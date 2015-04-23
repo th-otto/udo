@@ -1,0 +1,285 @@
+
+JUST ADD OS/2 WARP
+Frequently Asked Questions 
+November 14, 1995
+Updated December 15, 1995
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!                                                                    !!
+!!                         UPDATE NOTE                                !!
+!!                                                                    !!
+!!  The JUST ADD OS/2 WARP kit electronic image available from the    !!
+!!  World Wide Web sites, commercial on-line services, and bulletin   !!
+!!  board systems was updated December 15, 1995 with version 1.1 of   !!
+!!  the installation program.  If you experience difficulty           !!
+!!  installing the diskette, CD-ROM, or earlier downloaded versions   !!
+!!  of the kit, please download the new JAOWDSK1.ZIP (disks 2 and 3   !!
+!!  are unchanged).  And again, THANKS for trying JUST ADD OS/2 WARP! !!
+!!                                                                    !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Now that JUST ADD OS/2 WARP has been available for a couple of weeks,
+the interest has been most gratifying.  Our Web server has been
+extremely active with downloads ("on its knees" is a phrase that comes
+to mind), the entire run of diskette packages has been distributed,
+and the crew at Comdex is expected to come home empty handed after
+giving out lots of free CD-ROM copies in Las Vegas.  Press reviews
+have been favorable, if not astounded, that stodgy old IBM could take
+such an aggressive stand in the market.  For all your responses, THANK
+YOU!
+
+With the overwhelming activity on the downloads and 800#, it was
+inevitable that some questions arise about the kit, so here is a Q&A
+for the most common questions asked over the first several weeks.
+
+
+Q1) What tool was used to create the kit?
+
+A1) IBM Hyperwise was used to create the kit's textual content.
+Hyperwise creates files in .INF format (among others), so they can be
+viewed natively by the OS/2(tm) help engine, VIEW.EXE.  Hyperwise
+ships with a Windows(tm) viewer as well, so the same .INF file can be
+viewed under all of the operating environments supported by the JUST
+ADD OS/2 WARP kit.  Hyperwise provides drag-and-drop hypertext
+linking, graphic object display support, and external program launch
+capability.
+
+
+Q2) I downloaded JUST ADD OS/2 WARP and I get the following message
+when trying to unzip the distribution files:  "Warning!  I don't know
+how to handle:"  followed by all the file names.  What am I doing
+wrong?
+
+A2) DOS PKZIP 2.04 was used to create the .ZIP files.  If the PKUNZIP
+you're using doesn't handle PKZIP 2.04 format, you should be able to
+download another UNZIP utility that will.
+
+
+Q3) Why must the installation utility be run from a DOS Full Screen
+session?  Don't you know that you can press ALT-HOME from a DOS window
+under OS/2 to turn it into a Full Screen?
+
+A3) The installer scans your computer's hardware and video during the
+installation sequence and will not report video hardware and
+resolutuion modes if run in a window.  This prevents video corruption
+that would be caused when the sniffer queries the video chip set.
+
+Of course, ALT-HOME changes to full screen under OS/2, as does that
+"box with four arrows" button on Windows 95.  If you know those
+tricks, by all means use them.  They were omitted from the kit in the
+interest of simplicity since it runs in all three environments - OS/2
+Warp, Windows 95, and DOS/Windows 3.1.
+
+
+Q4) I installed JUST ADD OS/2 WARP, but I don't see any icons to start
+it up.  Where are they?
+
+A4) The installation utility scans your hard drive for the existence
+of DOS/Windows 3.1, Windows 95, and/or OS/2 Warp.  As a precaution, it
+doesn't scan any partition with less than 6 megabytes of free disk
+space so it won't clobber your swap file or leave too little space to
+grow your .INI files.  So, if your Windows or OS/2 is on a partition
+of less than 6 megabytes, the installer won't find it.  Also, if you
+have a highly customized installation with OS files in non-default
+directory structures (and you know who you are!)  we may miss it in
+some instances.
+
+If you have less than 6 megabytes of free disk space on your OS/2 or
+Windows partitions, you may move files to other partitions or delete
+them to free up 6 or more megabytes, then reinstall JUST ADD OS/2
+WARP.  Alternatively, you can manually create the program icons as
+follows:
+
+     OS/2 WARP
+
+        Create a new program object by dragging the program
+        template to your desktop.  Enter the following parameters in
+        the settings notebook:
+ 
+        Program tab 
+           Path and file name   VIEW.EXE
+           Parameters           d:\JUST_ADD\BOOKS\JAOWO.INF
+           Working directory    d:\
+           General tab Title:   Just Add OS/2 Warp
+           Current icon         Find d:\JUST_ADD\JUSTADDO.ICO
+
+        where d: is the drive where you chose to install JUST ADD
+        OS/2 WARP.  Close the settings notebook to create the icon on
+        your OS/2 desktop.
+
+
+     WINDOWS 95
+
+        Click on the open desktop with mouse button 2 (right mouse
+        button by default) and select "New -> Shortcut" from the 
+        pop-up menu.  Enter the following parameters in the Create
+        Shortcut wizard:
+
+        Command line:  d:\JUST_ADD\VIEW.EXE d:\JUST_ADD\BOOKS\JAOW.INF
+        Select "Next" button or press ENTER
+
+        Select a name for the shortcut: Just Add OS2 Warp
+        (note that Windows 95 does not allow a "/" character in a
+        file name) 
+
+        Select "Finish" button or press ENTER
+ 
+        This creates a program shortcut with the default VIEW.EXE 
+        icon. To change to the JUST ADD OS/2 WARP icon, click on the
+        Just Add OS2 Warp shortcut with mouse button 2 and select
+        "Properties".  
+
+        Select the "Shortcut" tab and press the "Change icon..."
+        button. Enter the following parameter:
+
+        File name:  C:\FILESYNC\JUSTADDW.ICO
+        Select the "OK" button 
+        Select the "OK" button again
+
+        d:  is the drive where you chose to install JUST ADD OS/2 
+        WARP.
+
+
+     DOS/WINDOWS 3.1
+
+        From the Windows 3.1 program manager menu bar select "File",
+        then "New...".  
+
+        Select the "Program Group" radio button, press "OK."  
+        Enter the following parameter:
+
+        Description:  Just Add OS/2 Warp 
+        Group file:  JAOW.GRP
+        Press "OK."  
+
+        Open the Just Add OS/2 Warp group you just created
+        and select "File", then "New..."  from the program manager 
+        menu bar. 
+
+        Select the "Program Item" radio button, press "OK."
+        Enter the following parameters:
+
+        Description:  Just Add OS/2 Warp 
+        Command Line: d:\JUST_ADD\VIEW.EXE d:\JUST_ADD\BOOKS\JAOW.INF
+        Working Directory:  d:\
+
+        Select the "Change Icon..."  button and enter the following
+        parameter:
+
+        File Name:  C:\FILESYNC\JUSTADDW.ICO 
+        Select the "OK" button
+        Select the "OK" button again
+
+        Select "File", then "New..."  from the program manager menu
+        bar. Select the "Program Item" radio button, press "OK."
+        Enter the following parameters:
+
+       Description:  Go To OS/2 Warp 
+       Command Line: C:\FILESYNC\GOTOWARP.EXE C:\FILESYNC\GOTOWARP.TXT
+       Working Directory:  C:\FILESYNC
+
+        Select the "Change Icon..."  button and enter the following
+        parameter:
+
+        File Name:  C:\FILESYNC\GOTOWARP.EXE 
+        Select the "OK" button
+        Select the "OK" button again
+
+        d: is the drive where you chose to install JUST ADD OS/2 
+        WARP.
+
+Now you will be able to launch JUST ADD OS/2 WARP from your OS/2 Warp
+or Windows 95 desktop, and/or from the DOS/Windows 3.1 Program
+Manager.
+
+
+Q5) The OS/2 Warp Upgrade Advisor says that I have enough hard drive
+space to install OS/2 Warp, but OS/2 won't install on my PC.  Why not?
+
+A5) If you have installed the disk compression that ships with
+Microsoft DOS 6.x or Windows 95 or have installed a compression
+utility such as Stacker(tm), and run the Upgrade Advisor from Windows
+95 or Windows 3.1, it will appear that there is sufficient free space.
+OS/2 Warp, however, cannot be installed to a compressed partition.
+Run the Uncompress utility that came with your compression software,
+install OS/2 Warp, then use an OS/2 compatible compression tool such
+as Stacker for OS/2 and DOS to re-compress your partition.  Stacker
+for OS/2 and DOS is compatible with both OS/2 and DOS, and therefore
+can be used in the dual boot environment supported by JUST ADD OS/2
+WARP.
+
+
+Q6) The OS/2 Warp Upgrade Advisor didn't see the memory I have
+installed on my IBM PC model 95.
+
+A6) The model 95 has unique hardware protection characteristics that
+block access to the memory ports under OS/2 by any application other
+than the operating system itself.  If you have Windows 3.1 or Windows
+95 installed, dual boot to that environment and re-run ADVISOR.BAT
+following the instructions in the READ.ME file.
+
+
+Q7) I chose to install JUST ADD OS/2 WARP to a drive other than C:,
+yet it placed the FILESYNC directory on C:  anyway.  Why?
+
+A7) The FILESYNC directory contains the files needed to run the
+Windows 95 to OS/2 Warp Dual Boot and Long File Name Conversion
+Utilities.  These utilities were placed on C:  because DOS and Windows
+95 can only boot from drive C:, and could therefore reliably locate
+these utilities.  The majority of JUST ADD OS/2 WARP is contained in
+the JUST_ADD and OS2DEMO directories which are installed to your
+choice of drive.
+
+
+Q8) While running under OS/2 Warp, I changed the name of a file that was
+created in Windows 95.  When I dual boot back to Windows 95, I don't see
+the changed file.  Have I lost that file?
+
+A8) The file is still there, under its old name.  The Long File Name 
+Migration utility is a one way street, migrating Windows 95 long file 
+names into OS/2 long file names.  By the way, the physical name on the 
+disk is still in the 8.3 format traditionally used by the DOS FAT file
+system, so the file can always be accessed by its old fashioned name 
+as well.
+
+
+Q9) What is the difference between the download, diskette, and CD-Rom
+versions of JUST ADD OS/2 WARP?
+
+A9) The download and diskette versions are identical.  The CD-ROM
+version is identical to the diskette version with the addition of a 
+very interesting multimedia video production on OS/2 Warp installation
+tips, usability tricks, and general how-to featuring that Warped 
+man-about-town, David Barnes.
+
+
+Q10) I would like to put JUST ADD OS/2 WARP on my BBS and make copies
+of the diskettes to give to other people who are interested in 
+upgrading their PCs, but the license agreement prohibits this.
+Is there any way I can help get this information out?
+
+A10) Yes, there is!  Due to the overwhelming response to the
+JUST ADD OS/2 WARP kit, IBM is making it available on a wider basis by
+relaxing some of the license terms to allow copying and electronic
+posting of the kit. All other terms and conditions of your JUST ADD
+OS/2 WARP license agreement remain in effect.
+                                                                         
+You may freely copy and distribute JUST ADD OS/2 WARP either by physical 
+(diskette) or electronic (bulletin board system) means. The JUST ADD     
+OS/2 WARP kit license agreement shall apply to any additional copies you 
+make.                                                                    
+
+
+Based on the numbers of questions received relative to the number of
+copies distributed, it appears that the vast majority of users have
+found that JUST ADD OS/2 WARP works well for them.  We hope that this
+FREE kit of information and utilities is useful for you, and that you
+will exercise your right to chose, and give OS/2 Warp a try.  Thanks
+for loading JUST ADD OS/2 WARP!
+
+
+(TM) OS/2 is a registered trademark of IBM Corp.
+     Stacker is a registered trademark of Stac Electronics
+     Windows is a trademark of Microsoft Corp.
+ 
+

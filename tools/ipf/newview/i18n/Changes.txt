@@ -1,0 +1,708 @@
+NewView release changes
+
+V2.20
+- big parts of the translation engine are refactored. The files are now sorted by label
+  if you export them.
+- More german translations added
+- There was a print message that was not 'translatable'; fixed
+- The File Open dialog had problems with archived directories; fixed (see bug #31)
+
+
+V2.19
+- the display of a bubble help at some places of the left panel is removed
+- the default of the option 'Show left panel for - Online help for applications' is changed to true.
+- new toolbar icon added for toggling the left panel
+- all toolbar icons replaced by new ones (copied form lucide)
+  the order of the icons is changed
+- some problems with various cmd line options fixed
+- global search in selected help path directories searches in all; fixed
+- starting 'newview -lang:en' produces some problems with translations
+  e.g. in the global search dialog; fixed (#16)
+- some layout problems with the gloabal search dialog fixed (includes the fix for #15)
+- New command line parser
+  The command line syntax is changed.
+  Samples:
+    newview cmdref copy
+    newview /s cmdref copy
+    newview /s cmdref "net access"
+    newview /g cmdref help
+    newview /g help
+- many fixes for links
+- other small fixes (see trac)
+- many changes for the debugging support
+
+- There was a blank at the beginning of a paragraph
+  after a graphic; fixed
+- In some other situations there was a blank to much at
+  the beginning of a paragraph; fixed
+- Version numbering changed
+- Menu entry 'Save as IPF' translated to german
+
+- many refactoring changes to remove unused source and add
+  as many unit tests as possible
+  yes we have (356) unit tests! (at the moment manly for the command line)
+- some backup files removed
+- ACLCtl10.DLL, ACLCtl10.h, ACLCtl10.pas, ACLCtl10.zip removed form my
+  local build \components directory
+- Test.pas removed form my local build \components directory
+- fix for unused vars in sibyl\addon\gradient.pas
+- fix for unused vars in sibyl\addon\ScktComp.pas
+- fix for missing bitmap cool1.bmp in components
+
+
+V2.18.1
+- Tools - Save as IPF
+
+V2.17.3
+- Fixed font substitution now works.
+  This overcomes a limitation of the IPF format.
+  By default, this substitutes for the "Courier 18x12" font
+  used for XWorkplace, VOICE newsletter, the output of HTML2IPF,
+  and other common help files.
+
+V2.17.1
+- Printing enhancements
+  - print entire document
+  - open windows
+  - Incomplete:
+    - cannot select a range of topics
+    - print the "related" topics
+    - empty windows are still printed
+- Fixed cursor behaviour when moving
+- Corrected word spacing in certain files (e.g. os2dbcs.inf)
+- Window is restored if app help is requested while it's minimized.
+- Fixed invisible startup window if a minimised help window already exists!
+- Fixed Edit-Copy or Ctrl+Ins from entry fields on the left panel
+- Fixed tab order on global search
+- Tab navigation of links (incomplete: no way to follow link)
+- Use WarpSans Combined (if supported) on DBCS systems
+
+V2.16.4
+- Fixed doubled table of contents
+- Fixed search locations list duplicating each time shown
+
+V2.16.3
+- New feature: more options for what directories to search
+  (Selected help paths, or any folder or folders)
+- Finnish translation from Tapani Raikkonen
+- Clickable contact details in Product Information dialog
+- Hints for split-bar between panels is now translatable
+- Many language updates from translators
+- Corrected some translation/hint problems.
+- Fixed some issues with URL recognition
+- Picture decoding is faster
+- Now includes newview.dll
+- Italian and Dutch help files now installed
+- Fixed stand-alone install, to stop complaining about newview.inf
+- NewView can be killed without an error message
+
+V2.15.3
+- Fixed problem in Helpmgr causing certain apps to crash
+- Improved Dutch translation from Jacques van Leeuwen
+- Updated Spanish  translation from Alfredo Fern ndez D¡az
+
+V2.15.2
+- /? works from view.exe (full replacement)
+- Updated usage dialog (newview /?)
+- Corrected help about /pos and about adding a note
+- Support for Maul Publisher
+  (Support HM_SET_HELP_LIBRARY_NAME and HM_SET_HELP_WINDOW_TITLE,
+   while help window is open)
+- Fix for problems when network printers configured.
+- Left margin "fit" code now correctly
+  breaks line if margin already past
+- Compatibility; also search global names for HM_PANELNAME
+- "help on help" from applications works
+
+V2.14.37
+- Fixed problems with own help file.
+
+V2.14.34
+Search:
+- Global search can search drives as well as help paths
+- Toolbar button for global search
+- Phrase search e.g. "warp server"
+- Highlighting of search words now works correctly
+  for words like OS/2, WM_CLOSE
+- Alt+S always moves focus to search entry field
+- Multi-word searches on the command line work
+  e.g. view cmdref directory command
+- First search match is brought into view
+- Search from command line now matches
+  (undocumented) old view behaviour.
+- New /s <text> option to do a normal search.
+Layout:
+- No extra space at end of italic if in fixed width
+  (fix display of tables containing italic)
+- Display :nt tag with correct indent
+- Footnote windows get a title
+User Interface:
+- New windows are positioned offset from topmost
+  help window
+- Tooltips for toolbar buttons
+- Remember full file paths for most recent list,
+  when specified using relative directories
+- F11/F12: previous/next in contents
+- F7/F8: back/forward
+- Tab or Shift+Tab moves between left and right panels
+- Many other keyboard navigation fixes
+  (Sibyl tab handling rewritten)
+- Help improved; includes context help for some things.
+- Minimum window sizes
+- Default colors for systems using less than 16 bit
+  color, reduced to plain/standard colors (e.g VGA boot)
+- Tools - Debug menu removed
+- Other tweaks to disable menu items, etc.
+Internationalisation
+- Swedish translation, thanks to Simon Gronlund
+- Updated Spanish translation, thanks to David Mediavilla
+- Space on Product Information dialog for translators
+Other
+- Install no longer complains about duplicate files
+  if . is in path.
+- PMSeek (16bit) help works (corrected exported function case)
+- Now using OpenWatcom - service problem fixed, thanks
+  again to Michal Necasek
+- Use Web Explorer for browser, if no other registered!
+- Better validation against corrupt help files
+- NewView help is now a .hlp file, not .inf, and goes
+  in the system help dir. Old newview.inf is deleted.
+- Fixed very rare crash showing dialogs
+- Fixed some bookmark editor problems
+- Fixed problems setting fonts
+- Fixed default file filter using standard OS/2 dialogs
+- Fixed printing
+- Own help file can now be language-specific, as for interface.
+- Also look in %OSDIR%\lang and %ULSPATH% for language files.
+
+V2.13.4
+
+Language files are now called newview_<lang>.lng so
+that they can be in the same directory as other programs
+using .lng files (e.g. AE).
+This means that you cannot use them on FAT systems (the
+filenames are too long for FAT).
+
+- Fix for crash in OS/2 Service (fixpack tool)
+  and other 16-bit applications
+- Fix to close help when applications closed
+- If a Windows .hlp file is opened, optionally
+  start Windows Help viewer
+- Turn left panel on and off
+  - Double click on sizebar, or View menu
+  - Defaults are set in Options
+- Fix for double-quotes when online help file
+  specified by a program.
+- A memory corruption fix
+- Fixed some small errors loading translations
+- Speed improvements at startup
+- Search matching adjusted
+- Progress bar on global search is correctly positioned
+  when dialog resized
+- Updated Czech translation from Michal Pohorelsky
+
+V2.12.9
+- Fix crash at shutdown
+- Remember dropped fonts.
+  On topic area, Drop+Shift sets fixed font.
+- Remember application font and size to fit
+- Options form more compact.
+- Fix problems loading from read-only media
+- Don't crash if default fonts not present
+- Fix memory corruption bug
+
+V2.11.1
+NOTE: Full manual install now REQUIRES many more steps. See readme.txt!
+- Now compatible with OpenChat
+  Thanks to Harald Pollack for Module Rename code
+- Install now sets up "ibmview", a working copy
+  of the old view, when doing a full install
+- Open dropped files
+  (on contents, index, topic etc)
+- Optionally open files without closing current files
+- Esperanto translation from Jonathan Moylan
+- Fixed problem with filenames containing underscores (_)
+- Extra space at end of italic text
+- Fixed decoding of linked images (e.g. rxtt.inf)
+- Fixed garbage in topics for automatic links (e.g. neusreng.inf)
+- Fixed color #7 e.g. Voice Newsletter headings
+
+V2.9.8
+- Launch program links
+  Links to "netscape" and "explore" are translated
+  into URLs and use the default browser.
+- Automatically make URL links from
+  http:// https:// ftp:// mailto: news:
+  www.a.b ftp.a.b and x@y.z
+- External links work
+- Fixed several PM resource leaks causing NewView/PM
+  to slow down after displaying many topics
+- Adjusted margins again
+
+V2.8.4
+- Checks for existing help windows with the same files
+  open and uses them instead of opening new windows.
+- Fixed topic display problem (DBExpert.hlp)
+- Corrected spacing in character graphics,
+  when a custom font is used (pmprintf.hlp).
+- Add blank line before/after cgraphics to match view
+- Dutch thanks to Kris Steenhaut
+- Japanese and Korean translations
+  Thanks to Tomoarai
+- Updated Russian translation
+- Standalone install can optionally associate
+  NewView with *.inf, *.hlp
+- Text files now installed
+  Full install, OS/2: x:\os2\book\NewView
+  Full install, eCS 1.1+: x:\ecs\doc\NewView
+- Standalone install uses %PROGRAMS%, if set,
+  for base folder
+- Installer checks for potential conflicts with
+  programs and help file
+
+V2.6.4
+Note: please delete your existing Language (.lng) files,
+unless you have customised them yourself, before installing.
+This is because the base files have been renamed, and the
+new files will be ignored in favour of the old ones.
+
+- Fixed online help in lots of apps, broken in
+  V2.5.0 by SmartSuite fix!
+- Fixed display of some context help
+  eg. PMView file dialogs
+- Searching by panel name works again
+  eg. Sibyl keyword lookup
+- Fixed occasional crashes when launching online help
+- Close help when app exits without explicit help close
+  eg. Sibyl
+- Display first contents topic when online help
+- Fixed crash on "Using Help"
+- Simplified Product Information dialog,
+  launch default browser on URL click
+- Removed 70kB from NewView.exe
+- Fixed inconsistent loading of languages...
+- Ignore extra bits in LANG (eg. _EURO)
+- Renamed language files to base language only
+  eg. de_de.lng -> de.lng
+  since most of them are not region-specific.
+- Added French translation
+  (Thanks Guillaume Gay)
+- Spanish, German and Russian translations updated
+  (Thanks David Mediavilla, Alfredo Fernández Díaz,
+   Christian Hennecke, Yuri Prokushev)
+- Added preliminary Czech translation
+  From Michal Pohorelsky
+
+V2.5.0
+- Fixed SmartSuite online help
+  (Thanks Mark Vollmer)
+- Update German & Spanish translations
+  (Thanks Christian Hennecke, Chris Hellwig)
+- Added Russian translation
+  (Thanks Yuri Prokushev)
+- Allow translation of NoteForm and other misc.
+- Fix text on crash dialog buttons!
+- Cope better if crash log cannot be written
+- Use LOGFILES variable if set (eCS compatibility)
+- Fix crash if INI file cannot be written
+  or doesn't exist (old bug resurfaced)
+- Note buttons now standard. Buttons larger.
+- Fix crash clicking on "no search results" text
+- Fix crash if no file specified for "Open Special"
+- Fixed English Edit - Find prompt
+- Fixed note problems with empty topics
+- Fixed saving "text-only" toolbar mode
+- Fixed topic properties display
+- Installer can install to the source folder
+
+V2.4.21
+- Added German and Spanish (partial) language files
+- Added a few missing items to language support
+- Expanded some controls to fit longer strings
+- Renamed a few badly named controls (sorry translators!)
+- Updating an existing language file now gives more info
+- Width of left panel is now saved
+
+V2.4.17
+- Multi-language support
+  See the Readme. Anyone can create translations!
+- Turned off logging in new HelpMgr.dll
+- Fix for .ce centering e.g. switch footnotes in
+  cmdref
+- Can find own help file using help paths
+
+V2.3.19
+- Remove limits/crash on filenames totalling more
+  than 255 characters
+  (command line, online help, file dialog)
+- Added DragText handling (requires DragText update)
+- Corrected WinAssociateHelpInstance when
+  help instance is NULLHANDLE
+- Allow multiple windows associated with help instance
+  Fixes VisPro Rexx apps, maybe others
+- Silently ignore if ini file unwritable.
+- Fix WPS crash on global Help Index
+- Dummy DDF (dynamic data format) functions for
+  apps that expect them.
+- Optimise new helpmgr.dll
+- Fixed memory leaks and reduced base memory use
+- Faster topic display.
+- Wrap only after at least one full word (like view)
+- Reduce flickering when starting online help
+- Remember full path for most-recently-used files
+  so it works for all files
+- Make keyboard in search and contents tabs,
+  work same as index (press enter to view topic)
+- Fixed display corruption in contents window
+
+[V2.3.18 withdrawn]
+
+V2.2.28
+- Minor updates to HelpMgr.dll,
+  reduce logging on some systems
+- Fixed bug loading help files (referenced files table)
+- Fixed memory leaks in searching
+- Fixed shutdown of PMView and other VisualAge
+  Open Class Library programs (Thanks PeterN).
+- Check for corrupt desktop at install.
+- Options for no or images-only toolbar
+
+[V2.2.27 was a mistake!]
+
+V2.2.19
+- Installer
+- Help Manager completed (helpmgr.dll)
+- First time window is centered.
+- Added a /pos command line parameter
+  Specifies window position and size (see help)
+- Center all dialogs
+- Added URL in about box
+- Show topic resource IDs in topic properties
+- Default button and ESC in print dialog
+- Fix crash after deleting bookmark
+- Fix crash with certain menu fonts
+- Fixed crash clicking in index!
+- Fix crash after Save As (and other?) dialog!
+- New icon courtesy Alessandro
+
+V2.0.25
+Faster, better layout, more options, and many bug fixes.
+
+Performance:
+- Restructured to keep file open and only load things
+  as needed.
+- Ignore duplicate directories in help paths
+- Other optimisations.
+Keyboard/Mouse
+- Use conventional Ctrl+FKey shortcuts for topic
+  windows; allow Alt+FKey shortcuts to work properly
+  (manipulating main app window).
+- Allow windows containing child windows to be
+  manipulated from keyboard
+  e.g. PMREF function topics, left pane.
+- Page up/down works when cursor showing!
+- Horizontal scroll when needed to show cursor
+Layout:
+- :lines. tag does not wrap
+- Improved wrapping behaviour e.g. in lists
+- Smarter margin sizing
+- No longer bold links to keep layout correct
+Appearance:
+- Improved fixed font selection.
+- Make all menus use system menu font
+- Fixed: text background fixed at white.
+- Added buttons to restore default fonts and colors
+- Hourglass cursor while decoding topic
+- Customisable colors for notes and search highlights
+- Notes now green (default)
+- Removed icons from buttons since they do not work
+  with different colour schemes and are not compatible
+  with enhancers like Styler/2
+- Cosmetic & spelling fixes
+- Restore correct color after links, highlights
+- Search highlights are now text background for
+  better visibility
+- Search highlights can be enabled or disabled from
+  the View menu
+File dialog:
+- Added filename completion to the file dialog.
+- SHow file titles in the file dialog.
+- Show network drive paths in file dialog
+Other:
+- Getting ready for online help mode.
+- Don't open new copies of windows if the topic is
+  already being displayed (regardless of ViewPort)
+- Fix occasional crash when mousing between NV and
+  other apps
+- File - New Window (Ctrl-N; Add Note is now Ctrl-M)
+- NewView help appears in top right of screen, doesn't
+  save position/size
+- Fix crash when shutting down with NewView's own
+  help file open
+- If no file specified at startup, by default loads
+  the NewView help file (switch off in Options)
+- Removed unimplemented History item.
+- Fix crash double clicking in empty topic window
+- Fix restoring of vertical scroll while e.g. going back
+- Fix huge memory usage on images > 256 colors
+  e.g. WarpNote.inf
+- Ensure Notes are reloaded in a usable state
+  (ie. clickable, viewable). However, they still are
+  not perfect.
+- Fix some problems with child windows (RXTT30.INF):
+  Parent is never changed after window created. Don't crash.
+
+V1.41.27
+- Fix crashes using file dialog
+
+V1.41.24
+Enhancements:
+- Searching for multipart/symbols now works
+  e.g. __os2__ or CAKE_AND_BISCUITS
+  Note: These searches can be slow due to the need
+  to verify exact sequences in the help file.
+- Improved the sorting of search results
+- Support custom fonts in the file
+  Note: smallest size is deliberately limited to 8 point
+- Direct RGB color editing ;)
+- Support text foreground/background colors
+- Added a popup menu item to search for the selected text.
+- Adding logging of call stack on exceptions. Hurrah!
+- Open Special operates like command line
+  (includes environment var expansion, path searching)
+- Improved mouse/keyboard handling:
+  - Ctrl+Cursor skips words
+  - Left mouse + shift keeps selection
+  - Double click words to select
+  - Left mouse drag + right click copies
+  - Alt+Cursor always scrolls
+  - Home/End goes to line start/end
+Bug fixes:
+- Contents/index decoding fixes
+- Cursor positioning around margins
+- Selection problem around line ends
+- Find in topic faster and less buggy
+- Printing to network printers without port
+- Less restriction on total length of filenames
+  when opening multiple files (still some probs)
+- Better handling of disk errors in file dialog
+- Missing space characters in some files
+- Crash when deleting notes
+- Notes now keep leading and trailing whitespace
+  Note: a single pararaph note still does not keep it's
+  final carriage return, apparently due to an OS/2 bug
+- Doesn't crash if default fonts missing (WarpSans/Helv)
+- Fixes to font selection dialog
+- Allow run-in images to be aligned (centred etc).
+- Put spaces after images if spacing is set (guess).
+- Message boxes improved a bit
+- Problem decoding margins set to 0
+  (resulted in very wide text!)
+- Flickering when displaying topic with notes
+
+V1.37.7
+- Printing
+  Only current topic is printed
+- Handle margins in-line; this improves list layout
+- Show titles instead of filenames for the
+  Most Recently Used files
+- Fixed problem with consecutive linked images
+- Set window size before display to avoid flicker.
+- Fixed some minor issues in help file.
+- Allow recursion in the opening of automatic windows, which
+  fixes some help files (eg. BA2)
+
+V1.35.8
+Enhancements:
+- Remember last file open directory
+- Contents tree is faster when it has lots of items open
+- Support bitmaparrays (only read first bitmap)
+  e.g. toolbar images in Borland C help
+- Support drag and drop colors for
+  the tabbed section
+- Added support for links by resource ID.
+  These are typically used across files
+  within a set of files (e.g PMREF)
+- Added option to turn toolbar images off.
+- File dialog:
+  - save size/position/split
+  - nice little drive type icons ;)
+- User interface standardisation
+- Help File updates, tidying
+- Some small optimisations & appearance improvements
+- Added more information to crash logging
+- Added stress tester
+- Added topic properties display (debugging aid)
+Bug fixes:
+- Fix a bug in fixed-width font layout (e.g. tables)
+- Fixed crash on helpfiles with >32k dictionary entries
+  (OS2SHARE.INF, WIN32.INF)
+- Corrected the inverted top/bottom
+  positioning of certain windows.
+- Corrected window centering
+- Lots of bug fixes around multiple window handling
+  - crashes on display
+  - inability to make notes/copy
+  - child (split) window positioning (no border)
+  - better reuse of same windows
+  - bring windows to front when viewed
+- Stop making Profile files
+
+V1.33.0
+Gak, I broke lots of things in the last few
+releases. Appy polly loggies :)
+- Navigation (back/forward):
+  - Fixed all windows invisible!
+  - Add last 9 back points in Navigate menu
+  - Connect Navigate - Forward
+  - Searching in index, have to press enter
+    to view the topic. This Saves useless entries
+    in history while you're typing
+- Save notes & bookmarks immediately on changes
+  (just in case NV crashes :P)
+- File open:
+  - Works!
+  - keys better; more shortcuts, tabbing works, (Sibyl bugs)
+  - .. etc working again
+- File - Save As works
+- Font selection dialog rewritten to be good instead of crap
+- Fixed bug shutting down leaving zombie process
+
+V1.30.6
+- True Multi Document Interface so topic
+  windows can be sized and closed.
+- Fixed bug with alignment around images
+- Fix for text line chunks longer than 200 chars
+  Shows up mostly on hi-res screens
+- Reconnected color wheel and value bar in options. Whoops.
+- Added NewView.INF helpfile, connected to menu
+  "Help" - "How to Use NewView"
+- Added Expand All item to view menu
+  Also option to Expand All on file open.
+- Minor user interface fixes/enhancements
+- Added gpl.txt to distribution
+
+V1.28.3
+- Bookmarks.
+  - Saved to a text file called <name>.bmk
+    in the same directory as the help file.
+- Layout the crash dialog text a little better!
+- Minor improvements in text and contents controls
+- Fixed problem with initial display of topics
+
+V1.27.9
+- Now GPL'd
+- Bug fixes in scrolling, margins, cursor
+- Added popup menu for topics.
+- Saves position within topic for each window
+- Fixed bugs in notes handling
+- Fixed up a couple of crashes in global search.
+- Fixed problem with index listbox
+- Various minor cosmetic fixes.
+- Changed to put INI file in application dir.
+
+V1.27.1
+- Major revamp of search.
+  Multi-word
+  +/- modifiers ala altavista to include/exclude words
+  Results are sorted by relevance
+- Simple implementation of hyperlinked bitmaps:
+  only handles single overall link code, but this is
+  enough to handle e.g cmdref examples links.
+- Added checks that BOOKSHELF and HELP environment vars
+  are defined. Give a warning if not.
+- Put INI file in application dir.
+- Set margins better
+
+V1.22.0
+- Wrapping works properly with outline fonts.
+- Footnotes.
+- Text centering via $fb code works.
+- Reworked links a little to fix crashes
+- Back to Sibyl fixpack 3: may fix problems with lockups
+- Checked the contents loading more carefully.
+- Implemented bitmap flags, except for stretch to fit.
+- More exception handling including logging
+
+V1.19.4
+- Loading rewritten. Twice as fast.
+- Fixed big mess I made a big mess of bitmap loading.
+- Can pick the toolbar bitmap now (File - Options - Style)
+- Fixed file dialog some more: now changes directory when typed in.
+- When images cannot be loaded, just displays a 'missing' placeholder.
+- Menu hints, displayed in status bar.
+- Fixed problem with words running together halfway through a topic
+- Fixed alignment in lists
+- Removed font log files (didn't learn much!)
+
+V1.17.15
+- Huge improvements in search speed, especially in global (all files) search.
+  Should be at least ten times faster.
+- Loading files is about 3x as fast
+- Fix for focus change to other apps
+- Added collapse all in view menu
+- Dialog font to WarpSans.9
+- Fixed a bug with displaying links a second time!
+- Added a few more keyboard shortcuts
+
+Note - memory usage is well up again, but will be reduced in future
+
+V1.16.12
+- Global search is functioning, although still slow. It's a modeless dialog.
+- Re-enabled save as
+- Fixed - Autolinks at start of a topic, the link continues into the text
+  e.g. cpplng.inf
+- Turned compiler optimisation off again. Was causing problems with assertions
+  reading bitmaps.
+- Fix for setting font (more than one activation of dialog usually caused crash)
+- Standardised layout of font dialog
+- Loading time improvements
+- Contents (outline/tree view) selection text is inverted, scrollbars fixed
+- Fixed all remaining memory leaks of note (for now ;-)
+- Fixed mistake in getting help file title.
+- Fixed many huge bugs in searching, such as only finding the first
+  occurrence of each matching word!
+- Search the topic titles and the index as well.
+- Double clicking a note in the notes list goes to it.
+- Search and index search edit boxes are not cleared on close file.
+
+
+V1.15.2
+- First draft of global search. It's pretty slow. Incomplete.
+- Fixed index duplicates. It's not quite perfect because if there is a topic
+  with the same title but pointing to a different topic it will not be caught...
+- Added /profile cmd line option
+- Command line topic searching. Bit different to view. View searches the
+  index and displays only the first topic. I decided to do a full text search
+  and (of course) display all the results.
+  This could be another option, I guess, but I think mine is more helpful.
+- Fixed many, many large memory leaks in help file loading.
+- While loading help file(s) show which file is being loaded in the
+  status bar.
+- Fixed a huge bug in the navigation back and forward with
+  multiple windows!
+- Load notes before displaying first topic.
+
+V1.13.2
+- Fixed broken options screen
+- Colors can be customised
+- File dialog:
+  - Option to use std OS/2 dialog, so that enhancers can replace.
+  - Fix keyboard operation of directory list box
+  - Default filter to only help files.
+- Fix copy
+- Fixed problems with link mouse over
+
+V1.12.19
+- Fixed huge memory consumption and crash on files
+  with one or more empty topics.
+- Fixed extra random data at end of topics.
+- Fixed crash following link in some cases.
+- Fixed the display of < and >.
+- Improved index reading - should not crash ;-)
+- Reset progress if file fails to load
+- Improved window painting while scrolling
+- FIxed bitmap/wrapping problems
+
+V1.12.14
+First public release.

@@ -1,0 +1,312 @@
+Short: Complete ARexx reference. AmigaGuide.
+Type: util/rexx
+Uploader: robin@halcyon.com
+Author: Robin Evans
+
+Keywords: ARexx,manual,reference,tutorial,AmigaGuide,script,TurboText,Edge,Ed
+
+ DESCRIPTION
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ARexxGuide is a complete ARexx reference with tutorials and dozens
+of ready-to-use examples. Done in AmigaGuide format, it includes
+argument templates and descriptions of all instruction keywords, of
+built-in functions, and of the functions in rexxsupport.library.
+The basic elements of the language are fully explained. Example
+programs -- some of them interactive -- answer frequently-asked
+questions about the language. Sample clauses are included with each
+function and instruction explanation. Error codes and possible
+solutions are explained.
+
+A help-system that will turn nearly any text editor into an online
+reference to ARexx is included. Working macros for three editors
+are provided as examples. A step-by-step tutorial explains the
+simple steps for making a new macro for a different editor.
+
+ARexxGuide is a shareware offering. The suggested fee is $15.
+
+ VERSION
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+2.0a: Some embarrasing problems in the included scripts are fixed.
+      Those who previously downloaded the 2.0 version can get
+      copies of the fixed scripts in the archive ARexxG_20patch.lha.
+
+The second edition includes extensive changes thoughout. Two new
+tutorials explain ARexx as a macro language. A new section on
+techniques answers frequently-asked questions about ARexx with
+example code that can often be plugged directly into a script. Each
+possible error code is explained.
+
+Notes on compatability issues have been added throughout the guide.
+They show how ARexx differs from the standard definition of REXX
+and offer methods for handling the differences.
+
+RQ version ======================
+
+Two different versions of the second edition are distributed. Both
+include the same information, but present it in somewhat different
+ways. The RQ version uses requesters to show definitions and other
+information that is displayed in the standard version by moving to
+a new node. The RQ version uses `rexxreqtools.library' by Rafael
+D'Halleweyn. and `ReqTools' by Nico François to implement the
+requesters. Because the requesters must be able to communicate with
+AmigaGuide through ARexx, this version can be used only with
+pre-MultiView versions of AmigaGuide -- that is, with version 34 of
+the library.
+
+ REQUIREMENTS
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For the standard version: (ARexxGuide2_0A.lha)
+	Any AmigaGuide viewer.
+
+	Multiview can be used with OS 3.x. Users of OS 1.3 or 2.x will
+	need the AmigaGuide utility and amigaguide.library which are
+	distributed by Commodore on most BBSes and networks that support
+	the Amiga.
+
+For the RQ version: (ARexxGuide2_0rqA.lha)
+	AmigaGuide version 34 viewer and library.
+
+	`reqtools.library' and `rexxreqtools.library'.
+
+	These libraries are included in the distribution archives for
+	ReqTools by Nico François. Look for `ReqTools22a_User.lha' on
+	your favorite shareware source. A minimum version of 37.5 for
+	rexxreqtools.library is required.
+
+ ARCHIVE CONTENTS
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The ARexxGuide drawer of this archive contains 21 files that make
+up one AmigaGuide® application. The AmigaGuide files are:
+
+  ArexxGuide.guide
+  ARx_Cmd.ag
+  ARx_Elements.ag
+  ARx_Elements2.ag
+  ARx_Elements3.ag
+  ARx_Func.ag
+  ARx_Func2.ag
+  ARx_Func3.ag
+  ARx_Func4.ag
+  ARx_Guide.xref
+  ARx_Index
+  ARx_Instr.ag
+  ARx_Instr2.ag
+  ARx_Instr3.ag
+  ARx_Intro.ag
+  ARx_Operator.ag
+  ARx_PrgUcr.ag
+  ARx_Tknq.ag
+  ARx_Tutor.ag
+  ARx_UcrTutor1.ag
+  ARx_UcrTutor2.ag
+
+Only ARexxGuide.guide is intended as an AmigaGuide executable. The
+other files are called from within the main node of that guide.
+
+The following ARexx script files, located in the same directory,
+are used to run interactive examples from ARexxGuide, or to provide
+utilities for the program:
+
+  ARexxGuide.rexx
+  ARx_Cmpr.rexx
+  ARx_IactExamples.rexx
+  ARx_Reg.rexx
+  ARx_Setup.rexx
+  Arx_Trace.rexx
+
+Two additional files are included with the RQ version of the guide.
+
+  ARx_Glossary.rexx
+  ARx_GlossaryPort.rexx
+
+The `Editors' drawer contains macros for the ARexxGuide help
+system. Example macros are included for Ed 2.0 (the editor that
+comes with the OS), TurboText, and Edge. A tutorial in ARexxGuide
+explains how to make a file for a different editor. Any editor that
+is capable of minimal communication with ARexx can be used.
+
+The 'Extras' drawer contains some files that are not necessary, but
+may be helpful to some users. Read the opening comment for more
+information.
+
+The file 'UnCrunch.rexx' is the the source document for the program
+included in the tutorial section.
+
+ INSTALLATION
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The ARexxGuide drawer can be moved to any location.
+
+Once the drawer has been moved, click on the ARx_Setup.rexx icon to
+establish environmental variables that are used by the ARexxGuide
+utility programs. You will be asked if you want to store the
+variables permanently. If you answer Yes, they will be copied to
+your Envarc: directory.
+
+You will also be asked if you want to copy the `.rexx' files from
+the ARexxGuide drawer to the REXX: directory. The files will be
+copied and deleted from the ARexxGuide drawer if you answer 'Yes'.
+
+You could also move the .rexx files manually. The following command
+will do that:
+
+   copy <path>/ARexxGuide/#?.rexx REXX:
+   delete <path>/ARexxGuide/#?.rexx
+
+The icon labeled simply `ARexxGuide' runs a program called
+ARexxGuide.rexx when it is double clicked. If ARexxGuide.rexx is
+stored in the REXX: directory, the the icon can be kept anywhere
+you wish. It will launch ARexxGuide even if it's located in a
+different directory. You can move the icon anywhere on your system,
+but only with the shell copy command since it isn't actually
+attached to a file.
+
+
+ RUNNING ARexxGuide
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+System setup
+	The ARx_Setup.rexx script -- explained above in Installation --
+	will customize ARexxGuide for your system. If it is not run
+	before starting ARexxGuide, or if the environmental variables
+	set by the script are deleted, then the setup program will
+	sometimes be called by other ARexxGuide utility scripts.
+
+From the ARexxGuide icon: (does not display '.guide' in the name)
+	This icon runs a script called ARexxGuide.rexx which should be
+	located either in the same directory as the icon or in the REXX:
+	directory. The default tool for this icon is `RX' without a path
+	specification. If the `RX' program is not in a command path that
+	is visible from Workbench, you will have to add a full path spec
+	to the icon's tool gadget. It would probably be something like
+	`sys:rexxc/rx'
+
+	If you haven't run ARx_Setup.rexx before running this script,
+	then the setup script is called to set some of the environmental
+	variables needed to customize ARexxGuide for your system.
+
+	If you have the function library rexxarplib.library, the script
+	lets you automatically display ARexxGuide on a public screen. If
+	you use the RQ version of the guide, the script will load the
+	requester data into memory before ARexxGuide is displayed and
+	will automatically close the requester port when the guide is
+	closed.
+
+From the ARexxGuide.guide icon:
+   Double-click on the ARexxGuide.guide icon. ARexxGuide will open
+   its window.
+
+   The default tool in the icon is 'AmigaGuide' without path
+   specification. If your AmigaGuide executable program is located
+   in a path that is searched by Workbench, then that will be
+   enough. If, however, AmigaGuide cannot be found by Workbench,
+   then you should single-click on the icon and press Amiga-I.  Add
+   the full path to the 'Default tool:' field in the Information
+   window.
+
+      Example:
+            sys:utilities/Amigaguide
+
+   If you use Multiview instead of AmigaGuide, then you will need to
+   change the default tool.
+
+   When ARexxGuide is called from the icon, the .rexx interactive
+   examples will run, even if they are not moved to the rexx:
+   directory.
+
+From a shell:
+   You have more options when you run ARexxGuide from a shell, but
+   may also run into a few more problems because this guide uses
+   multiple files. When pressing one of the link buttons in the
+   guide, AmigaGuide will often look for one of the subsidiary
+   files. It will find them if they are in the current directory or
+   if they are in a path included in the AmigaGuide/path
+   environmental variable.
+
+ --- Run ARexxGuide from the current directory.
+
+   Make the directory containing ARexxGuide.guide the current
+   directory before calling the guide:
+
+      Example:
+         cd <path>/ARexxGuide
+         Amigaguide ARexxGuide.guide
+
+   Interactive .rexx examples will run even if they are not moved
+   to REXX: when the guide is invoked this way.
+
+ --- Add the ARexxGuide path the AmigaGuide search path.
+
+   AmigaGuide will look for files in directories specified in the
+   environmental variable amigaguide/path. If you often run this
+   guide from a shell or directory utility, you should probably set
+   the variable.
+
+   The enviromental variable is set automatically by the
+	ARx_Setup.rexx script, but it could also be set manually with
+	the following command, issued from a shell:
+
+      makedir env:amigaguide
+      setenv amigaguide/path <path>/ARexxGuide
+
+   where <path> is the full path leading to the directory.
+
+   If you've already created an 'amigaguide' path in env:, then you
+   may omit the makedir command.
+
+   Note that this command will replace any value that might
+   previously have been set for the path variable. (ARx_Setup will
+   not overwrite current settings, however.)
+
+   You can,include multiple paths in that variable. Just separate
+   each path from others with a space and use the collection in the
+   'setenv' command.
+
+   The env: directory is located by default in RAM:, so this
+   setting will not survive a reboot. If you'd like to have path
+   automatically set when you reboot, issue this command:
+
+      copy env:amigaguide/#? envarc:
+
+   If that command is issued after you have opened and closed
+   AmigaGuide, then the window size and position last used will
+   also be saved.
+
+   Once the search path for AmigaGuide is set, ARexxGuide can be
+   run without setting the current directory. The interactive
+   examples, however, might not run. They should be moved to the
+   REXX: directory to so that ARexx will be able to find them.
+
+ DISTRIBUTION
+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The files in this archive are copyright © 1993,1994 by Robin Evans
+and may be distributed only in the original form and only under the
+conditions outlined below.
+
+Distribution of the material in this archive is prohibited if the
+contents of the original archive are altered in any way.
+
+The archive may be distributed in its original form on local and
+national computer networks, on Aminet distribution channels
+(including the Walnut Creek CD-ROM), on Fish collections, or on
+disk collections distributed by non-profit entities. Distribution
+by other means (including distribution by profit-making entities
+other than those mentioned) is prohibited unless specific
+permission is granted.
+
+Rights are reserved for other forms of distribution of this archive
+or of its contents individually, including but not limited to
+distribution of a printed version of any file contained in the
+archive, distribution with commercial products, or distribution on
+computer networks in hypertext form of any file in the archive.
+Contact the author for further information and permissions.
+
+               Robin Evans                   24 Mar 1994
+
+                  from Internet:
+                     robin@halcyon.com
+                     r.evans6@genie.geis.com
+
+                  on GEnie:
+                     R.EVANS6
+
+                  by phone:
+                     (206) 682-7077

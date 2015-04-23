@@ -1,0 +1,5 @@
+; if you get rid of the menu assignments that are in the default
+; s:Ed-Startup file, you'll see more complete menus.
+; read Denny on DOS in AmigaWorld for more hints like that.
+sf 1 "rx \arx_help\"
+

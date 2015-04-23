@@ -1,0 +1,380 @@
+@database "ARx_UcrTutor2.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN ""
+@toc ARx_TUTOR.ag/MAIN
+@prev ARx_PrgUcr.ag/UCREXPLAN
+@next ARx_PrgUcr.ag/UCREXPLAN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+
+@endnode
+@node PRG57 " SetDest: "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+@prev ARx_UcrTutor1.ag/PRG47
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 57}
+
+SetDest is called an @{" internal function " link ARx_Elements3.ag/PROGFUNC} because it is defined within the
+program from which it is called. The colon after 'SetDest:' identifies it
+as a @{" label " link ARx_Elements3.ag/LABEL}. It tells ARexx that the following program lines are part of
+a @{" subroutine " link ARexxGuide.guide/GLOSSARY 248}.
+
+In this case, all of the @{" variables " link ARx_Elements2.ag/VARIABLE} that were declared in the main
+program section will be available within the function definition. They
+could even be changed in the function. That behavior can be avoided by
+using the @{" keyword " link ARexxGuide.guide/GLOSSARY 135} @{" PROCEDURE " link ARx_Instr3.ag/PROCEDURE} immediately following the function label.
+
+The keyword @{" RETURN " link ARx_Instr3.ag/RETURN} at the end of the listing indicates the end of the
+function and returns control to the place in the main code of the program
+from which the function was called.
+
+
+@endnode
+
+@node PRG58 " parse arg AProg "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 58}
+
+The unabbreviated form of the @{" ARG " link ARx_Instr.ag/ARG} @{" instruction " link ARx_Elements3.ag/INSTRUCTION} which was used at the
+beginning of the program is used here. Adding @{" PARSE " link ARx_Instr2.ag/PARSE} prevents the
+received value from being translated to upper case. That may be important
+here because the case of the letters used in an option string is
+significant to some of archive programs.
+
+The instruction picks up the @{" argument " link ARx_Elements3.ag/FUNCARG} that was included within the
+parentheses when the function was called.
+
+
+@endnode
+
+@node PRG59 " cdir = pragma('D') /* Store the current directory */ "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 59}
+
+@{" PRAGMA() " link ARx_Func3.ag/PRAGMA()} returns information about the system environment in which an
+ARexx script is executing and allows the script to change some aspects of
+that environment. Here it is used for purely informational purposes; it
+retrieves the name of the current directory.
+
+
+@endnode
+
+@node PRG61 " /* Change archive filename..."
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 61}
+
+This @{" comment " link ARx_Elements.ag/COMMENT} partly explains the purpose of the code within the @{" SELECT " link ARx_Instr3.ag/SELECT}
+block that follows.
+
+The code is not absolutely necessary, but is included because it makes the
+script friendlier to the user by allowing any valid file specification to
+be used, even something like `:dl/flooey.lzh' or `//flooey.lzh'.
+
+It is useful because we might be changing directories later in the script
+to a volume different than the one where [FileName] is located. In order
+to properly identify [FileName] from the changed directory, we'll need a
+complete path specification for the file.
+
+
+@endnode
+
+@node PRG63 "    FDir = CDir"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 63}
+
+The @{" variable " link ARx_Elements2.ag/VARIABLE} [CDir] contains the name of the current directory. That
+value will be altered later in the program, but we'll have to remember its
+original value to restore the system to its original state. [FDir] can now
+be changed without affecting [CDir].
+
+
+@endnode
+
+@node PRG65 " when pos(':', FileName) > 1 then "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 65}
+
+This is the first of four @{" conditionals " link ARx_Elements3.ag/CONDITIONAL} (three @{" WHENs " link ARx_Instr3.ag/WHEN} and the
+@{" OTHERWISE " link ARx_Instr3.ag/OTHERWISE} @{" instruction " link ARx_Elements3.ag/INSTRUCTION}). Using the @{" built-in function " link ARx_Elements3.ag/BLTFUNC} @{" POS() " link ARx_Func.ag/POS()}, it
+checks for a [FileName] that contains ':' somewhere other than the first
+character: `foo:dl/flooey.lha'. That positioning of ':' means that a
+volume designation is included in [FileName], so it need not be modified.
+
+
+@endnode
+@node PRG67 " when left(FileName, 1) == '/' then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 67}
+
+This checks for a relative file specification like `//flooey.lzh' in which
+[FileName] is specified relative to the current directory without
+including the name of the directory.
+
+Notice that the @{" comparative operator " link ARx_Operator.ag/COMPARISON} `==' is used here rather than `='.
+Either one would work since a single character is returned by the
+function, but the sign for exact equality makes it clear that the
+comparison must be exact -- without extra spaces.
+
+
+@endnode
+
+@node PRG69 " do while left(FileName, 1) == '/'        /* is 1st char '/'? */"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 69}
+
+We've used a @{" DO " link ARx_Instr.ag/DO} block several times to group a block of @{" instructions " link ARx_Elements3.ag/INSTRUCTION}
+together under an @{" IF " link ARx_Instr.ag/IF} clause. This one does the same thing but it also
+introduces one of several @{" iteration " link ARexxGuide.guide/GLOSSARY 127} specifiers that can be used to make
+a program @{" loop " link ARexxGuide.guide/GLOSSARY 145} through a block of instructions repeatedly.
+
+Like @{" IF " link ARx_Instr.ag/IF} and @{" WHEN " link ARx_Instr3.ag/WHEN}, the @{" WHILE " link ARx_Instr.ag/DOOPT4} subkeyword must be followed by an
+expression that results in a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}. The expression is evaluated
+before any clauses in the block are executed. As long as the expression
+returns a TRUE value, the following block will be executed.
+
+In this case, the @{" LEFT() " link ARx_Func.ag/LEFT()} function pulls off the first character in
+[FileName], which is then compared to '/'.
+
+If the value of the expression is FALSE, (which will happen when there is
+no longer a '/' character at the beginning of [FileName]) the block
+between this line and the matched @{" END " link ARx_Instr.ag/END} will be skipped and program
+execution will continue with the next line.
+
+
+@endnode
+
+@node PRG70 " FileName = substr(FileName, 2)      /* strip it off     */ "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 70}
+
+As it's used here, with only the first and second arguments specified, the
+@{" SUBSTR() " link ARx_Func.ag/SUBSTR()} @{" function " link ARx_Elements3.ag/FUNCTION} returns the portion of the string [FileName]
+beginning at the second character; in other words, the first character of
+the value is stripped from [FileName]. `//flooey.lha' would become
+`/flooey.lha'.
+
+
+@endnode
+
+@node PRG72 " DivPos = max(lastpos('/', FDir,Pln),,"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 72}
+
+This is the first part of one @{" clause " link ARx_Elements3.ag/CLAUSE} divided over two lines. The extra
+comma at the end of this line is a @{" continuation token " link ARx_Elements.ag/COMMA} that tells ARexx
+to combine this line with the next one and treat them both as a single
+line.
+
+The technique used here for locating a filename and path is explained in a
+note to the @{" LASTPOS() " link ARx_Func.ag/LASTPOS()} function. The @{" nested " link ARexxGuide.guide/GLOSSARY 155} functions tell us where the
+final directory or volume divider character is located in [FDir].
+
+The @{" variable " link ARx_Elements2.ag/VARIABLE} [Pln] was defined on the previous line. It is a number one
+less than the length of [FDir] and is used to start the search for the '/'
+or ':' one character from the end of the string, resulting in a path that
+includes either ':' or '/' as the final character. That path will be used
+when we combine [FDir] with [FileName] to create a fully qualified file
+name.
+
+
+@endnode
+
+@node PRG74 " FDir = left(FDir, DivPos)"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 74}
+
+The value of [DivPos] tells us the length of the @{" string " link ARx_Elements2.ag/STRINGEXPR} that contains
+the file path to the current definition of [FileName]. The @{" LEFT() " link ARx_Func.ag/LEFT()}
+function will truncate [FDir] to just that length.
+
+This @{" loop " link ARexxGuide.guide/GLOSSARY 145} is performing much the same task as entering `cd /' on the
+CLI: it steps down one level in the file path each time this clause is
+called within the loop.
+
+
+@endnode
+
+@node PRG76 " when left(FileName,1) = ':' then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 76}
+
+This @{" conditional " link ARx_Elements3.ag/CONDITIONAL} checks for a relative file name that refers to the root
+directory in its specification -- something like `:flooey.lha'
+
+
+@endnode
+
+@node PRG77 " parse var CDir FDir ':' ."
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 77}
+
+PARSE is a powerful variation of the @{" assignment clause " link ARx_Elements3.ag/ASSIGNMENT}, which we've used
+several times already -- powerful because it is able to assign values to
+several @{" variables " link ARx_Elements2.ag/VARIABLE} at once and to perform, in one step, the tasks of
+@{" functions " link ARx_Elements3.ag/FUNCTION} like @{" LEFT() " link ARx_Func.ag/LEFT()}, @{" RIGHT() " link ARx_Func.ag/RIGHT()}, and @{" SUBSTR() " link ARx_Func.ag/SUBSTR()} as well as the
+location functions like @{" POS() " link ARx_Func.ag/POS()}.
+
+We've used variations of the @{" instruction " link ARx_Elements3.ag/INSTRUCTION} at three other spots in this
+script. Twice it was used to retrieve an @{" argument " link ARx_Elements3.ag/FUNCARG}, and once to pull a
+value from an interactive prompt presented to the user.
+
+This time, it is used to break down a variable. The subkeyword @{" VAR " link ARx_Instr2.ag/PARSESRC8}
+indicates that the symbol [CDir] is a variable that will supply the source
+string for the instruction. The following symbols -- (FDir ':' .) -- form
+a @{" template " link ARx_Instr2.ag/PARSETMP1} that guides PARSE in splitting the input value into its parts.
+
+The ':' in the template used here is enclosed in quotation marks, which
+identify it as a @{" pattern marker " link ARx_Instr2.ag/PARSETMP3}. PARSE will look for that character
+within the string [CDir] and assign all characters to the left of it to
+the variable [FDir]. All characters to the right of the first ':' will be
+assigned to [.]. That dot is a @{" placeholder token " link ARx_Instr2.ag/PARSETMP2 46}. It works like a
+variable would in that position, except that the value that would have
+been assigned to the variable is thrown away. We use it here because we
+don't care about characters to the right of the ':'.
+
+This same operation could have been performed using the following
+functions:
+               FDir = left(CDir, pos(':', CDir) - 1)
+
+
+@endnode
+
+@node PRG79 " if verify(right(FDir, 1), '/:', 'M') ~= 0 then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 79}
+
+What's left? Only a filename entered without a path -- one for a file
+located in the current directory.
+
+The @{" VERIFY() " link ARx_Func.ag/VERIFY()} function will return 0 if neither of the characters '/' or
+':' is used at the end of the path specification. If the value is not 0
+(the @{" comparison operator " link ARx_Operator.ag/COMPARISON} meaning 'not equal' is used here), then a '/'
+character is added in the next line.
+
+
+@endnode
+
+@node PRG82 " FileName = FDir||FileName"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 82}
+
+The final step in the process is to combine the path determined by the
+routine above with [FileName]. This gives us a fully qualified file name
+that will be understood by AmigaDOS no matter what the current directory
+may be.
+
+
+@endnode
+
+@node PRG84 " /* Perform the uncrunching  */"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 84}
+
+Now that we're sure we have a good file name, we'll perform the work that
+we really came here for: uncrunch a file. The following three @{" commands " link ARx_Elements3.ag/COMMAND}
+will be sent to AmigaDOS.
+
+
+@endnode
+
+@node PRG85 " 'cd \"'UCdir'\"'"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 85}
+
+Since this @{" function " link ARx_Elements3.ag/FUNCTION} is used for programs like ARC and ZOO that output
+unarchived files to the current directory, the first task is to move to
+the uncrunch directory defined in the main program. The `CD' statements
+are surrounded by quotation marks. That tells ARexx to treat them as
+@{" commands " link ARx_Elements3.ag/COMMAND} to be run by the @{" host " link ARx_Elements3.ag/HOST} -- AmigaDOS in our case. These commands
+will have the same effect as they would have if they were typed directly
+on the CLI.
+
+Notice the odd collection of quotation marks. The single quotation (')
+marks are there for ARexx and will be removed before the command is sent
+to the host, but the double marks (") are there for AmigaDOS (in case one
+of the directory specifications used here contains a space or `?' mark)
+and will be sent on by ARexx because they are enclosed within the
+single-marks.
+
+Both `CD' statements include ARexx @{" variables " link ARx_Elements2.ag/VARIABLE} outside the quotation
+marks. The variables will be expanded by ARexx before the command is sent
+to AmigaDOS.
+
+
+@endnode
+
+@node PRG86 " ''AProg '\"'FileName'\"'"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 86}
+
+Here, finally, is the heart of the matter -- another @{" command " link ARx_Elements3.ag/COMMAND} that will
+be sent to AmigaDOS. Notice though, that the command is a @{" variable " link ARx_Elements2.ag/VARIABLE} this
+time. Both variables in the @{" clause " link ARx_Elements3.ag/CLAUSE} will be expanded by ARexx before they
+are sent on to the @{" host " link ARx_Elements3.ag/HOST}. The resulting command will be something like
+
+                  Arc x "work:foo/flooey.arc"
+
+It will be executed by AmigaDOS just as would be if it had been typed on
+the CLI.
+
+The doubled quotation marks that begin the line { ''AProg ...} are a
+useful way to indicate that the clause is a command. The quotes form a
+null @{" string " link ARx_Elements2.ag/STRINGEXPR} which tells ARexx that the clause is neither an
+@{" instruction " link ARx_Elements3.ag/INSTRUCTION} nor an @{" assignment " link ARx_Elements3.ag/ASSIGNMENT}.
+
+Note: the '\' characters that may appear in the titlebar when viewing this
+listing are an odd effect of AmigaGuide and not a part of the program line.
+
+
+@endnode
+
+@node PRG89 " return"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 89}
+
+Program control is @{" RETURNed " link ARx_Instr3.ag/RETURN} to the line after the place where SetDest:
+was called.
+
+
+@endnode
+
+@node PRG92 " if arg(1, 'E') then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 92}
+
+The @{" ARG() " link ARx_Func3.ag/ARG()} @{" function " link ARx_Elements3.ag/FUNCTION} may be used instead of the @{" instructions " link ARx_Elements3.ag/INSTRUCTION} @{" ARG " link ARx_Instr.ag/ARG} or
+@{" PARSE ARG " link ARx_Instr2.ag/PARSESRC1}. It offers some options not available with its instruction
+cousin. In this line, the 'Exists' option is used to check for the
+existence of a string in the first @{" argument " link ARx_Elements3.ag/FUNCARG} slot.
+
+
+@endnode
+
+@node PRG93 " say arg(1)"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+@next ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 93}
+
+The @{" SAY " link ARx_Instr3.ag/SAY} @{" instruction " link ARx_Elements3.ag/INSTRUCTION} prints out a message on the active shell. It is
+used in this @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} to print a more complete explanation of how the
+UnCrunch program is used.
+
+In this line, the @{" instruction " link ARx_Elements3.ag/INSTRUCTION} prints out the @{" string " link ARx_Elements2.ag/STRINGEXPR} that was sent as
+an @{" argument " link ARx_Elements3.ag/FUNCARG} to the function. That string is retrieved using the @{" ARG() " link ARx_Func3.ag/ARG()}
+@{" function " link ARx_Elements3.ag/FUNCTION}.
+
+Once the information is displayed, the program  exits with an (arbitrary)
+error code of 20. (You could use any number you wish in this spot. 20,
+though, is the error number supplied by AmigaDOS in similar situations.)
+
+
+@endnode

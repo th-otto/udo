@@ -1,0 +1,180 @@
+# [MAIN]
+SOURCE=H:\SRC\UDO\DOC\DE\UDO.U
+DEST=H:\SRC\UDO\DOC\OUTPUT\DE\HTML\INDEX.htm
+
+# [Optionen]
+FORMAT=7
+ANPASSUNG=-1,-1,0,0,-1,-1,-1
+OPTIONEN=0,-1,-1,0,-1,0,0,0,0,0,0,-1,0,0,0
+SYMBOLE=0,0,0,0,0,0,0,0
+
+# [Symbole]
+SYMBOL1=
+SYMBOL2=
+SYMBOL3=
+SYMBOL4=
+SYMBOL5=
+SYMBOL6=
+SYMBOL7=
+SYMBOL8=
+
+# [Externe Programme]
+EXT-FORMAT=27
+
+# [UDO-Konverter]
+PROG=
+PARAM=
+OPT=0
+
+# [Quell-Editor]
+PROG=
+PARAM=
+OPT=0
+
+# [Quell-Shower]
+PROG=
+PARAM=
+OPT=0
+
+# [Ziel-Editor]
+PROG=
+PARAM=
+OPT=0
+
+# [Ziel-Shower]
+PROG=
+PARAM=
+OPT=0
+
+# [Grafik-Editor]
+PROG=
+PARAM=
+OPT=0
+
+# [Apple Quickview]
+PROG=
+PARAM=
+OPT=0
+
+# [ASCII]
+PROG=
+PARAM=
+OPT=0
+
+# [C]
+PROG=
+PARAM=
+OPT=0
+
+# [DRC]
+PROG=
+PARAM=
+OPT=0
+
+# [GNU-Texinfo]
+PROG=
+PARAM=
+OPT=0
+
+# [HTML]
+PROG=
+PARAM=
+OPT=0
+
+# [HTML-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [IPF]
+PROG=
+PARAM=
+OPT=0
+
+# [LaTeX]
+PROG=
+PARAM=
+OPT=0
+
+# [Linuxdoc-SGML]
+PROG=
+PARAM=
+OPT=0
+
+# [Lyx]
+PROG=
+PARAM=
+OPT=0
+
+# [Manualpage]
+PROG=
+PARAM=
+OPT=0
+
+# [NROFF]
+PROG=
+PARAM=
+OPT=0
+
+# [Pascal]
+PROG=
+PARAM=
+OPT=0
+
+# [PDF-LaTeX]
+PROG=
+PARAM=
+OPT=0
+
+# [Postscript]
+PROG=
+PARAM=
+OPT=0
+
+# [Pure C-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [Rich-Text-Format]
+PROG=
+PARAM=
+OPT=0
+
+# [ST-Guide]
+PROG=
+PARAM=
+OPT=0
+
+# [Turbo-Vision-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [UDO-Code]
+PROG=
+PARAM=
+OPT=0
+
+# [WinHelp]
+PROG=
+PARAM=
+OPT=0
+
+# [WinHelp 4.0]
+PROG=
+PARAM=
+OPT=0
+
+# [XML]
+PROG=
+PARAM=
+OPT=0
+
+# [Allgemeines]
+UDO-HILFE=
+
+# [Registrierung]
+USER-NAME=
+USER-ORT=
+USER-KEY=

@@ -1,0 +1,43 @@
+Changes
+
+With the release of Workbench 3.0, and the creation of the datatypes system, many changes were made to Amigaguide. With the creation of the datatypes system, a hyperlink can now point to any file (though it will only be displayed if a datatype is available for that filetype). The @{alink} tag now behaves the same as the @{link} tag, as it was considered bad practice to open new windows without the user's permission. As a result, the @{close} and @{quit} tags no longer work.
+New global tags and commands
+
+These can be placed outside of a node, on their own lines.
+
+@wordwrap
+    Wraps paragraphs without linefeeds. Example: @wordwrap 
+@xref
+    Specifies other amigaguide documents to refer to. Example: @xref "Documents:Amigaguide/safalra.guide" 
+
+New node-level tags and commands
+
+These are placed inside a node, on their own lines, and effect the whole node.
+
+@embed
+    Embeds a text document withing this node. Example: @embed "Documents:Text/speech.txt" 
+@proportional
+    Specifies that a proportional font is used for this node. Example: @proportional 
+@wordwrap
+    The same as the global @wordwrap command, but only effects this node. Example: @wordwrap 
+
+New local tags and commands
+
+These can be placed anywhere within a node.
+
+@{b}
+    Turns on bold text. Example: @{b} 
+@{beep}
+    Specifies a hypertext link that makes a \u2018beep\u2019 sound when clicked. Example: @{"Click me to beep" beep} 
+@{guide}
+    Specifies a hypertext link to another amigaguide document. Example: @{"Another amigaguide document" guide "Document:Amigaguides/safalra.guide"} 
+@{i}
+    Turns on italic text. Example: @{i} 
+@{u}
+    Turns on underlined text. Example: @{u} 
+@{ub}
+    Turns off bold text. Example: @{ub} 
+@{ui}
+    Turns off italic text. Example: @{ui} 
+@{uu}
+    Turns off underlined text. Example: @{uu} 

@@ -1,0 +1,105 @@
+
+A M I G A G U I D E    D E V E L O P M E N T
+
+$VER: AmigaGuide_Dev 34.6 (10.8.93)
+
+(c) Copyright 1991-93 Commodore-Amiga, Inc.  All Rights Reserved
+
+AmigaGuide version 34.3
+AmigaGuide.library version 34.11
+AD2AG version 39.2
+
+This disk or archive contains AmigaGuide, AmigaGuide development tools
+and examples, and a free electronic Product License Agreement for
+distribution of AmigaGuide.
+
+AmigaGuide, amigaguide.library, WDisplay, and the InstallAmigaGuide
+script may be distributed by developers who have a Workbench
+License and an AmigaGuide Amendment, and by developers who print out,
+complete, sign, and submit the included AmigaGuide.License agreement.
+
+
+The V34 directory is for Workbench V34 (1.3) and higher, and contains
+a V34-V39 compatible AmigaGuide, amigaguide.library, and WDisplay.
+
+Note - Since 34.2, the AmigaGuide utility again supports both DOC and
+DOCUMENT as the document keyword, and should be compatible with multiple
+older versions and their usage.
+
+The AD2AG directory contains the AD2AG tool which requires V37.
+
+The V39 directory contains example source code for using the V39 (3.0) 
+datatypes and the AmigaGuide class which are part of Workbench 3.0.
+
+
+Note - Other readmes may use SYS:Utilities/AmigaGuide as their default
+tool.  An InstallAmigaGuide script icon may be found in the V34 drawer.
+
+
+Release Notes
+=============
+amigaguide.library 34.4
+
+ o Wasn't freeing the library base properly when expunging.
+
+amigaguide.library 34.8
+
+ o Now sets the ofh_TOC, ofh_Next and ofh_Prev from dynamic node hosts.
+
+ o Now handles 8 bit-plane deep screens.
+
+ o No longer ghosts NEXT button if the last node has a @NEXT
+   command.
+
+ o No longer ghosts PREV button if the first node has a @PREV
+   command.
+
+ o No longer displays silly little vertical bars when
+   encountering V39 attribute commands.
+
+ o / is now a keyboard shortcut for Retrace (like in MultiView).
+
+
+amigaguide.library 34.9
+
+ o Fixed a bug in LoadXRef() that would cause it to drop names.
+
+ o Added AGA_WorkPath and AGA_WorkNode attributes to GetAmigaGuideAttr().
+   The destination path should be at least 300 bytes and the node name
+   should be at least 128 bytes.
+
+   /* If we can get one of these, we can get the other */
+   if (GetAmigaGuideAttr (AGA_WorkPath, aghandle, (ULONG *) &paddr))
+   {
+       GetAmigaGuideAttr (AGA_WorkNode, aghandle, (ULONG *) &naddr);
+       printf ("database='%s', node='%s'\n", path, node);
+   }
+
+   This feature allows your utilities to remember the last node visited,
+   so that the database can be brought back up at the same place.
+
+amigaguide.library 34.10
+
+ o Now checks for the presence of nag_BaseName and if NULL supplies
+   AmigaGuide.
+
+amigaguide.library 34.11
+
+ o Recompiled with SAS/C 6.3
+
+ o Wasn't handling improperly terminated link commands properly.  It would
+   end up trashing memory.   Now will terminated at the end of a line.
+
+ o new include/librries/amigaguide.h for V34 amigaguide development
+   (i.e. don't overwrite a V39 amigaguide,h with this)
+
+
+AD2AG 39.2
+
+ o AD2AG no longers provides an unwanted MungWall hit when
+   parsing include files.
+
+
+AmigaGuide 34.3
+
+ o Now sets return code properly

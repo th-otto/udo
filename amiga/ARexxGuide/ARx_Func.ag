@@ -1,0 +1,874 @@
+@database "ARx_Func.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN "ARexxGuide | Functions Reference"
+@toc ARexxGuide.guide/MAIN
+@prev ARx_Instr.ag/MAIN
+@next ARx_Operator.ag/MAIN
+   @{fg highlight}AN AMIGAGUIDE® TO ARexx@{fg text}                 Second edition (v2.0)
+   by Robin Evans
+
+   @{" About this section         " link ABOUT}
+
+   ARexx functions:
+         @{" Comparison functions " link CMPRLIST} FIND(), POS(), ABBREV(), etc.
+         @{" String manipulation  " link STRLIST} LEFT(), SUBSTR(), etc.
+         @{" Word manipulation    " link ARx_Func2.ag/WORDLIST} WORD(), DELWORD(), etc.
+         @{" Char/Num translation " link ARx_Func2.ag/TRANLIST} C2D(), X2C(), D2X() etc.
+         @{" Number manipulation  " link ARx_Func2.ag/NUMLIST} RANDOM(), MAX(), etc.
+         @{" Informational        " link ARx_Func2.ag/INFOLIST} DATE(), SHOW(), etc.
+         @{" File input/output    " link ARx_Func3.ag/FILEIOLIST} OPEN(), READLN(), SEEK(), etc.
+         @{" File management      " link ARx_Func2.ag/FILEMGTLIST} DELETE(), EXISTS(), RENAME(), etc.
+         @{" ARexx control        " link ARx_Func3.ag/ARXLIST} ADDLIB(), PRAGMA(), etc.
+         @{" Message ports        " link ARx_Func4.ag/PORTLIST} OPENPORT(), WAITPKT(), GETARG(), etc.
+         @{" Memory management    " link ARx_Func4.ag/MEMLIST} IMPORT(), NEXT(), NULL(), etc.
+         @{" Bit-wise operations  " link ARx_Func4.ag/BITLIST} BITAND(), BITCOMP(), etc.
+
+   @{" All functions  [INDEX ]    " link FUNCLIST}
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+    This guide is @{" shareware " link ARexxGuide.guide/REG}. If you find it useful, please register.
+
+@endnode
+@node ABOUT "ARexxGuide | Functions Reference | ABOUT"
+@prev MAIN
+    @{fg highlight}REFERENCE TO BUILT-IN AND REXXSUPPORT.LIBRARY FUNCTIONS@{fg text}
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This section presents a reference to @{" built-in functions " link ARx_Elements3.ag/BLTFUNC} and to the
+functions included in @{" rexxsupport.library " link RXSPTLIB}.
+
+Each node begins with a template that shows the format of the arguments
+accepted by the function. The following conventions are used:
+
+   rv =  Each function is shown as part of an @{" assignment clause " link ARx_Elements3.ag/ASSIGNMENT} to
+         emphasize that functions are @{" expressions " link ARx_Elements2.ag/EXPRESSION}. The variable name
+         [rv] is used as an arbitrary abbreviation for `return value'.
+
+   <>    A word or term surrounded by angle brackets should be replaced by
+         an expression. Any form of expression that returns a value of the
+         proper type may be used in place of this item. The replacement is
+         often a @{" variable " link ARx_Elements2.ag/VARIABLE}, but it could also be a @{" literal string " link ARx_Elements.ag/STRING}, a
+         @{" number " link ARx_Elements2.ag/NUMBER}, an @{" operation " link ARx_Elements3.ag/OPERATION}, or another function @{" call " link ARx_Instr.ag/CALL}.
+
+         The names used for the items in each template are included as
+         mnemonic devices -- terms that may help the user remember what
+         each expression stands for. They are not otherwise significant.
+
+         Each term is explained in more detail in the note following the
+         template.
+
+   []    Items enclosed in square brackets are optional. They may be
+         excluded when the function is called, but the commas that
+         separate optional items are significant. If only the second of
+         two optional items is included, a comma must still be used as a
+         placeholder for the omitted item as it is in the following:
+
+            SHOW('P',,'0a'x)
+
+   {}    Items enclosed in curly braces and entered in uppercase are
+         literal values. The expression used for such an argument must
+         return one of the values from the list.
+
+   |     A bar is used to separate a list of literal values within {}
+         braces.
+
+   <UC>  UPPERCASE characters are used to indicate literal values that may
+         be used as argument. The value may be entered in upper or
+         lowercase when the instruction is actually used. Only the first
+         letter of the option need be included. The value may be entered
+         as any type of @{" expression " link ARx_Elements2.ag/EXPRESSION}.
+
+   >>>   Three angle-braces are used in examples to indicate what the
+         example would output if run from a shell. Those braces and the
+         following text is not part of the code and should not be
+         entered if the example is used.
+
+Next: REXXSUPPORT.LIBRARY | Prev: Function ref. | Contents: Function ref.
+
+@endnode
+@node RXSPTLIB "ARexxGuide | Functions Reference | REXXSUPPORT.LIBRARY"
+@next MAIN
+@{" Functions " link ARx_Elements3.ag/FUNCTION} can be added to ARexx by means of @{" external libraries " link ARx_Elements3.ag/EXTFUNC}. One
+such library is included with the distribution of ARexx. Called
+'rexxsupport.library', it should be present in the user's libs: directory
+after ARexx is installed.
+
+The library adds several Amiga-specific functions that are not defined as
+a standard part of the REXX language. Included are memory-control
+functions like @{" ALLOCMEM() " link ARx_Func4.ag/ALLOCMEM()}, file system functions like @{" MAKEDIR() " link ARx_Func2.ag/MAKEDIR()}, and
+interprocess-communication functions like @{" OPENPORT() " link ARx_Func4.ag/OPENPORT()}.
+
+The functions in rexxsupport.library will not automatically be available
+to ARexx scripts, however. The are available only if the library is
+explicitly added to the list of libraries through which ARexx searches to
+find functions.
+
+That can be done with the @{" ADDLIB() " link ARx_Func3.ag/ADDLIB()} function or with the @{" RXLIB " link ARx_Cmd.ag/RXLIB} command
+utility. Examples of loading the library are included with the description
+of each of those methods.
+
+Those who frequently run ARexx programs may find it useful to add some
+libraries to the system during the startup sequence. Doing so doesn't
+take up much memory because the libraries aren't loaded until they are
+needed. It does assure that the library will be searched if one of its
+functions is used in a program.
+
+Adding the following command to the User-Startup file will add the library
+name to the ARexx list, making the library available whenever it is called.
+
+    rxlib rexxsupport.library 0 -30 0
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The functions in rexxsupport.library are, by their nature, system-
+   specific. They are ARexx extensions to the language. All REXX
+   implementations are able to load external libraries, but the language
+   definition makes no attempt to define what can or should be included in
+   the libraries.
+
+Next: Function ref. | Prev: About section | Contents: Function ref.
+
+@endnode
+@node FUNCLIST "ARexxGuide | Functions reference | INDEX to built-in & support functions"
+@next MAIN
+@prev MAIN
+@{" ABBREV       " link ABBREV()} @{" ABS          " link ARx_Func2.ag/ABS()} @{" ADDRESS      " link ARx_Func3.ag/ADDRESS()} @{" ADDLIB       " link ARx_Func3.ag/ADDLIB()} @{" ALLOCMEM     " link ARx_Func4.ag/ALLOCMEM()}
+@{" ARG          " link ARx_Func3.ag/ARG()} @{" BADDR        " link ARx_Func4.ag/BADDR()} @{" B2C          " link ARx_Func2.ag/B2C()} @{" BITAND       " link ARx_Func4.ag/BITAND()} @{" BITCHG       " link ARx_Func4.ag/BITCHG()}
+@{" BITCLR       " link ARx_Func4.ag/BITCLR()} @{" BITCOMP      " link ARx_Func4.ag/BITCOMP()} @{" BITOR        " link ARx_Func4.ag/BITOR()} @{" BITSET       " link ARx_Func4.ag/BITSET()} @{" BITTST       " link ARx_Func4.ag/BITTST()}
+@{" BITXOR       " link ARx_Func4.ag/BITXOR()} @{" C2B          " link ARx_Func2.ag/C2B()} @{" C2D          " link ARx_Func2.ag/C2D()} @{" C2X          " link ARx_Func2.ag/C2X()} @{" CENTER       " link CENTER()}
+@{" CLOSE        " link ARx_Func3.ag/CLOSE()} @{" CLOSEPORT    " link ARx_Func4.ag/CLOSEPORT()} @{" COMPARE      " link COMPARE()} @{" COMPRESS     " link COMPRESS()} @{" COPIES       " link COPIES()}
+@{" D2C          " link ARx_Func2.ag/D2C()} @{" DATATYPE     " link ARx_Func3.ag/DATATYPE()} @{" DATE         " link ARx_Func2.ag/DATE()} @{" DELAY        " link ARx_Func3.ag/DELAY()} @{" DELETE       " link ARx_Func2.ag/DELETE()}
+@{" DELSTR       " link DELSTR()} @{" DELWORD      " link ARx_Func2.ag/DELWORD()} @{" DIGITS       " link ARx_Func3.ag/DIGITS()} @{" EOF          " link ARx_Func3.ag/EOF()} @{" ERRORTEXT    " link ARx_Func3.ag/ERRORTEXT()}
+@{" EXISTS       " link ARx_Func2.ag/EXISTS()} @{" EXPORT       " link ARx_Func4.ag/EXPORT()} @{" FIND         " link FIND()} @{" FORBID       " link ARx_Func4.ag/FORBID()} @{" FORM         " link ARx_Func3.ag/FORM()}
+@{" FREEMEM      " link ARx_Func4.ag/FREEMEM()} @{" FREESPACE    " link ARx_Func4.ag/FREESPACE()} @{" FUZZ         " link ARx_Func3.ag/FUZZ()} @{" GETARG       " link ARx_Func4.ag/GETARG()} @{" GETCLIP      " link ARx_Func3.ag/GETCLIP()}
+@{" GETPKT       " link ARx_Func4.ag/GETPKT()} @{" GETSPACE     " link ARx_Func4.ag/GETSPACE()} @{" HASH         " link ARx_Func2.ag/HASH()} @{" IMPORT       " link ARx_Func4.ag/IMPORT()} @{" INDEX        " link INDEX()}
+@{" INSERT       " link INSERT()} @{" LASTPOS      " link LASTPOS()} @{" LEFT         " link LEFT()} @{" LENGTH       " link LENGTH()} @{" LINES        " link ARx_Func3.ag/LINES()}
+@{" MAKEDIR      " link ARx_Func2.ag/MAKEDIR()} @{" MAX          " link ARx_Func2.ag/MAX()} @{" MIN          " link ARx_Func2.ag/MIN()} @{" NEXT         " link ARx_Func4.ag/NEXT()} @{" NULL         " link ARx_Func4.ag/NULL()}
+@{" OFFSET       " link ARx_Func4.ag/OFFSET()} @{" OPEN         " link ARx_Func3.ag/OPEN()} @{" OPENPORT     " link ARx_Func4.ag/OPENPORT()} @{" OVERLAY      " link OVERLAY()} @{" PERMIT       " link ARx_Func4.ag/PERMIT()}
+@{" POS          " link POS()} @{" PRAGMA       " link ARx_Func3.ag/PRAGMA()} @{" RANDOM       " link ARx_Func2.ag/RANDOM()} @{" RANDU        " link ARx_Func2.ag/RANDU()} @{" READCH       " link ARx_Func3.ag/READCH()}
+@{" READLN       " link ARx_Func3.ag/READLN()} @{" REMLIB       " link ARx_Func3.ag/REMLIB()} @{" RENAME       " link ARx_Func2.ag/RENAME()} @{" REPLY        " link ARx_Func4.ag/REPLY()} @{" REVERSE      " link REVERSE()}
+@{" RIGHT        " link RIGHT()} @{" SEEK         " link ARx_Func3.ag/SEEK()} @{" SETCLIP      " link ARx_Func3.ag/SETCLIP()} @{" SHOW         " link ARx_Func2.ag/SHOW()} @{" SHOWDIR      " link ARx_Func2.ag/SHOWDIR()}
+@{" SHOWLIST     " link ARx_Func2.ag/SHOWLIST()} @{" SIGN         " link ARx_Func2.ag/SIGN()} @{" SOURCELINE   " link ARx_Func3.ag/SOURCELINE()} @{" SPACE        " link ARx_Func2.ag/SPACE()} @{" STATEF       " link ARx_Func2.ag/STATEF()}
+@{" STORAGE      " link ARx_Func4.ag/STORAGE()} @{" STRIP        " link STRIP()} @{" SUBSTR       " link SUBSTR()} @{" SUBWORD      " link ARx_Func2.ag/SUBWORD()} @{" SYMBOL       " link ARx_Func3.ag/SYMBOL()}
+@{" TIME         " link ARx_Func2.ag/TIME()} @{" TRACE        " link ARx_Func3.ag/TRACE()} @{" TRANSLATE    " link TRANSLATE()} @{" TRIM         " link TRIM()} @{" TRUNC        " link ARx_Func2.ag/TRUNC()}
+@{" TYPEPKT      " link ARx_Func4.ag/TYPEPKT()} @{" UPPER        " link UPPER()} @{" VALUE        " link ARx_Func3.ag/VALUE()} @{" VERIFY       " link VERIFY()} @{" WAITPKT      " link ARx_Func4.ag/WAITPKT()}
+@{" WORD         " link ARx_Func2.ag/WORD()} @{" WORDINDEX    " link ARx_Func2.ag/WORDINDEX()} @{" WORDLENGTH   " link ARx_Func2.ag/WORDLENGTH()} @{" WORDS        " link ARx_Func2.ag/WORDS()} @{" WRITECH      " link ARx_Func3.ag/WRITECH()}
+@{" WRITELN      " link ARx_Func3.ag/WRITELN()} @{" X2C          " link ARx_Func2.ag/X2C()} @{" XRANGE       " link XRANGE()}
+
+@endnode
+
+@node CMPRLIST "ARexxGuide | Functions reference (1 of 12) | COMPARISON"
+@prev MAIN
+@next STRLIST
+   @{" ABBREV    " link ABBREV()}(<longstring>,<shortstring>,[<length>])
+   @{" COMPARE   " link COMPARE()}(<string1>,<string2>,[<padchar>])
+   @{" FIND      " link FIND()}(<haystack>, <needle>)
+   @{" INDEX     " link INDEX()}(<haystack>,<needle>, [<startpos>])
+   @{" LASTPOS   " link LASTPOS()}(<needle>,<haystack>,[<startpos>])
+   @{" POS       " link POS()}(<needle>,<haystack>,[<startpos>])
+   @{" VERIFY    " link VERIFY()}(<string>, <reference>, [{'NOMATCH'|'MATCH'}], [<startpos>])
+
+Related functions:
+   @{" BITCOMP   " link ARx_Func4.ag/BITCOMP()}
+   @{" BITTST    " link ARx_Func4.ag/BITTST()}
+   @{" DATATYPE  " link ARx_Func3.ag/DATATYPE()}
+
+                     Also see @{" Bit manipulation functions   " link ARx_Func4.ag/BITLIST}
+
+Comparisons of one type or another are one of the most frequent tasks of
+any program. Comparisons allow a program to branch off to different code
+based on different conditions. @{" Comparison operators " link ARx_Operator.ag/COMPARISON} give ARexx the
+standard tools for matching strings, but these functions extend the power
+of the operators, allowing quick checks for a substring (what @{" Cowlishaw " link ARx_Intro.ag/REF}
+so elegantly calls a 'needle') in a string (the 'haystack'), or for a word
+or phrase within a string of words.
+
+The external library package @{" RexxDosSupport.library " link ARx_Elements3.ag/LIBFUNC 33}, by Hartmut Goebel,
+includes functions, ParsePattern() and MatchPattern(), that use pattern-
+match routines supplied by the operating system. The routines are, of
+course, system-specific and non-portable but can be useful when case-
+insensitive matching is needed or wild-cards must be used in a pattern.
+
+Next: String functions | Prev: BITXOR() | Contents: Function reference
+
+@endnode
+@node ABBREV() "ARexxGuide | Functions reference | Comparison (1 of 7) | ABBREV"
+@toc CMPRLIST
+@prev CMPRLIST
+@{i}rv@{ui} = ABBREV(<longstring>,<shortstring>,[<length>])
+     @{i}rv@{ui} is @{" boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Returns 1 if @{i}<shortstring>@{ui} is equal to the leading characters of
+@{i}<longstring>@{ui}. If @{i}<length>@{ui} is specified, then @{i}<shortstring>@{ui} must also be at
+least that long. The comparison is case-sensitive. If @{i}<length>@{ui} is not
+specified, an empty string will always match @{i}<longstring>@{ui}.
+
+Returns 0 if either condition is not met.
+
+   Examples:
+         say abbrev('Waldorf','Waldo');              >>> 1
+         say abbrev('Waldorf','WALDO');              >>> 0
+         say abbrev(@{" upper('Waldorf') "link UPPER()}, 'WALDO');    >>> 1
+         say abbrev('YES', 'Y')                      >>> 1
+         say abbrev('YES', '')                       >>> 1
+         say abbrev('YES', '', 1)                    >>> 0
+
+   Also see @{" COMPARE       " link COMPARE()}
+            @{" LEFT          " link LEFT()}
+
+                 Technique note: @{" Read one file, write to another   " link ARx_Tknq.ag/INOUTFILE}
+                                 @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+                                 @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+
+Next: COMPARE() | Prev: Comparison func. | Contents: Comparison func.
+
+@endnode
+@node COMPARE() "ARexxGuide | Functions reference | Comparison (2 of 7) | COMPARE"
+@toc CMPRLIST
+@{i}rv@{ui} = COMPARE(<string1>,<string2>,[<padchar>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is 0 if both strings are identical. If they aren't, the number
+returned is the position of the first character where the strings differ.
+The shorter string is padded with @{i}<padchar>@{ui} before the comparison.
+
+The default pad character is a blank.
+
+   Examples:
+
+         say compare('The first','The only');      >>> 5
+         say compare('worldwide','wordwide');      >>> 4
+         say compare('foo','f');                   >>> 2
+         say compare('foo','f','o');               >>> 0
+
+   Also see @{" ABBREV        " link ABBREV()}
+            @{" VERIFY        " link VERIFY()}
+
+Next: FIND() | Prev: ABBREV() | Contents: Comparison functions
+
+@endnode
+@node FIND() "ARexxGuide | Functions reference | Comparison (3 of 7) | FIND"
+@toc CMPRLIST
+@{i}rv@{ui} = FIND(<haystack>, <needle>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Locates the blank-delimited word or words @{i}<needle>@{ui} within the string
+@{i}<haystack>@{ui} and returns the word position of the first match, or 0 if there
+is no match.
+
+The search is case sensitive.
+
+   Examples:
+         say find('Tied to Godot?','dot');      >>> 0
+         say find('Tied to Godot?','to');       >>> 2
+
+   Also see @{" INDEX         " link INDEX()}
+            @{" POS           " link POS()}
+            @{" WORDINDEX     " link ARx_Func2.ag/WORDINDEX()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   In the standard language definition, this function is not defined, but
+   a similar function called WORDPOS() is defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. It takes
+   arguments in the reverse order. WORDPOS() accepts an optional third
+   argument that specifies the word at which the search should begin.
+
+   To maintain compatibility, the following @{" user function " link ARx_Elements3.ag/FUNCTION} could be be
+   used instead of FIND().
+
+   /* WordPos() user function */
+
+   WordPos:
+      if arg(3,'o') | ~datatype(arg(3), 'N') then
+         return find(arg(2), arg(1))
+      else do
+         wpSub = find(subword(arg(2), arg(3)), arg(1))
+         if wpSub > 0 then
+            return arg(3) + wpSub - 1
+         else
+            return 0
+      end
+
+Next: INDEX() | Prev: COMPARE() | Contents: Comparison functions
+
+@endnode
+@node INDEX() "ARexxGuide | Functions reference | Comparison (4 of 7) | INDEX"
+@toc CMPRLIST
+@{i}rv@{ui} = INDEX(<haystack>,<needle>, [<startpos>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the character position within the string @{i}<haystack>@{ui} of the
+the first occurrence of the string @{i}<needle>@{ui} or 0 if a match isn't found.
+
+If @{i}<startpos>@{ui} is specified, then the search proceeds from that position in
+@{i}<haystack>@{ui}.
+
+The search is case sensitive.
+
+   Examples:
+         say index('Tied to Godot?','dot');      >>> 11
+         say index('Tied to Godot?','to');       >>> 6
+
+   Also see @{" FIND          " link FIND()}
+            @{" POS           " link POS()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function was supported in early versions of IBM's REXX, but is no
+   longer included in the standard language definition. The POS() function
+   should be used instead.
+
+Next: LASTPOS() | Prev: FIND() | Contents: Comparison functions
+
+@endnode
+@node LASTPOS() "ARexxGuide | Functions reference | Comparison (5 of 7) | LASTPOS"
+@toc CMPRLIST
+@{i}rv@{ui} = LASTPOS(<needle>,<haystack>,[<startpos>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the character position within the string @{i}<haystack>@{ui} of the
+the last occurrence of the string @{i}<needle>@{ui} or 0 if a match isn't found.
+
+If @{i}<startpos>@{ui} is specified, then the search proceeds backwards from that
+position in @{i}<haystack>@{ui}.
+
+   Examples:
+         say lastpos('eak','growing weaker and weaker');    >>> 21
+         say lastpos('eak','growing weaker and weaker',20); >>> 10
+
+   Also see @{" POS           " link POS()}
+
+                 Technique note: @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+                                 @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+
+Next: POS() | Prev: INDEX() | Contents: Comparison functions
+
+@endnode
+@node POS() "ARexxGuide | Functions reference | Comparison (6 of 7) | POS"
+@toc CMPRLIST
+@{i}rv@{ui} = POS(<needle>,<haystack>,[<startpos>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the character position within the string @{i}<haystack>@{ui} of the
+the first occurrence of the string @{i}<needle>@{ui} or 0 if a match isn't found.
+
+If @{i}<startpos>@{ui} is specified, then the search proceeds forward from that
+position in @{i}<haystack>@{ui}.
+
+The search is case sensitive.
+
+   Examples:
+         say pos('eak','growing weaker and weaker')     >>> 10
+         say pos('eak','growing weaker and weaker',11)  >>> 21
+
+   Also see @{" LASTPOS       " link LASTPOS()}
+            @{" VERIFY        " link VERIFY()}
+
+                 Technique note: @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+                                 @{" Using the clip list               " link ARx_Tknq.ag/CLIPLIST}
+
+Next: VERIFY() | Prev: LASTPOS() | Contents: Comparison functions
+
+@endnode
+@node VERIFY() "ARexxGuide | Functions reference | Comparison (7 of 7) | VERIFY"
+@toc CMPRLIST
+@next CMPRLIST
+@{i}rv@{ui} = VERIFY(<string>, <reference>, ['@{b}M@{ub}atch'], [<startpos>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Checks for the presence in @{i}<string>@{ui} of any characters that appear in
+@{i}<reference>@{ui} -- a list of characters which may be entered in any order.
+
+If the '@{b}M@{ub}ATCH' option is omitted (or if any other value is used as an
+argument), then the function returns 0 when all characters in @{i}<string>@{ui}
+are contained in @{i}<reference>@{ui}. If a character in @{i}<string>@{ui} is not
+included in @{i}<reference>@{ui} the return is a positive integer that indicates
+the position of the first character in @{i}<string>@{ui} that does not match a
+character in @{i}<reference>@{ui}.
+
+The 'M' (match) option will cause the function to return the position of
+the first character in @{i}<string>@{ui} that matches a character in @{i}<reference>@{ui}.
+It returns 0 if none of the characters in @{i}<string>@{ui} match a character in
+@{i}<reference>@{ui}.
+
+If @{i}<startpos>@{ui} is specified, the search will begin at that character
+position in @{i}<string>@{ui}.
+
+   Examples:
+         say verify('#789-ABD', '1234567890ABCD-#')   >>> 0
+         say verify('#432-cfo', '1234567890ABCD-#')   >>> 6
+         say verify('FileName', ':;*/?`#%', 'm')      >>> 0
+         say verify('File*NAME', ':;*/?`#%', 'm')     >>> 5
+         say verify('File*NAME', ':;*/?`#%', 'm',6)   >>> 0
+         say verify('t:foo/file', ':/', 'm')          >>> 2
+         say verify('a', 'AEIOUaeiou')                >>> 0
+         say verify('vowel', 'AEIOUaeiou', 'm')       >>> 2
+         say verify('vowel', 'AEIOUaeiou', 'm', 3)    >>> 4
+
+   Also see @{" DATATYPE      " link ARx_Func3.ag/DATATYPE()}
+            @{" POS           " link POS()}
+
+                 Technique note: @{" Check unique datatypes            " link ARx_Tknq.ag/VERIFYNOTE}
+                                 @{" Divide a word at non-space char.  " link ARx_Tutor.ag/GETCWORD}
+
+Next: Comparison functions | Prev: POS() | Contents: Comparison functions
+
+@endnode
+
+@node STRLIST  "ARexxGuide | Functions reference (2 of 12) | STRING MANIPULATION"
+@prev CMPRLIST
+@next ARx_Func2.ag/WORDLIST
+   @{" CENTER    " link CENTER()}(<string>,<length>,[<padchar>])
+   @{" COMPRESS  " link COMPRESS()}(<string>, [<list>])
+   @{" COPIES    " link COPIES()}(<string>,<number>)
+   @{" DELSTR    " link DELSTR()}(<string>,<number>, [<length>])
+   @{" INSERT    " link INSERT()}(<new string>, <old string>,<startpos>, [<length>],[<padchar>])
+   @{" LEFT      " link LEFT()}(<string>,<length>,[<padchar>])
+   @{" LENGTH    " link LENGTH()}(<string>)
+   @{" OVERLAY   " link OVERLAY()}(<new string>, <old string>,[<startpos>], [<length>],[<padchar>])
+   @{" REVERSE   " link REVERSE()}(<string>)
+   @{" RIGHT     " link RIGHT()}(<string>,<length>,[<padchar>])
+   @{" STRIP     " link STRIP()}(<string>, [{'B'|'L'|'T'}], [<list>])
+   @{" SUBSTR    " link SUBSTR()}(<string>, <startpos>, [<length>],[<padchar>])
+   @{" TRANSLATE " link TRANSLATE()}(<string>,[<output table>], [<input table>],[<padchar>])
+   @{" TRIM      " link TRIM()}(<string>)
+   @{" UPPER     " link UPPER()}(<string>)
+   @{" XRANGE    " link XRANGE()}([<start>, [<end>])
+
+                     Also see @{" Word manipulation functions  " link ARx_Func2.ag/WORDLIST}
+                              @{" Number manipulation functions" link ARx_Func2.ag/NUMLIST}
+                              @{" PARSE instruction            " link ARx_Instr2.ag/PARSE}
+
+Nearly any change one might contemplate for a string can be made with one,
+or a combination of these functions, or one of the closely-allied
+@{" word manipulation functions " link ARx_Func2.ag/WORDLIST}. They'll cut chunks out of a string --
+LEFT(), RIGHT(), SUBSTR(), DELSTR(); or remove only certain characters --
+STRIP(), TRIM(), COMPRESS(); or add to the string -- OVERLAY(), INSERT(),
+COPIES(), CENTER(); or transform it in subtle and wonderful ways --
+TRANSLATE(), REVERSE().
+
+Next: Word functions | Prev: FuncList | Contents: Function reference
+
+@endnode
+
+@node CENTER() "ARexxGuide | Functions reference | String (1 of 15) | CENTER"
+@toc STRLIST
+@prev STRLIST
+@{i}rv@{ui} = CENTER(<string>,<length>,[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The function name may be spelled CENTRE or CENTER.
+
+The result is a string of @{i}<length>@{ui} characters with @{i}<string>@{ui} centered in
+it. The @{i}<padchar>@{ui} is used to fill out the left and right sides of the
+string. The default pad character is a blank.
+
+   Example:
+         say '['center('Title',20)']';      >>> [       Title        ]
+         say center('Title',22,'*');        >>> ********Title*********
+
+   Also see @{" SPACE         " link ARx_Func2.ag/SPACE()}
+            @{" COPIES        " link COPIES()}
+
+Next: COMPRESS() | Prev: String functions | Contents: String functions
+
+@endnode
+@node COMPRESS() "ARexxGuide | Functions reference | String (2 of 15) | COMPRESS"
+@toc STRLIST
+@{i}rv@{ui} = COMPRESS(<string>, [<list>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Removes any of the characters contained in @{i}<list>@{ui} from @{i}<string>@{ui}. The
+default character for @{i}<list>@{ui} is a blank, so this function will remove all
+blanks if only @{i}<string>@{ui} is specified.
+
+   Examples:
+         say compress('$1,045','$,%');      >>> 1045
+         say compress('Call me Ismael.');   >>> CallmeIsmael.
+
+   Also see @{" TRANSLATE     " link TRANSLATE()}
+            @{" STRIP         " link STRIP()}
+            @{" SPACE         " link ARx_Func2.ag/SPACE()}
+
+                 Technique note: @{" CountChar() user function        " link ARx_Tknq.ag/COUNTCHAR()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: COPIES() | Prev: CENTER() | Contents: String functions
+
+@endnode
+@node COPIES() "ARexxGuide | Functions reference | String (3 of 15) | COPIES"
+@toc STRLIST
+@{i}rv@{ui} = COPIES(<string>,<number>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a new string composed of @{i}<string>@{ui} concatenated with itself
+@{i}<number>@{ui} times.
+
+   Example:
+         say copies('xo',6);                >>> xoxoxoxoxoxo
+
+   Also see @{" XRANGE        " link XRANGE()}
+            @{" CENTER        " link CENTER()}
+
+                 Technique note: @{" Format a table of information    " link ARx_Tknq.ag/FORMATNOTE}
+                                 @{" AddComma() user function          " link ARx_Tknq.ag/ADDCOMMA()}
+
+Next: DELSTR() | Prev: COMPRESS() | Contents: String functions
+
+@endnode
+@node DELSTR() "ARexxGuide | Functions reference | String (4 of 15) | DELSTR"
+@toc STRLIST
+@{i}rv@{ui} = DELSTR(<string>,<number>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Deletes a portion of @{i}<string>@{ui} of @{i}<length>@{ui} characters beginning at the
+@{i}<number>@{ui} character position. The new string is returned. If @{i}<number>@{ui} is
+greater than the length of @{i}<string>@{ui} then <string> is returned unchanged.
+
+If @{i}<length>@{ui} is omitted, all characters beginning at position @{i}<number>@{ui} are
+deleted.
+
+   Example:
+         say delstr('indifference',3,3);      >>> inference
+
+   Also see @{" DELWORD       " link ARx_Func2.ag/DELWORD()}
+            @{" RIGHT         " link RIGHT()}
+            @{" SUBSTR        " link SUBSTR()}
+            @{" INSERT        " link INSERT()}
+            @{" OVERLAY       " link OVERLAY()}
+
+Next: INSERT() | Prev: COPIES() | Contents: String functions
+
+@endnode
+@node INSERT() "ARexxGuide | Functions reference | String (5 of 15) | INSERT"
+@toc STRLIST
+@{i}rv@{ui} = INSERT(<newstr>, <oldstr>, [<startpos>], [<length>],[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+@{i}<newstr>@{ui} is inserted into @{i}<oldstr>@{ui} beginning at @{i}<startpos>@{ui}, the
+character-count position. @{i}<newstr>@{ui} will be padded with @{i}<padchar>@{ui} or
+truncated to @{i}<length>@{ui} characters.
+
+If @{i}<startpos>@{ui} is greater than the length of @{i}<oldstr>@{ui} then @{i}<padchar>@{ui} will
+be added to the end of @{i}<oldstr>@{ui} before the new string is added. If
+@{i}<startpos>@{ui} is 0 or is omitted, then @{i}<newstr>@{ui} will be padded to @{i}<length>
+and then added to the start of @{i}<oldstr>@{ui}
+
+The default length is the length of @{i}<newstr>@{ui}. The default pad character is
+a blank.
+
+   Example:
+         say insert('always behaved like','I have a pig.',7,20)
+                                 >>> I have always behaved like a pig.
+
+   Also see @{" OVERLAY       " link OVERLAY()}
+            @{" DELSTR        " link DELSTR()}
+
+                 Technique note: @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+
+Next: LEFT() | Prev: DELSTR() | Contents: String functions
+
+@endnode
+@node LEFT() "ARexxGuide | Functions reference | String (6 of 15) | LEFT"
+@toc STRLIST
+@{i}rv@{ui} = LEFT(<string>,<length>,[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a string of @{i}<length>@{ui} characters made up of the leftmost
+characters in @{i}<string>@{ui}. If @{i}<length>@{ui} is greater than the length of
+@{i}<string>@{ui}, then the string returned is filled out on the right with
+@{i}<padchar>@{ui} -- a quick way to left-justify a string.
+
+The default pad character is a blank.
+
+   Example:
+         say left('never to stop saying',13);      >>> never to stop
+         say left('Widget', 12)'|'                 >>> Widget      |
+         say left('No', 4, '!')                    >>> No!!
+
+   Also see @{" RIGHT         " link RIGHT()}
+            @{" SUBSTR        " link SUBSTR()}
+            @{" ABBREV        " link ABBREV()}
+
+                 Technique note: @{" Formatting tables                 " link ARx_Tknq.ag/FORMATNOTE}
+                                 @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+                                 @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+Next: LENGTH() | Prev: INSERT() | Contents: String functions
+
+@endnode
+@node LENGTH() "ARexxGuide | Functions reference | String (7 of 15) | LENGTH"
+@toc STRLIST
+@{i}rv@{ui} = LENGTH(<string>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the number of characters in @{i}<string>@{ui}.
+
+   Example:
+         say length('never to stop saying');      >>> 20
+
+                 Technique note: @{" CountChar() user function         " link ARx_Tknq.ag/COUNTCHAR()}
+                                 @{" AddComma() user function          " link ARx_Tknq.ag/ADDCOMMA()}
+                                 @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+                                 @{" Check unique datatypes             " link ARx_Tknq.ag/VERIFYNOTE}
+
+Next: OVERLAY() | Prev: LEFT() | Contents: String functions
+
+@endnode
+@node OVERLAY() "ARexxGuide | Functions reference | String (8 of 15) | OVERLAY"
+@toc STRLIST
+@{i}rv@{ui} = OVERLAY(<newstr>, <oldstr>,[<startpos>], [<length>],[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Replaces the characters of @{i}<oldstr>@{ui} starting at position @{i}<startpos>@{ui} with
+the characters of @{i}<newstr>@{ui}. The default starting position is the beginning
+of @{i}<oldstr>@{ui}.
+
+If @{i}<length>@{ui} is not specified, all of the characters from @{i}<newstr>@{ui} will be
+overlaid on @{i}<oldstr>@{ui}. If @{i}<length>@{ui} is specified, then @{i}<newstr>@{ui} will either
+be truncated to that length or expanded to @{i}<length>@{ui} using @{i}<padchar>@{ui} to
+fill out the string.
+
+The default pad character is a blank.
+
+   Examples:
+         say overlay('12', 'abcdefg', 3, 4, '*')   >>> ab12**g
+         say overlay('abc', '12345678', 4, 2)      >>> 123ab678
+         say overlay( 'think of it',,
+           'the less I concentrate the more certain I am', 12)
+                     >>> the less I think of it the more certain I am
+
+   Also see @{" INSERT        " link INSERT()}
+            @{" DELSTR        " link DELSTR()}
+
+The third example above uses the comma @{" continuation character " link ARx_Elements.ag/COMMA} to turn
+two lines of text into one program line.
+
+Next: REVERSE() | Prev: LENGTH() | Contents: String functions
+
+@endnode
+@node REVERSE() "ARexxGuide | Functions reference | String (9 of 15) | REVERSE"
+@toc STRLIST
+@{i}rv@{ui} = REVERSE(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is @{i}<string>@{ui} flipped end for end.
+
+   Example:
+         say reverse('chameleon');      >>> noelemahc
+
+   Also see @{" LASTPOS       " link LASTPOS()}
+
+                 Technique note: @{" Add commas to a number            " link ARx_Tknq.ag/ADDCOMMAALT}
+
+Next: RIGHT() | Prev: OVERLAY() | Contents: String functions
+
+@endnode
+@node RIGHT() "ARexxGuide | Functions reference | String (10 of 15) | RIGHT"
+@toc STRLIST
+@{i}rv@{ui} = RIGHT(<string>,<length>,[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a string of @{i}<length>@{ui} characters made up the rightmost
+characters in @{i}<string>@{ui}. If @{i}<length>@{ui} is greater than the length of
+@{i}<string>@{ui}, then the result is filled out on the left with @{i}<padchar>@{ui} -- a
+quick way to right-justify a string.
+
+The default pad character is a blank.
+
+   Example:
+         say right('never to stop saying',11);      >>> stop saying
+         say '$'right(4.50, 6)                      >>> $  4.50
+         say '$'right(123.99, 6)                    >>> $123.99
+         say right('Whoa', 6, 'W')                  >>> WWWhoa
+
+   Also see @{" LEFT          " link LEFT()}
+            @{" SUBSTR        " link SUBSTR()}
+            @{" DELSTR        " link DELSTR()}
+
+                 Technique note: @{" Formatting tables                 " link ARx_Tknq.ag/FORMATNOTE}
+                                 @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+Next: STRIP() | Prev: REVERSE() | Contents: String functions
+
+@endnode
+@node STRIP() "ARexxGuide | Functions reference | String (11 of 15) | STRIP"
+@toc STRLIST
+@{i}rv@{ui} = STRIP(<string>, [{'B'|'L'|'T'}], [<list>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Removes spaces (by default) or any character in @{i}<list>@{ui} from the leading,
+trailing, or both ends (specified by the option used as the second
+argument) of @{i}<string>@{ui}. The default option is 'B'.
+
+
+   Example:
+         say '|'strip('   understand   ')'|';         >>> |understand|
+         say '|'strip('   understand   ',L)'|';       >>> |understand   |
+         say '|'strip('___understand___',T,'_')'|';   >>> |___understand|
+         say strip('understand',,'dnu')               >>> ersta
+
+The examples use the abuttal @{" concatenation operator " link ARx_Operator.ag/CONCATENATION} to add the character
+'|' to the beginning and end of the string returned by STRIP().
+
+   Also see @{" COMPRESS      " link COMPRESS()}
+            @{" TRIM          " link TRIM()}
+
+                 Technique note: @{" AddComma() user function          " link ARx_Tknq.ag/ADDCOMMA()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   Standard REXX accepts only a single character where ARexx accepts a
+   @{i}<list>@{ui} of characters to be stripped. Using a multiple-character list
+   will cause an error in most other implementations of the language.
+
+Next: SUBSTR() | Prev: RIGHT() | Contents: String functions
+
+@endnode
+@node SUBSTR() "ARexxGuide | Functions reference | String (12 of 15) | SUBSTR"
+@toc STRLIST
+@{i}rv@{ui} = SUBSTR(<string>, <startpos>, [<length>],[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a string of @{i}<length>@{ui} characters made up the characters in
+@{i}<string>@{ui} beginning at @{i}<startpos>@{ui}.
+
+If @{i}<length>@{ui} is not specified, then all of the string to the right of
+@{i}<startpos>@{ui} will be returned. If the argument is specified, the returned
+string will have @{i}<length>@{ui} characters, filled out, if necessary, with
+@{i}<padchar>@{ui}.
+
+The default pad character is a blank.
+
+   Example:
+         say substr('indifference',3,3);      >>> dif
+         say substr('No way',4,5,'!')         >>> way!!
+
+   Also see @{" LEFT          " link LEFT()}
+            @{" RIGHT         " link RIGHT()}
+            @{" DELSTR        " link DELSTR()}
+            @{" SUBWORD       " link ARx_Func2.ag/SUBWORD()}
+            @{" TRUNC         " link ARx_Func2.ag/TRUNC()}
+
+                 Technique note: @{" Format() user function            " link ARx_Tknq.ag/FORMAT()}
+                                 @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+                                 @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+
+Next: TRANSLATE() | Prev: STRIP() | Contents: String functions
+
+@endnode
+@node TRANSLATE() "ARexxGuide | Functions reference | String (13 of 15) | TRANSLATE"
+@toc STRLIST
+@{i}rv@{ui} = TRANSLATE(<string>, [<output table>], [<input table>], [<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Any character in @{i}<string>@{ui} that also appears in the @{i}<input table>@{ui} is
+converted to the corresponding character in the @{i}<output table>@{ui} or to the
+@{i}<padchar>@{ui} if there isn't a corresponding character in the @{i}<output table>@{ui}.
+
+If neither table is supplied, then the @{i}<string>@{ui} is converted to upper
+case, just as it would be by @{" UPPER(<string>) " link UPPER()}.
+
+The default pad character is a blank.
+
+   Examples:
+         say translate('abcdef', '123456', 'abcdef')   >>> 123456
+         say translate('abcdef', '123456', 'defabc')   >>> 456123
+         say translate('abcdef', '1234', 'defabc','*') >>> 4**123
+         say translate('UNNAMABLE', xrange('a','z'), xrange('A','Z'))
+                                                       >>> unnamable
+
+@{fg highlight}Translate a string to lowercase@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+@{i}<string>@{ui} can be translated to lowercase with the following function:
+
+   string = translate(string, 'abcdefghijklmnopqrstuvwxyz',,
+                              'ABCDEFGHIJKLMNOPQRSTUVWXYZ')
+
+If one isn't worried about incompatibility that would arise from non-ASCII
+character sets, then the list of characters can be replaced by these calls
+to the @{" XRANGE() " link XRANGE()} function:
+
+   string = translate(string, xrange('a','z'), xrange('A', 'Z'))
+
+
+The function @{" BITOR(<string>) " link ARx_Func4.ag/BITOR()} will also translate the alphabetic
+characters in @{i}<string>@{ui} to lowercase characters, but it will shift the
+ASCII characters between 91 and 95 { [ \ ] ^ _} to characters 123 through
+127.
+
+   Also see @{" COMPRESS      " link COMPRESS()}
+
+Next: TRIM() | Prev: SUBSTR() | Contents: String functions
+
+@endnode
+@node TRIM() "ARexxGuide | Functions reference | String (14 of 15) | TRIM"
+@toc STRLIST
+@{i}rv@{ui} = TRIM(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is @{i}<string>@{ui} with the trailing blanks removed.
+
+   Example:
+         say '|'trim('   understand   ')'|';    >>> |   understand|
+
+   Also see @{" STRIP         " link STRIP()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: UPPER() | Prev: TRANSLATE() | Contents: String functions
+
+@endnode
+@node UPPER() "ARexxGuide | Functions reference | String (15 of 15) | UPPER"
+@toc STRLIST
+@{i}rv@{ui} = UPPER(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is @{i}<string>@{ui} translated to all uppercase characters.
+
+   Example:
+         say upper('Waldorf')       >>> WALDORF
+
+   Also see @{" TRANSLATE     " link TRANSLATE()}
+            @{i}Includes note on translating a string to lowercase.@{ui}
+
+                 Technique note: @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be. The TRANSLATE(<string>)
+   function, without other options, does the same thing.
+
+Next: XRANGE() | Prev: TRIM() | Contents: String functions
+
+@endnode
+@node XRANGE() "ARexxGuide | Functions reference | Number (9 of 9) | XRANGE"
+@toc STRLIST
+@next STRLIST
+@{i}rv@{ui} = XRANGE([<start>, [<end>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a string comprised of all the characters between and
+including @{i}<start>@{ui} and @{i}<end>@{ui}.
+
+The output of the function is a character string. Use the @{" c2x() " link ARx_Func2.ag/C2X()}
+function, for example, to convert the output to hexadecimal number format.
+
+   Examples:
+         say xrange('a','g');              >>> abcdefg
+         say xrange(1,8);                  >>> 12345678
+         say c2x(xrange('c'x,'14'x));      >>> 0C0D0E0F1011121314
+
+   Also see @{" COPIES        " link COPIES()}
+
+                 Technique note: @{" Check unique datatypes            " link ARx_Tknq.ag/VERIFYNOTE}
+
+Next: String functions | Prev: UPPER() | Contents: String functions
+
+@endnode

@@ -1,0 +1,335 @@
+@database "ARx_UcrTutor1.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN ""
+@toc ARx_TUTOR.ag/MAIN
+@prev ARx_PrgUcr.ag/UCREXPLAN
+@next ARx_PrgUcr.ag/UCREXPLAN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+@endnode
+@node PRG5 " arg FileName UCdir . "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 5}
+
+The @{" keyword " link ARexxGuide.guide/GLOSSARY 135} @{" ARG " link ARx_Instr.ag/ARG} is an abbreviation for the instruction PARSE UPPER ARG.
+@{" PARSE " link ARx_Instr2.ag/PARSE} is an extraordinary instruction that gives ARexx power to handle
+text strings that is unmatched in most programming languages.
+
+As we've used it here, the instruction picks up the first two words (which
+are anything with a space on either side) typed on the CLI after the
+program name. In this case, we've picked up the filename and uncrunch
+directory, if it's included.
+
+The ARG instruction also translates values into uppercase (capital
+letters). That's useful in this program, but there are times when it is
+undesirable. In those cases, use the unabbreviated instruction @{" PARSE ARG " link ARx_Instr2.ag/PARSESRC1}.
+
+As it is used here, the ARG command won't recognize either a file name or
+a directory specification that includes spaces. It might be an interesting
+exercise to add that capability, but we won't do it in this tutorial.
+
+
+@endnode
+
+@node PRG7 " if FileName = '?' then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 7}
+
+Shell users are accustomed to getting a template of options after typing a
+command name followed by '?'. It works like this with the copy command:
+
+   >> copy ?
+   FROM/M,TO/A,ALL/S,QUIET/S,BUF=BUFFER/K/N,CLONE/S,DATES/S,NOPRO/S,
+   COM/S,NOREQ/S:
+
+This line gives UnCrunch.rexx the same facility by recognizing the cry
+for help. If the user has typed `UnCrunch ?', the following lines will
+be executed.
+
+
+@endnode
+
+@node PRG8 " do "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 8}
+
+The keyword @{" DO " link ARx_Instr.ag/DO} groups the following @{" clauses " link ARx_Elements3.ag/CLAUSE} into what ARexx considers
+a single @{" instruction " link ARx_Elements3.ag/INSTRUCTION}. It performs a function similar to the block
+identifier '{' in C or 'BEGIN' in Pascal.
+
+DO is often used in conjunction with an @{" IF/THEN " link ARx_Instr.ag/IF} instruction because IF
+will execute only the clause that immediately follows it. Using DO turns
+multiple clauses into a single instruction so that all of them will be
+executed when the IF condition is true.
+
+Like the '}' closing brace in C, @{" END " link ARx_Instr.ag/END} is a subkeyword that must always
+accompany DO.
+
+
+@endnode
+
+@node PRG9 " options prompt 'UCR FILENAME/A, DESTINATION/F: ' "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 9}
+
+The @{" OPTIONS " link ARx_Instr2.ag/OPTIONS} keyword is used for a number of unrelated tasks in ARexx.
+Here, it sets up a prompt string to be used later by another instruction.
+Note that OPTIONS PROMPT doesn't actually present a prompt to the user.
+That is done with the @{" PULL " link ARx_Instr3.ag/PULL} @{" keyword " link ARexxGuide.guide/GLOSSARY 135} on the next line.
+
+
+@endnode
+@node PRG10 " pull FileName UCdir"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 10}
+
+Like @{" ARG " link ARx_Instr.ag/ARG}, @{" PULL " link ARx_Instr3.ag/PULL} is an abbreviation for a variation of the @{" PARSE " link ARx_Instr2.ag/PARSE}
+@{" instruction " link ARx_Elements3.ag/INSTRUCTION}. The full instruction in this case is @{" PARSE UPPER PULL " link ARx_Instr2.ag/PARSESRC2}.
+This instruction echoes the ARG instruction used at the beginning of the
+main program listing. That's because it does the same thing except that,
+instead of taking its arguments from the command line, it pulls them
+interactively from the user. Here's the effect of this command:
+
+         > rx uncrunch ?
+         UCR FILENAME/A, DESTINATION/F:
+
+The template defined by the @{" OPTIONS PROMPT " link ARx_Instr2.ag/OPTIONS 12} instruction is presented to
+the user with the cursor positioned one space after the colon. (There is a
+space before the final quotation mark in the OPTIONS PROMPT parameter.)
+Once the user presses the return key, the PULL instruction will retrieve
+whatever was entered.
+
+
+@endnode
+
+@node PRG13 " if FileName = '' then "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 13}
+
+Since the program can't do anything without a filename, this section makes
+sure that we don't continue without one. This @{" IF " link ARx_Instr.ag/IF} @{" instruction " link ARx_Elements3.ag/INSTRUCTION} compares
+[FileName] to an empty @{" string " link ARx_Elements2.ag/STRINGEXPR}, which is like saying, 'If there isn't a
+FileName, then...'.
+
+The `=' sign here is a @{" comparison operator " link ARx_Operator.ag/COMPARISON} that means something like `is
+the same as'. Using the single `=' comparison operator means that any
+leading or trailing blanks on the value being compared will not be
+significant. In other words, { '    foo    ' } will be the same as { 'foo'
+}.
+
+In cases where exact comparison is desired, use the comparative operator
+'=='.
+
+
+@endnode
+
+@node PRG24 " if UCdir = '' then"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 24}
+
+The @{" IF " link ARx_Instr.ag/IF} instruction here, unlike the one above that checks for a blank
+filename, is not followed by an 'end' or 'endif' keyword. In many
+languages, 'endif' is a required part of any 'if' command. In ARexx,
+however, the IF/THEN instruction will automatically execute the one clause
+following THEN, so 'endif' is not required.
+
+On the other hand, the secondary keyword @{" THEN " link ARx_Instr.ag/THEN} is required whenever IF is
+used.
+
+
+@endnode
+@node PRG25 " UCdir = 'RAM:'"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 25}
+
+We've used the `=' sign in two previous clauses, but this `=' sign means
+something different. In the line directly above this one {if UCdir = '' }
+the `=' sign is a @{" comparison operator " link ARx_Operator.ag/COMPARISON}.
+
+Here, however, the `=' sign performs a significantly different task; it
+identifies an @{" assignment clause " link ARx_Elements3.ag/ASSIGNMENT} that associates the value of the
+@{" expression " link ARx_Elements2.ag/EXPRESSION} on the right side of the sign, 'RAM:', with the @{" variable " link ARx_Elements2.ag/VARIABLE} to
+its left, [UCDir].
+
+
+@endnode
+@node PRG27 " if right(UCdir, 1) ~= ':' & right(UCdir, 1) ~= '/' then "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 27}
+
+Here we find a new aspect of ARexx called @{" functions " link ARx_Elements3.ag/FUNCTION}. Functions are
+self-contained programs that perform an task and return a value of some
+sort. Although it would be redundant, an add() function might take the
+@{" arguments " link ARx_Elements3.ag/FUNCARG} 2 and 3. It would return the value 5.
+
+There are three classes of functions. @{" RIGHT() " link ARx_Func.ag/RIGHT()} is a @{" built-in function " link ARx_Elements3.ag/BLTFUNC}
+that is always available to any ARexx program. This line shows a standard
+form of the function. The values inside the parentheses are arguments that
+are sent to the function.
+
+In this case, the RIGHT() function gets the value of the @{" variable " link ARx_Elements2.ag/VARIABLE}
+[UcDir] and the number 1. It then 'returns' the right-most character of
+[UcDir] There is no @{" assignment clause " link ARx_Elements3.ag/ASSIGNMENT} here because the value returned by
+the function is used directly in the IF clause.
+
+ARexx has several functions that perform similar tasks. In @{" line 79 " link ARx_PrgUcr.ag/UCRCODE 79}, the
+@{" verify() " link ARx_Func.ag/VERIFY()} function is used along with right() to accomplish the same
+thing done here with the two comparative operations.
+
+
+@endnode
+
+@node PRG30 " ArcExt = upper(right(FileName, 3))"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 30}
+
+Two @{" functions " link ARx_Elements3.ag/FUNCTION} are @{" nested " link ARexxGuide.guide/GLOSSARY 155} in this clause. The value returned by the
+inner function, @{" RIGHT() " link ARx_Func.ag/RIGHT()}, becomes an @{" argument " link ARx_Elements3.ag/FUNCARG} to the outer function,
+@{" UPPER() " link ARx_Func.ag/UPPER()}.
+
+The RIGHT() function retrieves the last (or right-most) three characters
+of the @{" variable " link ARx_Elements2.ag/VARIABLE} [FileName]. The UPPER() function translates those
+characters to uppercase, which would make the comparisons in the lines
+below more accurate if the [FileName] variable contained a value in
+mixed-case.*
+
+The result or value returned by UPPER() is @{" assigned " link ARx_Elements2.ag/VARIABLE} to the variable to
+the left of the `=' sign -- [ArcExt]. The assignment to a variable will
+allow us to use the result of this function again without needing to call
+the function a second time.
+
+* The UPPER() function is included here to demonstrate how it can be used,
+even though it is redundant in this case since the [FileName] was already
+translated to uppercase in line 3 by the ARG instruction.
+
+
+@endnode
+
+@node PRG32 " address command "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 32}
+
+The @{" ADDRESS " link ARx_Instr.ag/ADDRESS} @{" instruction " link ARx_Elements3.ag/INSTRUCTION} changes the @{" host " link ARx_Elements3.ag/HOST} of subsequent commands. The
+'COMMAND' option indicates that AmigaDOS should serve as the host. Now
+that this instruction has been issued, any @{" commands " link ARx_Elements3.ag/COMMAND} issued later in the
+program will be sent to AmigaDOS.
+
+
+@endnode
+
+@node PRG33 " select "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 33}
+
+@{" SELECT " link ARx_Instr3.ag/SELECT} is a powerful cousin of the @{" IF " link ARx_Instr.ag/IF} @{" instruction " link ARx_Elements3.ag/INSTRUCTION}. It precedes a
+list of possible conditions each of which is identified by the @{" WHEN " link ARx_Instr3.ag/WHEN}
+keyword. ARexx makes its way through the list and executes the instruction
+following the first @{" conditional " link ARx_Elements3.ag/CONDITIONAL} that is TRUE. If there is no match, the
+@{" OTHERWISE " link ARx_Instr3.ag/OTHERWISE} @{" clause " link ARx_Elements3.ag/CLAUSE}, which is required, will be executed.
+
+
+@endnode
+
+@node PRG34 " when ArcExt = 'LZH' | ArcExt = 'LHA' then "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 34}
+
+The syntax for @{" WHEN " link ARx_Instr3.ag/WHEN} is similar to that of @{" IF " link ARx_Instr.ag/IF} except that it will not
+take an @{" ELSE " link ARx_Instr.ag/ELSE} clause since each successive WHEN clause already acts
+like ELSE. Only the first WHEN clause that tests true will be executed.
+The following WHEN clauses as well as the concluding @{" OTHERWISE " link ARx_Instr3.ag/OTHERWISE} will be
+skipped.
+
+Here, the @{" clause " link ARx_Elements3.ag/CLAUSE} checks the variable [ArcExt] against either of two
+possible values. The '|' in the middle of the clause is an ARexx
+@{" logical operator " link ARx_Operator.ag/LOGICAL} that means OR. This clause will test TRUE if [ArcExt]
+is equal to either of the supplied values.
+
+
+@endnode
+
+@node PRG36 " 'Lha -x x' FileName '#?' UcDir"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 36}
+
+The command 'Lha' has nothing to do with ARexx, but its presence here
+begins to hint at the extraordinary power of ARexx as an interprocess
+communication language.
+
+The quotation marks surrounding the command tell ARexx that it should not
+interpret anything inside the @{" string " link ARx_Elements2.ag/STRINGEXPR}. For instance, without the
+quotation marks, ARexx would try to subtract a variable [x] from a
+variable [Lha] when encountering the terms `Lha -x'. It wouldn't work.
+Instead, the quotation marks identify the clause as a @{" command " link ARx_Elements3.ag/COMMAND} that
+should be passed to the @{" host " link ARx_Elements3.ag/HOST} address.
+
+Because of the @{" ADDRESS COMMAND " link ARx_Instr.ag/ADDRESS} instruction @{" above " link PRG32}, the host address for
+ARexx is now the shell. The command -- `Lha' with all the options -- will
+be sent to AmigaDOS and executed there as it would be if it were typed in
+directly.
+
+
+@endnode
+
+@node PRG38 " call SetDest('ZOO x//')"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 38}
+
+Although the syntax is similar, the @{" function " link ARx_Elements3.ag/FUNCTION} used here is different than
+those used previously. SetDest() is an @{" internal function " link ARx_Elements3.ag/PROGFUNC} defined within
+this script.
+
+When it encounters the function call, the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} looks for a
+@{" label " link ARx_Elements3.ag/LABEL} matching the function name. The colon after @{" SetDest: " link ARx_PrgUcr.ag/UCRCODE 57} tells ARexx
+that the following program following lines define the function.
+
+Functions can be used in either of two forms that make them easy to spot.
+The symbol or word used to identify the function is either followed by a
+set of parentheses or it is preceded by the keyword @{" CALL " link ARx_Instr.ag/CALL}. (Parentheses
+may be used even with the CALL keyword, as they are in this script, but
+are not necessary.)
+
+
+@endnode
+
+@node PRG43 " otherwise"
+@toc ARx_PrgUcr.ag/UCREXPLAN
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 43}
+
+@{" OTHERWISE " link ARx_Instr3.ag/OTHERWISE} is a @{" keyword " link ARexxGuide.guide/GLOSSARY 135} that must always appear as the final @{" clause " link ARx_Elements3.ag/CLAUSE}
+in the list of @{" WHEN " link ARx_Instr3.ag/WHEN} conditions associated with a @{" SELECT " link ARx_Instr3.ag/SELECT} @{" instruction " link ARx_Elements3.ag/INSTRUCTION}.
+The clause after OTHERWISE is executed only if all of the preceding WHEN
+conditions failed.
+
+Even if there's nothing to do, @{" OTHERWISE " link ARx_Instr3.ag/OTHERWISE} must be used, but need not be
+followed by anything other than the @{" END " link ARx_Instr.ag/END} that closes the SELECT range.
+
+   select
+      when ...
+      when ...
+      otherwise
+   end
+
+
+@endnode
+
+@node PRG47 " end "
+@toc ARx_PrgUcr.ag/UCREXPLAN
+@next ARx_UcrTutor2.ag/PRG57
+                                 @{"Return to program listing" link ARx_PrgUcr.ag/UCRCODE 47}
+
+This is an example of the only situation in ARexx where @{" END " link ARx_Instr.ag/END} is not
+paired with the @{" DO " link ARx_Instr.ag/DO} @{" keyword " link ARexxGuide.guide/GLOSSARY 135}. In this case, it closes the range of
+@{" clauses " link ARx_Elements3.ag/CLAUSE} associated with @{" SELECT " link ARx_Instr3.ag/SELECT}. END must always be used with SELECT.
+
+
+@endnode

@@ -1,0 +1,6 @@
+BITMAP StdBmpEdgeTop          bmp\edgetop.bmp
+BITMAP StdBmpEdgeTopPlus      bmp\edgetopp.bmp
+BITMAP StdBmpEdgeTopMinus     bmp\edgetopm.bmp
+BITMAP StdBmpEdgeBottom       bmp\edgebot.bmp
+BITMAP StdBmpEdgeBottomPlus   bmp\edgebotp.bmp
+BITMAP StdBmpEdgeBottomMinus  bmp\edgebotm.bmp

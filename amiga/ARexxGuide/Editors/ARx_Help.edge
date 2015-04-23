@@ -1,0 +1,481 @@
+/** $VER: ARx_Help.edge 2.0 (10 Mar 1994)
+ ** by Robin Evans
+ **
+ ** Display the ARexxGuide page for the word currently under the
+ ** cursor.  Will call ARx_Setup.rexx if env: variables are not set.
+ **
+ ** Add the following line (change Q if you'd like) to user.keyboard.
+ **
+ ** KEYCOM   KEY="Help"      Q="Shift"        COMMAND ARx_help
+ **
+ ** You may want to add the following lines to your S:user-startup file.
+ **
+ **   RXLIB amigaguide.library 0 -30
+ **
+ **  The AmigaGuide/path environmental variable must include the directory
+ **  where arx_guide.xref is located.
+ **/
+
+signal on syntax
+signal on break_c
+signal on halt
+signal on failure
+
+options results
+parse arg LkUp
+
+call addlib('rexxsupport.library',0,-30)
+call addlib('amigaguide.library',-1,-30)
+
+TRUE=1; FALSE=0
+
+   /* Load the cross-ref file. Function returns quickly if the file is  **
+   ** already loaded, but -- like ADDLIB() it can return true even if   **
+   ** the file isn't available, so we check by looking for a known node.*/
+call DisplayStatus('ARx_Help: Checking .xref files...')
+do Attempt = 1
+	call LoadXref('ARx_Guide.xref')
+   if getxref('TRACEOPT1') = 10 then do   /* Leave below */
+      /* Did this in a loop just to be able to use signal for a no-load */
+      if Attempt = 2 then
+      	signal XRefError
+      else if 'ARx_Setup.rexx'('HELP',,address()) ~= 0 then signal XRefError
+   end
+   else leave Attempt
+end
+
+/* Add any extra files included in the env: variable.                */
+ExtraXRef = GetEnv('ARexxGuide/XRFiles')
+do i = 1 for words(ExtraXRef)
+      /* 'Call' because we don't care about errors here.             */
+   call loadxref(word(ExtraXRef, i))
+end
+
+call DisplayStatus('ARexxGuide online help system...')
+
+   /* It isn't used in the setup provided here, but it's possible to    **
+   ** just pass a word as an argument to this routine and get a lookup  **
+   ** on that.                                                          */
+if LkUp = '' then do
+      /* Get the current line and position. Editor's commands are all   **
+      ** in subroutines and not in the main code.                       */
+   HLine = GetCLine()
+   CurPos = GetCurPos()
+      /* Show the index requester if it's a blank line */
+   if HLine = '' | verify(HLine, ' ;') = 0 then do
+      call ShowInfo(,, CurPos, Kwd)
+      signal CleanExit
+   end
+
+      /* Cut a single clause out of preceding clauses                   */
+   SemPos = lastpos(';', HLine, CurPos) + 1
+      /* This will break if a semicolon is used within a string         **
+      ** but checking for that seems like overkill.                     */
+   if SemPos > 1 then do
+      if SemPos < CurPos + 1 then do
+         parse var HLine =SemPos HLine ';'
+         CurPos = CurPos - SemPos + 1
+      end
+   end
+      /* Cut it out of following clauses                                 */
+   else
+      parse var HLine HLine ';'
+
+   /* The current keyword is used within MChar select clause             */
+   Kwd = upper(word(HLine, 1))
+
+                                              /* Hex characters: SpTbRt    */
+      /* Check for special characters -- operators, quotation marks, etc */
+   MChar = pos(substr(HLine,CurPos,1), '+-/*%|&^><=,;:~)("''?!.'||'20090a'x)
+   select
+      when MChar = 0 then do     /* It isn't one of the chars */
+         /* Look for whole word if it isn't a special character */
+         LkUp = GetCWord(HLine, CurPos)
+      end
+      when MChar <= 5 then
+         select
+            when MChar <= 2 then       /* + or - */
+               if Kwd = 'PARSE' then
+                  LkUp = 'PARSETMP5'
+               else
+                  LkUp = 'ARITHMETIC'
+            when MChar <= 4 then do    /* / or * */
+                  /* This picks up the three characters surrounding a '*' or '/' */
+               ComChar = substr(HLine, max(1, CurPos - 1), 3)
+               if pos('/*', ComChar) + pos('*/', ComChar) > 0 then
+                  LkUp = 'COMMENT'
+               else
+                  LkUp = 'ARITHMETIC'
+            end
+            otherwise
+            	LkUp = 'ARITHMETIC'        /* % */
+         end
+      when MChar <= 13 then
+         select
+            when MChar <= 8 then do    /* | or & or ^ */
+                  /* This picks up the three characters surrounding token */
+               ComChar = substr(HLine, max(1, CurPos - 1), 3)
+               if pos('||', ComChar) > 0 then
+                  LkUp = 'CONCATENATION'
+               else
+                  LkUp = 'LOGICAL'
+            end
+            when MChar <= 10 then    /* < or > */
+               LkUp = 'COMPARISON'
+            when MChar = 11 then    /* = */
+               if Kwd = 'PARSE' then
+                  LkUp = 'PARSETMP5'
+               else if symbol(strip(left(HLine, max(1, CurPos-1)))) == 'BAD' then
+                  LkUp = 'COMPARISON'
+               else
+                  LkUp = 'ASSIGNMENT'
+            when MChar = 12 then    /* , */
+               LkUp = 'COMMA'
+            otherwise               /* ; */
+               LkUp = 'SEMICOLON'
+         end
+      when MChar <= 19 then
+         select
+            when MChar = 14 then    /* : */
+               LkUp = 'LABEL'
+            when MChar = 15 then do /* ~ */
+                  /* is the next character a comparison operator? */
+               if pos(substr(HLine, CurPos , 2), '~=~>~<') > 0 then
+                  LkUp = 'COMPARISON'
+               else
+                  LkUp = 'LOGICAL'
+            end
+            when MChar <=17 then    /* ) or ( */
+               if Kwd = 'PARSE' then
+                  LkUp = 'PARSETMP5'
+               else
+                  LkUp = 'PAREN'
+            otherwise               /* " or ' */
+               LkUp = 'STRING'
+         end
+      otherwise
+         select
+            when MChar = 20 then    /* ? */
+               if Kwd = 'TRACE' then
+                  LkUp = 'TRACEOPT1'
+               else
+                  LkUp = '?'
+            when MChar = 21 then    /* ! */
+               if Kwd = 'TRACE' then
+                  LkUp = 'TRACEOPT2'
+               else
+                  LkUp = '!'
+            when MChar = 22 then do   /* . -- dot  */
+                  /* Get the surrounding ARexx token */
+               StPos = verify(' 'HLine, '+-|/&=~\><^,;:()"'' ', 'M', lastpos(' ', ' 'HLine, CurPos))
+               Token = substr(HLine, StPos, verify(HLine' ', '+-|/&=~\><^,;:()"'' ', M, CurPos) - StPos)
+               select
+	               when Token = '.' then
+	                  if Kwd = 'PARSE' then
+   	                  LkUp = 'PARSETMP2'
+      	            else
+         	            LkUp = Token
+         	      when datatype(Token, 'N') then
+         	      	LkUp = 'NUMBER'
+         	      when datatype(Token, 'S') then
+         	      	if datatype(left(Token,1),'M') | verify(Token, '!@#$', 'M') = 1
+         	      		then LkUp = 'COMPVAR'
+               	otherwise
+	                  LkUp = Token
+	            end
+            end
+            otherwise               /* At a space or EOL */
+               if CurPos >= wordindex(HLine, 1) then
+                  LkUp = GetCWord(HLine, CurPos)
+               else do
+                  call ShowInfo(HLine,, CurPos, Kwd)
+                  signal CleanExit
+               end
+         end
+   end
+
+
+   /* Check for special words like `command' in `address command'       **
+   ** and most of the subkeywords in instructions like DO.              */
+   if word(HLine, 1) ~= LkUp then do CheckOpt = 1 for 1  /* Let's us leave */
+      if GetXRef(LkUp) = 10 | find('ARG PULL UPPER COMMAND', upper(LkUp)) > 0 then do
+         if word(GetXRef(Kwd),3) = 2 then select
+            when Kwd = 'DO' then do
+               SpecWord = find('UNTIL WHILE TO FOR BY FOREVER ', upper(LkUp))
+               if SpecWord > 0 then
+                  LkUp = word('DOOPT4 DOOPT4 DOOPT2 DOOPT3 DOOPT2 DOOPT5', SpecWord)
+            end
+            when Kwd = 'PARSE' then do
+               SpecWord = find('ARG PULL EXTERNAL NUMERIC SOURCE VERSION VALUE VAR WITH', upper(LkUp))
+               if SpecWord > 0 then do
+                  LkUp = 'PARSESRC'SpecWord
+                  if SpecWord = 9 then
+                     LkUp = 'PARSESRC7'
+               end
+               else
+                  LkUp = 'PARSETMP1'
+            end
+            when Kwd = 'OPTIONS' then
+               if find('RESULTS PROMPT FAILAT CASHE ON OFF', upper(LkUp)) > 0 then
+                  LkUp = Kwd
+            when Kwd = 'TRACE' then
+               if verify(upper(right(LkUp,1)), 'IRACLENOBS') = 0 then
+                  LkUp = 'TRACEOPT'
+            when Kwd = 'SIGNAL' then
+               if find('ON OFF', upper(LkUp)) >0 then
+                  LkUp = 'SIGTRAP'
+               else if pos('BREAK_', upper(LkUp)) = 1 then
+                  LkUp = 'BREAK_'
+               else
+                  LkUp = 'SIGTRAN'
+            when upper(LkUp) = 'UPPER' then
+               if Kwd ~= 'UPPER' then
+                  LkUp = 'UPPER()'
+            when Kwd = 'ADDRESS' then
+               if abbrev(word(HLine, 2), LkUp) then do
+                  LkUp = Kwd
+                  leave CheckOpt  /* so we don't get address() */
+               end
+            otherwise
+         end
+         if GetXRef(LkUp'()') ~= 10 then
+            LkUp = LkUp'()'
+      end
+   end
+end
+else do     /* Word was supplied as argument to the script */
+   upper LkUp
+   CurPos = 1; HLine = LkUp
+end
+
+XRVal = upper(GetXRef(LkUp))
+if find('10 NODE/K', XRVal) > 0 then do
+   if ShowInfo( HLine, LkUp, CurPos, Kwd ) = 0 then signal CleanExit
+	else XRVal = upper(GetXRef(LkUp))
+end
+
+if ~abbrev(word(XRVal,2), '"ARX_') then
+   Src = 'Other ref:'
+else
+   Src = 'ARexxGuide:'
+call DisplayStatus(Src upper(LkUp) '['word('Explanation Function Instruction', word(getxref(LkUp), 3)+1)']')
+
+signal on error
+call DisplayAG(LkUp)
+signal off error
+
+CleanExit:
+	/* Since it can cause severe problems, it's removed when not needed */
+call remlib('amigaguide.library')
+call EditorExit()
+exit 0
+
+/*************************************************************************
+** Error routines.                                                      */
+
+XRefError:
+   ErrMsg = 'Unable to load the cross-reference file ARx_Guide.xref\'
+   if ~exists('env:amigaguide/path') then
+      ErrMsg = ErrMsg || 'Your environmental variable "amigaguide/path" is not set.\'
+   else
+      ErrMsg = ErrMsg '  Be sure to include that file''s directory in env:amigaguide/path.\'
+   ErrMsg = ErrMsg '  The .xref file may be put into the current directory or into\',
+   '  any directory included in the amigaguide/path environmental variable.'
+   call PutErrMsg(SIGL, ErrMsg)
+   exit 6
+NoCmd:
+   call PutErrMsg(SIGL, 'Can''t read environmental variable "env:arexxguide/AGcmd".\',
+             '  That variable must hold the name of the command you use\',
+             '  to show AmigaGuide files.')
+   exit 7
+Syntax:
+   call PutErrMsg(SIGL, '   Syntax error #'rc ':' errortext(rc))
+   exit 9
+Failure:
+   call PutErrMsg(SIGL, '   Command "'sourceline(SIGL)'" failed.')
+	exit 10
+Halt:
+Break_C:
+   call PutErrMsg(SIGL, '   Execution halted.')
+	exit 8
+Error:
+   call PutErrMsg(SIGL, '   Command error in display routine: RC =' rc'.\\',
+             '  The name of your AmigaGuide viewer may not be properly set, or\',
+             '  an .xref file might have been loaded for a database not located\',
+             '  in one of the directories in env:AmigaGuide/path.\',
+             '  Type rx ARx_Setup at a shell prompt to run the setup program again.')
+	exit 9
+PutErrMsg:
+   call trace b
+   ErrMsg ='Sorry an enexpected error has occurred in line' arg(1)'.\\'arg(2)
+   signal off syntax
+   signal off halt
+   signal off break_c
+   WinHi = 59 + CountChar('\', ErrMsg) * 11
+   call DisplayStatus('ARx_Help macro error.')
+   if open(6ErrWin, 'raw:0/0/640/'WinHi'/Arx_Help Error/SCREEN *') then do
+      call writeln(6ErrWin, translate(ErrMsg,'0a'x, '\'))
+      call writech(6ErrWin, '0a'x'        -- Press any key -- ')
+      call readch(6ErrWin)
+   end
+   call EditorExit()
+   return 0
+
+exit 0
+
+/*************************************************************************
+** General utility routines                                             */
+
+GetAGCmd: procedure
+		/* Calls the setup program if env:ARexxGuide/AGCmd is not set       */
+	AGCmd = GetEnv('ARexxGuide/AGCmd')
+   if AGCmd = '' then do
+   	call DisplayStatus('Please wait... Running setup routine')
+      if 'ARx_Setup.rexx'('HELP',,address()) ~= 0 then
+         signal NoCmd
+		else
+			AGCmd = GetEnv('ARexxGuide/AGCmd')
+	end
+	return AGCmd
+
+ShowInfo:
+      /* The env: var ShowFullHelp determines whether a simple editor     **
+      ** requester is used, or a complex rexxarplib window that displays  **
+      ** far more information about the current line, but is also slow.   */
+   if getenv('ARexxGuide/ShowFullHelp') ~= '1' then do
+      if BoolReq(upper(LkUp) 'not found.','Show ARexxGuide index?') then do
+         LkUp = 'ARx_NdxCont'
+         return 1
+      end
+      else
+      	return 0
+   end
+   else do
+         /* Show that we're doing something */
+      call DisplayStatus(LkUp 'not found. Checking clause...')
+
+         /* The .rexx part of the name has to be added because the default **
+         ** extension is set by editor: .TTX, .edge, etc. Since this       **
+         ** is set up for different editors, it's stored with the generic  **
+         ** extension.                                                     */
+      return 'ARx_RArpInfoWin.rexx'(HLine,LkUp,CurPos,Kwd,SetAddress(),SetExecStr(),GetWinInfo())
+   end
+
+CountChar:
+   return length(arg(2)) - length(compress(arg(2), arg(1)))
+
+GetEnv: procedure
+      /* Arguments:                                                     **
+      **   arg(1) := The name of the variable to retrieve               **
+      ** Returns     a string                                           */
+
+		/* Use external function of same name if it's available           */
+	if show('L', 'rexxarplib.library') then
+		return 'GetEnv'(arg(1))
+      /*  OPEN()  will fail if variable is not defined. Null will be    **
+      ** returned in that case                                          */
+   if open(6Env, 'env:'arg(1), 'R') then do
+      EnvVar = readln(6Env)
+      call close 6Env
+   end
+   else EnvVar = ''
+   return EnvVar
+
+Tab2Space:  procedure
+   parse arg TSize, Line
+   tpos=pos('09'x,Line);
+   do while tpos>0;
+      Line=insert('',Line, tpos, min(1, tpos//TSize)*(TSize-tpos//TSize));
+      tpos=pos('09'x, Line,tpos+1);
+   end;
+return translate(Line,' ','09'x)
+
+
+/***********************************************************************
+** Editor-specific commands.                                          **
+**		These function calls are used elsewhere to make it easier to    **
+**    use the same script for different editors.                      **
+**                                                                    **
+** For help in customizing the macro for a different editor see       **
+** ARexxGuide Tutorials section: Building a help macro                */
+
+GetCLine: procedure
+   'DisableUser'
+   'GetEnvVar _FE_TabList'
+   TabSize = pos('T',result)		/* Hmm. Assumes that all tabs are same size */
+	'copy line resultbuff'
+      /* CurPos won't match ARexx count if tabs are used        */
+   return Tab2Space(TabSize, strip(result,'T', '0a'x))
+
+GetCurPos: procedure
+   'GetEnvVar _WE_Column'
+   CurPos = result + 1
+   'EnableUser'
+	return CurPos
+
+GetCWord: procedure
+		/* Use default version for testing */
+      /* Send back current word */
+   parse arg Line, CPos
+   	/* list of valid word-separator charaters: space, operator, spec char */
+   SepChar = ' +-*/%|&~=><^,;:()."''\'
+      /* Back up in line if Current position is not an alpha character  or digit */
+   do while (verify(substr(Line,CPos,1), SepChar || '0a'x)=0) & (CPos>1)
+      CPos = CPos - 1
+   end
+      /* Cut off word at space _or_ any of the operator or special characters     */
+   Word = reverse(left(Line,verify(Line' ',SepChar,'M',CPos) - 1))
+   return reverse(left(Word,verify(Word' ',SepChar,'M', max(1,length(Word) + 1 - CPos))-1))
+
+		/* Send back current word */
+			'copy word rb'
+			'copy word back rb'
+
+DisplayStatus:
+		/* Put message in title bar of editor */
+	'WindowTitle "'arg(1)'"'
+	return 0
+
+BoolReq:
+		/* Present a Yes/No requester                                      **
+		** Arguments:                                                      **
+		**    arg(1)	:= Titlebar text                                    **
+		**    arg(2)   := Message in body of requester                     */
+	if show('L', 'rexxreqtools.library') then
+		return rtezrequest(arg(2), '_Yes|_No', arg(1))
+ 	'RequestChoice TITLE "'arg(1)'" "'arg(2)'"'
+   return result
+
+GetWinInfo: procedure
+		/* Return Information about window                                 **
+		** 	Format of returned value:                                    **
+		**           word 1 = x position                                   **
+		**           word 2 - y position                                   **
+		**           word 3 = name of public screen                        */
+	'window'
+	parse var result 'X ' x ',' 'Y ' y ','
+	'GetEnvVar _GE_ScreenName'
+	return x y result
+
+EditorExit:
+		/* Used for any editor-specific commands that should be issued on  **
+		** exit.                                                           */
+	'EnableUser'
+	return 0
+
+SetExecStr:
+		/* The string returned by this function is used in the rexxarplib  **
+		** window to send link commands to AmigaGuide.                     */
+	return 'address ARX_ARP quit; Help section'
+
+SetAddress:
+		/* Address used as target of the commands from rarp window         */
+	return address()
+
+DisplayAG:
+		/* Show the node in AmigaGuide viewer. Missing env: will call**
+       ** error handler which runs the setup prg. and then passes   **
+       ** control back to here.                                     */
+
+	'Help' arg(1)
+	return 0

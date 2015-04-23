@@ -1,0 +1,10 @@
+library clib3r.lib
+
+  system os2v2 dll initinstance terminstance
+  option ManyAutoData
+  option map
+  option stack=1M
+
+  LIBRARY P:\newview_dev\tools\pmprintf\PMPRINTF.LIB
+
+  export LZWDECOMPRESSBLOCK         .1  = LZWDecompressBlock

@@ -1,0 +1,42 @@
+TOutline2
+
+A new Outline (also known as a "Tree View") for Sibyl.
+Main features: 
+- lots of options
+- more compact
+- fast 
+- more control over navigation through code 
+
+See componentsTestForm.pas for examples of how to use.
+
+Basically, to load items into the TOutline2 you use code like this:
+
+var 
+  Node: TNode;
+begin
+  Node:= TheOutline.AddChild( 'Seven', nil );
+  Node:= Node.AddChild( 'Biscuit', nil );
+  Node.AddChild( 'Afghan', nil );
+
+
+
+Notes
+-----
+
+
+The scroll bars are checked for visibility only when
+- the contents of the outline changes
+- a "visible" node is expanded/collapsed
+
+Node.IsVisible tells you if all a nodes' parents are expanded.
+Not if it is physically on screen.
+
+The scroll bar positions are updated at every refresh. The number of
+physical lines "visible" in the whole outline is counted while painting.
+When the topnode is found it's index from the top is stored in _TopLineIndex
+and used to set the vertical scrollbar position.
+
+During refresh the maximum width required is calculated, and used to decide
+if a horizontal scroll bar is needed, and the position of the scrollbar
+
+The horizontal scrollbar's position is the number of pixels to start drawing at...

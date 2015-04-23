@@ -1,0 +1,39 @@
+Name               Email                            Type              Amount
+----------------------------------------------------------------------------
+Henk Pol           hjpol@zeelandnet.nl              Paypal            10
+Moby Disk          mobydisk@redshift.com            Paypal            15
+Frederick Giroux   rgiroux@jdscivil.com             Paypal            25
+Jerauld Prather    prather.js@verizon.net           Paypal            30
+Keith Oswald       koswald@sbcglobal.net            Paypal            30
+Daniel Caroll      -                                Amazon Cert       50
+Sten Solberg       stens@powertech.no               Paypal            30
+Jason Stefanovich  stefanj@gte.net                  Paypal            10
+Alexander Newman   anewman@optusnet.com.au          Paypal            20
+Andy Willis        abwillis@attbi.com               Paypal            10
+Richard Tennis     rtennis@swri.org                 Paypal            20
+Gregg Young        ygk@qwest.net                    Paypal            15
+John F Moore       jomoore@radiantsystems.com       Paypal            20
+Bill Richardson    -                                Amazon cert       25
+Jan Magne Landsvik jan.magne@bbb.no                 Paypal            20
+Daniela Engert     dani@ngrt.de                     Paypal            10
+Kris Steenhaut     kris.steenhaut@hccnet.nl         moneybookers      42
+  (NZ$75  1 NZD = 0.561790 USD)
+ + 5  :)                                                               3
+Pieter Kruger Jr   -                                Blackstar GC      16
+  (GBP10  1 GBP = 1.60280 USD)
+Timur Tabi         8403rqb8n9y5an001@sneakemail.com Paypal            10
+Peter Gegenheimer  pgegen@lawrence.ks.us            Paypal            25
+Gordon Snider      gsnider@look.ca                  Paypal            25
+Julian Thomas      jt@jt-mj.net                     Paypal             5
+Philip Mann        prmlaw@bellatlantic.net          Paypal             5
+Robert S Stan      rsstan@dreamscape.com            Paypal            10
+Lionel Abrahams    lionel0201@charter.net           Paypal            25
+Howard Harris      hharris@netcomuk.co.uk           Paypal            10
+Teijo Kaakinen     zircon@interlink.or.jp           Paypal            20
+Lon Hoker          ganchero@powernet.net            Paypal            25
+Mark Henigan       drivnzen@netfeed.com             Paypal            15
+Aidan Grey         apgrey@cyberus.ca                Paypal            10
+Simon Wright       diver06@gmx.net                  Paypal            20
+Doug Fitzpatrick   dfitzpat@smartt.com              Paypal            10 
+------------------------------------------------------------------------
+Total                                                             US$586

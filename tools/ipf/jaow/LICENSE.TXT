@@ -1,0 +1,95 @@
+
+       IBM PROGRAM LICENSE AGREEMENT FOR "JUST ADD OS/2 WARP"
+
+IF YOU RECEIVED THE "JUST ADD OS/2 WARP" PACKAGE ON DISKETTES, THE
+FOLLOWING TERMS AND CONDITIONS APPLY TO THE DISKETTES AND ALL PROGRAMS AND
+DOCUMENTATION CONTAINED ON THE DISKETTES (HEREINAFTER COLLECTIVELY REFERRED
+TO AS THE "PROGRAM"). IF YOU RECEIVED THE "JUST ADD OS/2 WARP" PACKAGE
+ELECTRONICALLY, THE FOLLOWING TERMS AND CONDITIONS APPLY TO ALL PROGRAMS
+AND DOCUMENTATION YOU DOWNLOADED (HEREINAFTER COLLECTIVELY REFERRED TO AS
+THE "PROGRAM"). BEFORE YOU CONTINUE TO USE THE PROGRAM YOU SHOULD CAREFULLY
+READ THE FOLLOWING TERMS AND CONDITIONS.  CONTINUING TO USE THE PROGRAM
+INDICATES YOUR ACCEPTANCE OF THESE TERMS AND CONDITIONS. IF YOU DO NOT
+AGREE TO THESE TERMS AND CONDITIONS YOU MUST STOP USING THE PROGRAM AND
+EITHER:
+
+1. RETURN THE PROGRAM TO IBM,
+2. TRANSFER THE PROGRAM, PROVIDED THE TRANSFEREE AGREES TO BE BOUND IN
+   ALL RESPECTS BY THIS LICENSE AGREEMENT, OR
+3. DESTROY THE PROGRAM.
+
+     The PROGRAM is licensed not sold.  International Business Machines
+Corporation or the applicable IBM country organization (IBM) grants you a
+license for the PROGRAM only in the country where you acquired the PROGRAM.
+You obtain no rights other than those granted you under this license.
+IBM owns or has licensed from the owner copyrights in the PROGRAM.  You are
+responsible for the selection of the PROGRAM and for the installation of,
+use of, and results obtained from, the PROGRAM.
+
+1. License
+
+     Under this license, you may:
+
+     1) use the PROGRAM on only one machine at any one time and
+     2) transfer the possession of the PROGRAM to another party.
+
+If you transfer the PROGRAM, you must transfer your copy of the PROGRAM and
+a copy of this license to the other party. Your license is then terminated.
+The other party agrees to these terms and conditions by its first use of
+the PROGRAM.
+
+     Under this license, you may not:
+
+     1) use or transfer the PROGRAM except as provided in this license;
+     2) post the PROGRAM electronically;
+     2) copy, modify, merge, or distribute the PROGRAM;
+     3) reverse assemble or reverse compile the PROGRAM; or
+     4) sublicense, rent, lease, or assign the PROGRAM.
+
+2. Warranty
+
+THE PROGRAM IS PROVIDED "AS IS" WITHOUT ANY WARRANTIES (CONDITIONS) OF ANY
+KIND.  IBM DISCLAIMS ALL WARRANTIES (CONDITIONS) FOR THE PROGRAM, EITHER
+EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+Some jurisdictions do not allow exclusion of implied warranties, so the
+above exclusions may not apply to you.
+
+3. Limitation of Remedies
+
+IN NO EVENT WILL IBM BE LIABLE FOR ANY LOST PROFITS, LOST SAVINGS,
+INCIDENTAL OR INDIRECT DAMAGES OR OTHER ECONOMIC CONSEQUENTIAL DAMAGES,
+EVEN IF IBM OR ITS AUTHORIZED SUPPLIER HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES.  IN ADDITION, IBM WILL NOT BE LIABLE FOR ANY DAMAGES
+CLAIMED BY YOU BASED ON ANY THIRD-PARTY CLAIM.
+
+The above limitations of remedies also applies to any developer and/or
+supplier of the PROGRAM. Such developer and/or supplier is an intended
+beneficiary of this Section.
+
+Some jurisdictions do not allow these limitations or exclusions, so they
+may not apply to you.
+
+4. General
+
+You may terminate your license at any time.  IBM may terminate your license
+if you fail to comply with the terms and conditions of this license.  In
+either event, you must destroy your copy of the PROGRAM.
+
+You agree that you have no agreement that prohibits your use of this
+PROGRAM.  You agree to abide by the terms and conditions of all applicable
+program license agreements including those related to Microsoft products.
+
+You are responsible for payment of any taxes, including personal property
+taxes, resulting from this license.
+
+Neither party may bring an action, regardless of form, more than two years
+after the cause of the action arose.
+
+If you acquire the PROGRAM in the United States, this license is governed
+by the laws of the State of New York.  If you acquired the PROGRAM in
+Canada, this license is governed by the laws of the Province of Ontario.
+Otherwise, this license is governed by the laws of the country in which you
+acquired the PROGRAM.
+

@@ -1,0 +1,127 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File by RSM2OUT v1.95 fr ResourceMaster ab v2.06 by ARDISOFT
+
+#Dial 000 
+# 003 Ici vous pouvez choisir|le fichier source
+# 005 Ici vous pouvez choisir|le fichier de destination
+# 020 UDO.TTP ecrit les JumpID's|quand il fait la convertion|en C au Pascal
+# 021 UDO.TTP ecrit les fichiers MAP|(C) qaund il fait la|convertion pour WinHelp(4)
+# 022 UDO.TTP ecrit les fichiers MAP|(Pascal/Delphi) quand il fait|la convertion pour WinHelp(4)
+# 023 UDO.TTP ecrit les fichiers MAP|(GFA-Basic) quand il fait la|convertion pour WinHelp(4)
+# 024 UDO.TTP ecrit les fichiers MAP|(Visual-Basic) quand il fait la|convertion pour WinHelp(4)
+# 026 Mettre le fichier destination|dans un nouveau dossier ->|si le symbole 'UseFolders' et defini
+# 027 UDO.TTP attend|l'appuie d'une touche|apres la convertion
+# 028 UDO.TTP est verbeux|durant la conversion
+# 029 UDO.TTP fait la conversion|seulement en RAM
+# 030 Activer le mode test d'UDO.TTP
+# 031 Utiliser le fichier de projet (-(at) file)|Ferme toutes les autres indications
+# 032 Appeler UDO.TTP pour|la conversion
+# 033 Quitter UDO-Shell
+# 034 Appeler la fenetre de|gestian du projet
+# 035 Command syntax d'UDO
+# 036 Appeler l'aide a propos|d'UDO-Shell
+# 038 Charger Logfile dans l'editeur
+# 039 Charger Hyphenfile dans l'editeur
+# 040 Charger Treefile dans l'editeur
+#Dial 001 
+# 013 Fermer la fenetre
+#Dial 002 
+# 003 Nom de l'utilisateur|de l'utilisateur
+# 005 Code Postal et Ville|de l'utilisateur
+# 007 Cle de|l'utilisateur
+# 008 Enregistrer UDO-Shell
+# 009 Annuler l'enregistrement
+#Dial 003 
+# 002 Adapter chemin de destination
+# 004 Adapter le chemin et|le fichier de destination
+# 005 Adapter le nom et l'extension|du fichier de destination
+# 006 Adapter seulement l'extension|du fichier destination
+# 007 Generer le chemin de destination|en minuscule
+# 008 Generer le nom de fichier|destination en minuscule
+# 010 UDO.TTP ecrit des|fichiers en noms long
+# 011 UDO.TTP ecrit des|fichiers en noms courts
+# 013 Demander par une boite d'alerte|avant de quitter UDO-Shell?
+# 014 Reecrire les|fichiers destination
+# 016 UDO.TTP ecrit|un fichier de log (*.UL*)
+# 017 UDO.TTP ecrit|un fichier hyphen (*.UH*)
+# 018 UDO.TTP ecrit|un fichier tree (*.UT*)
+# 019 UDO.TTP est simencieux|pendant la conversion
+# 020 Appliquer les options choisis|et fermer la fenetre
+# 021 Fermer la fenetre
+# 022 Appeler l'aide pour|la fenetre d'options
+#Dial 004 
+# 002 Activer Symbole 1
+# 003 Texte du symbole 1
+# 004 Activer Symbole 2
+# 005 Texte du symbole 2
+# 006 Activer Symbole 3
+# 007 Texte du symbole 3
+# 008 Activer Symbole 4
+# 009 Texte du symbole 4
+# 010 Activer Symbole 5
+# 011 Texte du symbole 5
+# 012 Activer Symbole 6
+# 013 Texte du symbole 6
+# 014 Activer Symbole 7
+# 015 Texte du symbole 7
+# 016 Activer Symbole 8
+# 017 Texte du symbole 8
+# 018 Activer Symbole 9
+# 019 Texte du symbole 9
+# 020 Activer Symbole 10
+# 021 Texte du symbole 10
+# 022 Activer Symbole 11
+# 023 Texte du symbole 11
+# 024 Activer Symbole 12
+# 025 Texte du symbole 12
+# 026 Activer Symbole 13
+# 027 Texte du symbole 13
+# 028 Activer Symbole 14
+# 029 Texte du symbole 14
+# 030 Activer Symbole 15
+# 031 Texte du symbole 15
+# 032 Activer Symbole 16
+# 033 Texte du symbole 16
+# 034 Fermer la dialogue
+# 035 Appeler l'aide pour|cette fenetre
+#Dial 005 
+# 002 Choisissez le format de fichier|qui sera utilise par ce programme
+# 005 Choisir un programme externe|pour l'extension ci-dessus
+# 006 Le programme reconnait VA_START|(depuis le AV-Protocol)
+# 007 Le programme est un|programme TOS (sans GEM)
+# 009 Parametres a envoyer|au programme choisi
+# 010 Fermer la fenetre
+# 011 Choix des|parametres
+# 012 Appeler l'aide pour|cette fenetre
+#Dial 007 
+# 004 Quitter UDO-Shell
+# 005 Ne pas quitter UDO-Shell
+#Dial 009 
+# 024 Femer cette fenetre
+#Dial 010 
+# 015 Utiliser le project UDO-Shell
+# 016 Utiliser le fichier UDO-project
+# 020 Infiles desires?
+# 021 Outfiles desires?
+# 022 Bilder desires?
+# 023 Raws desires?
+# 024 Kapitel desires?
+# 025 Headings desires?
+# 026 Alias desires?
+# 027 Labels desires?
+# 028 Indizes desires?
+# 029 Ouvrir fichier(s) selectione(s)
+# 030 Recharger, rafraichir|le fichier projet
+# 031 Fermer cette fenetre
+# 032 Appeler l'aide pour|cette fenetre
+#Dial 011 
+# 004 Selectionnez le fichier|hypertext pour UDO
+# 006 Choisir le fichier project (-(at) file)
+# 008 Externes Druckprogramm ausw„hlen
+# 010 Utiliser le serveur Olga|pour voir les images
+# 011 UDO-Shell demarre automatiquement|UDO.TTP quand le fichier (*.U)|source est sauve
+# 012 UDO-Shell demande a un client OLGA|de recharger le fichier sauve
+# 013 Confirmer les choix
+# 014 Abandonner les choix|et fermer cette fenetre
+# 015 Appeler l'aide pour|cette fenetre

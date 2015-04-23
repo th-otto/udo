@@ -1,0 +1,42 @@
+/* default icon for all Sibyl applications */
+
+#ifdef os2
+GROUPICON 2 bmp\default.ico
+#endif
+#ifdef win32
+GROUPICON 2 bmp\wdefault.ico
+#endif
+
+#ifdef os2
+/* additional cursor shapes for OS/2 */
+
+POINTER 3 bmp\multisel.ptr
+POINTER 4 bmp\insert.ptr
+POINTER 5 bmp\paste.ptr
+
+POINTER 10  bmp\uparrow.ptr
+POINTER 14  bmp\hsplit.ptr
+POINTER 15  bmp\vsplit.ptr
+POINTER 17  bmp\sqlwait.ptr
+POINTER 19  bmp\appstart.ptr
+POINTER 20  bmp\help.ptr
+POINTER 21  bmp\cross.ptr
+#endif
+
+#ifdef win32
+/* additional cursor shapes for Win32 */
+
+POINTER 3 bmp\multisel.cur
+POINTER 4 bmp\insert.cur
+POINTER 5 bmp\paste.cur
+
+POINTER 10  bmp\help.cur /* uparrow */
+POINTER 12  bmp\drag.cur
+POINTER 14  bmp\vsplit.cur 
+POINTER 15  bmp\hsplit.cur 
+POINTER 17  bmp\sqlwait.cur 
+POINTER 19  bmp\help.cur /* appstart */
+POINTER 20  bmp\help.cur
+POINTER 21  bmp\cross.cur 
+#endif
+

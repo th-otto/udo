@@ -1,0 +1,1211 @@
+@database "ARx_Instr3.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN ""
+@toc ARx_Instr.ag/MAIN
+@prev ARx_Instr.ag/MAIN
+@next ARx_Instr.ag/MAIN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide.
+      Use that file as the entry point to this and other parts of the
+      full guide.
+
+            Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+@endnode
+
+@node PROCEDURE "ARexxGuide | Instruction Reference (16 of 25) | PROCEDURE"
+@toc ARx_Instr.ag/MAIN
+@prev ARx_Instr2.ag/PARSE
+@next PULL
+PROCEDURE [ @{" EXPOSE " link EXPOSE} <variable> [<variable>] [...] ] ;
+
+Creates a new symbol table for an @{" internal function " link ARx_Elements3.ag/PROGFUNC}. The optional EXPOSE
+keyword makes @{" <variable> " link ARx_Elements2.ag/VARIABLE} available to the function from the calling
+environment's symbol table.
+
+By default, a @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} has access to all variables defined in the main
+program. It may retrieve the values of those variables and change them.
+The PROCEDURE instruction protects variables in the main program by giving
+the subroutine a new symbol table, as though a new script were being
+executed.
+
+   Example:
+      /**/
+      Var = 'I came on a kind of crossroads'
+      CALL SubR
+      SAY Var                                  >>> From time to time.
+      EXIT
+
+      SubR:
+         SAY Var                               >>> I came on a kind <...>
+         Var = 'From time to time.'
+      RETURN
+
+      /**/
+      Var = 'I came on a kind of crossroads'
+      CALL SubR
+      SAY Var                                  >>> I came on a kind <...>
+      EXIT
+
+      SubR: PROCEDURE
+         SAY Var                               >>> VAR
+         Var = 'From time to time.'
+      RETURN
+
+In the first program fragment, [Var] in the subroutine inherits the value
+assigned to it in the main program and is able to change the assignment
+and affect the value of [Var] in the main program.
+
+In the second fragment, on the other hand, the use of PROCEDURE turns
+[Var] into what is, essentially, a different variable. It is uninitialized
+when the subroutine begins. The assignment clause within the subroutine
+has no effect upon the variable used in the main program.
+
+   Also see @{" Basic elements: Internal functions " link ARx_Elements3.ag/PROGFUNC} explanation
+
+                 Technique note: @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+                                 @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+
+Next: PULL | Prev: PARSE | Contents: Instruction ref.
+
+@endnode
+
+@node EXPOSE "ARexxGuide | Instruction Reference | Procedure (1 of 1) | EXPOSE"
+@toc PROCEDURE
+@next PROCEDURE
+@prev PROCEDURE
+procedure [ EXPOSE <variable> <variable> <...> ]
+
+The EXPOSE option keyword can be used only in conjunction with the
+@{" PROCEDURE " link PROCEDURE} instruction. It moderates the effect of PROCEDURE by allowing
+each listed @{i}<variable>@{ui} to be treated as part of the symbol table of both
+the subroutine and the calling environment.
+
+Each listed @{i}<variable>@{ui} in the subroutine will be treated as it would be in
+a subroutine that was not modified by the PROCEDURE instruction.
+
+Any number of individual variables can be listed after the keyword, but it
+is often useful to expose a group of variables in one step. That can be
+done in either of two ways:
+
+The first method is to maintain the globals as @{" compound variables " link ARx_Elements2.ag/COMPVAR}. If
+the @{" stem variable " link ARx_Elements2.ag/COMPVAR2} is used by itself in an EXPOSE list, then all
+variables formed from that stem will also be exposed. A short stem name
+like `g!.' is useful in this situation.
+
+   Example:
+         /* Formatting strings are stored under the g!. stem */
+      csi='9b'x; g!.slant=csi'3m'; g!.bold=csi'1m'; g!.norm=csi'0m'
+         /* intervening code */
+      say PrettyUp('This is the', 'absolute', 'finest.')
+      exit
+
+      PrettyUp: PROCEDURE EXPOSE g!.
+         Emphasis = g!.slant||arg(2)||g!.norm
+         return g!.bold||arg(1) Emphasis g!.bold||arg(3)||g!.norm
+
+Another method suggested by ARexx guru @{" Marvin Weinstein " link ARx_Intro.ag/REF} is store
+symbols to be used as globals in a string and then expand the string with
+the @{" interpret " link ARx_Instr.ag/INTERPRET} instruction:
+
+   Example:
+         /* symbols for color strings are stored in another variable */
+      csi='9b'x; Black=csi'31m'; White=csi'32m'; Blue=csi'33m'
+      Globals = 'Black White Blue'
+      say PrettyUp('This is the', 'absolute', 'finest.')
+      exit
+
+      PrettyUp: interpret 'PROCEDURE EXPOSE' Globals
+         return White||arg(1) Blue||arg(2) White||arg(3)||Black
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26} definition of REXX allows an indirect variable list as an
+   argument to this instruction. If @{i}<variable>@{ui} is enclosed in parentheses,
+   the standard will use the value of that variable as the list of
+   variable names to be dropped. It works this way:
+
+         /* Drop variable A and B  */
+      a=1;b=2;c=3;cl= 'a b';
+      call exposure
+      exit 0
+
+      exposure: procedure expose (cl)
+         say a b c                     >>> 1 2 C
+
+   Because this option is not supported in ARexx, such a statement would
+   generate @{" Error 31 " link ARx_Error.ag/ERROR_31}. It can, however, be duplicated less elegantly
+   through use of INTERPRET as shown above.
+
+Next, Prev & Contents: PROCEDURE
+
+@endnode
+
+@node PULL "ARexxGuide | Instruction Reference (17 of 25) | PULL"
+@toc ARx_Instr.ag/MAIN
+@prev PROCEDURE
+PULL <template>;
+
+Retrieves a line of input from the command line, translating it to
+uppercase. PULL is an abbreviation of @{" PARSE UPPER PULL " link ARx_Instr2.ag/PARSESRC2}.
+
+Next: PUSH | Prev: PROCEDURE | Contents: Instruction ref.
+
+@endnode
+
+@node PUSH "ARexxGuide | Instruction Reference (18 of 25) | PUSH"
+@toc ARx_Instr.ag/MAIN
+@next QUEUE
+PUSH <expression>;
+
+Places @{" <expression> " link ARx_Elements2.ag/EXPRESSION} with a newline appended into the @{" STDIN " link ARexxGuide.guide/GLOSSARY 225} stream. The
+stacked commands are placed in a last-in, first-out order.
+
+PUSH is a near-twin of the instruction @{" QUEUE " link QUEUE}, except that the latter
+stores lines in first-in, first-out order.
+
+   @{" PUSH, QUEUE and REXX data-stream I/O " link PUSHNOTE}
+
+Commands pushed or queued to STDIN may be retrieved with the PARSE PULL
+instruction. Any stacked lines remaining when the ARexx program exits will
+be executed as though they had been typed onto the shell. The built-in
+function @{" LINES() " link ARx_Func3.ag/LINES()} returns the number of stacked lines at STDIN.
+
+   Example:
+      /**/
+      PUSH 'run ppage:ppage'
+      PUSH 'stack 10000'
+      PUSH 'cd dtp:docs'
+      exit
+            /* Amigados commands would be run in this order: **
+            ** CD, STACK, RUN                                */
+      /**/
+      push 'I take a stone from the right pocket'
+      say lines()                >>> 1
+      pull Input
+      say input                  >>> I TAKE A STONE FROM THE RIGHT POCKET
+
+In the second example, the @{" PULL " link PULL} instruction will not wait for user
+input, but will pull the first (and, in this case, only) item from the
+stack.
+
+                 Technique note: @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+
+Next: QUEUE | Prev: PULL | Contents: Instruction ref.
+
+@endnode
+
+@node PUSHNOTE "... Instruction Reference | Push/Queue (1 of 2) | DATA-STREAM I/O "
+@toc PUSH
+@prev PUSH
+@next QUEUE
+PUSH and QUEUE use a model of communication based on the concept of a
+stack. Strings are stored one on top of another and can then be retrieved
+one at a time from the stack.
+
+The @{" PARSE PULL " link ARx_Instr2.ag/PARSESRC2} instruction first tries to pull a string from that stack.
+If there is nothing there (in other words, if @{" LINES() " link ARx_Func3.ag/LINES()} = 0 ) then PULL
+will wait until the user has typed in a line of input.
+
+PUSH and QUEUE are defined as part of the standard REXX language that
+was developed on and for IBM mainframe systems. On some of the systems
+where REXX is used, the PUSH and QUEUE instructions are used as a primary
+method of communicating with the system itself and with other programs.
+
+Despite that, the instructions are rarely used in ARexx. Why? A major
+reason is that some CLI/shell programs used on the Amiga do not support
+the instructions. PUSH and QUEUE have always been supported on any shell
+using the the shareware console-management utility ConMan and on the
+replacement shell @{" WShell " link ARx_Cmd.ag/WSHELL} (both authored by ARexx creator Bill Hawes),
+but it was not until Release 2.04 that the standard Amiga shell supported
+use of the instructions.
+
+The Amiga's interprocess communication features make it possible, in most
+cases, to use the @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction to send commands directly to the
+environment that will execute them. Commands invoked that way can also
+send an error code and result string back to the script that called them,
+giving it a chance to handle error conditions -- something that can't be
+done using PUSH and QUEUE, where the commands must be invoked blindly.
+
+Next: QUEUE | Prev: PUSH | Contents: Instruction ref.
+
+@endnode
+
+@node QUEUE "ARexxGuide | Instruction Reference (19 of 25) | QUEUE"
+@toc ARx_Instr.ag/MAIN
+@prev PUSH
+QUEUE <expression>;
+
+Places @{" <expression> " link ARx_Elements2.ag/EXPRESSION} with a newline appended into the @{" STDIN " link ARexxGuide.guide/GLOSSARY 225} stream. The
+stacked commands are placed in a first-out, last-in order.
+
+QUEUE is a near-twin of the instruction @{" PUSH " link PUSH}, except that the latter
+stores lines in last-in, first-out order.
+
+   @{" PUSH, QUEUE and REXX data-stream I/O " link PUSHNOTE}
+
+Commands pushed or queued to STDIN can be retrieved with the PARSE PULL
+instruction. Any stacked lines remaining when the ARexx program exits will
+be executed as though they had been typed onto the shell. The built-in
+function @{" LINES() " link ARx_Func3.ag/LINES()} returns the number of lines that have been stacked at
+STDIN.
+
+   Example:
+      /**/
+      QUEUE 'cd dtp:docs'
+      QUEUE 'stack 10000'
+      QUEUE 'run ppage:ppage'
+      EXIT
+            /* AmigaDOS commands would be run in this order: **
+            **    CD, STACK, RUN                             */
+
+                 Technique note: @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+
+Next: RETURN | Prev: PUSH | Contents: Instruction ref.
+
+@endnode
+
+@node RETURN  "ARexxGuide | Instruction Reference (20 of 25) | RETURN"
+@toc ARx_Instr.ag/MAIN
+RETURN [<expression>];
+
+Transfers program control (and an optional result of @{" <expression> " link ARx_Elements2.ag/EXPRESSION}) from
+an @{" function " link ARx_Elements3.ag/FUNCTION} or a program back to the point from which it was called.
+
+Unless it is invoked with the @{" CALL " link ARx_Instr.ag/CALL} instruction, an @{" internal " link ARx_Elements3.ag/PROGFUNC} or
+@{" external " link ARx_Instr2.ag/PARSESRC3} function must return a value of some kind to the calling
+environment. If @{i}<expression>@{ui} is omitted from the RETURN instruction
+at the end of such a function, @{" Error 16 " link ARx_Error.ag/ERROR_16} will be triggered.
+
+   Also see @{" EXIT          " link ARx_Instr.ag/EXIT}
+
+                 Technique note: @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+
+Next: SAY | Prev: QUEUE | Contents: Instruction ref.
+
+@endnode
+
+@node SAY  "ARexxGuide | Instruction Reference (21 of 25) | SAY"
+@toc ARx_Instr.ag/MAIN
+SAY [<expression>];
+
+Outputs @{" <expression> " link ARx_Elements2.ag/EXPRESSION} with a newline appended to @{" STDOUT " link ARexxGuide.guide/GLOSSARY 232} -- the active
+standard output device (usually the shell).
+
+   Example:
+      /**/
+      Str = 'circumstances better left unspoken'
+      SAY Str
+
+This sample would output to the shell the following:
+
+circumstances better left unspoken
+
+The keyword ECHO may be used as a synonym for SAY.
+
+               More information: @{" Redirection of standard input     " link ARx_Func3.ag/STDIO}
+
+   Throughout this guide, the SAY instruction is used in examples for
+   other instructions and for functions since it provides a way to output
+   the results of a program action to the shell. The output of the SAY
+   command is usually represented on the same line, preceded by the
+   characters '>>> '.
+
+                 Technique note: @{" CountWords() user function        " link ARx_Tknq.ag/countwords()}
+                                 @{" Check unique datatypes            " link ARx_Tknq.ag/VERIFYNOTE}
+
+   Also see @{" WRITELN()     " link ARx_Func3.ag/WRITELN()} function
+
+Next: SELECT | Prev: RETURN | Contents: Instruction ref.
+
+@endnode
+
+@node SELECT "ARexxGuide | Instruction Reference (22 of 25) | SELECT"
+@toc ARx_Instr.ag/MAIN
+@next SIGNAL
+SELECT;
+   @{" WHEN " link WHEN} <conditional> @{" THEN " link ARx_Instr.ag/THEN}; <action>
+    WHEN  <conditional>  THEN ; <action>
+   ...
+   @{" OTHERWISE " link OTHERWISE}; [<action list>]
+END
+
+Executes the @{i}<action>@{ui} associated with the first @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} in the
+list of WHEN clauses that evaluates to TRUE. If none of the WHEN
+@{i}<conditional>@{ui}s are true, then the list of clauses between OTHERWISE and
+END will be executed.
+
+@{i}<conditional>@{ui} may be any expression that returns a Boolean value.
+
+@{i}<action>@{ui} can be an @{" instruction " link ARx_Elements3.ag/INSTRUCTION}, @{" assignment " link ARx_Elements3.ag/ASSIGNMENT}, or @{" command " link ARx_Elements3.ag/COMMAND}. Only one
+such clause will be executed after THEN, however. To execute multiple
+clauses, enclose them within a DO/END block.
+
+Multiple clauses (or no clauses) are allowed in the @{i}<action list>@{ui}
+following OTHERWISE.
+
+The range of a SELECT statement must always be closed with the END
+keyword. All other clauses and expressions must bind to one of the WHEN
+keywords, or be included in the list of clauses following OTHERWISE.
+
+   Also see @{" IF            " link ARx_Instr.ag/IF}
+
+Next: SIGNAL | Prev: SAY | Contents: Instruction ref.
+
+@endnode
+
+@node WHEN "ARexxGuide | Instruction Reference | Select (1 of 1) | WHEN"
+@toc SELECT
+@prev SELECT
+select
+   WHEN <conditional> then <action>
+   < ... >
+   otherwise
+end
+
+WHEN is a secondary keyword that has meaning only within the range of a
+SELECT instruction. It must be the first word in the @{" clause " link ARx_Elements3.ag/CLAUSE} in which it
+is used. @{" THEN " link ARx_Instr.ag/THEN} is required to introduce the instruction, assignment, or
+command that is to be executed when the @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} is true.
+
+Next: OTHERWISE | Prev: Select | Contents: Select
+
+@endnode
+
+@node OTHERWISE "ARexxGuide | Instruction Reference | Select (1 of 1) | OTHERWISE"
+@toc SELECT
+@next SELECT
+select
+   when <condition> then <action>
+   when <condition> then <action>
+   OTHERWISE <action>
+end
+
+OTHERWISE is a required part of each SELECT instruction, but failure to
+include the keyword may cause a subtle condition that will not generate a
+syntax error. Because ARexx interprets each clause as it is encountered in
+the flow of a script, it will skip over any clause that is not required.
+In the following fragment, the OTHERWISE clause will never be executed
+since the condition specified for WHEN will always be true:
+
+   select
+      when 1 < 2 then
+         say 'WHEN clause executed'
+      otherwise
+         say 'WHEN clause skipped.'
+   end
+
+If OTHERWISE had been omitted in this instance, a syntax error would not
+be generated since ARexx would not look for the OTHERWISE clause. It might
+therefore seem more efficient to leave out the OTHERWISE if the WHEN
+clauses have exhausted all possible matches. That is not recommended,
+however, since future changes to the language or third-party extensions to
+ARexx might detect the error before the program is run. Dropping the
+OTHERWISE to save a line of code could cause future problems with the
+non-compliment code.
+
+It is acceptable to include the OTHERWISE keyword followed immediately by
+the END of the SELECT instruction:
+
+   select
+      when 1 < 2 then
+         say 'WHEN clause executed'
+      otherwise
+   end
+
+OTHERWISE may be followed by multiple clauses that are not enclosed
+within a @{" DO/END " link ARx_Instr.ag/DO} block:
+
+   select
+      when 1 > 2 then
+         say 'WHEN clause executed'
+      otherwise
+         say '1 is never greater than 2!'
+         say 'But, of course, you knew that.'
+   end
+
+Next: Select | Prev: When | Contents: Select
+
+@endnode
+
+@node SIGNAL "ARexxGuide | Instruction Reference (23 of 25) | SIGNAL"
+@toc ARx_Instr.ag/MAIN
+@next TRACE
+SIGNAL | @{" {ON | OFF } <interrupt> " link SIGTRAP}
+       | @{" [VALUE] <label name>     " link SIGTRAN}
+
+This instruction causes an unconditional and abnormal transfer of control
+to a @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} within the same script. It is used mainly to handle
+error conditions in a program or special termination conditions for a
+script or a subroutine within a script.
+
+With the `ON|OFF' option, the instruction controls the way interrupt
+conditions are handled. The other options cause an abnormal change in the
+flow of a program.
+
+If called within a multi-clause @{" control-structure " link ARexxGuide.guide/GLOSSARY 59} ( @{" DO " link ARx_Instr.ag/DO}, @{" IF " link ARx_Instr.ag/IF}, @{" WHEN " link WHEN},
+or @{" INTERPRET " link ARx_Instr.ag/INTERPRET} ), the control instruction will be terminated and cannot be
+reactivated.
+
+The special variable @{" SIGL " link ARx_Elements2.ag/SIGL} is set to the line number of the clause that
+triggered the transfer of control.
+
+A SIGNAL instruction of either kind can be used within a subroutine
+without breaking the flow of a program. If @{" RETURN " link RETURN} is encountered within
+a subroutine signalled from another subroutine, it is treated as it would
+be in the first subroutine: Control is returned to the environment that
+called the first subroutine.
+
+The search for the labels @{i}<interrupt>@{ui} or @{i}<name>@{ui} is not case sensitive.
+
+   Also see @{" CALL          " link ARx_Instr.ag/CALL}
+
+Next: TRACE | Prev: OTHERWISE | Contents: Instruction ref.
+
+@endnode
+
+@node SIGTRAP "ARexxGuide | Instruction Ref. | SIGNAL (1 of 2) | TRAPS"
+@toc SIGNAL
+@prev SIGNAL
+@{fg highlight}Condition traps@{fg text}
+~~~~~~~~~~~~~~~
+SIGNAL ON <interrupt> causes special handling of the exception condition
+identified by @{i}<interrupt>@{ui} (see below) and will transfer control to a
+subroutine that is identified by a @{" label " link ARx_Elements3.ag/LABEL} using the same name as
+@{i}<interrupt>@{ui}.
+
+For instance, if the instruction `SIGNAL ON Syntax' issued in the script,
+then any syntax error will cause a jump to the subroutine identified by
+the label `Syntax:'.
+
+SIGNAL OFF <interrupt> returns the program to its default manner of
+handling the specified interrupt.
+
+@{i}<interrupt>@{ui} may be any of the following:
+
+   Interrupt name    Caused by                         Default handling
+   --------------    ------------------------------    -------------------
+   @{" BREAK_C     " link BREAK_C}     a control-C break                 Execution halted
+   @{"| BREAK_D    " link BREAK_}     a control-D break                 Ignored
+   | BREAK_E         a control-E break                 Ignored
+   | BREAK_F         a control-F break                 Ignored
+   @{" ERROR       " link ERROR}     a non-0 return code from          Ignored
+                       a command
+   @{" FAILURE     " link FAILURE}     a failure-level return code       Error msg. printed
+                       from a command
+   @{" HALT        " link HALT}     an external HALT request          Execution halted
+   @{" IOERR       " link IOERR}     an error detected by IO system    Ignored
+   @{" NOVALUE     " link NOVALUE}     an uninitialized variable used    Ignored
+   @{" SYNTAX      " link SYNTAX}     a syntax or execution error       Execution halted
+
+   -----------------------------------------------------------------------
+
+The special variable @{" SIGL " link ARx_Elements2.ag/SIGL} is set to the line that was being interpreted
+when the trap condition was triggered.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26} definition allows a user-defined name to be specified for
+   condition traps. The syntax is:
+
+      SIGNAL ON <interrupt> NAME <subroutine>
+
+   This allows different subroutines to be used to trap errors that occur
+   in different parts of a program. The syntax is not supported in ARexx.
+
+   TRL2 also defines a function, CONDITION(), that returns information
+   about interrupt conditions. From within a signal trap, the function can
+   be used to determine the keyword that was being executed when the
+   condition was trapped, the name of the trap that was called, and more.
+   The function cannot be duplicated in ARexx.
+
+   The @{" CALL " link ARx_Instr.ag/CALL} instruction is also extended in the REXX standard to allow
+   for condition traps that need not break the original state of the
+   program.
+
+Next: Signal transfers | Prev: Signal | Contents: Signal
+
+@endnode
+
+@node SIGTRAN "ARexxGuide | Instruction Ref. | SIGNAL (2 of 2) | TRANSFER"
+@toc SIGNAL
+@next SIGNAL
+SIGNAL [VALUE] <label name>
+@{fg highlight}Unconditional transfer of program flow@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Used in this way, the instruction causes an unconditional transfer of
+control to the @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} identified by @{i}<label name>@{ui}, which is treated
+as a literal value if the subkeyword VALUE is not used.
+
+When the VALUE option is specified, @{i}<label name>@{ui} may be any @{" expression " link ARx_Elements2.ag/EXPRESSION}
+that evaluates to the name of a subroutine within the current program.
+
+The instruction acts in a way similar to the @{" egregious " link ARexxGuide.guide/GLOSSARY 75} GOTO command in
+some languages.
+
+   Example:
+      /*...*/
+      if Input = 'GETOUT' then
+         SIGNAL Cleanup
+      /* the program continues */
+      exit 0
+
+      Cleanup:
+         /* Any conditions set by the program that should be changed **
+         ** before exit can be included here.                         */
+         exit 5
+
+                 Technique note: @{" Copy data from source code       " link ARx_Tknq.ag/INLDATA}
+
+Next: Signal | Prev: Signal traps | Contents: Signal
+
+@endnode
+
+@node BREAK_C "ARexxGuide | Instructions | Signal | Traps (1 of 8) | BREAK_C"
+@toc SIGTRAP
+@prev SIGTRAP
+@{fg highlight}Break_C trap@{fg text}
+~~~~~~~~~~~~
+The BREAK_C condition is triggered when the user presses the Control and C
+keys together. That input, however, is usually recognized only by a script
+started from a shell or another environment that establishes a @{" STDIN " link ARexxGuide.guide/GLOSSARY 225}
+device.
+
+The default action of ARexx is to issue a halt request to the affected
+program. A BREAK_C trap will allow the script to take special action when
+a Control-C input is detected.
+
+SIGNAL ON BREAK_C allows special steps to be taken in the BREAK_C
+subroutine, which will be called when the keys are pressed.
+
+Next: BREAK_ | Prev: SIGTRAP | Contents: SIGTRAP
+
+@endnode
+
+@node BREAK_ "ARexxGuide | Instructions | Signal | Traps (2 of 8) | BREAK"
+@toc SIGTRAP
+@{fg highlight}Other break-key traps@{fg text}
+~~~~~~~~~~~~~~~~~~~~~
+The BREAK conditions are triggered when the user presses the Control key
+along with the letter key specified in the condition option. Such input is
+usually recognized only by a script started from a shell or another
+environment that establishes a @{" STDIN " link ARexxGuide.guide/GLOSSARY 225} device.
+
+If a SIGNAL trap for these keys is not set, ARexx will ignore them.
+
+BREAK traps can be used anywhere in a program, but they are especially
+useful in an @{" internal function " link ARx_Elements3.ag/PROGFUNC} since they recognize asynchronous user
+input, and can be used to stop execution of the current subroutine without
+halting the primary environment:
+
+   Example:
+      /**/
+      Say " Press Control and E to stop the obnoxious listing that"
+      say " will follow this message."
+      NumRepeats = AdInfinit()
+      say '0a'x'The message was repeated' NumRepeats 'times.'
+      exit
+
+         /* The subroutine being called by SIGNAL can be anywhere in **
+         ** program. @{" PROCEDURE " link PROCEDURE}, used in AdInfinit blinds it to     **
+         ** variables in the main program, but still allows the      **
+         ** BREAK_E subroutine to retrieve the [Rep] variable.       */
+
+      BREAK_E:
+         say 'Break detected at line' SIGL':'
+         say sourceline(SIGL)
+         return Rep
+
+      AdInfinit: PROCEDURE
+            /* turning on the signal within the @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} means    **
+            ** it will be effective only while this subroutine is     **
+            ** active                                                 */
+         signal on break_e
+         do Rep = 1
+            say 'Press Ctrl-E at any time.'
+            call delay 25
+            say 'Stop me. Please.'
+         end
+            /* because the @{" loop " link ARexxGuide.guide/GLOSSARY 145} above is endless, this @{" RETURN " link RETURN}     **
+            ** will never be reached.                                 */
+         return 0
+
+             Interactive example: @{" Use break signal in subroutine   " system "rx arx_iactexamples.rexx DoBreak"}  @{" * " link ARexxGuide.guide/IACTEXMP}
+
+Next: ERROR | Prev: BREAK_C | Contents: SIGTRAP
+
+@endnode
+
+@node ERROR "ARexxGuide | Instructions | Signal | Traps (3 of 8) | ERROR"
+@toc SIGTRAP
+@{fg highlight}Command error trap@{fg text}
+~~~~~~~~~~~~~~~~~~
+The ERROR condition is triggered by a @{" command " link ARx_Elements3.ag/COMMAND} that sets its return code
+at some value other than 0. If the @{" FAILURE " link FAILURE} trap is not set, then the
+ERROR trap will be triggered by any non-0 return code. If the the FAILURE
+trap is in effect, then only those codes less than the current failure
+level will be trapped by this option.
+
+ARexx normally ignores error returns lower than the failure level since
+they are often sent as informational codes. Some editors and word
+processors, for instance, will set an error code when a search/replace
+operation is complete to indicate that the final search was unsuccessful.
+The frequently-used command @{" WaitForPort " link ARx_Cmd.ag/WAITFORPORT} will set an error code of 5 when
+it times out without finding the specified port.
+
+Rather than trapping error codes with SIGNAL, it is often better to
+examine the system variable @{" RC " link ARx_Elements2.ag/RC}, which is set to the error code, within
+the script so that trivial errors can be handled without breaking the flow
+of the script.
+
+   Example:
+      'Command to host'
+      if rc > 0 then do
+         <handle error conditions>
+      end
+
+Next: FAILURE | Prev: BREAK_ | Contents: SIGTRAP
+
+@endnode
+
+@node FAILURE "ARexxGuide | Instructions | Signal | Traps (4 of 8) | FAILURE"
+@toc SIGTRAP
+@{fg highlight}Command failure trap@{fg text}
+~~~~~~~~~~~~~~~~~~~~
+The FAILURE condition is triggered by a @{" command " link ARx_Elements3.ag/COMMAND} that sets its return
+code at a value higher than the currently set failure level. ARexx
+inherits the failure level from its calling environment. The default
+failure level for AmigaDOS is 10, but that can be changed with the
+AmigaDOS command 'Failat'. The failure level can also be changed locally
+in a script with the @{" OPTIONS FAILAT " link ARx_Instr2.ag/OPTIONS 10} instruction.
+
+ARexx will usually generate an error message, but continue execution of a
+script when a failure-level value is returned by a command.
+
+   Example:
+      rx "address command copy foo;say 'ARexx continues.'"
+
+If issued from the shell, this command would output the following:
+
+      copy: required argument missing
+      copy failed (returncode 20)
+        1 *-* address command copy foo;
+      +++ Command returned 20
+      ARexx continues.
+
+The first message lines were generated by AmigaDOS and the next two by
+ARexx.
+
+Signal ON FAILURE allows for special handling of such events:
+
+   Example:
+      /**/
+      signal on failure
+      address command 'copy foo'
+
+      failure:
+         signal off failure   /* It's a good idea to turn off any trap **
+                              ** within the subroutine that handles   **
+                              ** the condition to avoid looping        */
+         say 'Command failed:'
+         say SIGL':' sourceline(SIGL)
+         say '    The command returned' rc'.'
+
+Although it's not much of an improvement, the text output this time is
+supplied by the [Failure:] subroutine:
+
+      copy: required argument missing
+      copy failed (returncode 20)
+      Command failed:
+      3:       address command 'copy foo'
+          The command returned 20.
+
+A FAILURE trap is especially useful in some macros since an output window
+may not be available for error message. The subroutine that handles the
+failure could open a @{" console window " link ARexxGuide.guide/GLOSSARY 35} and print the error message there,
+or send the error message to a file. (See node on @{" SYNTAX " link SYNTAX} for an
+example.)
+
+Next: HALT | Prev: ERROR | Contents: SIGTRAP
+
+@endnode
+
+@node HALT "ARexxGuide | Instructions | Signal | Traps (5 of 8) | HALT"
+@toc SIGTRAP
+@{fg highlight}Global halt-flag trap@{fg text}
+~~~~~~~~~~~~~~~~~~~~~
+The HALT condition is triggered when an external halt request, usually
+issued by the @{" HI " link ARx_Cmd.ag/HI} command, is received by a script. (A HALT trap will not
+be called by the Ctrl-C condition recognized by @{" BREAK C " link BREAK_C}.)
+
+ARexx stops execution of scripts as quickly as possible when such a request
+is received. Setting this SIGNAL trap will allow a script to take needed
+cleanup measures before exiting.
+
+The TurboText text editor includes a useful command that can be dangerous
+if it is not handled with SIGNAL traps. It is 'SetInputLock ON,' which
+deactivates all input to the program (except by a macro). If that command
+is in effect when a macro ends unexpectedly, then an external ARexx
+command must be sent to reactivate the TTX window. A more elegant solution
+is to turn it off before a program exits.
+
+Notice in this example that several interrupt conditions are handled with
+one @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} identified by stacked @{" labels " link ARx_Elements3.ag/LABEL}.
+
+   Example:
+      /* Turbotext macro */
+      signal on break_c
+      signal on failure
+      signal on halt
+      signal on syntax
+      'SetInputLock ON'
+
+         /* more commands */
+      'SetInputLock OFF'
+      exit
+
+         /* This subroutine will turn off locks in emergency exits   */
+      BREAK_C:
+      FAILURE:
+      HALT:
+      SYNTAX:
+
+         'SetInputLock OFF'
+         'SetDisplayLock OFF'
+         exit
+
+Next: IOERR | Prev: FAILURE | Contents: SIGTRAP
+
+@endnode
+
+@node IOERR "ARexxGuide | Instructions | Signal | Traps (6 of 8) | IOERR"
+@toc SIGTRAP
+@{fg highlight}I/O error trap@{fg text}
+~~~~~~~~~~~~~~
+The IOERR condition is triggered when an error is detected by ARexx in the
+@{" I/O " link ARexxGuide.guide/GLOSSARY 122} system. It is, however, rare for ARexx to become aware of such
+errors since AmigaDOS traps many of them before they get to ARexx. The OS
+will put up a system requester asking that a missing device be mounted, or
+informing the user of a full disk. I/O errors that make it through to
+ARexx usually occur when conditions are changed (a disk is removed or
+write-protected) after a file was successfully opened on the disk.
+
+An IOERR condition will be generated, for instance, under these conditions:
+
+   1.)   a file is successfully opened on a disk
+   2.)   the disk is removed from the drive
+   3.)   ARexx script attempts to write to, read from, or close the file
+   4.)   user cancels the system requester asking for the disk
+
+@{" Sullivan & Zamara " link ARx_Intro.ag/REF} point out another condition that will pass an IO error
+through to ARexx: an attempt to read from @{" PRT: " link ARexxGuide.guide/GLOSSARY 201}, the printer device.
+
+   Example:
+      /**/
+      signal on ioerr
+      if open(.Printer, 'PRT:', w) then
+         foo = readln(.Printer)
+      exit
+
+      IOERR:
+         signal off ioerr
+         say 'I/O error #'RC 'detected in line' SIGL':'
+         say sourceline(SIGL)
+
+This will output:
+
+      I/O error #253 detected in line 4:
+         foo = readln(.Printer)
+
+The error number assigned to RC is determined by AmigaDOS.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This condition is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. It is closely associated with
+   the non-standard @{" file I/O " link ARx_Func3.ag/FILEIOLIST} functions in ARexx. A condition named
+   `NOTREADY' can be triggered by failure of the standard I/O functions.
+
+Next: NOVALUE | Prev: HALT | Contents: Signal traps
+
+@endnode
+
+@node NOVALUE "ARexxGuide | Instructions | Signal | Traps (7 of 8) | NOVALUE"
+@toc SIGTRAP
+@{fg highlight}Unassigned symbol trap@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~
+The NOVALUE condition is triggered when a @{" symbol " link ARx_Elements.ag/SYMBOL} that has not been
+assigned a value is used in an @{" expression " link ARx_Elements2.ag/EXPRESSION}.
+
+An unassigned variable in ARexx is normally treated as a @{" string " link ARx_Elements2.ag/STRINGEXPR} -- the
+variable's name shifted to uppercase. That can lead to unexpected results,
+especially in a program under development.
+
+The NOVALUE trap allows the programmer to detect unassigned variables and
+to @{" debug " link ARexxGuide.guide/GLOSSARY 64} the script so that a variable cannot be used until it has an
+appropriate value.
+
+The NOVALUE trap will also be triggered by any use of a non-numeric
+@{" constant " link ARx_Elements.ag/CONSTANT}. Such a condition might be caused by using a constant or an
+unassigned variable as the @{" logical file name " link ARx_Func3.ag/LOGFILE} in the @{" OPEN() " link ARx_Func3.ag/OPEN()} function.
+The condition will also be triggered by using unquoted argument options in
+functions like @{" SHOW() " link ARx_Func2.ag/SHOW()}: Normally, a clause like `Ports = show(P)' is not
+an error, but with the NOVALUE condition turned on the `P' will be treated
+as a variable with no value. To avoid the trap, use quotation marks:
+`Ports = show('P')'.
+
+Next: SYNTAX | Prev: IOERR | Contents: Signal traps
+
+@endnode
+
+@node SYNTAX "ARexxGuide | Instructions | Signal | Traps (8 of 8) | SYNTAX"
+@toc SIGTRAP
+@next SIGTRAP
+@{fg highlight}Syntax error trap@{fg text}
+~~~~~~~~~~~~~~~~~
+The SYNTAX condition is triggered by a range of programming errors. It is
+a condition that will quickly become familiar to ARexx programmers since
+it normally calls the error message printed (too frequently for some of
+us) when a program is in development.
+
+Setting a SIGNAL trap for SYNTAX errors allows the script to take special
+action when a syntax error occurs.
+
+Error message: redirect to a file
+Since it allows an error message to be sent to a non-standard device, a
+SYNTAX trap is especially useful in a script called from an environment
+that does not provide a @{" STDOUT " link ARexxGuide.guide/GLOSSARY 232} or @{" STDERR " link ARexxGuide.guide/GLOSSARY 219} device to which ARexx can
+send error messages.
+
+In the following example, the script opens a console window to display the
+error message and then waits for user input:
+
+   Example:
+   /**/
+      Syntax:
+         parse source . . . Program
+         Program = subword(Program, 1, words(Program) - 2)
+         if open(6ErrWin, 'raw:5/10/620/70/ARexx syntax error') then do
+            call writeln(6ErrWin, '    Program:' Program)
+            call writeln(6ErrWin, '+++ Error' rc 'in line',
+                      /* @{" continuation " link ARx_Elements.ag/COMMA} */      SIGL':' errortext(rc))
+            call writech(6ErrWin, '0a'x'        -- Press any key -- ')
+            call readch(6ErrWin)
+            call close 6ErrWin
+         end
+         exit 20
+
+In the following example, error messages are saved to a file:
+
+   Example:
+      /* ... */
+      signal on syntax
+      if foo then
+         /* program code */
+      exit 0
+
+      syntax:
+         signal off syntax
+         ErrFile = 'T:ErrRpt'
+            /* Get the name of the program (which may include spaces) */
+         parse source . . . Prg
+         Prg = subword(Prg, 1, words(Prg) - 2)
+            /* Append to the file if it exists, else open it */
+         if exists(ErrFile) then
+            OType = 'A'
+         else
+            OType = 'W'
+         if open(6Errf, ErrFile, OType) then do
+            call writeln(6Errf, 'Error' RC':' errortext(RC))
+            call writeln(6Errf, '  In file "'Prg'"')
+            call writeln(6Errf, '  Line' SIGL':' sourceline(SIGL))
+            call close(6Errf)
+         end
+         exit 16
+
+This example might output to the file 'T:ErrRpt' the following:
+
+   Error 46: Boolean value not 0 or 1
+     In file "Ram Disk:T/test.rexx"
+     Line 4:      if foo then
+
+                 Technique note: @{" Format() user function           " link ARx_Tknq.ag/FORMAT()}
+
+Next: Signal traps | Prev: NOVALUE | Contents: Signal traps
+
+@endnode
+
+
+@node TRACE "ARexxGuide | Instruction Reference (24 of 25) | TRACE"
+@toc ARx_Instr.ag/MAIN
+@prev SIGNAL
+@next UPPER
+      | [{?|!} ] [<option>]
+TRACE | VALUE <expression>
+      | -<number>
+
+Provides a powerful debugging facility for ARexx scripts. The trace output
+is sent to the @{" STDERR " link ARexxGuide.guide/GLOSSARY 219} device which can be defined for that purpose
+within the program. If it is not defined and if a @{" trace console " link ARx_Cmd.ag/TCO} has been
+opened with the @{" TCO " link ARx_Cmd.ag/TCO} command, then the tracing output will be sent to
+there. Otherwise, ARexx will try to send the results of the trace to the
+current @{" STDOUT " link ARexxGuide.guide/GLOSSARY 232} -- usually the shell.
+
+@{" <option> " link TRACEOPT} controls the type and format of information presented.
+
+If the sub-keyword VALUE is used, then @{" <expression> " link ARx_Elements2.ag/EXPRESSION} must evaluate to one
+of the @{i}<option>@{ui} keywords.
+
+The `?' and `!' characters may be used alone `TRACE ?' or together with
+any of the letter options `TRACE ?R'. They act as toggles: Used once, they
+turn the option on; used a second time, they turn it off
+
+   @{b}?@{ub}  is the toggle for @{" interactive tracing " link TRACEOPT1}
+   @{b}!@{ub}  is the toggle for @{" command inhibition  " link TRACEOPT2}
+
+When a negative number (such as `TRACE -20') is entered as the @{i}<option>@{ui},
+the tracing will the remain quiet for the absolute number of lines
+specified. Entering a positive number `TRACE 20' will cause the trace to be
+output for that number of lines without stopping for interactive input.
+
+               Interactive example: @{" Experiment with trace options  " system "rx ARx_Trace.rexx"}  @{" * " link ARexxGuide.guide/IACTEXMP}
+
+   Also see @{" TRACE()       " link ARx_Func3.ag/TRACE()} function
+            @{" Error codes   " link ARx_Error.ag/MAIN}
+
+   Tutorial @{" Debugging a script   " link ARx_Tutor.ag/MCR7}
+
+Next: UPPER | Prev: SIGNAL | Contents: Instruction ref.
+
+@endnode
+
+@node TRACEOPT "... Instruction Reference | Trace (1 of 3) | OPTIONS"
+@toc TRACE
+@prev TRACE
+@{fg highlight}Options to TRACE instruction and TRACE() function@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+These tracing options may be used both with the @{" TRACE " link TRACE} instruction and
+the @{" TRACE() " link ARx_Func3.ag/TRACE()} function. The options work the same way except that, when it
+is entered in the program code, the function `call trace()' with the `o',
+`n', or `b' options will end tracing started with the @{" TS " link ARx_Cmd.ag/TS} command utility.
+
+Only the first letter of the option keyword need be used. The TRACE
+instruction treats the option letter or keyword as a literal unless the
+VALUE sub-keyword is used. The option to the TRACE() function, on the
+other hand, is treated as an @{" expression " link ARx_Elements2.ag/EXPRESSION}, so variable substitutions will
+be made before the function is executed.
+
+ @{i}<option>@{ui}          Action@{fg text}
+ -------------     ------------------------------------------------------
+ @{b}I@{ub}ntermediates Everything in the program is traced. The intermediate
+                 result of each @{" expression " link ARx_Elements2.ag/EXPRESSION} is output along with the
+                 resolved value of each variable. The output is
+                 identified by @{" special formatting codes " link TRACEICODE}.
+ @{b}R@{ub}esults       Everything in the program is traced, but only the
+                 final result of each expression is output.
+ @{b}A@{ub}ll           Each clause is output to the console as it is executed,
+                 but the results are not shown.
+ @{b}C@{ub}ommands      Only @{" command " link ARx_Elements3.ag/COMMAND} clauses are traced.
+ @{b}L@{ub}abels        Only @{" labels " link ARx_Elements3.ag/LABEL} are traced. This option shows when a script
+                 has jumped to a subroutine.
+ @{b}E@{ub}rrors        Any command clause that generated an error is output
+                 with an extra line indicating the error number returned.
+ @{b}N@{ub}ormal        The default trace option outputs only those command
+                 clauses that generate an non-zero return value higher
+                 than the currently set failure level.
+ @{b}O@{ub}ff           All tracing is suppressed, but an external tracing
+                 request (from the TS command) will allow tracing of the
+                 program.
+ @{b}B@{ub}ackground    Suppresses all tracing like the OFF option, but --
+                 unlike that option -- not even an external request for
+                 tracing will trace the program.
+ @{b}S@{ub}can          This mode traces all clauses, and checks for errors,
+                   but doesn't actually execute any of them, making it
+                   useful for in initial check for syntax errors.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The Scan option was removed from the REXX standard in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}.
+
+Next: INTERACTIVE TRACING | Prev: TRACE | Contents: TRACE
+
+@endnode
+
+@node TRACEOPT1 "... Instruction Reference | Trace (2 of 3) | INTERACTIVE"
+@toc TRACE
+@{fg highlight}Interactive tracing@{fg text}
+~~~~~~~~~~~~~~~~~~~
+Interactive tracing can be specified by using the `?' option with either
+the @{" TRACE " link TRACE} instruction or @{" TRACE() " link ARx_Func3.ag/TRACE()} function. The command utility @{" TS " link ARx_Cmd.ag/TS}
+also starts interactive tracing.
+
+When interactive tracing is in effect, the tracing and the program itself
+will stop after almost every clause is executed. A prompt string of '>+>'
+will be presented. The user has three options in responding to the prompt:
+
+   Pressing <Enter> without other characters will cause the program to
+   continue to the next pause point.
+
+   Entering a `=' character before pressing <Enter> will cause the
+   previous clause in the program to be reinterpreted.
+
+   Any other characters entered at the prompt will be treated as program
+   input and interpreted as an ARexx @{" clause " link ARx_Elements3.ag/CLAUSE}. Any valid clause can be
+   entered -- an @{" instruction " link ARx_Elements3.ag/INSTRUCTION}, a @{" command " link ARx_Elements3.ag/COMMAND}, or an @{" assignment " link ARx_Elements3.ag/ASSIGNMENT}. Multiple
+   clauses can be at each pause point since execution of the source code
+   will not continute until <Enter> is pressed on a blank line.
+
+The input accepted at the prompt in interactive tracing is similar to the
+types of input accepted for the @{" INTERPRET " link ARx_Instr.ag/INTERPRET} instruction.
+
+Any command, assignment clause, or instruction that can be included in a
+program can be entered at the `>+>' prompt of the @{" trace console " link ARx_Cmd.ag/TCO}. Because
+clauses entered at the trace prompt are treated as part of the program
+being traced, the value of variables in the program can be changed from
+the console by entering an assignment clause at the prompt.
+
+Even a trace instruction can be entered. The instruction
+
+      trace off   <or>   trace n
+
+will stop tracing of the of the current @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} or of the current
+script if a subroutine is not being executed.
+
+Since the trace console is defined as the logical file @{" STDERR " link ARexxGuide.guide/GLOSSARY 219}, it is
+possible to view the value of an @{" expression " link ARx_Elements2.ag/EXPRESSION} on the trace console with
+the following clause:
+
+   >+> call writeln(stderr, <expression>)
+
+The name of any @{" variable " link ARx_Elements2.ag/VARIABLE} defined in the script can be substituted for
+@{i}<expression>@{ui} to determine its value at that point in the script. If the
+trace output is being sent to a shell window rather than to the trace
+console, then the @{" SAY " link SAY} instruction can be used instead.
+
+Another way to control the tracing is to use the last of the TRACE
+options: When a negative number (such as TRACE -20) is entered as the
+option, the tracing will the remain quiet for the number of lines
+specified. Entering a positive number (such as TRACE 20) will cause the
+trace to be output to the console for that number of lines, but without
+stopping for input.
+
+Using the numeric options on the interactive trace console, is one way to
+limit tracing of well-tested sections of code.
+
+If tracing was started with the @{" TS " link ARx_Cmd.ag/TS} command, it can be turned off with
+any of the above methods. Some options, however, make it impossible to
+restart tracing with another TS command and all of them affect only the
+script that is paused and not other scripts that might be running at the
+same time. An alternative method is to issue a command from the trace
+console. Since any valid clause can be entered at the prompt, the @{" TE " link ARx_Cmd.ag/TE}
+command can be used to globally turn off tracing while allowing it to be
+restarted with another TS command:
+
+   >+> address command TE
+
+Next: COMMAND INHIBITION | Prev: Trace options | Contents: TRACE
+
+@endnode
+
+@node TRACEOPT2  "...Instruction Reference | Trace (3 of 3) | COMMAND INHIBITION"
+@next TRACE
+@toc TRACE
+@{fg highlight}Trace command inhibition@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~
+The option controlled by '!' is called 'command inhibition.' It prevents
+@{" commands " link ARx_Elements3.ag/COMMAND} from being sent to the external @{" host " link ARx_Elements3.ag/HOST}. The commands are still
+evaluated, however: variable substitutions and other @{" expression " link ARx_Elements2.ag/EXPRESSION}
+operations are performed.
+
+Since all of the ARexx clauses are evaluated and executed, the program
+logic can be checked using this option before commands are actually sent
+to an outside host.
+
+Next: TRACE | Prev: Interactive tracing | Contents: TRACE
+
+@endnode
+
+@node TRACEICODE "... Instruction Reference | Trace | Options (1 of 1) | TRACE I CODES"
+@toc TRACEOPT
+@prev TRACEOPT
+@next TRACEOPT
+@{fg highlight}Output codes for Intermediates option to TRACE@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The output of the TRACE I instruction or function is specially coded to
+identify the types of information being presented.
+
+   Output code   What it identifies
+   ~~~~~~~~~~~   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   >V>           The resolved value of a @{" variable " link ARx_Elements2.ag/VARIABLE} symbol
+   >L>           A literal value that is not altered by ARexx
+   >F>           The value returned by a @{" function " link ARx_Elements3.ag/FUNCTION}
+   >O>           The result of a @{" dyadic " link ARexxGuide.guide/GLOSSARY 68} @{" operation " link ARx_Elements3.ag/OPERATION}
+   >P>           The result of a @{" prefix " link ARexxGuide.guide/GLOSSARY 68} @{" operation " link ARx_Elements3.ag/OPERATION}
+   >C>           Resolved name of a @{" compound variable " link ARx_Elements2.ag/COMPVAR}
+   >.>           The value taken by a @{" placeholder " link ARx_Instr2.ag/PARSETMP2 46} token
+   >U>           The name (symbol) of an unassigned variable
+   >>>           The final result of the clause. This code is used for
+                 other trace options as well
+
+In the interactive example to the main node, the following assignment is
+one of the clauses traced:
+
+ Filename = substr(FilePath, 1 + max(lastpos(':', FilePath),,
+                                             lastpos('/', FilePath)))
+
+The output of TRACE I on that clause is listed below
+
+ Reference TRACE output
+ --------- ---------------------------------------------------------------
+           6 *-* Filename = substr(FilePath,max(lastpos(':', FilePath),...
+ @{i}[a]@{ui}           >V> "sys:system/rexxmast"
+ @{i}[b]@{ui}           >L> ":"
+ @{i}[c]@{ui}           >V> "sys:system/rexxmast"
+ @{i}[d]@{ui}           >F> "4"
+ @{i}[e]@{ui}           >L> "/"
+ @{i}[f]@{ui}           >V> "sys:system/rexxmast"
+ @{i}[g]@{ui}           >F> "11"
+ @{i}[h]@{ui}           >F> "11"
+ @{i}[i]@{ui}           >L> "1"
+ @{i}[j]@{ui}           >O> "12"
+ @{i}[k]@{ui}           >>> "12"
+ @{i}[l]@{ui}           >F> "rexxmast"
+ @{i}[m]@{ui}           >>> "rexxmast"
+
+Listed below is the clause with reference letters added to indicate which
+parts of the clause produced the output above:
+
+ @{i}[m]@{ui}Filename = @{i}[l]@{ui}substr(@{i}[a]@{ui}FilePath,@{i}[j&k] [h]@{ui}max(@{i}[d]@{ui}lastpos(@{i}[b]@{ui}':',,
+               @{i}[c]@{ui}FilePath),@{i}[g]@{ui}lastpos(@{i}[e]@{ui}'/', @{i}[f]@{ui}FilePath)) + @{i}[i]@{ui}1)
+
+Next, Prev & Contents: Trace Options
+
+@endnode
+
+@node UPPER "ARexxGuide | Instruction Reference (25 of 25) | UPPER"
+@toc ARx_Instr.ag/MAIN
+@prev TRACE
+@next Arx_Instr.ag/MAIN
+UPPER <variable> [<variable>] [<...
+
+Translates @{" <variable> " link ARx_Elements2.ag/VARIABLE} to upper-case letters.
+
+This instruction will work more quickly than the similar @{" UPPER() " link ARx_Func.ag/UPPER()}
+function if a group of variables is to be translated to uppercase.
+
+   Example:
+   /**/
+   v1 = 'smoke'
+   v2 = 'delusion'
+   v3 = 'stranger'
+   UPPER v1 v2 v3
+   SAY v1 v2 v3                        >>> SMOKE DELUSION STRANGER
+
+   Also see @{" UPPER()       " link ARx_Func.ag/UPPER()} function
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This instruction is not defined in and not supported by the REXX
+   standard.
+
+Next: Instruction ref. | Prev: TRACE | Contents: Instruction ref.
+
+@endnode

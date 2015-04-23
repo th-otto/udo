@@ -1,0 +1,59 @@
+library clib3r.lib
+
+system os2v2 dll initinstance terminstance 
+option ManyAutoData
+option map
+option stack=1M
+
+export WINCREATEHELPINSTANCE      .1  = NHM16CREATEHELPINSTANCE
+export WINDESTROYHELPINSTANCE     .2  = NHM16DESTROYHELPINSTANCE
+export WINQUERYHELPINSTANCE       .3  = NHM16QUERYHELPINSTANCE
+export WINASSOCIATEHELPINSTANCE   .4  = NHM16ASSOCIATEHELPINSTANCE
+export WINLOADHELPTABLE           .5  = NHM16LOADHELPTABLE
+export WINCREATEHELPTABLE         .6  = NHM16CREATEHELPTABLE
+
+export WIN32CREATEHELPINSTANCE    .51 = NHM32CreateHelpInstance
+export WIN32DESTROYHELPINSTANCE   .52 = NHM32DestroyHelpInstance
+export WIN32QUERYHELPINSTANCE     .53 = NHM32QueryHelpInstance
+export WIN32ASSOCIATEHELPINSTANCE .54 = NHM32AssociateHelpInstance
+export WIN32LOADHELPTABLE         .55 = NHM32LoadHelpTable
+export WIN32CREATEHELPTABLE       .56 = NHM32CreateHelpTable
+
+export DDFINITIALIZE              .74 = NHMDdfInitialize
+export DDFPARA                    .75 = NHMDdfPara
+export DDFSETFORMAT               .76 = NHMDdfSetFormat
+export DDFSETTEXTALIGN            .77 = NHMDdfSetTextAlign
+export DDFSETCOLOR                .78 = NHMDdfSetColor
+export DDFINFORM                  .79 = NHMDdfInform
+export DDFSETFONTSTYLE            .80 = NHMDdfSetFontStyle
+export DDFHYPERTEXT               .81 = NHMDdfHyperText
+export DDFBEGINLIST               .82 = NHMDdfBeginList
+export DDFLISTITEM                .83 = NHMDdfListItem
+export DDFENDLIST                 .84 = NHMDdfEndList
+export DDFTEXT                    .85 = NHMDdfText
+export DDFMETAFILE                .86 = NHMDdfMetafile
+export DDFSETFONT                 .87 = NHMDdfSetFont
+export DDFBITMAP                  .88 = NHMDdfBitmap
+
+import IOLOADALLTOC               ibmhmgr.28
+export IOLOADALLTOC               .28
+import IOFREEALLTOC               ibmhmgr.30
+export IOFREEALLTOC               .30
+import IOFREEIOINFOLIST           ibmhmgr.32
+export IOFREEIOINFOLIST           .32
+import HMSETHELPDATABASE          ibmhmgr.37
+export HMSETHELPDATABASE          .37
+
+import MSCSTRICMP                 ibmhmgr.46
+export MSCSTRICMP                 .46 
+import MSCSTRNICMP                ibmhmgr.47
+export MSCSTRNICMP                .47 
+import DBMSTRTOK2                 ibmhmgr.90
+export DBMSTRTOK2                 .90
+ 
+import SEARCHMINDEX               ibmhmgr.89
+export SEARCHMINDEX               .89
+
+import DOSFLATTOSEL               doscalls.425
+import DOSSELTOFLAT               doscalls.426
+

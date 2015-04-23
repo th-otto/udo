@@ -1,0 +1,24 @@
+AmigaGuide Dev Kit 34.6 - (C) Copyright 1991-93  Commodore-Amiga, Inc.
+                          All Rights Reserved.
+                          Written by David N Junod
+
+This archive also contains developer examples and tools for AmigaGuide
+under V34/V37 and V39, plus a new free print/sign/send-in distribution
+license for AmigaGuide, amigaguide.library, WDisplay, and their icons.
+
+Contains: AmigaGuide 34.3
+          amigaguide.library 34.11
+          AD2AG 39.2
+          WDisplay 34.1
+
+AmigaGuide since 34.2 accepts both DOC and DOCUMENT as the DOC keyword
+for compatibility with various previous versions.  The 34.4 archive is
+now compressed using LHA.
+
+This archive is freely redistributable as long as it remains unchanged.
+Distribution restrictions on parts of the archive are detailed in the
+license information inside the archive.
+
+.
+amigaguide ad2ht ad2ag wdisplay hypertext agdk
+.

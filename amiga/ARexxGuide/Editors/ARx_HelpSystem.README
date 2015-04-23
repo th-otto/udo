@@ -1,0 +1,89 @@
+Help-system macros for ARexxGuide
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Three example macros for the ARexxGuide help system are included here.
+A macro for another editor can be created by following the steps in
+the help-system tutorial in the TUTORIAL section of the guide.
+
+All editor-specific commands are collected together in one section
+so that they can be easily changed for a new editor. The tutorial
+explains what each command subroutine does.
+
+Pressing the help key when the cursor is positioned on any word or
+character with a special meaning in ARexx will bring up an AmigaGuide
+window with information about the instruction keyword, function, or
+operator character.
+
+The library rexxarplib.library may be used with this macro to open a
+requester that lists information about a word that is not recognized.
+
+rexxarplib.library IS NOT REQUIRED, however. If two comment tokens are
+removed from the code, the rexxarplib requester will not be shown.
+Instructions for making that alteration are included in the macro.
+
+-------------------------------------------------------------------------
+SETUP:
+
+If you choose to use one of the example macros as-is, you should move
+the macro for your editor to the REXX: directory. A macro for the system
+editor, Ed 2.0, is included so that anyone can test the macros before
+customizing one of them for a new editor.
+
+The script ARx_Setup.rexx will set a collection of environmental
+variables required by each of the help-system macros. That script should
+be run before the macro is used, but if it isn't, the macro will usually
+call the setup script to get the information needed.
+
+The setup script works best if the library `rexxreqtools.library' is
+available. That's part of the distribution for ReqTools by Nico François.
+If the library isn't available, other requester options will be tried
+before user interaction with simple console windows is used.
+
+-------------------------------------------------------------------------
+HOW THE HELP SYSTEM WORKS:
+
+        In the list below the { ^ } character is used to indicate the
+        position of the cursor when the help key is pressed. The notes
+        after the { :: } characters explain what the macro will display.
+
+-------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+ ^
+ :: A requester will present information about the clause. It identifies
+    the clause as an instruction, assignment, command, comment, or null.
+-------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+                                                 ^
+ :: The ARexxGuide node for DO will be displayed. If the cursor is located
+    at an end-of-line blank, it will look for a node matching the last
+    word in the line. It isn't necessary to enter the () after a function
+    name to get help for that function. Just type the name and press help.
+-------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+       ^
+ :: The ARexxGuide node for the ABBREV() function will appear.
+-------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+                  ^
+ :: The ARexxGuide node explaining parentheses will appear. Generally,
+    when the cursor is located on a punctuation mark of some kind, the
+    node for that character will appear. This is useful when one wishes to
+    check for valid operator characters.
+-------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+                           ^
+ :: A requester will identify the current clause as an instruction and
+    will identify 'Info' as a variable and as a function argument. If a
+    lookup word is not recognized as an instruction keyword or subkeyword
+    or as a function name, the macro will attempt to identify how the word
+    is used in the clause. It recognizes variables, numbers, strings,
+    function names, function arguments, and more. It will, however, be
+    confused by a clause that includes multiple levels of quotation marks.
+--------
+   if abbrev(strip(upper(Info)), 'SHOW') then  do
+                                   ^
+ :: This would normally be identified in a requester as a string, but
+    since SHOW() is the name of a built-in macro, the macro won't make it
+    that far. It will display the ARexxGuide node for SHOW(). In general,
+    the macro will display the node for any word recognized as a function
+    or instruction name, even if the word is used in a different context
+    in the clause.

@@ -1,0 +1,102 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File
+
+#Dial 000 
+# 003 Ici vous pouvez choisir|le fichier source
+# 005 Ici vous pouvez choisir|le fichier de destination
+# 008 Ici vous pouvez choisir|le format de convertion
+# 010 UDO.TTP ‚crit les JumpID's|quand il fait la convertion|en C ou Pascal
+# 011 UDO.TTP ‚crit les fichiers MAP|(C) quand il fait la|convertion pour WIN-Help
+# 012 UDO.TTP ‚crit les fichiers MAP|(Pascal/Delphi) quand il fait|la convertion pour WIN-Help
+# 013 UDO.TTP ‚crit les fichiers MAP|(BASIC) quand il fait la|convertion pour WIN-Help
+# 015 Mettre le fichier destination |dans un nouveau dossier ->|si le symbole 'UseFolders' et d‚fini
+# 016 UDO.TTP attend|l'appuie d'une touche|aprŠs la convertion
+# 017 UDO.TTP est verbeux|durant la conversion
+# 018 UDO.TTP fait la conversion|seulement en RAM
+# 019 Activer le mode test d'UDO.TTP
+# 020 Appeler UDO.TTP pour|la conversion
+# 021 Quitter UDO-Shell
+# 022 Appeler la fenˆtre de|gestion du projet
+# 023 Command syntax d'UDO
+# 024 Appeler l'aide … propos|d'UDO-Shell
+#Dial 001 
+# 005 Enregistr‚ vous S.V.P :-)
+# 012 Fermer la fenˆtre
+#Dial 002 
+# 002 Nom de l'utilisateur|de l'utilisateur
+# 003 Code Postal et Ville|de l'utilisateur
+# 004 Cl‚ de|l'utilisateur
+# 005 Annuler l'enregistrement
+# 006 Enregistrer UDO-Shell
+#Dial 003 
+# 002 Adapter chemin de destination 
+# 004 Adapter le chemin et|le fichier de destination
+# 005 Adapter le nom et l'extension|du fichier de destination
+# 006 Adapter seulement l'extension|du fichier destination
+# 007 G‚n‚rer le chemin de destination|en minuscule
+# 008 G‚n‚rer le nom de fichier|destination en minuscule
+# 009 UDO.TTP ‚crit les|fichiers en nom long
+# 011 Demander par une boŒte d'alerte|avant de quitter UDO-Shell?
+# 012 R‚‚crire les|fichiers destination
+# 014 UDO.TTP ‚crit|un fichier de log (*.UL*)
+# 015 UDO.TTP ‚crit|un fichier hyphen (*.UH*)
+# 016 UDO.TTP ‚crit|un fichier tree (*.UT*)
+# 017 UDO.TTP est simencieux|pendant la conversion
+# 018 Appliquer les options choisis|et fermer la fenˆtre
+# 019 Fermer la fenˆtre
+# 020 Appeler l'aide pour|la fenˆtre d'options
+#Dial 004 
+# 002 Activer Symbole 1
+# 003 Texte du symbole 1
+# 004 Activer Symbole 2
+# 005 Texte du symbole 2
+# 006 Activer Symbole 3
+# 007 Texte du symbole 3
+# 008 Activer Symbole 4
+# 009 Texte du symbole 4
+# 010 Activer Symbole 5
+# 011 Texte du symbole 5
+# 012 Activer Symbole 6
+# 013 Texte du symbole 6
+# 014 Activer Symbole 7
+# 015 Texte du symbole 7
+# 016 Activer Symbole 8
+# 017 Texte du symbole 8
+# 018 Fermer la dialogue
+# 019 Appeler l'aide pour|cette fenˆtre
+#Dial 005 
+# 002 Choisissez le format de fichier|qui sera utilis‚ par ce programme
+# 005 Selectionnez le fichier|hypertext pour UDO
+# 007 Choisir un programme externe|pour l'extension ci-dessus
+# 008 Le programme reconnait VA-START|(depuis le AV-Protocol)
+# 009 Le programme est un|programme TOS (sans GEM)
+# 011 ParamŠtres … envoyer|au programme choisi
+# 012 Fermer la fenˆtre
+# 013 Choix des|paramŠtres
+# 014 Appeler l'aide pour|cette fenˆtre
+#Dial 008 
+# 004 Quitter UDO-Shell
+# 005 Ne pas quitter UDO-Shell
+#Dial 010 
+# 004 $I Repr‚sente le fichier source (*.U)
+# 007 $O Repr‚sente le fichier destination
+# 010 $L Repr‚sente le fichier de log (*.UL*)
+# 013 $H Repr‚sente le fichier d'hyphen (*.UH*)
+# 016 $T Repr‚sente le fichier tree (*.UT*)
+# 019 $C Repr‚sente le fichier Pure-C-Help-Commande (*.CMD)
+# 022 $P Repr‚sente le fichier projet WinHhelp (*.HLP)
+# 024 Fermer cette fenˆtre
+#Dial 011 
+# 014 Ouvrir fichier(s) s‚lection‚(s)
+# 015 Recharger, rafraichir|le fichier projet
+# 016 Fermer cette fenˆtre
+# 017 Appeler l'aide pour|cette fenˆtre
+#Dial 012 
+# 002 Dialogues en mode 3D
+# 004 Utiliser le serveur Olga|pour voir les images
+# 005 UDO-Shell d‚marre automatiquement|UDO.TTP quand le fichier (*.U)|source est sauv‚
+# 006 UDO-Shell demande a un client OLGA|de recharger le fichier sauv‚
+# 007 Confirmer les choix
+# 008 Abandonner les choix|et fermer cette fenˆtre
+# 009 Appeler l'aide pour|cette fenˆtre

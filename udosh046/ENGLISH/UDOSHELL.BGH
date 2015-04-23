@@ -1,0 +1,129 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File by RSM2OUT v1.95 fr ResourceMaster ab v2.06 by ARDISOFT
+
+#Dial 000 41
+# 003 Here you can choos|your sourcefile
+# 005 Here you can choose|your destinationfile
+# 020 UDO.TTP puts the JumpID's|when translating to C or|Pascal
+# 021 UDO.TTP puts MAP-file|for C when translating|to WinHelp(4)
+# 022 UDO.TTP puts MAP-file|for Pascal/Delphi when trabslating|to WinHelp(4)
+# 023 UDO.TTP puts the MAP-file|for GFA-Basic when translating|to WInHelp(4)
+# 024 UDO.TTP puts MAP-file|for Visual-Basic when translating|to WinHelp(4)
+# 026 Puts the destination files|into a new directory ->|Symbol 'UseFolders' is set
+# 027 UDO.TTP waits|for a keypress|after translation
+# 028 UDO puts verbose|messages during translation
+# 029 UDO.TTP puts translation|only in RAM
+# 030 Activate checkmodus of UDO.TTP
+# 031 Use (-(at) file)
+# 032 Call UDO.TTP for|translation
+# 033 Leave UDO-Shell
+# 034 Call the Project-Dialog
+# 035 Command-Syntax of UDO
+# 036 Call Help for|the UDO-Shell
+# 038 Call the logfile
+# 039 Call the Hyphenfile
+# 040 Call the Treefile
+#Dial 001 14
+# 013 Leave the Info-Dialog
+#Dial 002 10
+# 003 Name and Given Name|of the user
+# 005 Postal number and Place|of the user
+# 007 Key of|the user
+# 008 Registrate UDO-Shell
+# 009 Cancel registration
+#Dial 003 23
+# 002 Adapt destination path
+# 004 Adapt whole destination path
+# 005 Adapt the name|and extension|of destination|path
+# 006 Endung der Zieldatei|wird angepasst
+# 007 Generate lower pathnames|for destination
+# 008 Generate lower filenames|for destination
+# 010 UDO.TTP puts|long filenames
+# 011 UDO.TTP puts|long filenames
+# 013 Ask by alert before|leaving the UDO-Shell?
+# 014 Write over existing|destination files?
+# 016 UDO.TTP puts logfile
+# 017 UDO.TTP puts hyphenfile
+# 018 UDO.TTP puts treefile
+# 019 UDO.TTP don't give out warnings|during translation
+# 020 Take over options
+# 021 Close Options-Dialog
+# 022 Call help for the|Options-Dialog
+#Dial 004 36
+# 002 Activate Symbol 1
+# 003 Symboltext 1
+# 004 Activate Symbol 2
+# 005 Symboltext 2
+# 006 Activate Symbol 3
+# 007 Symboltext 3
+# 008 Activate Symbol 4
+# 009 Symboltext 4
+# 010 Activate Symbol 5
+# 011 Symboltext 5
+# 012 Activate Symbol 6
+# 013 Symboltext 6
+# 014 Activate Symbol 7
+# 015 Symboltext 7
+# 016 Activate Symbol 8
+# 017 Symboltext 8
+# 018 Activate Symbol 9
+# 019 Symboltext 9
+# 020 Activate Symbol 10
+# 021 Symboltext 10
+# 022 Activate Symbol 11
+# 023 Symboltext 11
+# 024 Activate Symbol 12
+# 025 Symboltext 12
+# 026 Activate Symbol 13
+# 027 Symboltext 13
+# 028 Activate Symbol 14
+# 029 Symboltext 14
+# 030 Activate Symbol 15
+# 031 Symboltext 15
+# 032 Activate Symbol 16
+# 033 Symboltext 16
+# 034 Close Symbol-Dialog
+# 035 Call help for the|Symbol-Dialog
+#Dial 005 13
+# 002 Choose format, to whom|an application should|be searched
+# 005 Choose programm
+# 006 The programm knows VA_START|(from the AV-Protocol)
+# 007 The programm is|a TOS-programm|(without GEM)
+# 009 Register parameters
+# 010 Close External-Dialog
+# 011 Hints to the|parameters
+# 012 Call help for the|External-Dialog
+#Dial 006 56
+#Dial 007 6
+# 004 Leave UDO-Shell
+# 005 Don't leave UDO-Shell
+#Dial 008 11
+#Dial 009 25
+# 024 Close Hint-Dialog
+#Dial 010 33
+# 015 Use UDO-Shell Project
+# 016 Use UDO Projectfile
+# 020 Want to see Infiles?
+# 021 Want to see Outfiles?
+# 022 Want to see Images?
+# 023 Want to see Raw-Files
+# 024 Want to see Nodes?
+# 025 Want to see Headings?
+# 026 Want to see Alias?
+# 027 Want to see Labels?
+# 028 Want to see Indices?
+# 029 Open selected file(s)
+# 030 Generate new projectfile|(UDO-Shell)
+# 031 Close Project-Dialog
+# 032 Call help for the|Project-Dialog
+#Dial 011 16
+# 004 Where is the|UDO-Hypertext?
+# 006 Where is the (-(at) file)?
+# 008 Where is the external|printprogramm
+# 010 Use Olga-Server for|starting of images
+# 011 The UDO-Shell starts automatically UDO.TTP|after saving sourcefile in the editor
+# 012 The UDO-Shell requests an OLGA-Client|to update his document
+# 013 Take over engagement
+# 014 Close General-Dialog
+# 015 Call help for the|General-Dialog

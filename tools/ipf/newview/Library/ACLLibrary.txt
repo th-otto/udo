@@ -1,0 +1,26 @@
+                          Upload Information Template for Hobbes.nmsu.edu
+                          ===============================================
+
+        Archive Filename: ACLLibrary.zip
+       Short Description: Speedsoft Sibyl utility library
+        Long Description: Various useful functions and classes, especially for strings,
+                          including a full string class, file and filename manipulation etc.
+      Proposed directory
+           for placement: /pub/os2/dev/pascal
+               Your name: Aaron Lawrence 
+           Email address: aaronl at consultant dot com
+    Program contact name: (same)
+   Program contact email: (same)
+             Program URL: (none) 
+
+      Would you like the
+   contact email address
+    included in listings? yes
+
+Operating System/Version: 
+ Additional requirements: 
+
+                Replaces: 
+
+
+

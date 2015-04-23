@@ -1,0 +1,88 @@
+he original Amigaguide, containing 31 tags and commands, was never properly documented by Commodore.
+Escape codes
+
+Because of their special meaning in Amigaguide, the chracters @ and \ have to be escaped.
+
+\@
+    Escape code for @
+\\
+    Escape code for \
+
+Global tags and commands
+
+These can be placed outside of a node, on their own lines.
+
+@$VER:
+    The version information for the AmigaDOS version command. Example: @$VER: safalra.guide 1.0 (18/12/2003) 
+@(c)
+    The copyright information. This information is not currently used by Amigaguide. Example: @(c) 2003 Safalra (Stephen Morley) 
+@author
+    The name of the author or authors. This information is not currently used by Amigaguide. Example: @author Safalra (Stephen Morley) 
+@database
+    Identifies the file as an Amigaguide document (this allows Multiview to display it using the Amigaguide datatype). This must be the first line of the file. Example: @database 
+@dnode
+    Indicates a dynamic node. This was never implemented and should not be used. 
+@endnode
+    The end of a node. Example: @endnode 
+@font
+    Specifies the font to use, specified by name and size. Example: @font safalra.font 12 
+@height
+    Specifies the height (in rows) of the largest node. This information is not currently used by Amigaguide. Example: @height 42 
+@help
+    Specifies the node to be displayed when the user clicks the \u2018Help\u2019 button. Example: @help "A helpful node" 
+@index
+    Specifies the node to be displayed when the user clicks the \u2018Index\u2019 button. Example: @index "The index node" 
+@master
+    The name of the master copy of this amigaguide document. This information is not currently used by Amigaguide. Example: @master "Documents:Amigaguide/safalra.guide" 
+@node
+    The start of a node, followe by a name and title. The title is displayed in Amigaguide\u2019s title bar, and the name is used to identify the node. Example: @node "Node name" "Node title" 
+@rem
+    A comment that is not displayed. Example: @rem Amigaguide won't display this 
+@remark
+    A comment that is not displayed. Example: @remark Amigaguide won't display this 
+@width
+    Specifies the width (in columns) of the largest node. This information is not currently used by Amigaguide. Example: @width 78 
+
+Node-level tags and commands
+
+These are placed inside a node, on their own lines, and effect the whole node.
+
+@font
+    The same as the global font command, but only effects this node. Example: @font safalra.font 12 
+@help
+    The same as the global help command, but only effects this node. Example: @help "A helpful node" 
+@index
+    The same as the global index command, but only effects this node. Example: @index "The index node" 
+@keywords
+    The keywords for this node. This information is not currently used by Amigaguide. Example: @keywords Torquay "English Riviera" Devon "Fawlty Towers" 
+@next
+    The next node, displayed when the user clicks the \u2018Browser >\u2019 button. This defaults to the next node in the document source. Example: @next "The next node" 
+@prev
+    The previous node, displayed when the user clicks the \u2018< Browser\u2019 button. This defaults to the previous node in the document source. Example: @prev "The previous node" 
+@title
+    Specifies the title of this node. This overrides the title specified in the @node tag. Example: @title "Node title" 
+@toc
+    The contents page, displayed when the user clicks the \u2018Contents\u2019 button. This defaults to the main node. Example: @toc "A contents node" 
+
+Local tags and commands
+
+These can be placed anywhere within a node.
+
+@{alink}
+    Specifies a hypertext link to open in a new window. Non-local links are specifed using the path to the amigaguide file, followed by / and the node name. A line number can also be specified. Example: @{"Link text" alink "local node" 7} 
+@{bg}
+    Specifies the background colour to use from the next character onwards. Valid values are \u2018back\u2019, \u2018background\u2019, \u2018fill\u2019, \u2018filltext\u2019, \u2018highlight\u2019, \u2018shadow\u2019, \u2018shine\u2019 and \u2018text\u2019. Example: @{bg background} 
+@{close}
+    Closes this window. This is used in combination with @{alink}. Example: @{"Back to previous node" close} 
+@{fg}
+    Specifies the text colour to use from the next character onwards. Valid values are \u2018back\u2019, \u2018background\u2019, \u2018fill\u2019, \u2018filltext\u2019, \u2018highlight\u2019, \u2018shadow\u2019, \u2018shine\u2019 and \u2018text\u2019. Example: @{fg text} 
+@{link}
+    Specifies a hypertext link to another node. Non-local links are specifed using the path to the amigaguide file, followed by / and the node name. A line number can also be specified. Example: @{"Link text" link "Documents:Amigaguide/safalra.guide/non local node name" 12} 
+@{rx}
+    Specifies a hypertext link that executes an ARexx script. Example: @{"Execute a script" rx "script.rexx"} 
+@{rxs}
+    Specifies a hypertext link that executes an ARexx string. Example: @{"Execute a string" rxs "Say 'hello'"} 
+@{system}
+    Specifies a hypertext link that executes an AmigaDOS command. Example: @{"Format DF0: now" system "Format DF0:"} 
+@{quit}
+    Specifies a hypertext link that closes Amigaguide. Example: @{"Close Amigaguide" quit} 

@@ -1,0 +1,266 @@
+/* src/config_h.in.  Generated from configure.in by autoheader.  */
+
+/* The version of ATK */
+#undef ATK_VERSION_FROM_CONFIGURE
+
+/* The version of BZ2 */
+#undef BZ2_VERSION_FROM_CONFIGURE
+
+/* always defined to indicate that i18n is enabled */
+#undef ENABLE_NLS
+
+/* define to the name of the gettext package */
+#undef GETTEXT_PACKAGE
+
+/* A 'va_copy' style function */
+#undef G_VA_COPY
+
+/* 'va_lists' cannot be copies as values */
+#undef G_VA_COPY_AS_ARRAY
+
+/* Define to 1 if you have the <argz.h> header file. */
+#undef HAVE_ARGZ_H
+
+/* Define to 1 if you have the 'bind_textdomain_codeset' function. */
+#undef HAVE_BIND_TEXTDOMAIN_CODESET
+
+/* Define to 1 if you have the 'dcgettext' function. */
+#undef HAVE_DCGETTEXT
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the <endian.h> header file. */
+#undef HAVE_ENDIAN_H
+
+/* Define to 1 if you have the <fcntl.h> header file. */
+#undef HAVE_FCNTL_H
+
+/* Define to 1 if you have the 'fdopen' function. */
+#undef HAVE_FDOPEN
+
+/* Define this if you have the GDK_Pixbuf library installed. Some of the demos
+   can make use of this if it is available. */
+#undef HAVE_GDK_PIXBUF
+
+/* Define to 1 if you have the 'getcwd' function. */
+#undef HAVE_GETCWD
+
+/* Define to 1 if you have the 'getegid' function. */
+#undef HAVE_GETEGID
+
+/* Define to 1 if you have the 'geteuid' function. */
+#undef HAVE_GETEUID
+
+/* Define to 1 if you have the 'getgid' function. */
+#undef HAVE_GETGID
+
+/* Define to 1 if you have the 'getpid' function. */
+#undef HAVE_GETPID
+
+/* Define to 1 if you have the 'getppid' function. */
+#undef HAVE_GETPPID
+
+/* Define if the GNU gettext() function is already present or preinstalled. */
+#undef HAVE_GETTEXT
+
+/* Define to 1 if you have the 'getuid' function. */
+#undef HAVE_GETUID
+
+/* Define this if you have Gtk (any version.) */
+#undef HAVE_GTK
+
+/* Define this if you have Gtk 2.x. */
+#undef HAVE_GTK2
+
+/* Define this if you have Gtk 3.x. */
+#undef HAVE_GTK3
+
+/* Define this if you have the GtkHtml library. */
+#undef HAVE_GTKHTML
+
+/* Define this if you have the GtkHtml2 library. */
+#undef HAVE_GTKHTML2
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the <io.h> header file. */
+#undef HAVE_IO_H
+
+/* Define if your <locale.h> file defines LC_MESSAGES. */
+#undef HAVE_LC_MESSAGES
+
+/* Define to 1 if you have the <limits.h> header file. */
+#undef HAVE_LIMITS_H
+
+/* Define to 1 if you have the <locale.h> header file. */
+#undef HAVE_LOCALE_H
+
+/* Define to 1 if you have the 'lstat' function. */
+#undef HAVE_LSTAT
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the 'mkdir' function. */
+#undef HAVE_MKDIR
+
+/* Define to 1 if you have the 'mkstemp' function. */
+#undef HAVE_MKSTEMP
+
+/* Define to 1 if you have the 'munmap' function. */
+#undef HAVE_MUNMAP
+
+/* Define this if you have the Soup library and it has cookies support. */
+#undef HAVE_NEWSOUP
+
+/* Define to 1 if you have the <nl_types.h> header file. */
+#undef HAVE_NL_TYPES_H
+
+/* Define to 1 if you have the <process.h> header file. */
+#undef HAVE_PROCESS_H
+
+/* Define to 1 if you have the 'putenv' function. */
+#undef HAVE_PUTENV
+
+/* Define to 1 if you have the <pwd.h> header file. */
+#undef HAVE_PWD_H
+
+/* Define to 1 if you have the 'realpath' function. */
+#undef HAVE_REALPATH
+
+/* Define to 1 if you have the 'setenv' function. */
+#undef HAVE_SETENV
+
+/* Define to 1 if you have the 'setlocale' function. */
+#undef HAVE_SETLOCALE
+
+/* Define to 1 if you have the 'setrlimit' function. */
+#undef HAVE_SETRLIMIT
+
+/* Define to 1 if you have the 'sigaction' function. */
+#undef HAVE_SIGACTION
+
+/* Define this if you have the Soup library. */
+#undef HAVE_SOUP
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the 'strcasecmp' function. */
+#undef HAVE_STRCASECMP
+
+/* Define to 1 if you have the 'strchr' function. */
+#undef HAVE_STRCHR
+
+/* Define to 1 if you have the 'strerror' function. */
+#undef HAVE_STRERROR
+
+/* Define to 1 if you have the 'stricmp' function. */
+#undef HAVE_STRICMP
+
+/* Define to 1 if you have the 'strincmp' function. */
+#undef HAVE_STRINCMP
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the 'strlwr' function. */
+#undef HAVE_STRLWR
+
+/* Define to 1 if you have the 'strncasecmp' function. */
+#undef HAVE_STRNCASECMP
+
+/* Define to 1 if you have the 'strncmpi' function. */
+#undef HAVE_STRNCMPI
+
+/* Define to 1 if you have the 'strnicmp' function. */
+#undef HAVE_STRNICMP
+
+/* Define to 1 if you have the 'strupr' function. */
+#undef HAVE_STRUPR
+
+/* Define to 1 if you have the 'syslog' function. */
+#undef HAVE_SYSLOG
+
+/* Define to 1 if you have the 'sys_errlist' function. */
+#undef HAVE_SYS_ERRLIST
+
+/* Define to 1 if you have the <sys/param.h> header file. */
+#undef HAVE_SYS_PARAM_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the 'times' function. */
+#undef HAVE_TIMES
+
+/* Define to 1 if you have the 'tmpnam' function. */
+#undef HAVE_TMPNAM
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <wchar.h> header file. */
+#undef HAVE_WCHAR_H
+
+/* Define this if you have the XML library. */
+#undef HAVE_XML
+
+/* Define the location where the catalogs will be installed */
+#undef LOCALEDIR
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* define to integrate UDO into the shell */
+#undef UDO_INTEGRATED
+
+/* Version number of package */
+#undef VERSION
+
+/* use iso-latin1 character set on HPUX */
+#undef __HPUX_ISO__
+
+/* use HP-Roman-8 character set on HPUX */
+#undef __HPUX_ROMAN8__
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const

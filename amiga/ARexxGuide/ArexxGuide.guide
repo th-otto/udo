@@ -1,0 +1,811 @@
+@database "ARexxGuide.guide"
+@index ARx_Index/ARx_NdxCont
+@xref ARx_Guide.xref
+
+@node MAIN " ARexxGuide                       Copyright © 1993,1994 Robin Evans"
+@next ARx_Elements.ag/MAIN
+@toc COMPCONT
+  @{fg highlight}AN AMIGAGUIDE® TO ARexx@{fg text}                 Second edition (v2.0a)
+  by Robin Evans
+
+  @{" Registration         " link REG}   @{" Comprehensive contents                        " link COMPCONT}
+  @{" Introduction         " link ARx_Intro.ag/MAIN}   @{" Tutorials            " link ARx_Tutor.ag/MAIN}   @{" Techniques           " link ARx_Tknq.ag/MAIN}
+
+  Reference
+  @{" Basic elements       " link ARx_Elements.ag/MAIN}   @{" Instructions         " link ARx_Instr.ag/MAIN}   @{" Functions            " link ARx_Func.ag/MAIN}
+   Guide to the powders     Syntax & explanation     Syntax & explanation
+   & potions in the ARexx   of keywords and          of built-in & support
+   chemistry set.           instructions             functions.
+  @{" Operators            " link ARx_Operator.ag/MAIN}   @{" Commands             " link ARx_Cmd.ag/MAIN}   @{" Error codes          " link ARx_Error.ag/MAIN}
+   Glue for arithmetic,     Utility programs.        Error codes/messages.
+   comparison, & logical                             Possible causes and
+   expressions.                                      solutions.
+
+  @{" INDEX                                                                   " link ARx_Index/ARx_NdxCont}
+
+        Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+@endnode
+
+@node REG "ARexxGuide | Registration | THANK YOU FOR YOUR SUPPORT!"
+@prev MAIN
+This guide is shareware. Please use it and pass it on (in its original
+archive) to your friends and acquaintances. If you learn something from
+the guide or find it helpful in writing ARexx programs, then please take a
+moment to fill out the registration form and send in the fee.
+
+@{fg highlight}The requested fee for this guide is $15.00.@{fg text} For that you get the complete
+reference you see before you now -- information you would pay $25 to $40
+for if it were presented in traditional book form.
+
+Sorry, folks, we don't have operators standing by to take your order, but
+we do have -- yes, standing by -- representatives of the worlds's postal
+services who will deliver your registration fee to the address below.
+
+To make things easier, and to provide information helpful in making future
+revisions to this guide, the button below will guide you through an
+on-line registration form that can be printed immediately or saved to disk.
+
+                  @{" Fill out registration form " system "rx ARx_IactExamples.rexx ARx_Reg.rexx"}  @{" * " link IACTEXMP}
+
+      @{fg highlight}Send registration fee (and optional form) to:@{fg highlight}
+                  Robin Evans
+                  1020 Seneca #405
+                  Seattle WA 98101-2720
+
+      @{fg highlight}And thank you, very much.@{fg text}
+
+Please send comments or requests to any of the following on-line
+addresses:
+               robin@halcyon.com       on Internet
+               R.EVANS6                on GEnie
+               r.evans6@genie.geis.com on Internet
+
+
+Next: ARexxGuide contents | Prev: Registration intro | Contents: main
+
+
+@endnode
+
+@node COMPCONT "ARexxGuide | CONTENTS"
+@next MAIN
+@prev MAIN
+@{fg highlight}Foreword:@{fg text}
+
+   @{fg highlight}Preface@{fg text}
+      @{" Acknowledgements                                         " link ARx_Intro.ag/ACKN}
+      @{" References                                               " link ARx_Intro.ag/REF}
+      @{" About the author                                         " link ARx_Intro.ag/AUTHOR}
+      @{" Compatibility issues                                     " link ARx_Intro.ag/COMPATIBILITY}
+
+   @{fg highlight}About this guide@{fg text}
+      @{" Navigating hints                                         " link ARx_Intro.ag/NAVG}
+
+   @{fg highlight}Intro to ARexx@{fg text}
+      @{" Hello World!                                             " link ARx_Intro.ag/HIWRLD}
+      @{" Why ARexx?                                               " link ARx_Intro.ag/WHYREXX}
+      @{" Getting it started                                       " link ARx_Intro.ag/STARTUP}
+      @{" Writing programs                                         " link ARx_Intro.ag/WRITING}
+      @{" Running a script                                         " link ARx_Intro.ag/RUNAREXX}
+
+@{fg highlight}Tutorials:@{fg text}
+      @{" Using ARexx with macros: Extending keyboard macros       " link ARx_Tutor.ag/MCRINTRO}
+      @{"    Simple macro: recording keystrokes                    " link ARx_Tutor.ag/MCR1}
+      @{"    Adding ARexx control to the macro                     " link ARx_Tutor.ag/MCR2}
+      @{"    A closer look at ARexx IF instruction                 " link ARx_Tutor.ag/MCR3}
+      @{"    Repeating macro with an ARexx loop                    " link ARx_Tutor.ag/MCR4}
+      @{"    Growing a macro                                       " link ARx_Tutor.ag/MCR5}
+      @{"    ADDRESS and the macro                                 " link ARx_Tutor.ag/MCR6}
+      @{"    Debugging a macro                                     " link ARx_Tutor.ag/MCR7}
+      @{" Using the ARexxGuide online help system                  " link ARx_Tutor.ag/HELPKEYMACRO}
+      @{"    Setting up a help key macro                           " link ARx_Tutor.ag/SETUPHELP}
+      @{"    Environmental variables                               " link ARx_Tutor.ag/HELPENVVAR}
+      @{"    Information about a non-matches                       " link ARx_Tutor.ag/FULLHELP}
+      @{"    Building a new help-key macro                         " link ARx_Tutor.ag/BUILDHELP}
+      @{"       GetCLine: Get current line from editor             " link ARx_Tutor.ag/GETCLINE}
+      @{"       GetCPos: Get cursor position from editor           " link ARx_Tutor.ag/GETCPOS}
+      @{"       GetCWord: Calculate (or get) current word          " link ARx_Tutor.ag/GETCWORD}
+      @{"       DisplayStatus: Display a message in status bar     " link ARx_Tutor.ag/DISPLAYSTATUS}
+      @{"       BoolReq: Post a Boolean requester                  " link ARx_Tutor.ag/BOOLREQ}
+      @{"       GetWinInfo: Get information about editor's window  " link ARx_Tutor.ag/GETWININFO}
+      @{"       EditorExit: Send special editor commands on exit   " link ARx_Tutor.ag/EDITOREXIT}
+      @{"       SetExecStr: Set command issued by info window      " link ARx_Tutor.ag/SETEXECSTR}
+      @{"       SetAddress: Set the address used by info window    " link ARx_Tutor.ag/SETADDRESS}
+      @{"       DisplayAG: Display the node in AmigaGuide viewer   " link ARx_Tutor.ag/DISPLAYAG}
+      @{" A complete program example: Uncrunch.rexx                " link ARx_PrgUcr.ag/UCREXPLAN}
+
+      @{fg highlight}Interactive examples:@{fg text}  @{" * " link IACTEXMP}
+      @{" Test for valid symbols                                   " system "rx ARx_IactExamples.rexx ShowValidSymbol"}
+      @{" Comparison demonstration                                 " system "rx ARx_IactExamples.rexx ARx_Cmpr.rexx"}
+      @{" NUMERIC demonstration                                    " system "rx ARx_IactExamples.rexx ShowNumeric"  }
+      @{" TRACE demonstration                                      " system "rx ARx_Trace.rexx"                     }
+      @{" Standard I/O demonstration                               " system "rx ARx_IactExamples.rexx ShowStdIO"    }
+      @{" Break-key demonstration                                  " system "rx ARx_IactExamples.rexx DoBreak"      }
+
+@{fg highlight}Techniques:@{fg text}
+      @{i}Strings@{ui}
+      @{"    CountChar(): count characters with COMPRESS()         " link ARx_Tknq.ag/COUNTCHAR()}
+      @{"    CountWords(): count words in a file                   " link ARx_Tknq.ag/COUNTWORDS()}
+      @{"    Format data into table form                           " link ARx_Tknq.ag/FORMATNOTE}
+      @{"    Format(): round and format a number                   " link ARx_Tknq.ag/FORMAT()}
+      @{"    AddComma(): add commas to an integer                  " link ARx_Tknq.ag/ADDCOMMA()}
+      @{"       Alternative: add commas within a loop              " link ARx_Tknq.ag/ADDCOMMAALT}
+      @{"    WordWrap(): wordwrap text to a defined length         " link ARx_Tknq.ag/WORDWRAP()}
+      @{"    ParseFileName(): split name of file from path         " link ARx_Tknq.ag/FILENAME}
+      @{i}Input/Output@{ui}
+      @{"    Open console windows for I/O                          " link ARx_Tknq.ag/CONWINDOW}
+      @{"    Output text to a printer                              " link ARx_Tknq.ag/PRINTTEST}
+      @{"    Read data from one file, write to another             " link ARx_Tknq.ag/INOUTFILE}
+      @{"    Retrieve result of AmigaDOS command                   " link ARx_Tknq.ag/READCMD}
+      @{"    Getting and sending message packets                   " link ARx_Tknq.ag/PORTXMP}
+      @{i}Data storage and retrieval@{ui}
+      @{"    Store global variables on the clip list               " link ARx_Tknq.ag/CLIPLIST}
+      @{"    Get and set environmental variables                   " link ARx_Tknq.ag/GETSETENV}
+      @{"    Retrieve data from source code                        " link ARx_Tknq.ag/INLDATA}
+      @{"    Create a data scratchpad with PUSH, QUEUE, and PULL   " link ARx_Tknq.ag/SCRATCHPAD}
+      @{"    SeekToRecord(): pull single record from data file     " link ARx_Tknq.ag/SEEKTORECORD()}
+      @{"    Use VALUE() to create interpreted variable names      " link ARx_Tknq.ag/VALUENOTE}
+      @{"    Check unique datatypes with VERIFY()                  " link ARx_Tknq.ag/VERIFYNOTE}
+      @{"    Determine version number of any library               " link ARx_Tknq.ag/LIBVER()}
+
+
+@{fg highlight}Basic Elements:@{fg text}
+      @{" Structure of an ARexx program                            " link ARx_Elements.ag/STRUCTURE}
+      @{" Tokens                                                   " link ARx_Elements.ag/TOKEN}
+      @{"    Comment tokens                                        " link ARx_Elements.ag/COMMENT}
+      @{"    String tokens                                         " link ARx_Elements.ag/STRING}
+      @{"       Hex and binary strings                             " link ARx_Elements.ag/HEXSTRING}
+      @{"    Symbol tokens                                         " link ARx_Elements.ag/SYMBOL}
+      @{"       Fixed symbols                                      " link ARx_Elements.ag/CONSTANT}
+      @{"       Variable symbols                                   " link ARx_Elements.ag/VARSYMBOL}
+      @{"    Operator tokens                                       " link ARx_Elements.ag/OPERATOR}
+      @{"       Concatenation  || <blank> <abuttal>                " link ARx_Operator.ag/CONCATENATION}
+      @{"       Arithmetic     + - | / // %                        " link ARx_Operator.ag/ARITHMETIC}
+      @{"       Comparative    < > = == >= <=                      " link ARx_Operator.ag/COMPARISON}
+      @{"       Logical        & | && ~                            " link ARx_Operator.ag/LOGICAL}
+      @{"    Reserved characters                                   " link ARx_Elements.ag/SPECCHAR}
+      @{"       The comma: Continuation character                  " link ARx_Elements.ag/COMMA}
+      @{"       The semicolon: Clause end symbol                   " link ARx_Elements.ag/SEMICOLON}
+      @{"          Using semicolons for in-line scripts            " link ARx_Elements.ag/INLINE}
+      @{"       The colon: Label identifier                        " link ARx_Elements.ag/LABELID}
+      @{"       Parenthesis: Grouping / Function argument list     " link ARx_Elements.ag/PAREN}
+      @{" Expressions                                              " link ARx_Elements2.ag/EXPRESSION}
+      @{"    Numbers                                               " link ARx_Elements2.ag/NUMBER}
+      @{"       Numeric precision                                  " link ARx_Elements2.ag/PRECISION}
+      @{"    Strings                                               " link ARx_Elements2.ag/STRINGEXPR}
+      @{"       Treating numbers as strings                        " link ARx_Elements2.ag/NUMASTEXT}
+      @{"    Variables                                             " link ARx_Elements2.ag/VARIABLE}
+      @{"       Using variables                                    " link ARx_Elements2.ag/VARDES}
+      @{"       Compound variables                                 " link ARx_Elements2.ag/COMPVAR}
+      @{"          Overview: Using compound variables              " link ARx_Elements2.ag/COMPVAR1}
+      @{"          Stem variables                                  " link ARx_Elements2.ag/COMPVAR2}
+      @{"          Extending stem variables                        " link ARx_Elements2.ag/COMPVAR3}
+      @{"          Substituting values in compound variables       " link ARx_Elements2.ag/COMPVAR4}
+      @{"          Using strings as the derived name of a branch   " link ARx_Elements2.ag/COMPVAR5}
+      @{"          Setting default value of a compound variable    " link ARx_Elements2.ag/COMPVAR6}
+      @{"          Finding values in a compound variable           " link ARx_Elements2.ag/COMPVAR7}
+      @{"       Special variables                                  " link ARx_Elements2.ag/SPECVAR}
+      @{"          RC                                              " link ARx_Elements2.ag/RC}
+      @{"          RESULT                                          " link ARx_Elements2.ag/RESULT}
+      @{"          SIGL                                            " link ARx_Elements2.ag/SIGL}
+      @{"       'Natural' data typing in ARexx                     " link ARx_Elements2.ag/VARTYPE}
+      @{"    Function calls                                        " link ARx_Elements3.ag/FUNCTION}
+      @{"       Internal functions                                 " link ARx_Elements3.ag/PROGFUNC}
+      @{"       Built-in functions                                 " link ARx_Elements3.ag/BLTFUNC}
+      @{"       Library/Host functions                             " link ARx_Elements3.ag/LIBFUNC}
+      @{"       External functions                                 " link ARx_Elements3.ag/EXTFUNC}
+      @{"       Function arguments                                 " link ARx_Elements3.ag/FUNCARG}
+      @{"    Operations                                            " link ARx_Elements3.ag/OPERATION}
+      @{"       Concatenation                                      " link ARx_Operator.ag/CONCATENATION}
+      @{"       Arithmetic                                         " link ARx_Operator.ag/ARITHMETIC}
+      @{"       Comparative                                        " link ARx_Operator.ag/COMPARISON}
+      @{"       Logical                                            " link ARx_Operator.ag/LOGICAL}
+      @{"       Conditional expressions                            " link ARx_Elements3.ag/CONDITIONAL}
+      @{"    Avoiding accidental commands from expressions         " link ARx_Elements3.ag/ACICMD}
+      @{" Clauses                                                  " link ARx_Elements3.ag/CLAUSE}
+      @{"    Assignment clauses                                    " link ARx_Elements3.ag/ASSIGNMENT}
+      @{"    Instructions                                          " link ARx_Elements3.ag/INSTRUCTION}
+      @{"    Command clauses                                       " link ARx_Elements3.ag/COMMAND}
+      @{"       Command host: what is it?                          " link ARx_Elements3.ag/HOST}
+      @{"       The default host                                   " link ARx_Elements3.ag/DEFHOST}
+      @{"       Determining the initial host                       " link ARx_Elements3.ag/INITHOST}
+      @{"       Entering commands in a script                      " link ARx_Elements3.ag/CMDSTRING}
+      @{"       Example script                                     " link ARx_Elements3.ag/TTXCOMMAND}
+      @{"    Label clauses                                         " link ARx_Elements3.ag/LABEL}
+      @{"    Null clauses                                          " link ARx_Elements3.ag/NULL}
+
+@{fg highlight}Instruction keywords:@{fg text}
+      @{" ADDRESS                                                  " link ARx_Instr.ag/ADDRESS}
+      @{" ARG                                                      " link ARx_Instr.ag/ARG}
+      @{" BREAK                                                    " link ARx_Instr.ag/BREAK}
+      @{"    Breaking structure                                    " link ARx_Instr.ag/BREAKSTRUCT}
+      @{" CALL                                                     " link ARx_Instr.ag/CALL}
+      @{" DO                                                       " link ARx_Instr.ag/DO}
+      @{"    <number>                                              " link ARx_Instr.ag/DOOPT1}
+      @{"    Index variable/TO/BY                                  " link ARx_Instr.ag/DOOPT2}
+      @{"    FOR                                                   " link ARx_Instr.ag/DOOPT3}
+      @{"    WHILE/UNTIL                                           " link ARx_Instr.ag/DOOPT4}
+      @{"    FOREVER                                               " link ARx_Instr.ag/DOOPT5}
+      @{"    END                                                   " link ARx_Instr.ag/END}
+      @{" DROP                                                     " link ARx_Instr.ag/DROP}
+      @{" ECHO                                                     " link ARx_Instr3.ag/SAY}
+      @{" EXIT                                                     " link ARx_Instr.ag/EXIT}
+      @{" IF                                                       " link ARx_Instr.ag/IF}
+      @{"    ELSE                                                  " link ARx_Instr.ag/IF}
+      @{" INTERPRET                                                " link ARx_Instr.ag/INTERPRET}
+      @{" ITERATE                                                  " link ARx_Instr.ag/ITERATE}
+      @{" LEAVE                                                    " link ARx_Instr.ag/LEAVE}
+      @{" NOP                                                      " link ARx_Instr.ag/NOP}
+      @{" NUMERIC                                                  " link ARx_Instr2.ag/NUMERIC}
+      @{" OPTIONS                                                  " link ARx_Instr2.ag/OPTIONS}
+      @{" PARSE                                                    " link ARx_Instr2.ag/PARSE}
+      @{"    ARG                                                   " link ARx_Instr2.ag/PARSESRC1}
+      @{"    EXTERNAL                                              " link ARx_Instr2.ag/PARSESRC3}
+      @{"    NUMERIC                                               " link ARx_Instr2.ag/PARSESRC4}
+      @{"    PULL                                                  " link ARx_Instr2.ag/PARSESRC2}
+      @{"    SOURCE                                                " link ARx_Instr2.ag/PARSESRC5}
+      @{"    VALUE <expression> WITH                               " link ARx_Instr2.ag/PARSESRC7}
+      @{"    VAR                                                   " link ARx_Instr2.ag/PARSESRC8}
+      @{"    VERSION                                               " link ARx_Instr2.ag/PARSESRC6}
+      @{"    Templates                                             " link ARx_Instr2.ag/PARSETMP1}
+      @{"       Tokenization                                       " link ARx_Instr2.ag/PARSETMP2}
+      @{"          The period: Placeholder token                   " link ARx_Instr2.ag/PARSETMP2 46}
+      @{"       Pattern markers                                    " link ARx_Instr2.ag/PARSETMP3}
+      @{"       Positional markers                                 " link ARx_Instr2.ag/PARSETMP4}
+      @{"       Using variables as template markers                " link ARx_Instr2.ag/PARSETMP5}
+      @{"       Combining different types of markers               " link ARx_Instr2.ag/PARSETMP6}
+      @{"       Using multiple templates                           " link ARx_Instr2.ag/PARSETMP7}
+      @{"    ARexx departures from REXX-standard PARSE             " link ARx_Instr2.ag/NONSTDPARSE}
+      @{" PROCEDURE                                                " link ARx_Instr3.ag/PROCEDURE}
+      @{"    EXPOSE                                                " link ARx_Instr3.ag/EXPOSE}
+      @{" PULL                                                     " link ARx_Instr3.ag/PULL}
+      @{" PUSH                                                     " link ARx_Instr3.ag/PUSH}
+      @{" QUEUE                                                    " link ARx_Instr3.ag/QUEUE}
+      @{"    PUSH, QUEUE and REXX data-stream I/O                  " link ARx_Instr3.ag/PUSHNOTE}
+      @{" RETURN                                                   " link ARx_Instr3.ag/RETURN}
+      @{" SAY                                                      " link ARx_Instr3.ag/SAY}
+      @{" SELECT                                                   " link ARx_Instr3.ag/SELECT}
+      @{"    WHEN                                                  " link ARx_Instr3.ag/WHEN}
+      @{"    OTHERWISE                                             " link ARx_Instr3.ag/OTHERWISE}
+      @{" SIGNAL                                                   " link ARx_Instr3.ag/SIGNAL}
+      @{"    ON | OFF <interrupt>                                  " link ARx_Instr3.ag/SIGTRAP}
+      @{"       BREAK_C                                            " link ARx_Instr3.ag/BREAK_C}
+      @{"       | BREAK_D                                          " link ARx_Instr3.ag/BREAK_}
+      @{"       | BREAK_E                                          " link ARx_Instr3.ag/BREAK_}
+      @{"       | BREAK_F                                          " link ARx_Instr3.ag/BREAK_}
+      @{"       ERROR                                              " link ARx_Instr3.ag/ERROR}
+      @{"       FAILURE                                            " link ARx_Instr3.ag/FAILURE}
+      @{"       HALT                                               " link ARx_Instr3.ag/HALT}
+      @{"       IOERR                                              " link ARx_Instr3.ag/IOERR}
+      @{"       NOVALUE                                            " link ARx_Instr3.ag/NOVALUE}
+      @{"       SYNTAX                                             " link ARx_Instr3.ag/SYNTAX}
+      @{"    <label name>                                          " link ARx_Instr3.ag/SIGTRAN}
+      @{" TRACE                                                    " link ARx_Instr3.ag/TRACE}
+      @{"   Trace options                                          " link ARx_Instr3.ag/TRACEOPT}
+      @{"   Interactive tracing: ?                                 " link ARx_Instr3.ag/TRACEOPT1}
+      @{"   Command inhibition: !                                  " link ARx_Instr3.ag/TRACEOPT2}
+      @{" UPPER                                                    " link ARx_Instr3.ag/UPPER}
+
+@{fg highlight}ARexx functions:@{fg text}
+      @{" Comparison functions                                     " link ARx_Func.ag/CMPRLIST}
+      @{"    ABBREV                                                " link ARx_Func.ag/ABBREV()}
+      @{"    COMPARE                                               " link ARx_Func.ag/COMPARE()}
+      @{"    FIND                                                  " link ARx_Func.ag/FIND()}
+      @{"    INDEX                                                 " link ARx_Func.ag/INDEX()}
+      @{"    LASTPOS                                               " link ARx_Func.ag/LASTPOS()}
+      @{"    POS                                                   " link ARx_Func.ag/POS()}
+      @{"    VERIFY                                                " link ARx_Func.ag/VERIFY()}
+      @{" String manipulation                                      " link ARx_Func.ag/STRLIST}
+      @{"    CENTER                                                " link ARx_Func.ag/CENTER()}
+      @{"    COMPRESS                                              " link ARx_Func.ag/COMPRESS()}
+      @{"    COPIES                                                " link ARx_Func.ag/COPIES()}
+      @{"    DELSTR                                                " link ARx_Func.ag/DELSTR()}
+      @{"    INSERT                                                " link ARx_Func.ag/INSERT()}
+      @{"    LEFT                                                  " link ARx_Func.ag/LEFT()}
+      @{"    LENGTH                                                " link ARx_Func.ag/LENGTH()}
+      @{"    OVERLAY                                               " link ARx_Func.ag/OVERLAY()}
+      @{"    REVERSE                                               " link ARx_Func.ag/REVERSE()}
+      @{"    RIGHT                                                 " link ARx_Func.ag/RIGHT()}
+      @{"    STRIP                                                 " link ARx_Func.ag/STRIP()}
+      @{"    SUBSTR                                                " link ARx_Func.ag/SUBSTR()}
+      @{"    TRANSLATE                                             " link ARx_Func.ag/TRANSLATE()}
+      @{"    TRIM                                                  " link ARx_Func.ag/TRIM()}
+      @{"    UPPER                                                 " link ARx_Func.ag/UPPER()}
+      @{"    XRANGE                                                " link ARx_Func.ag/XRANGE()}
+      @{" Word manipulation                                        " link ARx_Func2.ag/WORDLIST}
+      @{"    DELWORD                                               " link ARx_Func2.ag/DELWORD()}
+      @{"    SPACE                                                 " link ARx_Func2.ag/SPACE()}
+      @{"    SUBWORD                                               " link ARx_Func2.ag/SUBWORD()}
+      @{"    WORD                                                  " link ARx_Func2.ag/WORD()}
+      @{"    WORDINDEX                                             " link ARx_Func2.ag/WORDINDEX()}
+      @{"    WORDLENGTH                                            " link ARx_Func2.ag/WORDLENGTH()}
+      @{"    WORDS                                                 " link ARx_Func2.ag/WORDS()}
+      @{" Char/Num translation                                     " link ARx_Func2.ag/TRANLIST}
+      @{"    B2C                                                   " link ARx_Func2.ag/B2C()}
+      @{"    C2B                                                   " link ARx_Func2.ag/C2B()}
+      @{"    C2D                                                   " link ARx_Func2.ag/C2D()}
+      @{"    C2X                                                   " link ARx_Func2.ag/C2X()}
+      @{"    D2C                                                   " link ARx_Func2.ag/D2C()}
+      @{"    D2X                                                   " link ARx_Func2.ag/D2X()}
+      @{"    X2C                                                   " link ARx_Func2.ag/X2C()}
+      @{"    X2D                                                   " link ARx_Func2.ag/X2D()}
+      @{" Number manipulation                                      " link ARx_Func2.ag/NUMLIST}
+      @{"    ABS                                                   " link ARx_Func2.ag/ABS()}
+      @{"    HASH                                                  " link ARx_Func2.ag/HASH()}
+      @{"    MAX                                                   " link ARx_Func2.ag/MAX()}
+      @{"    MIN                                                   " link ARx_Func2.ag/MIN()}
+      @{"    RANDOM                                                " link ARx_Func2.ag/RANDOM()}
+      @{"    RANDU                                                 " link ARx_Func2.ag/RANDU()}
+      @{"    SIGN                                                  " link ARx_Func2.ag/SIGN()}
+      @{"    TRUNC                                                 " link ARx_Func2.ag/TRUNC()}
+      @{" Informational                                            " link ARx_Func2.ag/INFOLIST}
+      @{"    DATE                                                  " link ARx_Func2.ag/DATE()}
+      @{"       DATE() Options                                     " link ARx_Func2.ag/DATESUB}
+      @{"       Persistence of DATE() & TIME() settings            " link ARx_Func2.ag/TIMEPERSIST}
+      @{"    SHOW                                                  " link ARx_Func2.ag/SHOW()}
+      @{"    SHOWDIR                                               " link ARx_Func2.ag/SHOWDIR()}
+      @{"    SHOWLIST                                              " link ARx_Func2.ag/SHOWLIST()}
+      @{"       SHOWLIST() Options                                 " link ARx_Func2.ag/SHOWLISTSUB}
+      @{"    TIME                                                  " link ARx_Func2.ag/TIME()}
+      @{"       TIME() Options                                     " link ARx_Func2.ag/TIMESUB}
+      @{"       The elapsed time counter                           " link ARx_Func2.ag/TIMENOTE}
+      @{"       Persistence of DATE() & TIME() settings            " link ARx_Func2.ag/TIMEPERSIST}
+      @{" File input/output                                        " link ARx_Func3.ag/FILEIOLIST}
+      @{"    Overview of I/O functions                             " link ARx_Func3.ag/IOFUNC}
+      @{"    Setting the logical file name                         " link ARx_Func3.ag/LOGFILE}
+      @{"    Using I/O functions other devices                     " link ARx_Func3.ag/OTHERIO}
+      @{"    Standard I/O files                                    " link ARx_Func3.ag/STDIO}
+      @{"    CLOSE                                                 " link ARx_Func3.ag/CLOSE()}
+      @{"    EOF                                                   " link ARx_Func3.ag/EOF()}
+      @{"    LINES                                                 " link ARx_Func3.ag/LINES()}
+      @{"    OPEN                                                  " link ARx_Func3.ag/OPEN()}
+      @{"    READCH                                                " link ARx_Func3.ag/READCH()}
+      @{"    READLN                                                " link ARx_Func3.ag/READLN()}
+      @{"    SEEK                                                  " link ARx_Func3.ag/SEEK()}
+      @{"    WRITECH                                               " link ARx_Func3.ag/WRITECH()}
+      @{"    WRITELN                                               " link ARx_Func3.ag/WRITELN()}
+      @{" File management                                          " link ARx_Func2.ag/FILEMGTLIST}
+      @{"    DELETE                                                " link ARx_Func2.ag/DELETE()}
+      @{"    EXISTS                                                " link ARx_Func2.ag/EXISTS()}
+      @{"    MAKEDIR                                               " link ARx_Func2.ag/MAKEDIR()}
+      @{"    RENAME                                                " link ARx_Func2.ag/RENAME()}
+      @{"    STATEF                                                " link ARx_Func2.ag/STATEF()}
+      @{" ARexx control                                            " link ARx_Func3.ag/ARXLIST}
+      @{"    ADDRESS                                               " link ARx_Func3.ag/ADDRESS()}
+      @{"    ADDLIB                                                " link ARx_Func3.ag/ADDLIB()}
+      @{"    ARG                                                   " link ARx_Func3.ag/ARG()}
+      @{"    DATATYPE                                              " link ARx_Func3.ag/DATATYPE()}
+      @{"       DATATYPE() Options                                 " link ARx_Func3.ag/DATATYPESUB}
+      @{"    DELAY                                                 " link ARx_Func3.ag/DELAY()}
+      @{"    DIGITS                                                " link ARx_Func3.ag/DIGITS()}
+      @{"    ERRORTEXT                                             " link ARx_Func3.ag/ERRORTEXT()}
+      @{"    FORM                                                  " link ARx_Func3.ag/FORM()}
+      @{"    FUZZ                                                  " link ARx_Func3.ag/FUZZ()}
+      @{"    GETCLIP                                               " link ARx_Func3.ag/GETCLIP()}
+      @{"    PRAGMA                                                " link ARx_Func3.ag/PRAGMA()}
+      @{"    REMLIB                                                " link ARx_Func3.ag/REMLIB()}
+      @{"    SETCLIP                                               " link ARx_Func3.ag/SETCLIP()}
+      @{"    SOURCELINE                                            " link ARx_Func3.ag/SOURCELINE()}
+      @{"    SYMBOL                                                " link ARx_Func3.ag/SYMBOL()}
+      @{"    TRACE                                                 " link ARx_Func3.ag/TRACE()}
+      @{"    VALUE                                                 " link ARx_Func3.ag/VALUE()}
+      @{" Message ports                                            " link ARx_Func4.ag/PORTLIST}
+      @{"    Using ports in ARexx programs                         " link ARx_Tknq.ag/PORTXMP}
+      @{"    CLOSEPORT                                             " link ARx_Func4.ag/CLOSEPORT()}
+      @{"    GETARG                                                " link ARx_Func4.ag/GETARG()}
+      @{"    GETPKT                                                " link ARx_Func4.ag/GETPKT()}
+      @{"    OPENPORT                                              " link ARx_Func4.ag/OPENPORT()}
+      @{"    REPLY                                                 " link ARx_Func4.ag/REPLY()}
+      @{"    TYPEPKT                                               " link ARx_Func4.ag/TYPEPKT()}
+      @{"    WAITPKT                                               " link ARx_Func4.ag/WAITPKT()}
+      @{" Memory management                                        " link ARx_Func4.ag/MEMLIST}
+      @{"    ALLOCMEM                                              " link ARx_Func4.ag/ALLOCMEM()}
+      @{"    BADDR                                                 " link ARx_Func4.ag/BADDR()}
+      @{"    EXPORT                                                " link ARx_Func4.ag/EXPORT()}
+      @{"    FORBID                                                " link ARx_Func4.ag/FORBID()}
+      @{"    FREEMEM                                               " link ARx_Func4.ag/FREEMEM()}
+      @{"    FREESPACE                                             " link ARx_Func4.ag/FREESPACE()}
+      @{"    GETSPACE                                              " link ARx_Func4.ag/GETSPACE()}
+      @{"    IMPORT                                                " link ARx_Func4.ag/IMPORT()}
+      @{"    NEXT                                                  " link ARx_Func4.ag/NEXT()}
+      @{"    NULL                                                  " link ARx_Func4.ag/NULL()}
+      @{"    OFFSET                                                " link ARx_Func4.ag/OFFSET()}
+      @{"    PERMIT                                                " link ARx_Func4.ag/PERMIT()}
+      @{"    STORAGE                                               " link ARx_Func4.ag/STORAGE()}
+      @{" Bit-wise operations                                      " link ARx_Func4.ag/BITLIST}
+      @{"    BITAND                                                " link ARx_Func4.ag/BITAND()}
+      @{"    BITCHG                                                " link ARx_Func4.ag/BITCHG()}
+      @{"    BITCLR                                                " link ARx_Func4.ag/BITCLR()}
+      @{"    BITCOMP                                               " link ARx_Func4.ag/BITCOMP()}
+      @{"    BITOR                                                 " link ARx_Func4.ag/BITOR()}
+      @{"    BITSET                                                " link ARx_Func4.ag/BITSET()}
+      @{"    BITTST                                                " link ARx_Func4.ag/BITTST()}
+      @{"    BITXOR                                                " link ARx_Func4.ag/BITXOR()}
+
+@{fg highlight}ARexx operators:@{fg text}
+      @{" Concatenation                                            " link ARx_Operator.ag/CONCATENATION}
+      @{" Arithmetic                                               " link ARx_Operator.ag/ARITHMETIC}
+      @{"    Table of arithmetic operators                         " link ARx_Operator.ag/ARITHTABLE}
+      @{" Comparison                                               " link ARx_Operator.ag/COMPARISON}
+      @{"    Table of comparison operators                         " link ARx_Operator.ag/CMPRTABLE}
+      @{" Logical                                                  " link ARx_Operator.ag/LOGICAL}
+      @{"    Table of logical operators                            " link ARx_Operator.ag/LOGTABLE}
+      @{" Operator priority                                        " link ARx_Operator.ag/PRIORITY}
+      @{" Parentheses: Change priority                             " link ARx_Operator.ag/PARENPRIORITY}
+
+@{fg highlight}AmigaDOS command programs:@{fg text}
+      @{" RexxMast                                                 " link ARx_Cmd.ag/REXXMAST}
+      @{" RXC                                                      " link ARx_Cmd.ag/RXC}
+      @{" RX                                                       " link ARx_Cmd.ag/RX}
+      @{" HI                                                       " link ARx_Cmd.ag/HI}
+      @{" RXLIB                                                    " link ARx_Cmd.ag/RXLIB}
+      @{" RXSET                                                    " link ARx_Cmd.ag/RXSET}
+      @{" TCO                                                      " link ARx_Cmd.ag/TCO}
+      @{" TCC                                                      " link ARx_Cmd.ag/TCC}
+      @{" TS                                                       " link ARx_Cmd.ag/TS}
+      @{" TE                                                       " link ARx_Cmd.ag/TE}
+      @{" WaitForPort                                              " link ARx_Cmd.ag/WAITFORPORT}
+
+   @{fg highlight}Useful tools:@{fg text}
+      @{" WShell                                                   " link ARx_Cmd.ag/WSHELL}
+      @{" ExecIO                                                   " link ARx_Cmd.ag/EXECIO}
+
+@{" Error codes and messages                                       " link ARx_Error.ag/MAIN}
+
+@{" GLOSSARY                                                       " link GLOSSARY}
+@{" INDEX                                                          " link ARx_Index/ARx_NdxCont}
+
+@endnode
+
+@node GLOSSARY " ARexxGuide | GLOSSARY (Press -Retrace- to return to previous node)
+@prev MAIN
+@next MAIN
+@{fg highlight}ARexxGuide glossary of terms@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ADDRESS STRING  A four-character (4-byte) string that represents a
+                  machine address. The character @{" string " link ARx_Elements2.ag/STRINGEXPR} will be
+                  meaningless in itself, but can be translated to
+                  meaningful form with the @{" c2d() " link ARx_Func2.ag/C2D()} or @{" c2x() " link ARx_Func2.ag/C2X()} functions.'
+
+    @{" ASSIGNMENT " link ARx_Elements3.ag/ASSIGNMENT}  A process that gives (assigns) a value of some kind
+                  to a variable. An @{" assignment clause " link ARx_Elements3.ag/ASSIGNMENT} takes this form:
+
+                                 <symbol> = <expression>;
+
+                  The <symbol> -- a @{" variable " link ARx_Elements2.ag/VARIABLE} --  becomes a placeholder
+                  for the value of <expression>.
+
+                  There are also other less common, ways that an
+                  assignment can be made, notably the @{" PARSE " link ARx_Instr2.ag/PARSE} and
+                  @{" DO " link ARx_Instr.ag/DO} instructions.
+
+         BOOLEAN  Either true or false, which -- in ARexx -- is
+                  considered to be 1 for true and 0 for false. Named
+                  after the mathematician George Boole.
+
+
+        @{" CLAUSE " link ARx_Elements3.ag/CLAUSE}  A collection of @{" tokens " link ARx_Elements.ag/TOKEN} forming a program statement
+                  that can be executed by ARexx, usually contained on a
+                  single line. A clause is the smallest language unit
+                  that can be executed as a statement.
+
+       @{" COMMAND " link ARx_Elements3.ag/COMMAND}  A program statement ( a @{" clause " link ARx_Elements3.ag/CLAUSE}) that is sent to an
+                  external environment ( the @{" host " link ARx_Elements3.ag/HOST}) to be run. The host
+                  determines the syntax and other requirements for a
+                  command. Although it is often overlooked, commands
+                  should be enclosed in quotation marks.
+
+            CON:  Or: Console Window. A @{" logical device " link ARexxGuide.guide/GLOSSARY  139} that opens a
+                  text window on the Workbench or other public screen.
+                  This device can be used as the <filename> with the
+                  file @{" I/O functions " link ARx_Func3.ag/FILEIOLIST} to direct output to a window
+                  opened by the script.
+
+     CONCATENATE  To combine one part with another to form a new whole.
+                  When two strings are concatenated, they are joined
+                  together to form a new string.
+
+                  A space between two expressions acts as a concaten-
+                  ation operator in ARexx as do the characters `||''.
+
+      @{" CONSTANT " link ARx_Elements.ag/CONSTANT}  In ARexx, a symbol that cannot be used as the target
+                  of a variable @{" assignment " link ARx_Elements3.ag/ASSIGNMENT}. The most common constants
+                  in ARexx are numbers.
+
+  @{" CONTINUATION " link ARx_Elements.ag/COMMA}  When a comma `,'' is used as the last significant
+                  @{" token " link ARx_Elements.ag/TOKEN} in a line, it indicates that the current line
+                  should be combined with the next line to form a
+                  single @{" clause " link ARx_Elements3.ag/CLAUSE}. @{" Comments " link ARx_Elements.ag/COMMENT} and other @{" null " link ARx_Elements3.ag/NULL} values may
+                  be included after the continuation token.
+
+
+CONTROL STRUCTURE A programming construct that allows a series of
+                  statements to be executed as part of a block. The
+                  instructions @{" DO " link ARx_Instr.ag/DO}, @{" SELECT " link ARx_Instr3.ag/SELECT}, and @{" IF " link ARx_Instr.ag/IF} create control
+                  structures in ARexx.
+
+           DEBUG  To search for and eliminate (eventually) problems or
+                  bugs in a program. The @{" TRACE " link ARx_Instr3.ag/TRACE} instruction aids
+                  debugging in ARexx.
+
+          DYADIC  Having two parts. In ARexx, the term refers to
+                  @{" operations " link ARx_Elements3.ag/OPERATION} that have two operands (2 + 2, for
+                  instance). Some operations have only one operator
+                  (-1, for instance) and are referred to here as
+                  prefix operations. The more technical name for the
+                  opposite of a dyadic operation is unary operation.
+
+       EGREGIOUS  It means "very bad," but use of this word shows that
+                  the writer has spent too much time in the company of
+                  lawyers. (Which may be the same thing, come to think
+                  of it.)
+
+     EXPONENTIAL  A way of writing a @{" number " link ARx_Elements2.ag/NUMBER} in which one value --
+                  the exponent -- is a power of ten by which the other
+                  value will be multiplied before use.
+
+                  In ARexx, an `e'' in a number indicates exponential
+                  notation. 7.34e6 is the same number as 7340000.
+
+    @{" EXPRESSION " link ARx_Elements2.ag/EXPRESSION}  One or more @{" tokens " link ARx_Elements.ag/TOKEN} that can be evaluated to produce a
+                  a single value. An expression can be anything from a
+                  single number to a mixture of numbers, strings,
+                  variables, sub-expressions, and function calls.
+
+      @{" FUNCTION " link ARx_Elements3.ag/FUNCTION}  A subprogram that returns a single value to the
+                  calling environment. A function might be defined in
+                  any of several ways. Some are a @{" built-in " link ARx_Elements3.ag/BLTFUNC} feature of
+                  the language, some are available in external
+                  @{" libraries " link ARx_Elements3.ag/LIBFUNC}, and some are written by the user either
+                  as a @{" subroutine " link ARexxGuide.guide/GLOSSARY  248} in the executing script or as an
+                  external program.
+
+             GUI  Graphic User Interface. It's the acronym used to refer
+                  to things like windows, icons, mouse pointers, menus,
+                  and requesters that are common on the current
+                  generations of computer systems.
+
+          @{" HOST " link ARx_Elements3.ag/HOST}  A program that can accept and act on commands issued
+                  from an ARexx script. The @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction is used
+                  to set up communication with a host.
+
+   @{" INSTRUCTION " link ARx_Elements3.ag/INSTRUCTION}  The basic program statement in ARexx scripts. An
+                  instruction may include several clauses, but always
+                  begins with a REXX @{" keyword " link ARexxGuide.guide/GLOSSARY  135} which must be the first
+                  @{" token " link ARx_Elements.ag/TOKEN} in the @{" clause " link ARx_Elements3.ag/CLAUSE}.
+
+                  Instruction include @{" IF " link ARx_Instr.ag/IF}, @{" CALL " link ARx_Instr.ag/CALL}, @{" DO " link ARx_Instr.ag/DO} and similar
+                  statements.
+
+     INTERPRETER  A program that translates source code (the program
+                  lines you write) into machine instructions. It does
+                  that each time the script is run. @{" RexxMast " link ARx_Cmd.ag/REXXMAST} is the
+                  ARexx interpreter program.
+
+            @{" IO " link ARexxGuide.guide/GLOSSARY  122}  Input/Output. The term refers to the various ways of
+                  obtaining data and displaying or saving it. The I/O
+                  system on the Amiga includes disk drives, windows,
+                  and requesters.
+
+       ITERATION  A program-ese synonym for `repetition'. To a human
+                  the instruction to "Do forever" would be a Sisyphean
+                  punishment. To a computer, it is just another task.
+                  In ARexx, iteration is performed by a single
+                  instruction, @{" DO " link ARx_Instr.ag/DO}, which has a wide range of options
+                  to give the programmer control over when the
+                  iteration stops.
+
+         KEYWORD  The word that identifies an ARexx @{" instruction " link ARx_Elements3.ag/INSTRUCTION} or the
+                  option to an instruction. Keywords and instructions
+                  are detailed in the Instruction reference.
+
+  LOGICAL DEVICE  A part of the computer system defined through
+                  software. In AmigaDOS, logical devices intervene
+                  between the application program (including ARexx) and
+                  such hardware devices as disk drives, printers, and
+                  the monitor screen.
+
+            LOOP  A section of program code that is repeated (or
+                  iterated). Looping in ARexx is controlled by the @{" DO " link ARx_Instr.ag/DO}
+                  instruction.
+
+           MANTRA  In Hinduism, a sacred formula, repeated over and over
+                  again, that is believed to posses special power.
+                  (Looking up this word demonstrates one of two things:
+                  either the user wasn't around for the 60''s or wasn't
+                  paying attention. <insert smiley chars> )
+
+          NESTED  To place one thing within another just as an egg is
+                  placed in a bird's nest. A nested function is one
+                  function used as an argument to another function as
+                  in RIGHT(TRUNC(Amount, 2), 6). Here the @{" TRUNC() " link ARx_Func2.ag/TRUNC()}
+                  function, which truncates the decimal points on a
+                  number, is nested within the @{" RIGHT() " link ARx_Func.ag/RIGHT()} function, which
+                  right-justifies the resulting number.
+
+            NIL:  A @{" logical device " link ARexxGuide.guide/GLOSSARY  139} recognized by AmigaDOS that will
+                  throw away input or output directed to it.
+
+        @{" NUMBER " link ARx_Elements2.ag/NUMBER}  A string or symbol made up only of digits (0 - 9)
+                  with an optional decimal point `.'' that may be
+                  placed anywhere within the string -- at the
+                  beginning, at the end, or anywhere in between.
+
+                  Another option allows for @{" exponential notation " link ARexxGuide.guide/GLOSSARY  80}
+                  when the letter `e' is included within the string:
+                  The number to the right of the `e'' is interpreted
+                  as the exponent to the value on the left.
+
+     @{" OPERATION " link ARx_Elements3.ag/OPERATION}  An @{" expression " link ARx_Elements2.ag/EXPRESSION} that includes an @{" operator " link ARx_Elements3.ag/OPERATION} and usually
+                  two terms that are combined in a way specified by the
+                  operator to produce a new single value. `3+5'' is an
+                  arithmetic operation.
+
+                  Some operators (like negation) act on a single term
+
+      @{" OPERATOR " link ARx_Elements3.ag/OPERATION}  Any of a variety of @{" tokens " link ARx_Elements.ag/TOKEN} that represent an
+                  @{" operation " link ARx_Elements3.ag/OPERATION} that is to be performed on the adjoining
+                  @{" expressions " link ARx_Elements2.ag/EXPRESSION}. Operators include these characters
+                  (sometimes used in combination):
+
+                                  + - * / % | & = ~ > <
+
+                  A space between two strings is also an operator.
+
+     PREFERENCES  A series of programs that are part of the Amiga OS.
+                  They allow the user to customize most aspects of the
+                  system.
+
+     PROTOTYPING  The process of developing an initial version of a
+                  software application in one language to test the
+                  logic of the code and the usefulness of contemplated
+                  options.
+
+            PRT:  A @{" logical device " link ARexxGuide.guide/GLOSSARY  139} recognized by AmigaDOS that directs
+                  output to the printer defined in Preferences. This
+                  device can be used as the <filename> with the file
+                  @{" I/O functions " link ARx_Func3.ag/FILEIOLIST} to print data from an ARexx script.
+
+        RESERVED  A @{" token " link ARx_Elements.ag/TOKEN} that serves a specialized purpose in the
+                  language and cannot be used for any other purpose.
+
+                  REXX has a limited set of reserved tokens: The single
+                  characters representing @{" operators " link ARx_Elements3.ag/OPERATION} and @{" special " link ARx_Elements.ag/SPECCHAR}
+                  characters are reserved in all situations.
+                  Instruction @{" keywords " link ARexxGuide.guide/GLOSSARY  135} and sub-keywords are reserved
+                  only within the limited range of the instruction
+                  itself. The variables [x] and [b] -- although they
+                  are not technically reserved -- should be avoided
+                  because of possible conflicts with @{" hex " link ARx_Elements.ag/HEXSTRING} and binary
+                  strings.
+
+          STDERR  Standard error device. This is the logical name
+                  assigned to a device to which ARexx will send error
+                  messages and the output of tracing. If the trace
+                  console is open, that will become STDERR. The PARSE
+                  @{" EXTERNAL " link ARx_Instr2.ag/PARSESRC3} instruction retrieves input from this device.
+
+           STDIN  Standard input device. This is the logical name
+                  assigned to a device from which ARexx will retrieve
+                  input then the @{" PARSE PULL " link ARx_Instr2.ag/PARSESRC2} instruction is used. It
+                  is usually the shell from which a program was
+                  launched, although a script started from another
+                  environment will often have @{" STDIN " link ARexxGuide.guide/GLOSSARY  225} assigned to @{" NIL: " link ARexxGuide.guide/GLOSSARY  163}.
+
+          STDOUT  Standard output device. This is the logical name of
+                  the device to which ARexx will output the expression
+                  used in a SAY instruction. It is usually the shell
+                  from which a program was launched, although a script
+                  started from another environment will often have
+                  STDOUT assigned to NIL:.
+
+        @{" STRING " link ARx_Elements2.ag/STRINGEXPR}  A character or group of characters that are stored
+                  and referenced as a unit. A `literal string'' or
+                  @{" string token " link ARx_Elements.ag/STRING} is surrounded by quotation marks --
+                  either single { '' } or double { " }, but the word
+                  `string' may also refer to the value of a variable,
+                  or the result of an expression.
+
+                  A string can comprise up to 65535 characters.
+
+      SUBROUTINE  A section of code separated from the main body of a
+                  program. In ARexx, subroutines are identified by
+                  @{" labels " link ARx_Elements3.ag/LABEL} and usually serve as @{" internal functions " link ARx_Elements3.ag/PROGFUNC}.
+
+      @{" SYMBOL " link ARx_Elements.ag/SYMBOL}  A @{" token " link ARx_Elements.ag/TOKEN} made up of any of the following alphabetic
+                  characters, digits, or special characters:
+
+                      A to Z  a to z  0 to 9  . ! $ _ @ #
+
+                  The following are symbols: Names for @{" variables " link ARx_Elements2.ag/VARIABLE} or
+                  @{" functions " link ARx_Elements3.ag/FUNCTION}, @{" numbers " link ARx_Elements2.ag/NUMBER}, and instruction @{" keywords " link ARexxGuide.guide/GLOSSARY  135}.
+                  A symbol may be entered in a mixture of upper- and
+                  lowercase alphabetic characters, but all symbols are
+                  translated to uppercase during evaluation.
+
+                  Symbols can have up to 65535 characters.
+
+         @{" TOKEN " link ARx_Elements.ag/TOKEN}  The simplest (smallest) item in the language, from
+                  which more complex elements are formed. A token might
+                  be a single character like `+'' or `/'', a number, or a
+                  word like `FOO'' or `CALL''.
+
+        TRUNCATE  To shorten by chopping off the trailing end. If a
+                  decimal number like 1.9 is truncated to one digit, it
+                  would become 1, rather than the number 2 that would
+                  result from rounding the number.
+
+      @{" VARIABLE " link ARx_Elements2.ag/VARIABLE}  A @{" symbol " link ARx_Elements.ag/SYMBOL} that becomes a placeholder for another value
+                  and can, in most cases, be used in place of the
+                  literal value it represents. A variable name follows
+                  general symbol-naming rules.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@endnode
+
+@node IACTEXMP "ARexxGuide | Interactive examples -- Requirements"
+@prev MAIN
+@next MAIN
+The @{" registration form " link REG} and several @{" interactive examples " link ARX_TUTOR.AG/MAIN} scattered
+throughout ARexxGuide use ARexx scripts to provide the interactive
+environment. Because they must try to run a script, the buttons impose
+some extra requirements:
+
+      1. The @{" RX " link ARx_Cmd.ag/RX} command must be located in a directory that is included
+         in the Workbench command search path.
+
+The RX command is included in a special directory, "rexxc," on Workbench
+disks distributed by Commodore. If the contents of that directory are not
+included in your search path, the links will fail. Either add "sys:rexxc"
+to the search path or move RX to a directory like "C:" that is already in
+the path.
+
+(AmigaGuide has a built-in "RX" link command. It is not used here because
+scripts launched with the command exhibit some inconsistent behavior.)
+
+      2. The #?.rexx files distributed with the ARexxGuide archive must be
+         stored either in the @{" REXX: directory " link ARx_Intro.ag/STARTUP 18} or in ARexxGuide's current
+         directory.
+
+The most versatile place to store any .rexx file is in the REXX: directory
+since it can then be found and launched by RX no matter what the current
+directory is. That directory can become crowded, however. Since the
+@{" interpreter " link ARexxGuide.guide/GLOSSARY  117} looks for files first in the current directory, it can be a
+useful alternative for task-specific ARexx scripts like those included
+with this guide.
+
+If you decide to keep the .rexx files in another directory and if the
+guide is launched from a shell or directory utility, the `CD' command
+should be used before launching the guide to change the working directory
+to the location of the .rexx files. If the guide is launched with an icon,
+the .rexx files should be stored in the same directory as the icon's .info
+file.
+
+      3. AmigaGuide should be launched as a command rather than through a
+         call to the ShowNode() function of amigaguide.library.
+
+Scripts that use the library function to launch AmigaGuide files have
+circulated on the nets. Use of the function limits AmigaGuide's ability to
+call ARexx scripts.
+
+
+@endnode

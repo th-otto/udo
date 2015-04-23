@@ -1,0 +1,264 @@
+
+LIBRARIES
+
+----------------------------------------------------------------------
+1. Editing notebook activepage, cannot select from dropdown list. (Actually, requires IDE enhancements.
+But could provide a property editor.)
+
+----------------------------------------------------------------------
+2. Additional zero written when copying zero-terminated strings
+- Fixed in SP4
+- Fixed in v2.0.3.1
+
+This is a bug in StringCopy in SysUtils. [NB There are also StrCOpy functions
+in Strings.pas and System.pas!]
+
+----------------------------------------------------------------------
+3. Hint windows don't always deactivate properly
+- Does not correctly detect when app focus lost. 
+However, this is
+very tricky to do well on OS/2. Other apps have the same problem. Most
+compatible solution is discussed on EDM... (?)
+
+----------------------------------------------------------------------
+4. Too much useage of Private in SPCC
+A design flaw, but copied from Delphi :-(
+
+Prevents fixing bugs or enhancements without copying code. Could change to protected
+
+----------------------------------------------------------------------
+5. Bitmap button disabled drawing looks bad in some situations
+Better disable picture. Use psAlternate (psInsideFrame before FP4). 
+Or generate/load proper disabled bitmap
+
+Fixed in SPCC v2.0.3.6
+
+----------------------------------------------------------------------
+6. Radio button group item index cannot be set until visible
+
+Fixed in SPCC v2.0.3.7
+
+----------------------------------------------------------------------
+7. Need popup index for listbox and outline
+When right mouse popup menu is activated, it's not possible to
+tell which item was right clicked.
+Alternatively, could set the item index 
+- Not fixed
+
+----------------------------------------------------------------------
+8. File controls cannot be refreshed through code
+Directory outline, directorylistbox, filelistbox
+
+- ?
+
+----------------------------------------------------------------------
+9. StringLists, Memo lines etc are limited to 255 chars.
+No good solution until AnsiStrings are finished.
+
+----------------------------------------------------------------------
+10. Nothing resets TForm.FIsModal...
+
+10b. Apparent duplication between fismodal and fmodalshowing
+
+----------------------------------------------------------------------
+11. Task list entries being left behind when app closes (fp4)
+Fixed in FP4 refresh
+
+----------------------------------------------------------------------
+12. Font allocation
+There seem to be memory problems with frequently changing font. 
+( ? Related to font dereferencing bug, see below?)
+
+[NB Sibyl does not use the OS/2 logical font mechanism. Each time the font
+is changed on a canvas the old font is destroyed and a new one create.
+This is not efficient for drawing with several different fonts.
+
+However, this is more of an enhancement than a bug fix].
+
+----------------------------------------------------------------------
+13. Problem dereferencing fonts: Crash in Font Dialog
+Fixed in v2.0.3.1
+
+When Sibyl library destroys a font due to the usecount being zero, the
+TFont reference is still left as non-nil. 
+
+This makes the font dialog crash on the second or later useage. It would
+also cause other font problems, depending on how you use them.
+
+----------------------------------------------------------------------
+14. Combo box does not drop down on click 
+You have to click the V button, clicking within the edit is not enough.
+
+Fixed in Fp4 (not quite properly - missing double click handling)
+Fixed in v2.0.3.4
+
+14a. Cannot click and drag thru combo
+Fixed for Linux?
+Not very important.(?)
+
+14b. Combo does not appear disabled (? text may be grayed, button is not)
+
+----------------------------------------------------------------------
+15. Modal dialogs appear as seperate tasklist entry
+Partially fixed in FP4 (not properly)
+Fixed in v2.0.3.2
+
+----------------------------------------------------------------------
+16. Clicking on disabled control in main window, while modal dialog
+showing, focuses the main window!
+
+Not fixed.
+
+----------------------------------------------------------------------
+17. Property "Enabled" does not effect the frame (FB)
+? 
+Fixed in FP4
+
+----------------------------------------------------------------------
+18. TTrackBar ignores some properties while loading from SCU (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+19. TGrid "TopRow" and "LeftCol" properties doesn't work correctly (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+20. TEdit '&' characters where replaced automatically by '~' characters (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+21. Functions "Time" and "Now" raise exceptions in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+22. TWinSockProcs has the wrong calling convention in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Redraw bug in the last panel of TStatusbar if Alignment <> LeftJustify (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Key stroke AltGr+BkSp should trigger the "Undo" command in the editor (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TCombobox.PopupMenu crashs (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Application.Font is overrided by MainForm.Font (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- DOS.SetTime doesn't return an error code (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Sibyl hangs while loading OS/2 bitmaps from SCU in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TColorDialog doesn't recognize the name of the selected color (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TCustomHintWindow doesn't work in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TEdit.MaxLength property is ignored in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Constant CRA_SOURCE not declared in PMStdDlg.pas (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- ParamStr() doesn't work in programms started from IDE in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TTimer method corrupts the heap (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Problems while converting special german characters (umlaut) between OS/2 
+  and Win32 projects (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TMemo and TEdit doesn't accept special german characters (umlaut) in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TSystemOpenDialog and TSystemSaveDialog doesn't work in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TForm.OnActivate and TForm.OnDeactivate doesn't work in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Context menus capture the focus after selection of a menu item in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Cursor has the wrong position after activation of a MDI window in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Focus doesn't change correctly in MDI windows in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Redraw bug in TTabset in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TClipBoard doesn't work in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Redraw bug in THeaderControl in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- TEdit and TComboBox don't have (working) popup menus
+Containing, e.g. copy, paste etc
+
+----------------------------------------------------------------------
+- TRadiogroup does not appear disabled
+
+----------------------------------------------------------------------
+- Subsequent showmodals of a TForm, don't set default button
+
+----------------------------------------------------------------------
+- TGrid - large scroll jump skips 1 row
+
+----------------------------------------------------------------------
+- Mnemo chars look like crap due to OS/2 underlining
+Fixed in v2.0.3.5
+
+----------------------------------------------------------------------
+File list box drawing slightly buggy
+
+----------------------------------------------------------------------
+Standard dialogs would be better sizeable
+
+----------------------------------------------------------------------
+Multi-select listboxes are incredibly slow because
+of the copy that it makes of the selected state for 
+*every item*, whenever selection changes; further more to
+find which item was focussed for ItemFocus it looks through the
+whole array comparing it to the current selected state. Why!?
+
+Enhancements/Other issues
+-------------------------
+
+How to make window stay on top
+(for modeless dialogs: use WinSetOwner( TheWindow.Frame.Handle, 
+					OwnerWindow.Frame.Handle );
+
+Make hints show up for disabled controls ( maybe OS/2 limitation ? )
+

@@ -1,0 +1,179 @@
+@database "ARx_PrgUcr.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node main  " Tutorial: A program to automate dissolving of archived files"
+@toc ARexxGuide.guide/MAIN
+@prev ARx_TUTOR.ag/MAIN
+@next ARx_TUTOR.ag/MAIN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+
+@endnode
+@node UCREXPLAN " ARexxGuide | Tutorial (3 of 3) | Uncrunch program"
+@toc ARx_TUTOR.ag/MAIN
+@prev ARx_Tutor.ag/MCRINTRO
+@next ARx_TUTOR.ag/MAIN
+A complete program example
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+The program that follows is but one way to accomplish a task that is
+often one of the more tedious for those who use files from networks and
+bulletin boards: uncrunching files from archives created with a variety
+of archiving utilities.
+
+This program provides a single, consistent CLI interface for the many
+different utilities.
+
+      @{" View program        " link UCRCODE}
+
+The tutorial demonstrates the use of @{" internal functions " link ARx_Elements3.ag/PROGFUNC}, the @{" ARG " link ARx_Instr.ag/ARG}
+instruction, @{" comparison operators " link ARx_Operator.ag/COMPARISON}, and of the several @{" built-in " link ARx_Elements3.ag/BLTFUNC}
+functions that allow manipulation of character strings.
+
+Pressing any of the highlighted lines calls up explanatory text for that
+line. The explanations include extensive links to nodes elsewhere in this
+guide. Pressing any of those link points with the shift key depressed will
+open a new window for the link. If a new window is not opened, pressing
+-Retrace- will return the the program explanation node.
+
+The complete text for this program is included in the file in the
+distribution archive: ARx_UnCrunch.rexx.
+
+Next: Program code | Prev: Tutorials | Contents: Tutorials
+
+@endnode
+
+@node UCRcode "ARexxGuide | Tutorials | UNCRUNCH.REXX "
+@toc UCREXPLAN
+@next UCREXPLAN
+/**** UnCrunch.rexx ****************  Unarchive any file ****************
+**
+**    A tutorial example to ARexxGuide
+*/
+
+@{" arg FileName UCdir .                                                " link ARx_UcrTutor1.ag/PRG5}
+
+@{" if FileName = '?' then                                              " link ARx_UcrTutor1.ag/PRG7}
+@{" do                                                                  " link ARx_UcrTutor1.ag/PRG8}
+@{"    options prompt 'UCR FILENAME/A, DESTINATION/F: '                 " link ARx_UcrTutor1.ag/PRG9}
+@{"    pull FileName UCdir                                              " link ARx_UcrTutor1.ag/PRG10}
+ end
+
+@{" if FileName = '' then                                               " link ARx_UcrTutor1.ag/PRG13}
+    do
+      call Usage('You must supply the name of a file to uncrunch.')
+      exit 19
+    end
+    else
+      if ~exists(FileName) then
+      do
+         call Usage(Can't open' FileName 'for input - object not found)
+         exit 20
+      end
+@{" if UCdir = '' then                                                  " link ARx_UcrTutor1.ag/PRG24}
+@{"    UCdir = 'RAM:'                                                   " link ARx_UcrTutor1.ag/PRG25}
+ else
+@{"    if right(UCdir, 1) ~= ':' & right(UCdir, 1) ~= '/' then          " link ARx_UcrTutor1.ag/PRG27}
+       UCdir = UCdir || '/'
+
+@{" ArcExt = upper(right(FileName, 3))                                  " link ARx_UcrTutor1.ag/PRG30}
+
+@{" address command                                                     " link ARx_UcrTutor1.ag/PRG32}
+@{" select                                                              " link ARx_UcrTutor1.ag/PRG33}
+@{"    when ArcExt = 'LZH' | ArcExt = 'LHA' then                        " link ARx_UcrTutor1.ag/PRG34}
+       /* Substitute 'lz' for 'lha'if you prefer to use it */
+@{"       'Lha -x x' FileName '#?' UcDir                                " link ARx_UcrTutor1.ag/PRG36}
+    when ArcExt = 'ZOO' then
+@{"       call SetDest('ZOO x//')                                       " link ARx_UcrTutor1.ag/PRG38}
+    when ArcExt = 'ARC' then
+       call SetDest('ARC x')
+    when ArcExt = 'ZIP' then
+       call SetDest('UNZIP')
+@{"    otherwise                                                        " link ARx_UcrTutor1.ag/PRG43}
+       say FileName 'is not valid archive'
+       say 'Filename must end in "LZH", "LHA", "ZOO", "ZIP", or "ARC"'
+       exit 11
+@{" end                                                                 " link ARx_UcrTutor1.ag/PRG47}
+
+ exit
+
+
+   /* ZOO and ARC uncrunch all files to the current directory           **
+   ** The following subroutine changes the current directory to that    **
+   ** specified for uncrunching                                         */
+
+
+@{" SetDest:                                                            " link ARx_UcrTutor2.ag/PRG57}
+@{"    parse arg AProg                                                  " link ARx_UcrTutor2.ag/PRG58}
+@{"    cdir = pragma('D')          /* Store the current directory */    " link ARx_UcrTutor2.ag/PRG59}
+
+@{"       /* Change archive filename to a path/file that can be      */ " link ARx_UcrTutor2.ag/PRG61}
+       /* understood from a different directory                   */
+@{"    FDir = CDir                                                      " link ARx_UcrTutor2.ag/PRG63}
+    select
+@{"       when pos(':', FileName) > 1 then                              " link ARx_UcrTutor2.ag/PRG65}
+          FDir = ''   /* device is already specified. Don't change*/
+@{"       when left(FileName, 1) == '/' then                            " link ARx_UcrTutor2.ag/PRG67}
+             /* Strip off leading '/' in filename */
+@{"       do while left(FileName, 1) == '/'      /* is 1st char '/'? */ " link ARx_UcrTutor2.ag/PRG69}
+@{"          FileName = substr(FileName, 2)      /* strip it off     */ " link ARx_UcrTutor2.ag/PRG70}
+          PLn = length(FDir) - 1
+@{"          DivPos = max(lastpos('/', FDir,Pln),,                      " link ARx_UcrTutor2.ag/PRG72}
+                            lastpos(':', FDir, Pln))
+@{"          FDir = left(FDir, DivPos)                                  " link ARx_UcrTutor2.ag/PRG74}
+       end
+@{"       when left(FileName,1) = ':' then                              " link ARx_UcrTutor2.ag/PRG76}
+@{"          parse var CDir FDir ':' .                                  " link ARx_UcrTutor2.ag/PRG77}
+       otherwise
+@{"          if verify(right(FDir, 1), '/:', 'M') ~= 0 then             " link ARx_UcrTutor2.ag/PRG79}
+             FDir = FDir'/'
+    end
+@{"    FileName = FDir||FileName                                        " link ARx_UcrTutor2.ag/PRG82}
+
+@{"       /* Perform the uncrunching                                 */ " link ARx_UcrTutor2.ag/PRG84}
+@{"    'cd \"'UCdir'\"'                                                   " link ARx_UcrTutor2.ag/PRG85}
+@{"     ''AProg '\"'FileName'\"'                                          " link ARx_UcrTutor2.ag/PRG86}
+    'cd "'CDir'"'
+
+@{" return                                                              " link ARx_UcrTutor2.ag/PRG89}
+
+Usage:
+@{"   if arg(1, 'E') then                                               " link ARx_UcrTutor2.ag/PRG92}
+@{"      say arg(1)                                                     " link ARx_UcrTutor2.ag/PRG93}
+    say 'Usage:'
+    say '  ucr <filename> [destination]'
+    say '      <filename> must end with valid archive extension.'
+    say '      [destination] is the dir in which files will be uncrunched.'
+    say ''
+    exit 20
+ end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@endnode

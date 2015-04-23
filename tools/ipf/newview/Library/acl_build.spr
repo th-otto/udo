@@ -1,0 +1,8 @@
+[Directories]
+
+OutDir=P:\newview_dev\build\library
+LibDir=P:\newview_dev\build\sibyl\lib
+
+[Project Files]
+
+Primary=.\ACLLibrary.pas

@@ -1,0 +1,558 @@
+NewView Design Notes
+--------------------
+
+Like all good hobbyist apps NewView didn't really get an overall design.
+Overall it is largely on Windows HTMLHelp, although arguably that is a fairly 
+obvious design these days.
+
+Some aspects of it are somewhat non-obvious.
+
+NewView.exe is a Speedsoft Sibyl application. The original Sibyl libraries
+have been significantly bug-fixed, and slightly enhanced for performance etc.
+They were originally Sibyl Fixpack 3, as I had difficulties with Fixpack 4
+(FP4 introduced Linux support, so changed many things and broke some).
+
+The new HelpMgr.dll is written using Open Watcom C++
+http://openwatcom.org
+Actually it's straight C, for some reason I did not use C++...
+
+===============================================================================
+
+Sibyl Problems
+--------------
+
+- NewView is near a limit on the total number of Units that can be linked.
+I've removed unneeded dependencies, we must be down to about 6 remaining...
+
+The max I could use had 28 files in the project plus 108 dependencies
+
+- As always you can't use optimisation. Most of it probably works but
+especially the bitmap decompression was going wrong when I accidentally
+turned optimisation on.
+
+- I/O checking is a funny thing. The original Sibyl code turned it off
+explicitly in system.pas so it was useless. I changed that.
+
+- Assembler: Sibyl doesn't recognise some valid 386 instructions
+and certainly can't do any Pentium/SSE/SSE2/3dNow instructions :)
+
+===============================================================================
+
+Strings
+-------
+
+Unfortunately Sibyl is still stuck in the Delphi 1.0 (?) days when strings
+were at most 255 bytes. This makes them useless for a lot of the stuff NewView
+does (such as decoding help topics). Sibyl has AnsiStrings, which are large,
+referenced counted strings. I think they do work, but unfortunately most of
+Sibyl's libraries do not use them, and without optimisation there is no
+efficient way to concatenate onto ansistrings(!).
+
+As a result of all this I use pchars (zero terminated strings), or
+my TAString class. This is incredibly tedious compared to automatically managed
+strings, but no worse than any other objects in Object Pascal, and these strings
+are pretty efficient for concatenation, and have no length limits. I made
+many conversion functions such as AsString to make it easier to combine with
+other types of strings.
+
+===============================================================================
+
+Performance
+-----------
+
+Currently, TAString has a cunning piece of code that explicitly checks for
+invalid object references in *every method*. While very cunning, this is kind of
+ridiculous performance wise, because it sets up exception handling even for addition
+of a single character. Probably, it should be compiled out for a release mode.
+
+Sibyl's compiler is unfortunately completely broken in optimising mode. How a
+commercial compiler could be released like this is an interesting question. Suffice
+to say, Sibyl gives you fast-ish compiled code, but it is probably less than half
+as fast as a properly optimsed C/C++ program, maybe much worse. This is primarily
+because it does not make much use of registers, instead using stack for nearly
+everything.
+
+In any case, I have done a few key things:
+
+- const string parameters wherever possible.
+  This avoids the large overhead of copying the entire string each call
+
+- assembly for a few key things
+  Sibyl already has some assembly for certain string ops, I added a few more.
+  More could be used, but there are diminishing returns. Sibyl does have
+  a highly optimised Move (memory copy) so that is used e.g. in TAString
+
+- Minimising string operations
+  Some bits of the help topic decoding are a bit longer to avoid so much
+  copying of strings.
+
+Of course, algorithms have been optimised carefully, especially in the area
+of file I/O: I changed the help file loader over from loading the entire file
+to just loading pieces as needed.
+
+On the whole this achieves decent peformance. Unfortunately, the SPCC component
+library seems somewhat sluggish - not to the level of interpreted code, but
+definitely much less snappy than compiled C apps. Here, I think optimisation is
+desperately needed, to speed up all the repititive loops in e.g. loading forms
+from SCU (resource) data. Short of re-writing the whole thing in C/C++ this cannot
+be improved much.
+
+===============================================================================
+
+Multi-lingual Support
+---------------------
+
+The goals of the language code is
+
+a) Load languages at runtime, reasonably fast
+b) Be human editable, so that people can contribute without
+   any tools required or even contacting the author
+c) Be able to update an existing language file with missing
+   items to avoid manual tracking of which strings have
+   been translated
+d) Minimal specific code
+
+b and c are to encourage open source contributions.
+
+Resources or msg files would satisfy a, but neither is human
+editable, and both are difficult to update at runtime.
+
+Instead, I implemented the following design
+
+Language Files
+
+These files are simply text files, each line consisting of:
+
+  <item name> "<item value>"
+
+<item name> is the name of various text strings from the application.
+The names are defined by the application code.
+<item value> is the string that should be used for this language.
+Strings can be DBCS for e.g. Japanese.
+
+Forms
+
+When created, each form registers a method of itself for language events,
+which looks like this:
+
+    Procedure OnLanguageEvent( Language: TLanguageFile;
+                               const Apply: boolean );
+
+The registration is usually done in OnCreate
+
+  RegisterForLanguages( OnLanguageEvent );
+
+This callback is called in one of two cases:
+  1) Apply = true: A new language is being loaded, or
+  2) Apply = false: A language file is being updated/saved. (more later).
+
+In the either case, the form is expected to load (or pretend to load) all it's strings from the language file it is given. Specifically, it should:
+
+  1) Call the Language.LoadComponentLanguage( self, Apply )
+
+     This loads strings for any static control elements e.g.
+     menu and button captions and hints. Parts of controls that
+     are normally variable e.g listbox items are not loaded.
+
+  2) Load any strings to be used in code ("code strings")
+
+     It should do this by calling Language.LL:
+       Language.LL( Apply, <string var>, '<name of string>', '<default>' );
+     for each string to be found.
+     LL will look up the given name in the language file,
+     then store the value into the string variable, or <default> if not found.
+
+When the form first registers itself, the language callback will be
+called immediately, so the form can load the current language.
+
+Note: Even if the default language is being used (ie. no language file used,
+ie. English) this still happens so that default values can be loaded for
+code strings (e.g. prompts).
+
+If Apply is false then no strings will actually be loaded but the references (names) will be recorded.
+
+Strings Outside of Forms
+
+Code strings that are needed but aren't related to a form can be
+registering a procedure at unit initialization:
+
+  Initialization
+    RegisterProcForLanguages( OnLanguageEvent );
+
+These language events look the same as for forms but are not methods:
+
+  Procedure OnLanguageEvent( Language: TLanguageFile;
+                             const Apply: boolean );
+
+this procedure should
+
+    1) Set the prefix: Language.Prefix := '<Category>.';
+
+       This is mostly a convenience, allowing codestrings to
+       be grouped together. <Category> could be unit name, for instance.
+
+       NOTE: LoadControlLanguage sets prefix automatically to the form
+       name being loaded, which allows related codestrings to automatically
+       appear under the form name. However, this prefix remains in effect
+       until changed or another form is loaded, so you MUST set it if loading
+       strings outside a form.
+
+    2) Call LL for each needed string, as before
+
+Loading Languages
+
+  var
+    Language: TLanguageFile;
+
+  try
+    Language := TLanguageFile.Create( Filename );
+  except
+    ...
+  end;
+
+  ApplyLanguage( Language );
+
+This will call all registered methods and procedures telling them that
+a new language is to be loaded.
+
+Updating Language Files
+
+  try
+    Language := TLanguageFile.Create( Filename );
+
+    UpdateLanguage( Language );
+
+    Language.AppendMissingItems;
+  except
+    ...
+  end;
+
+  Language.Destroy;
+
+UpdateLanguage calls all registered methods and procedures, but with
+Apply set to false so that required items are searched for, but not
+actually applied to components or code string variables.
+
+After UpdateLanguage, the TLanguageFile contains a list of missing items
+and their default values. AppendMissingItems writes this list to the
+end of the file called filename.
+
+When a new language file is being saved, none of the required items
+will be found, so all of them will be stored. Note that the strings
+saved to the file will be the default value for codestring, but the
+last loaded language strings for forms.
+
+Dynamically Loaded Forms
+
+In order that language files can include all required strings,
+all forms must be loaded before updating a language file. This can be
+semi-automated by registering an "ensure loaded" procedure for each
+form:
+
+  procedure EnsureMyFormLoaded;
+  begin
+    if MyForm = nil then
+      MyForm := TMyForm.Create( nil );
+  end;
+
+then registering this procedure in the UNIT initialization:
+
+  Initialization
+  ...
+    RegisterUpdateProcForLanguages( EnsureMyFormLoaded );
+
+UpdateLanguage will call all these procedures before accessing the
+language file, ensuring that all forms are loaded.
+
+Performance of String Lookups
+
+Requirement (a) included the desire to be "reasonably fast". Well, looking up
+names in a string list is not the fastest thing to do. I've made this use
+a binary search, so the algorithm is O( N log N ) which is generally considered
+acceptable. I haven't done any timings though.
+
+Testing
+
+... there are currently 443 strings required for NewView ...
+
+In practice it seems to take no detectable time to load a language. That's
+on my Duron 1.1G, 256MB RAM.
+
+Multilingual stuff could be further optimised:
+- Optimise for sequential lookup. Most of the time, the next item will be
+  immediately after the previous item, so long as the language file
+  has not been rearranged. If not, fall back to normal search.
+  This is probably the simplest and most beneficial.
+
+- change to pstrings: instead of copying strings from the language file
+  (codestrings only), store pointers to them.
+  This would save time (since not copying so many strings) and memory
+  (since there would not be two copies of all strings).
+  The time is probably not significant because there is not a lot of data.
+  The memory would be nice to save, but a lot of the strings are component
+  properties which are generally allocated dynamically anyway, and we
+  cannot pass a pstring to component string properties.
+
+- could free strings from the language file after using them.
+  This would save memory, but might have side effects, and would be no faster.
+  OTOH it would save a lot of memory since even component properties would
+  not be duplicated.
+
+- lookup strings hiearchically (e.g. first search for formname in a small list)
+  This would be a huge improvement in speed for random access, but is probably
+  not needed if sequential access is optimised (see above)
+
+===============================================================================
+
+Exception Logging
+-----------------
+
+I added code to the Sibyl libraries to store a callstack into global variables.
+Performance wise this is outrageously inefficient since it happens on every
+exception, but then exceptions should not occur in normal processing.
+
+This global callstack can be accessed in a method specified in Application.OnException.
+
+This code doesn't currently work properly from other threads - ie. the search thread.
+
+
+===============================================================================
+
+Help Manager
+------------
+
+Replacing HELPMGR.DLL (c:\os2\dll\helpmgr.dll).
+
+HlpMgr2.pas contains a DLL implementation with the same interface.
+
+Use DLLRNAME target.exe HELPMGR=HLPMGR2 for testing.
+
+Initially, I was going to put all the code in HLPMGR2, loading mainform etc.
+
+Problem is, that programs using help manager may have very small stack space, e.g.
+ICONEDIT.EXE has 24kB. NewView overflows this and crashes.
+
+Also, as a principle, I feel uncomfortable loading all my unreliable code
+into an existing, possibly very robust application's process space, potentially
+crashing it if anything goes wrong.*
+
+The third problem was the need to implement 16-bit entry points for certain
+older applications, such as PMCHKDsk.
+
+Therefore, instead we launch a NewView session (and relaunch if needed)
+The filename is passed as normal.
+
+In addition these parameters are passed:
+/hm:xxx
+indicating "helpmanager mode"
+xxx is the HelpManager window, for NewView to send messages to.
+
+/owner:yyy
+yyy is the application window using helpmanager
+
+
+* HelpMgr is small, tight C code with lots of validation and no GUI code. It's much
+simpler than NewView itself.
+
+Who Owns the Help Window
+------------------------
+
+In original helpmgr, the help window is set to be owned by EITHER
+a) the active top-level window when help requested (by whatever means)
+OR, if set:
+b) the "relative window" set by a HM_SET_ACTIVE_WINDOW message.
+
+In NewView I've currently disabled the ownership; because it's usually more annoying than helpful.
+
+Associations
+------------
+
+One or more windows can be associated with a help instance.
+
+I suspect the original HelpMgr stores a window's associated help instance somewhere in window words, but this is not documented.
+
+Instead, I store a list of associated windows with each help instance.
+
+?? Is this section out of date?
+
+===============================================================================
+
+ViewStub
+--------
+
+ViewStub opens up shared memory and examines a linked list there, that specifies
+all files that any instance of NewView has open. If it finds the same set of files
+as is being specified in it's parameters, already open in one newview instance, then
+it just activates that instance (WinSetFocus; the list contains the main HWND).
+
+It then passes any important parameters (e.g. search text) to the existing instance
+with window messages referring to shared memory, as for help manager.
+
+If not found, then it runs a new instance of NewView (WinStartApp), passing all the
+parameters unchanged.
+
+On eCS 1.1 we have the problem that there is already a copy of newview.exe in x:\ecs\bin.
+So the installer knows about that and a full install replaces that copy. Similarly the
+help file in x:\ecs\book.
+
+===============================================================================
+
+Searching
+---------
+
+The IPF compiler creates a search index table of all the "words" in the text of help topics.
+This does not include the titles (displayed in contents) of topics, nor does it include index words.
+
+Each entry in the search table is either a series of alpha numeric characters, or a single non-alphanumeric symbol. So for example if the text of a topic includes __OS2__ then the search table will have entries for "_" and "OS2".
+
+However it is often useful to be able to search for "words" containing symbols, so the program must look for consecutive strings of search table words.
+
+NewView does this by this method:
+
+For each search term (TSearchTerm):
+  1. Seperate into IPF words (symbols and alphanumeric strings) (TSearchTerm.Parts)
+  2. Search file dictionary
+    for starting words, search for finishing matches.
+      e.g searching for "if(" we would look for words ending in "if"
+    for middle words, search for exact matches (case insensitive).
+      e.g searching for "_os2_" we would look for words matching "os2". 
+      There could only be "os2" "Os2" "OS2" and "oS2". 
+    for end words, search for beginning matches.
+      e.g searching for "if(" we would look for words starting with "("
+  3. Matched topics are where there is one or more matches for all words
+     (This is obtained by looking up matching topics for each word and 
+      ANDing the results together.)
+    AND a search thru the actual topic text shows one or more occurrences of
+    a matching sequence. e.g. we don't want _os2_ to match a topic 
+    that just contains an underscore somewhere and "os2" elsewhere.
+    This is complicated by the fact that each word can match more than 1 dictionary
+    word.
+
+
+
+Search logic is:
+
+topic match if:
+      ( ( matches all required terms ) or ( there are no required terms) )
+  and ( ( matches any optional term ) or ( there are no optional terms ) )
+  and ( doesn't match any excluded term ) or ( there are no excluded terms )
+
+Algorithimically this can be done sequentially:
+
+if no terms
+  nothing matches, abort
+
+if ( any optional terms) 
+  match each term, or results
+else
+  all topics match by default
+
+if ( any required terms )
+  match each term, and results 
+
+if ( any excluded terms )
+  match each term, and ( not results )
+
+... this has the benefit of not requiring keeping 2 flags per topic
+but who cares... that's not a big cost
+
+Keep an "allowed" (=not excldued) flag a "matched" flag
+ 
+set allowed to true for all
+set matched to false for all
+
+if optional term
+  or results -> matched flags
+if required term
+  and results -> allowed flags
+  or results -> matched flags
+if excluded term
+  and not results -> allowed flags
+
+In practice, for speed this is implemented with arrays of integers acting
+as flags, one for each topic. This is very susceptible to optimisation, even eg. SSE!
+but I have not done any since it seems pretty fast as is.
+
+
+Highlighting matching search terms.
+
+To handle multi-part search terms, the results are stored as something
+called a "word sequence". Each step of the sequence is a mask
+for the entire dictionary, indicating which words can match at
+that step. The steps are arrays and the sequence is a TList.
+
+To handle multi-term searches, we then store each of these word sequences
+in another list.
+
+Finally, because each file has it's own dictionary and search table, we store
+a final list (AllFilesWordSequences) of the results for each file.
+
+A list of results for open files
+  For each file, a list of word sequences
+    For each term, a word sequence
+      For each term part, a mask of matching words
+
+When displaying a topic, we first select a list of word sequences,
+based on the file the topic is from.
+
+Then, as we go through the topic, at each word we look to see if
+we have started one of the word sequences, by looking at each
+sequence in turn and seeing if the word is allowed in the first step.
+
+If we find a match for the start of one of the sequences, we look
+ahead to see if it is a complete match. If it is, we start highlighting,
+then continue decoding and counting down until the sequence is finished.
+
+
+Startup Topic Search
+--------------------
+
+When running View <file> <topic> view does some arbitrary, undocumented search.
+Seems to be matching, in order:
+  - topic title starts with
+  - index entry starts with
+  - topic title contains
+  - index contains
+
+Test case - view cmdref <topic>
+
+topic      match? topic shown
+-----------------------------------------------------------------
+dir        y      DIR - Displays Files in a Directory
+device     y      DEVICE (OPTICAL.DMD) - Installs Optical Device Driver
+optical    y      DEVICE (OPTICAL.DMD) - Installs Optical Device Driver
+drivers    y      BASEDEV - Installs Base Device Drivers
+syntax     y      Syntax and Parameters [about TRSPOOL]
+saves      y      BACKUP - Saves Files
+determine  y      CHKDSK - Checks File System Structure
+deter      y      Problem Determination
+determines y      BUFFERS - Determines Number of Disk Buffers
+divided    y      "topic not found" [note: divided occurs in the text of the first topic]
+expiration y      NET ACCOUNTS - Administers Network Accounts
+expir      y      NET ACCOUNTS - Administers Network Accounts
+
+
+Help On Help
+============
+
+
+1. Standalone; invoke help 
+  old helpmgr: shows the topic itself 
+  new helpmgr: 
+     first looks for a help window which has marked itself as showing newview help
+     if so activates that
+     else passes [OWNHELP] to NV as filename
+
+3. App help NOT loaded; invoke help on help from app
+  
+
+3. App help loaded; invoke help on help from app
+
+4. App help loaded, help on help loaded; invoke help on help from app
+
+5. App help loaded, invoke help from NV
+
+6. App help loaded, help on help loaded, invoke help from NV
+
+
+

@@ -1,0 +1,95 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File fÅr die UDO-Shell (25. Juli 1998)
+
+#Dial 000 
+# 003 Hier kînnen Sie die|Quelldatei wÑhlen
+# 005 Hier kînnen Sie die|Zieldatei wÑhlen
+# 008 Hier kînnen Sie das|Zielformat wÑhlen
+# 010 Bei Pascal und C die|JumpID's ausgeben lassen
+# 011 Bei WIN-Help(4) Ausgabe wird eine|MAP-Datei fÅr C geschrieben
+# 012 Bei WIN-Help(4) Ausgabe wird eine|MAP-Datei fÅr Pascal geschrieben
+# 013 Bei WIN-Help(4) Ausgabe wird eine|MAP-Datei fÅr GFA-Basic geschrieben
+# 015 Zieldatei(en) werden in|einen Ordner ausgegeben ->|Das Symbol 'UseFolders' wird gesetzt
+# 016 UDO wartet nach dem öbersetzen|auf einen Tastendruck
+# 017 UDO gibt wÑhrend der|öbersetzung Meldungen aus
+# 018 UDO Åbersetzt nur im Speicher
+# 019 Checkmodus von UDO aktivieren
+# 020 Aufruf von UDO.TTP
+# 021 UDO-Shell verlassen
+# 022 Aufruf Projekt-Dialog
+# 023 Befehlssyntax von UDO
+# 024 Die Hilfe der|UDO-Shell
+#Dial 001 
+# 005 Registrieren lassen :-)
+# 012 Info-Dialog schlieûen
+#Dial 002 
+# 002 Vor- und Zuname|des Benutzers
+# 003 Postleitzahl und Ort|des Benutzers
+# 004 SchlÅssel|des Benutzers
+# 005 Registrierung abbrechen
+# 006 UDO-Shell registrieren
+#Dial 003 
+# 002 Der Zielpfad|wird angepasst
+# 004 Der gesamte Zielpfad|wird angepasst
+# 005 Name u. Endung der Zieldatei|werden angepasst
+# 006 Endung der Zieldatei|wird angepasst
+# 007 Es werden kleingeschriebene|Pfadnamen erzeugt
+# 008 Es werden kleingeschriebene|Dateinamen erzeugt
+# 009 UDO gibt lange|Dateinamen aus
+# 011 Vor Programmende|nochmal nachfragen?
+# 012 Vorhandene Ziel-Dateien|werden Åberschrieben
+# 014 UDO legt ein Logfile an
+# 015 UDO legt ein Hyphenfile an
+# 016 UDO legt ein Treefile an
+# 017 Warnungen werden beim|öbersetzen nicht ausgegeben
+# 018 Optionen Åbernehmen
+# 019 Optionen-Dialog schlieûen
+# 020 Die Hilfe zum|Optionen-Dialog
+#Dial 004 
+# 002 Symbol 1 aktivieren
+# 003 Symboltext 1
+# 004 Symbol 2 aktivieren
+# 005 Symboltext 2
+# 006 Symbol 3 aktivieren
+# 007 Symboltext 3
+# 008 Symbol 4 aktivieren
+# 009 Symboltext 4
+# 010 Symbol 5 aktivieren
+# 011 Symboltext 5
+# 012 Symbol 6 aktivieren
+# 013 Symboltext 6
+# 014 Symbol 7 aktivieren
+# 015 Symboltext 7
+# 016 Symbol 8 aktivieren
+# 017 Symboltext 8
+# 018 Symbole-Dialog schlieûen
+# 019 Die Hilfe zum|Symbole-Dialog
+#Dial 005 
+# 002 Format auswÑhlen, zu dem|ein Programm gesucht werden soll
+# 005 Wo ist der|UDO-Hypertext?
+# 007 Programm auswÑhlen
+# 008 Programm versteht|VA-START
+# 009 Programm ist|ein TOS-Programm
+# 011 Parameter eintragen
+# 012 Externes-Dialog schlieûen
+# 013 Hinweis zu|den Parametern
+# 014 Die Hilfe zum|Externes-Dialog
+#Dial 008 
+# 004 UDO-Shell verlassen
+# 005 UDO-Shell nicht verlassen
+#Dial 010 
+# 024 Hinweis-Dialog schlieûen
+#Dial 011 
+# 014 AusgewÑhlte Datei(en)|îffnen lassen
+# 015 Projektdatei neu erstellen
+# 016 Projekt-Dialog schlieûen
+# 017 Die Hilfe zum|Projekt-Dialog
+#Dial 012 
+# 002 Dialoge im 3D-Modus
+# 004 Olga-Server zum|Starten von Bildern|benutzen
+# 005 Die UDO-Shell ruft automatisch UDO.TTP|auf, wenn der Quelltext im Editor|gesichert ist
+# 006 Die UDO-Shell fordert einen Olga-Client|zum Auffrischen seines Dokumentes auf
+# 007 Einstellungen Åbernehmen
+# 008 Allgemeines-Dialog schlieûen
+# 009 Die Hilfe zum|Allgemein-Dialog

@@ -1,0 +1,394 @@
+@database "ARx_Operator.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN "ARexxGuide | Operators"
+@toc ARexxGuide.guide/MAIN
+@prev ARx_Func.ag/MAIN
+@next ARx_Cmd.ag/MAIN
+   @{fg highlight}AN AMIGAGUIDE® TO ARexx@{fg text}                 Second edition (v2.0)
+   by Robin Evans
+
+ @{" Using operators in expressions       " link ARx_Elements3.ag/OPERATION} -- Basic Elements section.
+
+ @{fg highlight}ARexx operators:@{fg text}
+   @{" Concatenation                      " link CONCATENATION}
+   @{" Arithmetic                         " link ARITHMETIC}
+   @{"    Table of arithmetic operators   " link ARITHTABLE}
+   @{" Comparison                         " link COMPARISON}
+   @{"    Table of comparison operators   " link CMPRTABLE}
+   @{" Logical                            " link LOGICAL}
+   @{"    Table of logical operators      " link LOGTABLE}
+
+   @{" Operator priority                  " link PRIORITY}
+   @{" Parentheses: Change priority       " link PARENPRIORITY}
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+    This guide is @{" shareware " link ARexxGuide.guide/REG}. If you find it useful, please register.
+
+@endnode
+@node CONCATENATION "ARexxGuide | Operators (1 of 4) | CONCATENATION"
+@{fg highlight}Concatenation operation@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~
+A concatenation operator combines a pair of @{" strings " link ARx_Elements2.ag/STRINGEXPR} into one string. The
+operators take three forms in ARexx: a blank space between strings,
+abuttal of two strings, or the characters `||' between strings.
+
+The easiest way to combine strings is to place them next to each other on
+the same line like this:
+
+      /**/
+      Str = 'This is one string' 'and another'
+      say Str        >>> This is one string and another
+
+It may not look like it, but there's an operator at work here. The space
+between the two strings is one of three forms of the concatenation
+operator. Only one blank is considered an operator. Others will be
+stripped, so the same value results from both of the following:
+
+      say 'single'     'blank'      >>> single blank
+      say 'single' 'blank'          >>> single blank
+
+@{" Expressions " link ARx_Elements2.ag/EXPRESSION} can be abutted against one another to combine the two values:
+
+      /**/
+      Str1 = 'No'
+      say Str1'space'               >>> Nospace
+
+Abuttal of string values is an implied operator telling ARexx to combine
+the two strings without an intervening blank.
+
+Implied abuttal will not always work. For instance, two variable symbols
+cannot be combined that way without creating a new symbol. ARexx provides
+the explicit concatenation operator `||' for those circumstances. When
+placed between two expression with any number of blanks dividing the
+operator and the expressions, the operator causes the strings to be
+combined without intervening blanks.
+
+      /**/
+      Str1 = 'No'
+      Str2 = 'space'
+      SAY Str1 || Str2              >>> Nospace
+
+A single '|' is not a concatenation operator. It is, rather, the @{" logical " link LOGICAL}
+operator representing OR in an expression.
+
+                 Technique note: @{" Format a table of information    " link ARx_Tknq.ag/FORMATNOTE}
+                                 @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+Next: ARITHMETIC | Prev: Operators | Contents: Operators
+
+@endnode
+
+@node ARITHMETIC "ARexxGuide | Operators (2 of 4) | ARITHMETIC"
+@next COMPARISON
+@{fg highlight}Arithmetic operation@{fg text}         @{" TABLE OF ARITHMETIC Operators       " link ARITHTABLE}
+~~~~~~~~~~~~~~~~~~~~
+Any two @{" expressions " link ARx_Elements2.ag/EXPRESSION} that yield a @{" number " link ARx_Elements2.ag/NUMBER} can be combined using the
+@{" dyadic " link ARexxGuide.guide/GLOSSARY 68} arithmetic operators that take this form:
+
+                  @{i}<num expr> <operator> <num expr>@{ui}
+
+ARexx also recognizes two prefix operators that affect only the number to
+the right. The prefix operators take this form:
+
+                  @{i}<operator><num expr>@{ui}
+
+@{i}<num expr>@{ui} can be a @{" constant " link ARx_Elements.ag/CONSTANT}, @{" variable " link ARx_Elements2.ag/VARIABLE}, or the result of a @{" function " link ARx_Elements3.ag/FUNCTION}
+or of another expression.
+
+With both dyadic and prefix operators, blanks between the operator token
+and @{i}<num expr>@{ui} are allowed and will be removed by ARexx. Leading or
+trailing blanks in the number will also be removed as part of the
+conversion. The result of the expression is formatted according to the
+current settings of @{" NUMERIC DIGITS " link ARx_Instr2.ag/NUMERIC}.
+
+If the numeric setting is shorter than the number of digits in @{i}<num expr>@{ui},
+then a prefix operation will cause a loss of @{" precision " link ARx_Elements2.ag/PRECISION} in the number.
+This characteristic may be used instead of the @{" TRUNC() " link ARx_Func2.ag/TRUNC()} function to round
+numbers to a desired size:
+
+   bn = 1.239856790097
+   say digits()        >>> 9              /* current NUMERIC setting */
+   say bn              >>> 1.239856790097
+   say +bn             >>> 1.23985679     /* formatted to 9 digits   */
+   say trunc(bn, 2)    >>> 1.23           /* not rounded             */
+   numeric digits 3                       /* change setting          */
+   say +bn             >>> 1.24           /* fraction is rounded     */
+
+                 Technique note: @{" Format() user function            " link ARx_Tknq.ag/FORMAT()}
+
+Next: COMPARISON | Prev: Concatenation | Contents: Operators
+
+@endnode
+
+@node ARITHTABLE  "ARexxGuide | Operators | Arithmetic (1 of 1) | TABLE"
+@toc ARITHMETIC
+@next ARITHMETIC
+@prev ARITHMETIC
+@{fg highlight}Table of arithmetic operators@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Operator    Operation                        @{" Priority " link PRIORITY} Type
+   --------    -------------------------------- ---------- ---------
+      +        Addition                             5      Dyadic
+      -        Subtraction                          5      Dyadic
+      *        Multiplication                       6      Dyadic
+      /        Division                             6      Dyadic
+      %        Integer division. (Divide number     6      Dyadic
+               on the left by number on the
+               right and return the integer
+               part of the result)
+      //       Remainder (Divide numbers --         6      Dyadic
+               left by right -- and return
+               the remainder, which may be
+               negative)
+      **       Exponentiation. (Raise the           7      Dyadic
+               number on the left to the whole
+               number power on the right)
+      - <num>  Negation. (Same as 0 - <num>)        8      Prefix
+      + <num>  Conversion. (Same as 0 + <num>)      8      Prefix
+
+      Examples:
+            Sev = 7
+            say 10 + Sev      >>> 17
+            say 10 - Sev      >>> 3
+            say 10 * Sev      >>> 70
+            say 10 / Sev      >>> 1.42857143
+            say 10 % Sev      >>> 1
+            say 10 // Sev     >>> 3
+            say 10 ** Sev     >>> 10000000
+            say +Sev          >>> 7
+            say -Sev          >>> -7
+
+Next, Prev & Contents: Arithmetic
+
+@endnode
+@node COMPARISON "ARexxGuide | Operators (3 of 4) | COMPARISON"
+@next LOGICAL
+@prev ARITHMETIC
+@{fg highlight}Comparison operation@{fg text}         @{" TABLE OF COMPARISON OPERATORS       " link CMPRTABLE}
+~~~~~~~~~~~~~~~~~~~~
+The result of an expression using comparison operators is one of two
+values: either 0 for FALSE or 1 for TRUE. Each of the operators compares
+the value to the right of the operator with the value to the left. A
+comparison of alphabetic values is case-sensitive.
+
+Comparison expressions take this form:
+
+                     @{i}<expr> <operator> <expr>@{ui}
+
+@{i}<expr>@{ui} can be any @{" expression " link ARx_Elements2.ag/EXPRESSION} including a @{" variable " link ARx_Elements2.ag/VARIABLE} or @{" number " link ARx_Elements2.ag/NUMBER}, or the
+result from another expression.
+
+There are two classes of comparison operators: normal and strict. The
+normal comparison operators ignore leading and trailing spaces in @{i}<expr>@{ui}
+and, when performing numeric comparisons, ignore leading 0's in a number.
+The two strict operators, `==' and `~==' compare @{i}<expr>@{ui} character-for-
+character -- spaces and 0's included -- and treat all numbers as character
+strings.
+
+When using the normal operators, ARexx will perform a numeric comparison
+if the values on both sides of the operator are @{" numbers " link ARx_Elements2.ag/NUMBER}. In other words,
+`9<19' will evaluate to 1 (TRUE), but if either value is non-numeric, both
+will be treated as character strings: The string `101a' (which is not a
+number) is less than the string `33' (which is a number) because the
+lexical order of the character `1' is lower than that of the character `3'.
+
+Strings like `2e5' are numbers because the `e' indicates that the
+following numeral is an @{" exponent " link ARexxGuide.guide/GLOSSARY 80}.
+
+Comparison expressions are often used as the @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} in @{" IF " link ARx_Instr.ag/IF},
+@{" WHEN " link ARx_Instr3.ag/WHEN}, or @{" DO " link ARx_Instr.ag/DO} instructions, but they may also be used as a subexpression
+in a compound operation:
+
+                           a = (a<b) * 5
+
+[A] will be given a value of either 5 or 0 depending on the outcome
+(either 1 or 0) of the comparative expression in parentheses.
+
+The @{" LOGICAL " link LOGICAL} operators can be used to produce a @{" Boolean " link ARexxGuide.guide/GLOSSARY 19} result from two
+or more comparative expressions.
+
+            Interactive example: @{" Compare two values                " system "rx ARx_IactExamples.rexx ARx_Cmpr.rexx"}  @{" * " link ARexxGuide.guide/IACTEXMP}
+                 Technique note: @{" Get/set environmental variables   " link ARx_Tknq.ag/GETSETENV}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The REXX standard specifies additional `strict comparison'
+   operators. Where ARexx offers only `==' for `exactly equal to' or
+   `~==' for its negation, the standard specifies `>>', `<<', `>>=',
+   `<<=' for greater/less comparisons that respect the spaces in a
+   string. Each of these operators has a negation.
+
+   Also see note about the standard negation character in the
+   @{" Table of Logical Operators " link LOGTABLE}.
+
+Next: LOGICAL | Prev: ARITHMETIC | Contents: Operators
+
+@endnode
+
+@node CMPRTABLE  "ARexxGuide | Operators | Comparison (1 of 1) | TABLE"
+@toc COMPARISON
+@next COMPARISON
+@prev COMPARISON
+@{fg highlight}Table of comparison operators@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   Operator    Operation (what it tests for)    @{" Priority " link PRIORITY} Class
+   --------    -------------------------------- ---------- --------
+      =        is equal                            3       Normal
+      ==       is exactly equal                    3       Strict
+      ~=       is not equal                        3       Normal
+      ~==      is exactly not equal                3       Strict
+      >        is greater than                     3       Normal
+      >=       is greater than or equal to         3       Normal
+      ~<       is greater than or equal to         3       Normal
+      <        is less than                        3       Normal
+      <=       is less than or equal to            3       Normal
+      ~>       is less than or equal to            3       Normal
+
+   Samples:
+
+      Expression             Result  Notes
+      ---------------------  ------  -------------------------------------
+      'about' < 'around'     TRUE    Alphabetic comparison
+      30 > 7                 TRUE    Numeric comparison
+      '30' > '7'             TRUE    Numeric comparison performed even
+                                     when the number is entered as a
+                                     string.
+      'Thirty' > 'Seven'     TRUE    'T' has a higher ASCII value than 'S'
+      30 > 'Seven'           FALSE   Alphabetic comparison performed.
+                                     Digits have a lower value in ASCII
+                                     than all alpha characters.
+      'foo' = 'foo   '       TRUE    blanks are ignored
+      '  foo  ' = 'foo'      TRUE    both leading and trailing blanks are
+                                     ignored
+      'foo' == 'foo   '      FALSE   '==' causes blanks to be significant
+
+Next, Prev & Contents: Logical
+
+@endnode
+@node LOGICAL "ARexxGuide | Operators (4 of 4) | LOGICAL"
+@next MAIN
+@prev COMPARISON
+@{fg highlight}Logical operation@{fg text}            @{" TABLE OF LOGICAL OPERATORS          " link LOGTABLE}
+~~~~~~~~~~~~~~~~~
+Any two valid @{" expressions " link ARx_Elements2.ag/EXPRESSION} that yield a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19} (either 1 or 0)
+can be combined using the @{" dyadic " link ARexxGuide.guide/GLOSSARY 68} logical operators that take this form:
+
+                  @{i}<Boole expr> <operator> <Boole expr>@{ui}
+
+ARexx also recognizes a prefix negation operator that has effect only on
+the expression to the right. The prefix operator takes this form:
+
+                  @{i}<operator><Boole expr>@{ui}
+
+@{i}<Boole expr>@{ui} may any expression -- a @{" constant " link ARx_Elements.ag/CONSTANT}, @{" string " link ARx_Elements2.ag/STRINGEXPR}, @{" variable " link ARx_Elements2.ag/VARIABLE}, or
+the result of a @{" function " link ARx_Elements3.ag/FUNCTION} or of another operation.
+
+Next: Operators | Prev: Comparison | Contents: Operators
+
+@endnode
+@node LOGTABLE "ARexxGuide | Operators | Logical (1 of 1) | TABLE"
+@toc LOGICAL
+@prev LOGICAL
+@next LOGICAL
+@{fg highlight}Table of logical operators@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+   Operator    Operation                        @{" Priority " link PRIORITY}  Type
+   --------    -------------------------------- ---------- ---------
+      ~        NOT -- negation. TRUE value           8      Prefix
+               becomes FALSE and visa-versa
+      &        AND -- TRUE only if both terms        2      Dyadic
+               are TRUE
+      |        OR  -- TRUE if either of the          1      Dyadic
+               terms is TRUE
+     &&        Exclusive OR
+      ^        Exclusive OR -- TRUE if one but       1      Dyadic
+               not both of the terms is TRUE.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+
+   Although it is accepted as an option in some other implementations
+   of REXX, the `~' character is not recognized as a negation character
+   in the REXX standard. The standard specifies that the negation
+   character should be either `\' or `¬' (ASCII 172 or 'AC'x -- alt-
+   shift-Z on an Amiga keyboard).
+
+   The `^' character is not recognized as an alternative representation
+   for `exclusive or' by the standard. Only the `&&' symbol (also
+   available in ARexx) is used for that purpose.
+
+Next, Prev & Contents: Logical
+
+@endnode
+
+@node PRIORITY  "ARexxGuide | Operators | Note (1 of 2) | PRIORITY"
+@prev MAIN
+@{fg highlight}Operator priority@{fg text}
+~~~~~~~~~~~~~~~~~
+ARexx normally evaluates a @{" clause " link ARx_Elements3.ag/CLAUSE} from left to right. That could cause
+problems in operations, however, because the order in which terms are
+presented in an operation would have a significant effect on the result:
+`4 + 3 * 5' would result in 35 if the operations were performed in strict
+left-to-right order while `5 * 3 + 4' would result in 19.
+
+To prevent such differences in the results two similar operations, ARexx
+assigns to each operator a priority. Instead of evaluating all terms in an
+operation in the usual left to right order, the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} performs the
+operations with a higher priority before evaluating those with a lower
+priority.
+
+The table below lists the relative priority of the various operators:
+
+   Operation                  Represented by          Priority
+   -------------------------  ----------------------  --------
+   Prefix                     + - ~                      8
+   Exponentiation             **                         7
+   Multiplication/Division    * / // %                   6
+   Addition/Subtraction       + -                        5
+   Concatenation              || @{i}<blank> <abuttal>@{ui}       4
+   Comparison                 = == < > >= <= ~> ~< ~=    3
+   And                        &                          2
+   Or/Exclusive or            | && ^                     1
+
+Multiplication operations have a priority of 6 while addition has a
+priority of 5, which means that the both of the alternative forms of
+writing `4 + 3 * 5' will result in 19 because the multiplication operation
+will be performed before the addition operation.
+
+Next: Parentheses & priority | Prev: Operators | Contents: Operators
+
+@endnode
+
+@node PARENPRIORITY  "ARexxGuide | Operators | Note (2 of 2) | PARENTHESES"
+@next MAIN
+@{fg highlight}Using parentheses to change priority@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Parentheses may be used in any expression to control the order in which
+the expression is evaluated.
+
+Parentheses force evaluation of the enclosed expression before other
+operations are performed. This grouping will sometimes have a significant
+effect on the result of an expression:
+
+  [A]      2 + 4 * 3   = 14
+  [B]      (2 + 4) * 3 = 18
+
+The multiplication operator has a higher priority than the addition
+operator, so ARexx multiplies 4 and 3 in line [A] before adding the
+resulting values. In line [B], on the other hand, addition is done first
+because the parentheses make the operation a subexpression.
+
+Although they are not needed in the following expression, parentheses may
+still be used to group expressions even when they do not affect the order
+of evaluation.
+
+      2 + (4 * 3)          is the same as 2 + 4 * 3 because of the
+                           priority of the operators.
+
+Expressions can be @{" nested " link ARexxGuide.guide/GLOSSARY 155} up to 32 levels. @{" Error 43 " link ARx_Error.ag/ERROR_43} will be generated
+if there are more than 32 nesting levels in an expression.
+
+Next: Operators | Prev: Priority | Contents: Operators
+
+@endnode

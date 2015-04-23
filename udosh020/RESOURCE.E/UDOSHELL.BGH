@@ -1,0 +1,95 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File for the UDO-Shell (Juli 25th 1998)
+
+#Dial 000 
+# 003 Here you can choose|your sourcefile
+# 005 Here you can choose|your destinationfile
+# 008 Here you can choose|your destination format
+# 010 UDO.TTP puts the JumpID's|when translating to C or|Pascal
+# 011 UDO.TTP puts the MAP-file|for C when translating|to WIN-Help(4)
+# 012 UDO.TTP puts the MAP-file|for Pascal when translating|to WIN-Help(4)
+# 013 UDO.TTP puts the MAP-file|for GFA-Basic when translating|to WIN-Help(4) 
+# 015 Puts the destination files|into an new directory ->|Symbol 'UseFolders' is set
+# 016 UDO.TTP waits|for a keypress|after translation
+# 017 UDO.TTP puts verbose|messages during translation
+# 018 UDO.TTP puts translation|only in RAM
+# 019 Activate checkmodus of UDO.TTP
+# 020 Call UDO.TTP for|translation
+# 021 Leave UDO-Shell
+# 022 Call the Project-Dialog
+# 023 Commandsyntax of UDO
+# 024 Call Help for|the UDO-Shell
+#Dial 001 
+# 005 Please register :-)
+# 012 Close Info-Dialog
+#Dial 002 
+# 002 Name an Given Name|of the user
+# 003 Postal number and Place|of the user
+# 004 Key of|the user
+# 005 Cancel registration
+# 006 Registrate UDO-Shell
+#Dial 003 
+# 002 Adapt destination path
+# 004 Adapt whole destination path
+# 005 Adapt the name|and extension|of destination|file
+# 006 Adapt only extension|of destination file
+# 007 Generate minor pathnames|for destination
+# 008 Generate minor filenames|for destination
+# 009 UDO.TTP puts|long filenames
+# 011 Ask by alert before|leaving the UDO-Shell?
+# 012 Write over existing|destination files
+# 014 UDO.TTP puts logfile
+# 015 UDO.TTP puts hyphenfile
+# 016 UDO.TTP puts treefile
+# 017 UDO.TTP don't give out warnings|during translation
+# 018 Take over options
+# 019 Close Options-Dialog
+# 020 Call help for the|Options-Dialog
+#Dial 004 
+# 002 Activate Symbol 1
+# 003 Symboltext 1
+# 004 Activate Symbol 2
+# 005 Symboltext 2
+# 006 Activate Symbol 3
+# 007 Symboltext 3
+# 008 Activate Symbol 4
+# 009 Symboltext 4
+# 010 Activate Symbol 5
+# 011 Symboltext 5
+# 012 Activate Symbol 6
+# 013 Symboltext 6
+# 014 Activate Symbol 7
+# 015 Symboltext 7
+# 016 Activate Symbol 8
+# 017 Symboltext 8
+# 018 Close Symbol-Dialog
+# 019 Call help for the|Symbol-Dialog
+#Dial 005 
+# 002 Choose format, to whom|an application should|be searched
+# 005 Where is the|UDO-Hypertext?
+# 007 Choose programm
+# 008 The programm knows VA-START|(from the AV-Protocol)
+# 009 The programm is|a TOS-programm|(without GEM)
+# 011 Register parameters
+# 012 Close External-Dialog
+# 013 Hints to the|parameters
+# 014 Call help for the|External-Dialog
+#Dial 008 
+# 004 Leave UDO-Shell
+# 005 Don't leave UDO-Shell
+#Dial 010 
+# 024 Close Hint-Dialog
+#Dial 011 
+# 014 Open selected file(s)
+# 015 Generate new projectfile
+# 016 Close Project-Dialog
+# 017 Call help for the|Project-Dialog
+#Dial 012 
+# 002 Dialogs in 3D-Modus
+# 004 Use Olga-Server for|starting of images
+# 005 The UDO-Shell starts automatically UDO.TTP|after saving sourcefile in the editor
+# 006 The UDO-Shell requests an OLGA-Client|to update his document
+# 007 Take over engagement
+# 008 Close General-Dialog
+# 009 Call help for the|General-Dialog

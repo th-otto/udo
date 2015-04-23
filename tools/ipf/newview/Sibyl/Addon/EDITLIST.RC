@@ -1,0 +1,5 @@
+
+BITMAP BmpBtnNew  FileNew.bmp
+BITMAP BmpBtnDel  Delete.bmp
+BITMAP BmpBtnUp   Up.bmp
+BITMAP BmpBtnDown Down.bmp

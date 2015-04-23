@@ -1,0 +1,4610 @@
+@database "hardware..hyper"
+@master "Progr:HWMAN/ApndxA.TXT"
+
+@Node Main "hardware.adoc"
+@Next Main
+                        A Cryptoburners Release 
+             Doc for the Amiga hardware in HyperText form.
+                             by Vishnu/CRB
+
+			@{"  The Assembler   " Link "AsmDoc"}
+			@{" The Instructions " Link "InstDoc"}
+
+			@{"   The hardware   " Link HW_Contents}
+
+			@{"   Terminology    " Link Terminology}
+
+Thanks must go to Oliver Seidel/SUBSONIC INC., PMC France and Comrade J/SAE
+for the AGA docs I built on in the AGA department.
+
+@EndNode
+
+##   Bad references:
+## Bitmap, BmpSprites, CopBlit
+
+##   Bad nodes:
+## AsmOpts, Branches, InstFlags (Replaced by InstFlags2?)
+
+
+@Node Terminology "Terminology in the document"
+
+AGA:	Advanced Graphics Architechture, Commodores temporary
+	replacement for ECS.  The AGA chipset do not have an official,
+	publically available hardware manual. The features of this
+	chipset are 24-bit color, 18 bit HAM (called HAM8 for the number
+	of bitplanes employed) usable in any screenmode, scan-doubling,
+	up to 8 bitplanes in any mode, register compatibility with the
+	OCS and ECS chipsets, any resolution on sprites, up to 64 pixels
+	wide sprites, selectable color banks for sprites, and 2X and 4X
+	speedup on DMA access to chipram.
+	Documentation on this chipset comes from HW hacking and
+	copperlist hacking on copperlists set up by the OS.  Some also
+	come from the official CBM HW manual that was leaked from a
+	company that got it from CBM.  This manual is NOT distributed to
+	registered or commercial developer on demand.
+	WARNING: THE AGA CHIPSET REGISTERS *WILL* CHANGE.  IF YOU BANG
+	AGA HARDWARE, YOUR CODE *WILL* BREAK ON LATER MACHINES.
+	Always test for AGA precence before banging AGA hardware; this
+	is done by testing for V37 and then testing the AA_* bits in
+	gb_ChipRevBits0, *NOT* by testing deniseid (HW register 7C).
+
+ECS:    Enchanted Chip Set.  Commodores replacement for OCS.  This is the
+	chipset used in the A500+, A600, and A3000.  The chipset give
+	you 
+	ECS Agnus: 1 or 2 MB chipram, bigger blits, and access to the
+	 minterm bits of BLTCON0 without changing the rest of the
+	 register.
+	ECS Denise: SHi-res, better genlock support (chromakeying and
+	 controllable transparency, among other things), and
+	 programmable resolutions.
+	ECS is supposed to keep beeing HW supported; this means that
+	banging this HW will (probably) keep working, as long as you
+	follow CBMs rules for allocating hardware.
+
+Hi-res:	In this document, hi-res refers to the old mode called hi-res;
+	that is, 640 pixels pr line (70 ns pixels).  Lo-res, SHi-res.
+
+Lo-res:	In this document, lo-res refers to the old mode called lo-res;
+	that is, 320 pixels pr line (140 ns pixels). Lo-res, SHi-res.
+
+OCS:	Old Chip Set.  The chipset in the A1000 and, for a long while,
+	A500 and A2000.  This chipset allow only 0.5 MB chipram, doesn't
+	have superhires, and can only genlock in color 0.  It will
+	genlock in color 0 ALWAYS, so it is not SW controllable.  The
+	only kind of output it will give is 15 khz.
+	Most A500s that came with 1.3 installed had the ECS instead.
+
+SHi-res:In this document, SHi-res refers to the ECS mode called
+	super-hi-res; that is, 1280 pixels pr line (35 ns pixels).
+
+@EndNode
+
+##**************************************************************************
+
+@Node HW_Contents "Table of Contents - Hardware section"
+@toc Main
+@prev HW_Contents
+@Next HW_IndexAlpha
+
+    @{" The Audio                     " link HW_Audio}
+    @{" The Blitter                   " Link "Blitter"}
+    @{" The Copper                    " beep 0}
+    @{" The Disk                      " beep 0}
+    @{" The IO hardware               " beep 0}
+    @{" The Playfields                " beep 0}
+    @{" The Sprites                   " beep 0}
+    @{" The 8520s                     " beep 0}
+    @{" Programmable display hardware " beep 0}
+
+    @{" ECS Enchantments              " beep 0}
+    @{" AGA Enchantments              " beep 0}
+
+    @{" Hardware index - addresses    " link HW_Index}
+    @{" Hardware index - alphabetical " link HW_IndexAlpha}
+
+@EndNode
+
+@Node HW_IndexAlpha "Alphabetical index of hardware registers"
+@toc HW_Contents
+@Next HW_Index
+@Prev HW_Contents
+
+This list is not complete, to allow easier manuevering.  Use related
+registers to access information about unfound ones.
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"ADKCONR" Link HW_ADKCON}   *010 R      P   Audio, disk control register read
+@{"AUDxDAT" Link HW_AUDxDAT} &  0xA W     P    Audio channel data
+@{"AUDxLC" Link HW_AUDxLC}  +  0x0 W A        Audio channel location
+@{"AUDxLEN" Link HW_AUDxLEN}    0x4 W     P    Audio channel length
+@{"AUDxPER" Link HW_AUDxPER}    0x6 W     P    Audio channel x period
+@{"AUDxVOL" Link HW_AUDxVOL}    0x8 W     P    Audio channel x volume
+@{"BEAMCON0" Link HW_BEAMCON0}   1DC            Beam Control Register			(ECS+)
+@{"BLTxDAT" Link HW_BLTxDAT} % -074 W  A       Blitter source x data register
+@{"BLTAFWM" Link HW_BLTAFWM}   -044 W  A       Blitter first word mask for source A
+@{"BLTALWM" Link HW_BLTAFWM}   -046 W  A       Blitter last word mask for source A
+@{"BLTxMOD" Link HW_BLTxMOD}   -064 W  A       Blitter modulo for source A
+@{"BLTAPT" Link HW_BLTxPT}  + -050 W  A       Blitter pointer to source/destination
+@{"BLTCON0" Link HW_BLTCON}   -040 W  A       Blitter control register 0
+@{"BLTCON0L" Link HW_BLTCON}  -05B W  A       BLTCON0 minterm only access (*BYTE*)     ECS+
+@{"BLTCON1" Link HW_BLTCON}   -042 W  A       Blitter control register 1
+@{"BLTDDAT" Link HW_BLTxDAT} & *000 ER A       Blitter destination early read (dummy address)
+@{"BLTSIZE" Link HW_BLTSIZE}   -058 W  A       Blitter start and size (window width, height)
+@{"BLTSIZH" Link HW_BLTSIZE}   -05E W  A       Blitter start & size (window width)      ECS+
+@{"BLTSIZV" Link HW_BLTSIZE}   -05C W  A       Blitter size vertical (window height)    ECS+
+@{"BPLxDAT" Link HW_BPLxDAT}  & 110 W D        Bit plane x data (parallel-to-serial convert)
+@{"BPLxPT" Link HW_BPLxPT}  +  0E0 W A        Bit plane x pointer
+@{"BPLxMOD" Link HW_BPLxMOD}    108 W A        Bit plane modulo (odd/even planes)
+@{"BPLCON0" Link HW_BPLCON0}    100 W A D      Bit plane control register (misc. control bits)
+@{"BPLCON1" Link HW_BPLCON1}    102 W      D   Bit plane control reg. (scroll value PF1, PF2)
+@{"BPLCON2" Link HW_BPLCON2}    104 W      D   Bit plane control reg. (priority control)
+@{"BPLCON3" Link HW_BPLCON3}    106 W      D   Bit plane control reg. (AGA/ECS control)
+@{"BPLCON4" Link HW_BPLCON4}    10C W      D   Bit Plane magic reg. (misc. control bits)
+BPLHMOD    1E6            UHRES Bitplane modulo       (AGA?)
+BPLHPTH    1EC            UHRES Bitplane Pointer High (AGA?)
+BPLHPTL    1EE            UHRES Bitplane Pointer Low  (AGA?)
+BPLHSTOP   1D6            UHRES Bitplane Vertical stop		(ECS+)
+BPLHSTRT   1D4            UHRES Bitplane Vertical start		(ECS+)
+@{"CLXCON" Link HW_CLXCON}     098 W     D    Collision control
+CLXCON2    10E W      D   Extended collision control (AGA)
+@{"CLXDAT" Link HW_CLXDAT}    *00E R    D     Collision data register (read and clear)
+@{"COLORxx" Link HW_COLORxx}    1xx W   D      Color table xx (Address 180+xx*2)
+@{"COPxLC" Link HW_COPxLC}  +  080 W A        Coprocessor location registers
+@{"COPCON" Link HW_COPCON}    *02E W A        Coprocessor control register (CDANG)
+@{"COPINS" Link HW_COPINS}     08C W A        Coprocessor instruction fetch identify
+@{"COPJMP1" Link HW_COPJMP }    088 S A        Coprocessor restart at first location
+@{"COPJMP2" Link HW_COPJMP }    08A S A        Coprocessor restart at second location
+@{"DDFSTRT" Link HW_DDFxxxx}    092 W A        Display bit plane data fetch start (horiz position)
+@{"DDFSTOP" Link HW_DDFxxxx}    094 W A        Display bit plane data fetch stop (horiz position)
+@{"DENISEID" Link HW_DENISEID}  -07C            Denise revision identification register  ECS+
+@{"DIWHIGH" Link HW_DIWHIGH}    1E4            Display window upper bits		(ECS+)
+@{"DIWSTOP" Link HW_DIWxxxx}    090 W A        Display window stop (lower right vert-horiz pos)
+@{"DIWSTRT" Link HW_DIWxxxx}    08E W A        Display window start (upper left vert-horiz pos)
+@{"DMACON" Link HW_DMACON}     096 W A D P    DMA control read/write
+@{"DSKBYTR" Link HW_DSKBYTR}   *01A R      P   Disk data byte and status read
+@{"DSKDAT" Link HW_DSKDAT}  & *026 W      P   Disk DMA data write
+@{"DSKLEN" Link HW_DSKLEN}    *024 W      P   Disk length
+@{"DSKPT" Link HW_DSKPT}   + *020 W A        Disk pointer
+@{"DSKSYNC" Link HW_DSKSYNC}   -07E W      P   Disk sync pattern register for disk read
+@{"FMODE" Link HW_FMODE}      1FC  A         Fetch MODE register (misc bits) (AGA)
+HBSTOP	   1C6            Horiz line pos for HBlank Stop	(ECS+)
+HBSTRT	   1C4            Horiz line pos for HBlank Start	(ECS+)
+HCENTER    1E2            Horizontal lace position		(ECS+)
+HHPOSR	   1DA            Dual Mode Hires H Beam Counter Read	(ECS+)
+HHPOSW	   1D8            Dual Mode Hires H Beam Counter Write	(ECS+)
+HSSTOP	   1C2            Horiz line pos for HSYNC stop		(ECS+)
+HSSTRT	   1DE            Horizontal Sync Start			(ECS+)
+HTOTAL	   1C0            Highest count in horiz line		(ECS+)
+@{"INTENA" Link HW_INTxxx}     09A W     P    Interrupt enable bits
+@{"INTREQ" Link HW_INTxxx}     09C W     P    Interrupt request bits
+@{"JOYxDAT" Link HW_JOYxDAT}   *00A R    D     Joystick-mouse x data (vert,horiz)
+@{"JOYTEST" Link HW_JOYTEST}   *036 W  D       Write to all 4 joystick-mouse counters at once
+NO-OP      1FE            Guaranteed unused register; dummy.
+@{"POTxDAT" Link HW_POTxDAT}   *012 R      P   Pot counter pair x data (vert,horiz)
+@{"POTGO" Link HW_POTGO}     *034 W      P   Pot port data write and start
+@{"POTGOR" Link HW_POTGO}    *016 R      P   Pot port data read (formerly POTINP)
+@{"REFPTR" Link HW_REFPTR}  & *028 W A        Refresh pointer
+@{"SERDAT" Link HW_SERDAT}    *030 W      P   Serial port data and stop bits write
+@{"SERDATR" Link HW_SERDAT}   *018 R      P   Serial port data and status read
+@{"SERPER" Link HW_SERPER}    *032 W      P   Serial port period and control
+@{"SPRxCTL" Link HW_SPRxCTL}  % 142 W A D      Sprite x vert stop position and control data
+@{"SPRxDAT" Link HW_SPRxDAT}  % 144 W D        Sprite x image data register
+@{"SPRxPOS" Link HW_SPRxCTL}  % 140 W A D      Sprite x vert-horiz start position data
+@{"SPRxPT" Link HW_SPRxPT}   + 120 W A        Sprite x pointer
+SPRHPTH    1E8            UHRES Sprite Pointer High   (AGA?)
+SPRHPTL    1EA            UHRES Sprite Pointer Low    (AGA?)
+SPRHSTOP   1D2            UHRES Sprite Vertical stop		(ECS+)
+SPRHSTRT   1D0            UHRES Sprite Vertical start		(ECS+)
+@{"STREQU" Link HW_STRxxx}  & *038 S  D       Strobe for horiz sync with VB and EQU
+@{"STRHOR" Link HW_STRxxx}  & *03C S  D   P   Strobe for horiz sync
+@{"STRLONG" Link HW_STRxxx} & *03E S  D       Strobe for identification of long horiz. line.
+@{"STRVBL" Link HW_STRxxx}  & *03A S  D       Strobe for horiz sync with VB (vert. blank)
+VBSTOP	   1CE            Vert line for VBLANK Stop		(ECS+)
+VBSTRT	   1CC            Vert line for VBLANK Start		(ECS+)
+@{"VHPOSR" Link HW_VHPOSR}    *006 R  A       Read vert and horiz. position of beam
+@{"VHPOSW" Link HW_VHPOSR}    *02C W A        Write vert and horiz position of beam
+@{"VPOSR" Link HW_VHPOSR}     *004 R  A       Read vert most signif. bit (and frame flop)
+@{"VPOSW" Link HW_VHPOSR}     *02A W A        Write vert most signif. bit (and frame flop)
+VSSTOP	   1CA            Vert line pos for VSYNC Stop		(ECS+)
+VSSTRT	   1E0            Vertical Sync Start			(ECS+)
+VTOTAL	   1C8            Highest numbered vertical line	(ECS+)
+
+@EndNode
+
+@Node HW_Index "Numerical index of hardware registers"
+@toc HW_Contents
+@Prev HW_IndexAlpha
+@Next HW_Index
+
+@{"BLTDDAT" Link HW_BLTxDAT} & *000 ER A       Blitter destination early read (dummy address)
+@{"DMACONR" Link HW_DMACON}   *002 R  A   P   DMA control (and blitter status) read
+@{"VPOSR" Link HW_VHPOSR}     *004 R  A       Read vert most signif. bit (and frame flop)
+@{"VHPOSR" Link HW_VHPOSR}    *006 R  A       Read vert and horiz. position of beam
+@{"DSKDATR" Link HW_DSKDAT} & *008 ER     P   Disk data early read (dummy address)
+@{"JOY0DAT" Link HW_JOYxDAT}   *00A R    D     Joystick-mouse 0 data (vert,horiz)
+@{"JOY1DAT" Link HW_JOYxDAT}   *00C R    D     Joystick-mouse 1 data (vert,horiz)
+@{"CLXDAT" Link HW_CLXDAT}    *00E R    D     Collision data register (read and clear)
+@{"ADKCONR" Link HW_ADKCON}   *010 R      P   Audio, disk control register read
+@{"POT0DAT" Link HW_POTxDAT}   *012 R      P   Pot counter pair 0 data (vert,horiz)
+@{"POT1DAT" Link HW_POTxDAT}   *014 R      P   Pot counter pair 1 data (vert,horiz)
+@{"POTGOR" Link HW_POTGO}    *016 R      P   Pot port data read (formerly POTINP)
+@{"SERDATR" Link HW_SERDAT}   *018 R      P   Serial port data and status read
+@{"DSKBYTR" Link HW_DSKBYTR}   *01A R      P   Disk data byte and status read
+@{"INTENAR" Link HW_INTxxx}   *01C R      P   Interrupt enable bits read
+@{"INTREQR" Link HW_INTxxx}   *01E R      P   Interrupt request bits read
+@{"DSKPTH" Link HW_DSKPT}  + *020 W A        Disk pointer (high 3 bits)
+@{"DSKPTL" Link HW_DSKPT}  + *022 W A        Disk pointer (low 15 bits)
+@{"DSKLEN" Link HW_DSKLEN}    *024 W      P   Disk length
+@{"DSKDAT" Link HW_DSKDAT}  & *026 W      P   Disk DMA data write
+@{"REFPTR" Link HW_REFPTR}  & *028 W A        Refresh pointer
+@{"VPOSW" Link HW_VHPOSR}     *02A W A        Write vert most signif. bit (and frame flop)
+@{"VHPOSW" Link HW_VHPOSR}    *02C W A        Write vert and horiz position of beam
+@{"COPCON" Link HW_COPCON}    *02E W A        Coprocessor control register (CDANG)
+@{"SERDAT" Link HW_SERDAT}    *030 W      P   Serial port data and stop bits write
+@{"SERPER" Link HW_SERPER}    *032 W      P   Serial port period and control
+@{"POTGO" Link HW_POTGO}     *034 W      P   Pot port data write and start
+@{"JOYTEST" Link HW_JOYTEST}   *036 W  D       Write to all 4 joystick-mouse counters at once
+@{"STREQU" Link HW_STRxxx}  & *038 S  D       Strobe for horiz sync with VB and EQU
+@{"STRVBL" Link HW_STRxxx}  & *03A S  D       Strobe for horiz sync with VB (vert. blank)
+@{"STRHOR" Link HW_STRxxx}  & *03C S  D   P   Strobe for horiz sync
+@{"STRLONG" Link HW_STRxxx} & *03E S  D       Strobe for identification of long horiz. line.
+@{"BLTCON0" Link HW_BLTCON}   -040 W  A       Blitter control register 0
+@{"BLTCON1" Link HW_BLTCON}   -042 W  A       Blitter control register 1
+@{"BLTAFWM" Link HW_BLTAFWM}   -044 W  A       Blitter first word mask for source A
+@{"BLTALWM" Link HW_BLTAFWM}   -046 W  A       Blitter last word mask for source A
+@{"BLTCPTH" Link HW_BLTxPT} + -048 W  A       Blitter pointer to source C (high 3 bits)
+@{"BLTCPTL" Link HW_BLTxPT} + -04A W  A       Blitter pointer to source C (low 15 bits)
+@{"BLTBPTH" Link HW_BLTxPT} + -04C W  A       Blitter pointer to source B (high 3 bits)
+@{"BLTBPTL" Link HW_BLTxPT} + -04E W  A       Blitter pointer to source B (low 15 bits)
+@{"BLTAPTH" Link HW_BLTxPT} + -050 W  A       Blitter pointer to source A (high 3 bits)
+@{"BLTAPTL" Link HW_BLTxPT} + -052 W  A       Blitter pointer to source A (low 15 bits)
+@{"BLTDPTH" Link HW_BLTxPT} + -054 W  A       Blitter pointer to destination D (high 3 bits)
+@{"BLTDPTL" Link HW_BLTxPT} + -056 W  A       Blitter pointer to destination D (low 15 bits)
+@{"BLTSIZE" Link HW_BLTSIZE}   -058 W  A       Blitter start and size (window width, height)
+@{"BLTCON0L" Link HW_BLTCON}  -05B W  A       BLTCON0 minterm only access (*BYTE*)     ECS+
+@{"BLTSIZV" Link HW_BLTSIZE}   -05C W  A       Blitter size vertical (window height)    ECS+
+@{"BLTSIZH" Link HW_BLTSIZE}   -05E W  A       Blitter start & size (window width)      ECS+
+@{"BLTCMOD" Link HW_BLTxMOD}   -060 W  A       Blitter modulo for source C
+@{"BLTBMOD" Link HW_BLTxMOD}   -062 W  A       Blitter modulo for source B
+@{"BLTAMOD" Link HW_BLTxMOD}   -064 W  A       Blitter modulo for source A
+@{"BLTDMOD" Link HW_BLTxMOD}   -066 W  A       Blitter modulo for destination D
+          -068
+          -06A
+          -06C
+          -06E
+@{"BLTCDAT" Link HW_BLTxDAT} % -070 W  A       Blitter source C data register
+@{"BLTBDAT" Link HW_BLTxDAT} % -072 W  A       Blitter source B data reglster
+@{"BLTADAT" Link HW_BLTxDAT} % -074 W  A       Blitter source A data register
+          -076
+          -078
+          -07A
+@{"DENISEID" Link HW_DENISEID}  -07C            Denise revision identification register  ECS+
+@{"DSKSYNC" Link HW_DSKSYNC}   -07E W      P   Disk sync pattern register for disk read
+@{"COP1LCH" Link HW_COPxLC} +  080 W A        Coprocessor first location register (high 4 bits)
+@{"COP1LCL" Link HW_COPxLC} +  082 W A        Coprocessor first location register (low 15 bits)
+@{"COP2LCH" Link HW_COPxLC} +  084 W A        Coprocessor second location register (high 4 bits)
+@{"COP2LCL" Link HW_COPxLC} +  086 W A        Coprocessor second location register (low 15 bits)
+@{"COPJMP1" Link HW_COPJMP }    088 S A        Coprocessor restart at first location
+@{"COPJMP2" Link HW_COPJMP }    08A S A        Coprocessor restart at second location
+@{"COPINS" Link HW_COPINS}     08C W A        Coprocessor instruction fetch identify
+@{"DIWSTRT" Link HW_DIWxxxx}    08E W A        Display window start (upper left vert-horiz pos)
+@{"DIWSTOP" Link HW_DIWxxxx}    090 W A        Display window stop (lower right vert-horiz pos)
+@{"DDFSTRT" Link HW_DDFxxxx}    092 W A        Display bit plane data fetch start (horiz position)
+@{"DDFSTOP" Link HW_DDFxxxx}    094 W A        Display bit plane data fetch stop (horiz position)
+@{"DMACON" Link HW_DMACON}     096 W A D P    DMA control write (clear or set)
+@{"CLXCON" Link HW_CLXCON}     098 W     D    Collision control
+@{"INTENA" Link HW_INTxxx}     09A W     P    Interrupt enable bits (clear or set bits)
+@{"INTREQ" Link HW_INTxxx}     09C W     P    Interrupt request bits (clear or set bits)
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUD0LCH" Link HW_AUDxLC} +  0A0 W A        Audio channel 0 location (high 3 bits)
+@{"AUD0LCL" Link HW_AUDxLC} +  0A2 W A        Audio channel 0 location (low 15 bits)
+@{"AUD0LEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel 0 length
+@{"AUD0PER" Link HW_AUDxPER}    0A6 W     P    Audio channel 0 period
+@{"AUD0VOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel 0 volume
+@{"AUD0DAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel 0 data
+           0AC
+           0AE
+@{"AUD1LCH" Link HW_AUDxLC} +  0B0 W A        Audio channel 1 location (high 3 bits)
+@{"AUD1LCL" Link HW_AUDxLC} +  0B2 W A        Audio channel 1 location (low 15 bits)
+@{"AUD1LEN" Link HW_AUDxLEN}    0B4 W     P    Audio channel 1 length
+@{"AUD1PER" Link HW_AUDxPER}    0B6 W     P    Audio channel 1 period
+@{"AUD1VOL" Link HW_AUDxVOL}    0B8 W     P    Audio channel 1 volume
+@{"AUD1DAT" Link HW_AUDxDAT} &  0BA W     P    Audio channel 1 data
+           0BC
+           0BE
+@{"AUD2LCH" Link HW_AUDxLC} +  0C0 W A        Audio channel 2 location (high 3 bits)
+@{"AUD2LCL" Link HW_AUDxLC} +  0C2 W A        Audio channel 2 location (low 15 bits)
+@{"AUD2LEN" Link HW_AUDxLEN}    0C4 W     P    Audio channel 2 length
+@{"AUD2PER" Link HW_AUDxPER}    0C6 W     P    Audio channel 2 period
+@{"AUD2VOL" Link HW_AUDxVOL}    0C8 W     P    Audio channel 2 volume
+@{"AUD2DAT" Link HW_AUDxDAT} &  0CA W     P    Audio channel 2 data
+           0CC
+           0CE
+@{"AUD3LCH" Link HW_AUDxLC} +  0D0 W A        Audio channel 3 location (high 3 bits)
+@{"AUD3LCL" Link HW_AUDxLC} +  0D2 W A        Audio channel 3 location (low 15 bits)
+@{"AUD3LEN" Link HW_AUDxLEN}    0D4 W     P    Audio channel 3 length
+@{"AUD3PER" Link HW_AUDxPER}    0D6 W     P    Audio channel 3 period
+@{"AUD3VOL" Link HW_AUDxVOL}    0D8 W     P    Audio channel 3 volume
+@{"AUD3DAT" Link HW_AUDxDAT} &  0DA W     P    Audio channel 3 data
+           0DC
+           0DE
+@{"BPL1PTH" Link HW_BPLxPT} +  0E0 W A        Bit plane 1 pointer (high 5 bits)
+@{"BPL1PTL" Link HW_BPLxPT} +  0E2 W A        Bit plane 1 pointer (low 15 bits)
+@{"BPL2PTH" Link HW_BPLxPT} +  0E4 W A        Bit plane 2 pointer (high 5 bits)
+@{"BPL2PTL" Link HW_BPLxPT} +  0E6 W A        Bit plane 2 pointer (low 15 bits)
+@{"BPL3PTH" Link HW_BPLxPT} +  0E8 W A        Bit plane 3 pointer (high 5 bits)
+@{"BPL3PTL" Link HW_BPLxPT} +  0EA W A        Bit plane 3 pointer (low 15 bits)
+@{"BPL4PTH" Link HW_BPLxPT} +  0EC W A        Bit plane 4 pointer (high 5 bits)
+@{"BPL4PTL" Link HW_BPLxPT} +  0EE W A        Bit plane 4 pointer (low 15 bits)
+@{"BPL5PTH" Link HW_BPLxPT} +  0F0 W A        Bit plane 5 pointer (high 5 bits)
+@{"BPL5PTL" Link HW_BPLxPT} +  0F2 W A        Bit plane 5 pointer (low 15 bits)
+@{"BPL6PTH" Link HW_BPLxPT} +  0F4 W A        Bit plane 6 pointer (high 5 bits)
+@{"BPL6PTL" Link HW_BPLxPT} +  0F6 W A        Bit plane 6 pointer (low 15 bits)
+@{"BPL7PTH" Link HW_BPLxPT} +  0F8 W A        Bit plane 6 pointer (high 5 bits)
+@{"BPL7PTL" Link HW_BPLxPT} +  0FA W A        Bit plane 6 pointer (low 15 bits)
+@{"BPL8PTH" Link HW_BPLxPT} +  0FC W A        Bit plane 6 pointer (high 5 bits)
+@{"BPL8PTL" Link HW_BPLxPT} +  0FE W A        Bit plane 6 pointer (low 15 bits)
+@{"BPLCON0" Link HW_BPLCON0}    100 W A D      Bit plane control register (misc. control bits)
+@{"BPLCON1" Link HW_BPLCON1}    102 W      D   Bit plane control reg. (scroll value PF1, PF2)
+@{"BPLCON2" Link HW_BPLCON2}    104 W      D   Bit plane control reg. (priority control)
+@{"BPLCON3" Link HW_BPLCON3}    106 W      D   Bit plane control reg. (AGA/ECS control)
+@{"BPL1MOD" Link HW_BPLxMOD}    108 W A        Bit plane modulo (odd planes)
+@{"BPL2MOD" Link HW_BPLxMOD}    10A W A        Bit Plane modulo (even planes)
+@{"BPLCON4" Link HW_BPLCON4}    10C W      D   Bit Plane magic reg. (misc. control bits)
+CLXCON2    10E W      D   Extended collision control (AGA)
+@{"BPL1DAT" Link HW_BPLxDAT}  & 110 W D        Bit plane 1 data (parallel-to-serial convert)
+@{"BPL2DAT" Link HW_BPLxDAT}  & 112 W D        Bit plane 2 data (parallel-to-serial convert)
+@{"BPL3DAT" Link HW_BPLxDAT}  & 114 W D        Bit plane 3 data (parallel-to-serial convert)
+@{"BPL4DAT" Link HW_BPLxDAT}  & 116 W D        Bit plane 4 data (parallel-to-serial convert)
+@{"BPL5DAT" Link HW_BPLxDAT}  & 118 W D        Bit plane 5 data (parallel-to-serial convert)
+@{"BPL6DAT" Link HW_BPLxDAT}  & 11A W D        Bit plane 6 data (parallel-to-serial convert)
+@{"BPL7DAT" Link HW_BPLxDAT}  & 11C W D        Bit plane 7 data (parallel-to-serial convert)
+@{"BPL8DAT" Link HW_BPLxDAT}  & 11E W D        Bit plane 8 data (parallel-to-serial convert)
+
+@{"SPR0PTH" Link HW_SPRxPT}  + 120 W A        Sprite 0 pointer (high 3 bits)
+@{"SPR0PTL" Link HW_SPRxPT}  + 122 W A        Sprite 0 pointer (low 15 bits)
+@{"SPR1PTH" Link HW_SPRxPT}  + 124 W A        Sprite 1 pointer (high 3 bits)
+@{"SPR1PTL" Link HW_SPRxPT}  + 126 W A        Sprite 1 pointer (low 15 bits)
+@{"SPR2PTH" Link HW_SPRxPT}  + 128 W A        Sprite 2 pointer (high 3 bits)
+@{"SPR2PTL" Link HW_SPRxPT}  + 12A W A        Sprite 2 pointer (low 15 bits)
+@{"SPR3PTH" Link HW_SPRxPT}  + 12C W A        Sprite 3 pointer (high 3 bits)
+@{"SPR3PTL" Link HW_SPRxPT}  + 12E W A        Sprite 3 pointer (low 15 bits)
+@{"SPR4PTH" Link HW_SPRxPT}  + 130 W A        Sprite 4 pointer (high 3 bits)
+@{"SPR4PTL" Link HW_SPRxPT}  + 132 W A        Sprite 4 pointer (low 15 bits)
+@{"SPR5PTH" Link HW_SPRxPT}  + 134 W A        Sprite 5 pointer (high 3 bits)
+@{"SPR5PTL" Link HW_SPRxPT}  + 136 W A        Sprite 5 pointer (low 15 bits)
+@{"SPR6PTH" Link HW_SPRxPT}  + 138 W A        Sprite 6 pointer (high 3 bits)
+@{"SPR6PTL" Link HW_SPRxPT}  + 13A W A        Sprite 6 pointer (low 15 bits)
+@{"SPR7PTH" Link HW_SPRxPT}  + 13C W A        Sprite 7 pointer (high 3 bits)
+@{"SPR7PTL" Link HW_SPRxPT}  + 13E W A        Sprite 7 pointer (low 15 bits)
+@{"SPR0POS" Link HW_SPRxCTL}  % 140 W A D      Sprite 0 vert-horiz start position data
+@{"SPR0CTL" Link HW_SPRxCTL}  % 142 W A D      Sprite 0 vert stop position and control data
+@{"SPR0DATA" Link HW_SPRxDAT} % 144 W D        Sprite 0 image data register A
+@{"SPR0DATB" Link HW_SPRxDAT} % 146 W D        Sprite 0 image data register B
+@{"SPR1POS" Link HW_SPRxCTL}  % 148 W A D      Sprite 1 vert-horiz start position data
+@{"SPR1CTL" Link HW_SPRxCTL}  % 14A W A D      Sprite 1 vert stop position and control data
+@{"SPR1DATA" Link HW_SPRxDAT} % 14C W D        Sprite 1 image data register A
+@{"SPR1DATB" Link HW_SPRxDAT} % 14E W D        Sprite 1 image data register B
+@{"SPR2POS" Link HW_SPRxCTL}  % 150 W A D      Sprite 2 vert-horiz start position data
+@{"SPR2CTL" Link HW_SPRxCTL}  % 152 W A D      Sprite 2 vert stop position and control data
+@{"SPR2DATA" Link HW_SPRxDAT} % 154 W D        Sprite 2 image data register A
+@{"SPR2DATB" Link HW_SPRxDAT} % 156 W D        Sprite 2 image data register B
+@{"SPR3POS" Link HW_SPRxCTL}  % 158 W A D      Sprite 3 vert-horiz start position data
+@{"SPR3CTL" Link HW_SPRxCTL}  % 15A W A D      Sprite 3 vert stop position and control data
+@{"SPR3DATA" Link HW_SPRxDAT} $ 15C W D        Sprite 3 image data register A
+@{"SPR3DATB" Link HW_SPRxDAT} % 15E W D        Sprite 3 image data register B
+@{"SPR4POS" Link HW_SPRxCTL}  % 160 W A D      Sprite 4 vert-horiz start position data
+@{"SPR4CTL" Link HW_SPRxCTL}  % 162 W A D      Sprite 4 vert stop position and control data
+@{"SPR4DATA" Link HW_SPRxDAT} % 164 W D        Sprite 4 image data register A
+@{"SPR4DATB" Link HW_SPRxDAT} % 166 W D        Sprite 4 image data register B
+@{"SPR5POS" Link HW_SPRxCTL}  % 168 W A D      Sprite 5 vert-horiz start position data
+@{"SPR5CTL" Link HW_SPRxCTL}  % 16A W A D      Sprite 5 vert stop position and control data
+@{"SPR5DATA" Link HW_SPRxDAT} % 16C W D        Sprite 5 image data register A
+@{"SPR5DATB" Link HW_SPRxDAT} % 16E W D        Sprite 5 image data register B
+@{"SPR6POS" Link HW_SPRxCTL}  % 170 W A D      Sprite 6 vert-horiz start position data
+@{"SPR6CTL" Link HW_SPRxCTL}  % 172 W A D      Sprite 6 vert stop position and control data
+@{"SPR6DATA" Link HW_SPRxDAT} % 174 W D        Sprite 6 image data register A
+@{"SPR6DATB" Link HW_SPRxDAT} % 176 W D        Sprite 6 image data register B
+@{"SPR7POS" Link HW_SPRxCTL}  % 178 W A D      Sprite 7 vert-horiz start position data
+@{"SPR7CTL" Link HW_SPRxCTL}  % 17A W A D      Sprite 7 vert stop position and control data
+@{"SPR7DATA" Link HW_SPRxDAT} % 17C W D        Sprite 7 image data register A
+@{"SPR7DATB" Link HW_SPRxDAT} % 17E W D        Sprite 7 image data register B
+
+@{"COLORxx" Link HW_COLORxx}    1xx W   D      Color table xx (Address 180+xx*2)
+
+HTOTAL	   1C0            Highest count in horiz line		(ECS+)
+HSSTOP	   1C2            Horiz line pos for HSYNC stop		(ECS+)
+HBSTRT	   1C4            Horiz line pos for HBlank Start	(ECS+)
+HBSTOP	   1C6            Horiz line pos for HBlank Stop	(ECS+)
+VTOTAL	   1C8            Highest numbered vertical line	(ECS+)
+VSSTOP	   1CA            Vert line pos for VSYNC Stop		(ECS+)
+VBSTRT	   1CC            Vert line for VBLANK Start		(ECS+)
+VBSTOP	   1CE            Vert line for VBLANK Stop		(ECS+)
+SPRHSTRT   1D0            UHRES Sprite Vertical start		(ECS+)
+SPRHSTOP   1D2            UHRES Sprite Vertical stop		(ECS+)
+BPLHSTRT   1D4            UHRES Bitplane Vertical start		(ECS+)
+BPLHSTOP   1D6            UHRES Bitplane Vertical stop		(ECS+)
+HHPOSW	   1D8            Dual Mode Hires H Beam Counter Write	(ECS+)
+HHPOSR	   1DA            Dual Mode Hires H Beam Counter Read	(ECS+)
+@{"BEAMCON0" Link HW_BEAMCON0}   1DC            Beam Control Register			(ECS+)
+HSSTRT	   1DE            Horizontal Sync Start			(ECS+)
+VSSTRT	   1E0            Vertical Sync Start			(ECS+)
+HCENTER    1E2            Horizontal lace position		(ECS+)
+@{"DIWHIGH" Link HW_DIWHIGH}    1E4            Display window upper bits		(ECS+)
+
+BPLHMOD    1E6            UHRES Bitplane modulo       (AGA?)
+SPRHPTH    1E8            UHRES Sprite Pointer High   (AGA?)
+SPRHPTL    1EA            UHRES Sprite Pointer Low    (AGA?)
+BPLHPTH    1EC            UHRES Bitplane Pointer High (AGA?)
+BPLHPTL    1EE            UHRES Bitplane Pointer Low  (AGA?)
+           1F0            AGA only register (?)
+           1F2            AGA only register (?)
+           1F4            AGA only register (?)
+           1F6            AGA only register (?)
+           1F8            AGA only register (?)
+           1FA            AGA only register (?)
+
+@{"FMODE" Link HW_FMODE}      1FC  A         Fetch MODE register (misc bits)
+NO-OP      1FE            Guaranteed unused register; dummy.
+
+@EndNode
+
+
+@Node HW_ADKCON "The Audio & Disk Control Registers"
+@toc HW_Contents
+
+ADKCON     09E      W     P             Audio, disk, control write
+ADKCONR    010      R     P             Audio, disk, control read
+
+ BIT# USE
+ --------------------------------------------------------------------
+ 
+ 15   SET/CLR   Set/clear control bit. Determines if bits written with a 1
+                get set or cleared. Bits written with a zero are always
+                unchanged.
+ 
+ 14-13 PRECOMP 1-0
+ 
+           CODE   PRECOMP VALUE
+           --------------------
+            00        none
+            01       140 ns
+            10       280 ns
+            11       560 ns
+ 
+ 
+ 12   MFMPREC   (1=MFM precomp 0-GCR precomp)
+ 11   UARTBRK   Forces a UART break (clear TXD) if true (See @{"SERPER" Link HW_SERPER}.
+ 10   WORDSYNC  Enable disk read synchronizing on a word equal to DISK
+                SYNC CODE, located in @{"DSKSYNC" Link HW_DSKSYNC}.
+ 09   MSBSYNC   Enables disk read synchronizing on the MSB (most
+                significant bit). Apply type GCR.
+ 08   FAST      Disk data clck rate control 1-fast(2us) 0=slow(4us). (fast
+                for MFM, slow for MFM or GCR)
+ 
+ 07   USE3PN    Use audio channel 3 to modulate nothing.
+ 06   USE2P3    Use audio channel 2 to modulate period of channel 3.
+ 05   USE1P2    Use audio channel 1 to modulate period of channel 2.
+ 04   USE0P1    Use audio channel 0 to modulate period of channel 1.
+ 
+ 03   USE3VN    Use audio channel 3 to modulate nothing.
+ 02   USE2V3    Use audio channel 2 to modulate volume of channel 3.
+ 01   USE1V2    Use audio channel 1 to modulate volume of channel 2.
+ 00   USE0V1    Use audio channel 0 to modulate volume of channel 1.
+ 
+NOTE: If both @{"period" Link HW_AUDxPER} and @{"volume" Link HW_AUDxVOL} are modulated on the same channel, the
+period and volume will be alternated. First word xxxxxxxx V6-V0 , Second
+word P15-P0 (etc)
+
+@EndNode
+
+@Node HW_AUDxDAT "The Audio Data registers"
+@toc HW_Contents
+
+AUDxDAT    0AA      W     P             Audio channel x data
+
+This register is the audio channel x (x=0,1,2,3) DMA data buffer. It
+contains 2 bytes of data that are each 2's complement and are output
+sequentially (with digital-to-analog conversion) to the audio output pins.
+(LSB = 3 mV) The DMA controller automatically transfers data to this
+register from RAM. The processor can also write directly to this
+register. When the DMA data is finished (words output=length) and the
+data in this register has been used, an audio channel interrupt request
+is set.
+
+(Conjuncture form playing with the audio interrupts)
+When the DMA is disabled, an interrupt request will be posted every time
+a word has been output.  This will, however NOT be accompanied by a
+re-load of the internal pointer and length registers.  These registers
+will be re-loaded only on a denied interrupt request, whether it is
+denied because the interrupt bit is set or the enable bit is unset seems
+to make no difference.
+As both the interrupt logic and the audio hardware is in Paula, it is
+possible that a re-load can be forced by writing the interrupt request
+bit while the interrupt is disabled.  This is, however, not a CBM
+supported practice, and is likely not to keep working.
+If you want to use audio in way that keep working, use audio.device,
+which in fact is quite quick.
+
+  SEE ALSO
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLC" Link HW_AUDxLC}  +  0A0 W A        Audio channel x location
+@{"AUDxLEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel x length
+@{"AUDxPER" Link HW_AUDxPER}    0A6 W     P    Audio channel x period
+@{"AUDxVOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel x volume
+@{"Interrupts" Link HW_INTxxx}
+
+@EndNode
+
+@Node HW_AUDxLC "The Audio Pointer registers"
+@toc HW_Contents
+
+AUDxLCH 0A0 W A       Audio channel x location (high 3 bits)
+AUDxLCL 0A2 W A       Audio channel x location (low 15 bits)
+
+This pair of registers contains the 18 bit starting address (location) of
+audio channel x (x=0,1,2,3) DMA data. This is not a pointer register and
+therefore needs to be reloaded only if a different memory location is to
+be output, ie, another sample is to be played.
+Be aware, though, that this also make it hard to stop a smaple in
+mid-play.  To force re-load of the internal pointer-register, it seems
+that an interrupt request must be DENIED.  It may be possible to force a
+re-load by writing the interrupt request bit.
+
+  SEE ALSO
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel x length
+@{"AUDxPER" Link HW_AUDxPER}    0A6 W     P    Audio channel x period
+@{"AUDxVOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel x volume
+@{"AUDxDAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel x data
+
+@EndNode
+
+@Node HW_AUDxLEN "The audio length registers"
+@toc HW_Contents
+
+AUDxLEN 0A4 W     P   Audio channel x length
+
+This register contains the length (number of words) of audio channel x DMA
+data.
+
+  SEE ALSO
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLC" Link HW_AUDxLC}  +  0A0 W A        Audio channel x location
+@{"AUDxPER" Link HW_AUDxPER}    0A6 W     P    Audio channel x period
+@{"AUDxVOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel x volume
+@{"AUDxDAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel x data
+
+@EndNode
+
+@Node HW_AUDxPER "The audio period registers"
+@toc HW_Contents
+
+AUDxPER 0A6 W     P   Audio channel x Period
+
+This register contains the period (rate) of audio channel x DMA data
+transfer. The minimum period is 12 color clocks. This means that the
+smallest number that should be placed in this register is 124 decimal.
+This corresponds to a maximum sample frequency of 28.86 khz.
+This register is copied to an internal backup register when playing
+samples, and the next sample is fetched when this internal register has
+count down to zero. If there is no more samples to fetch, and
+audio-interrupt is triggered.
+
+To replay a waveform of n samples at a frequency of f hz, use the
+following formula:
+	Period = 3579545/(f*n)			(For NTSC)
+	Period = 3546897/(f*n)			(For PAL)
+If you want to convert from period to frequency, you can use the same
+formulas, just swap period and frequency.
+
+Normally, audio samples for the Amiga is sampled at a C with
+8 samples/cycle; that is, there are 8 samples in a complete curve for
+the dominant wavelength.  At least, that's the theory.  In fact, usually
+samples are recorded a little bit off, and are out-of-tune, but who
+carez? ;-)
+Anyway; they are sampled at ANY C, so we don't know what frequency they
+will be when played, but we know how to play it at any TONE; a tone in a
+given octave is defined as a frequency f.  To move it up or down an
+octave, we divide or multiply the frequency by 2.
+Humans hear frequencies logarithmically; 16 is twice as much as 4, as
+far as the ear is concerned.  Thus, to divide the scale equally into the
+12 half-notes there are in one octave, we have to multiply each
+frequency by 2^(1/12) to get the next frequency.  The frequency for the
+middle A on the piano (A5) is 440 Hz.
+
+       Period  Period	 Ideal	 Freq.	 Freq.
+       (PAL)   (NTSC)	 freq.	 (PAL)	(NTSC)
+C	847	856	 261.6	 261.7	261.4
+C#	800	808	 277.2	 277.1	276.5
+D	755	762	 293.7	 293.6	293.6
+D#	712	720	 311.1	 311.3	310.7
+E	673	678	 329.6	 329.4	330.0
+F	635	640	 349.2	 349.1	349.6
+F#	599	604	 370.0	 370.1	370.4
+G	566	570	 392.0	 391.7	392.5
+G#	533	538	 415.3	 415.9	415.8
+A	504	508	 440.0	 439.8	440.4
+A#	476	480	 466.1	 465.7	466.1
+B	449	453	 493.9	 493.7	493.9
+C	424	428	 523.2	 522.8	522.7
+C#	400	404	 554.4	 554.2	553.8
+D	377	381	 587.3	 588.0	587.2
+D#	356	360	 622.2	 622.7	621.4
+E	336	339	 659.2	 659.8	659.9
+F	317	320	 698.4	 699.3	699.1
+F#	300	302	 740.0	 738.9	740.8
+G	283	285	 784.0	 783.3	785.0
+G#	267	269	 830.6	 830.3	831.7
+A	252	254	 880.0	 879.7	880.8
+A#	238	240	 932.3	 931.4	932.2
+B	224	226	 987.8	 989.6	989.9
+C	212	214	1046.5	1045.7	1045.4
+C#	200	202	1108.7	1108.4	1107.5
+D	189	190	1174.7	1172.9	1177.5
+D#	178	180	1244.5	1245.4	1242.9
+E	168	170	1318.5	1319.5	1316.0
+F	159	160	1396.9	1394.2	1396.3
+F#	150	151	1480.0	1477.9	1481.6
+G	141	143	1568.0	1572.2	1564.5
+G#	133	135	1661.2	1666.8	1657.2
+A	126	127	1760.0	1759.4	1761.6
+A#	119	120	1864.6	1862.9	1864.3
+B	112	113	1975.5	1979.3	1979.8
+
+BTW: Most trackers and replayers are based on the Amiga Hardware Manual,
+     which only have NTSC formulas in it.  This doesn't matter much, as
+     we don't hear whether the absolute frequency is correct, only
+     whether the realtive ratio between frequencies are correct.
+
+
+
+
+  SEE ALSO
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLC" Link HW_AUDxLC}  +  0A0 W A        Audio channel x location
+@{"AUDxLEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel x length
+@{"AUDxVOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel x volume
+@{"AUDxDAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel x data
+
+@EndNode
+
+@Node HW_AUDxVOL "The audio volume registers"
+@toc HW_Contents
+
+AUDxVOL 0A8 W     P   Audio channel x volume
+
+This register contains the volume setting for audio channel x. Bits
+6,5,4,3,2,1,0 specify 65 linear volume levels as shown below.
+
+ Bit#   Use
+ --------------------------------------------------
+ 15-07  Not used
+ 06     Forces volume to max (64 ones, no zeros)
+ 05-00  Sets one of 64 levels (000000-no output (111111-63 19, one 0)
+
+************ EXPAND **********
+Add table of decibel values corresponding to volumes.
+
+  SEE ALSO
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLC" Link HW_AUDxLC}  +  0A0 W A        Audio channel x location
+@{"AUDxLEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel x length
+@{"AUDxPER" Link HW_AUDxPER}    0A6 W     P    Audio channel x period
+@{"AUDxDAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel x data
+
+@EndNode
+
+@Node HW_BPLxMOD "The bitplane modulo registers"
+@toc HW_Contents
+
+BPL1MOD 108 W A       Bit plane modulo (odd planes)
+BPL2MOD 10A W A       Bit Plane modulo (even planes)
+
+These registers contain the modulos for the odd and even bit planes.  A
+modulo is a number that is automatically added to the address at the end of
+each line, so that the address then points to the start of the next line.
+
+Since they have separate modulos, the odd and even bit planes may have
+sizes that are different from each other, as well as different from the
+@{"display window size" Link HW_DIWxxxx}.
+
+The modulo registers can be set to negative values; this can be used for
+things like flipping the screen upside down.
+
+****  Expand here; interleaved bitmaps, tech-tech, water, etc ****
+
+  SEE ALSO
+
+@{"Display Data Fetch Control" Link HW_DDFxxxx}
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+@{"BLTxMOD" Link HW_BLTxMOD}   -06x W  A       Blitter modulo for source x
+
+@EndNode
+
+@Node HW_BEAMCON0 "The BEAM control register (ECS+)"
+@toc HW_Contents
+
+  This register is one of the primary parts of the programable
+resolution system of the ECS chipset.  It control various aspect of the
+display, the ones that have nothing to do with bitplanes etc.
+
+
+ BIT#  NAME      DESCRIPTION
+ ------------------------------------------------
+ 15      X
+ 14      X
+ 13      X
+ 12   VARVBLANK   Variable vertical blank enable
+ 11   LOLDIS      Long line disable
+ 10   CSCBLANKEN  Redirect composite sync
+ 09   VARVSYNC    Variable vertical sync enable
+ 08   VARHSYNC    Variable horizontal sync enable
+ 07   VARBEAM     Variable beam counter enable
+ 06   DISPLAYDUAL Use UHRES pointer and standard pointers
+ 05   DISPLAYPAL  PAL or NTSC display (PAL=1,NTSC=0)
+ 04   VARCSYNC    Variable composite sync enable
+ 03   CSBLANK     Composite blank out to CSY* pin
+ 02   CSYNCTRUE   Composite sync true signal
+ 01   VSYNCTRUE   Vertical sync true
+ 00   HSYNCTRUE   Horizontal sync true
+
+Probably some of the upper bits are used for enabling scan-doubling on
+AGA machines.  BTW: Be CAREFUL about messing with this register; it can
+burn out your monitor.  (Not EXTREMLY quickly, but in a matter of
+seconds, probably)
+
+@EndNode
+
+
+@Node HW_BPLCON0 "The BitPLane CONtrol register 0"
+@toc HW_Contents
+
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+
+  This register control the operation of the bit planes and various
+aspects of the display.
+  If you want to be compatible with as much stuff as possible, you will
+have to OR in partial system defaults when writing to this register.
+system_bplcon0 (from GfxBase) should be ORed into bplcon0 writes under
+all OS revisions to work with genlocks, and whatever else CBM may come
+up with of strange display devices.
+
+ BIT#    NAME      DESCRIPTION
+ ------------------------------------------------
+ 15      HIRES     High-resolution (640) mode
+ 14      BPU2      Bit plane use code bit 2
+ 13      BPU1      Bit plane use code bit 1
+ 12      BPU0      Bit plane use code bit 0
+ 11      HOMOD     Hold-and-modify mode
+ 10      DBLPF     Double playfield (PF1=odd PF2=even bit planes)
+ 09      COLOR     Composite video color enable
+ 08      GAUD      Genlock audio enable (mixed on BKGND pin during VBL)
+ 07     *BRITE     Extra halfbrite control (Note 1)
+ 06     *SUCOP     "Super Copper" mode (?) (AGA only) (Note 2)
+ 05     +SUPER     Enable superhires (used WITH the hires bit) (ECS+)
+ 04     *UBP8      Use 8 bitplanes.  BPU0-BPU2 = 0! (Note 3)
+ 03      LPEN      Lightpen enable (reset on power up)
+ 02      LACE      Interlace enable (reset on power up)
+ 01      ERSY      External resync (HSYNC, VSYNC pads become inputs)
+ 00     +ENBPLCN3  Enable new BPLCON3 register (ECS+)
+
+ + indicates a bit that was introduced with ECS
+ * indicates a bit exist on AGA ONLY.
+
+Note 1: This bit is used for the EHB monitor IDs.  POSSIBLY it is also
+used for disabling EHB for 64 color pictures on AGA.  Another
+possibility is HAM8.
+
+Note 2: The "Super Copper Mode" is a rumour about the AGA machines.  It
+is supposed to have 3 words pr copper instruction instead of 2, and
+most of the 3rd words are zero.  The reason I believe this bit is the
+super copper control bit is that all copper activity lock up when this
+bit it set.
+
+Note 3: The effect of setting the bitplane use codes to something else
+than zero with this bit on is not known.
+
+REMEMBER:  AGA is a temporary chipset, and _will_ be changed without
+notice.  You have been warned.
+
+  SEE ALSO
+
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+
+@EndNode
+
+@Node HW_BPLCON1 "The BitPLane CONtrol register 1"
+@toc HW_Contents
+
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+
+  This register control the scrolling position of the bitplanes for both
+playfields.  The resolution is one lores pixel under OCS/ECS, one
+superhires pixel under AGA.
+
+ BIT#    NAME    DESCRIPTION
+ ------------------------------------------------
+ 15     *PF2H5   Playfield 2 horizontal scroll code bit 7
+ 14     *PF2H4   Playfield 2 horizontal scroll code bit 6
+ 13     *PF2Hm1  Playfield 2 horizontal scroll code bit 1
+ 12     *PF2Hm2  Playfield 2 horizontal scroll code bit 0
+ 11     *PF1H5   Playfield 1 horizontal scroll code bit 7
+ 10     *PF1H4   Playfield 1 horizontal scroll code bit 6
+ 09     *PF1Hm1  Playfield 1 horizontal scroll code bit 1
+ 08     *PF1Hm2  Playfield 1 horizontal scroll code bit 0
+ 07      PF2H3   Playfield 2 horizontal scroll code bit 5
+ 06      PF2H2   Playfield 2 horizontal scroll code bit 4
+ 05      PF2H1   Playfield 2 horizontal scroll code bit 3
+ 04      PF2H0   Playfield 2 horizontal scroll code bit 2
+ 03      PF1H3   Playfield 1 horizontal scroll code bit 5
+ 02      PF1H2   Playfield 1 horizontal scroll code bit 4
+ 01      PF1H1   Playfield 1 horizontal scroll code bit 3
+ 00      PF1H0   Playfield 1 horizontal scroll code bit 2
+
+ * indicates a bit that exist on AGA ONLY.
+
+The bit number in the names refer to lores pixels; m1 and m2 means -1
+and -2, refering to half and quarter lores pixels.  The bit number in
+the descriptions refer to superhires pixels.
+ONLY THE 8 LOWER BITS ARE VALID UNDER OCS/ECS.
+This mean you can only scroll 16 lores pixels under OCS/ECS, while you
+can scroll 64 lores pixels under AGA.
+
+REMEMBER:  AGA is a temporary chipset, and _will_ be changed without
+notice.  You have been warned.
+
+  SEE ALSO
+
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+
+@EndNode
+
+@Node HW_BPLCON2 "The BitPLane CONtrol registers"
+@toc HW_Contents
+
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+
+  This register control what playfield is on top of what other
+playfield, and how the playfields relate to sprites. It also determines
+how the genlock control hardware works.
+
+ BIT#    NAME      DESCRIPTION
+ ------------------------------------------------
+ 15        X       
+ 14     +ZDBPSEL2  \  Select bitplane to use to
+ 13     +ZDBPSEL1   > control video overlay
+ 12     +ZDBPSEL0  /  (Genlocking)
+ 11     +ZDBPEN    Use BITPLANEKEY to control what to videooverlay
+ 10     +ZDCTEN    Use color register to control what to videooverlay
+ 09     +KILLEHB   Kill extra halfbrite-mode
+ 08       *X       "Beware of poking"
+ 07       *X       "Beware of poking"
+ 06      PF2PRI    Playfield 2 (even planes) has priority over (appears
+                    in front of) playfield 1 (odd planes).
+ 05      PF2P2     \
+ 04      PF2P1      > Playfield 2 priority code (with respect to sprites)
+ 03      PF2P0     /
+ 02      PF1P2     \
+ 01      PF1P1      > Playfield 1 priority code (with respect to sprites)
+ 00      PF1P0     /
+
+ + indicates a bit that was introduced with ECS
+ * indicates a bit that exist on AGA ONLY. (Probable bits - CBM warns)
+
+  Beware that sprites can go in front of the playfield in the front
+while they are behind the playfield in the back.  The sprite priority
+code select which sprite group (two and two sprites) are in front of the
+playfield.  0 means no group, 1 means group 1 (consisting of sprite 0 &
+1), 2 means group 1 & 2 (sprites 0-2) in front, etc.
+  One thing to note:  If you set the sprite priority for playfield 1 to
+higher than 4 (selecting all sprites in front) all pixels in the display
+with bitplane 5 set will end up in color 16.  Nice for tricky effects;
+it is, as far as I know, not documented from CBMs side, and may not work
+on ECS/AGA machines (I have only tested it on OCS machines).
+
+  SEE ALSO
+
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+
+@EndNode
+
+@Node HW_BPLCON3 "The BitPLane CONtrol register #3"
+@toc HW_Contents
+
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+(New register for ECS, not present on OCS Denise)
+
+  This register control border transparency and various other genlock
+related operation on the ECS chipset.
+ On AGA, it also control the operation of the 24-bit color registers,
+and sprite resolution.
+
+  If you want to be compatible with as much stuff as possible, you will
+have to OR in partial system defaults when writing to this register.
+BP3Bits (a byte from GfxBase) should be ORed into bplcon3 writes under
+V39 and higher.  This was to make border transparency global, but more
+information may be put here at a later date.
+
+ BIT#     NAME     FUNCTION
+ --------------------------------------------
+ 15      *CREG7    Color Register Bit 7 (Bank #) (Note 1)
+ 14      *CREG6    Color Register Bit 6 (Bank #) (Note 1)
+ 13      *CREG5    Color Register Bit 5 (Bank #) (Note 1)
+ 12        *X
+ 11        *X
+ 10         X
+ 09      *LOCT     Access low part of colortable (Note 1)
+ 08         X
+ 07      *SRESH    Sprite resolution (HIRES control) (Note 2)
+ 06      *SRESSH   Sprite resolution (SUPERHIRES control) (Note 2)
+ 05      +BRDRBLNK Border is opaque on genlock (Note 3)
+ 04      +BRDRTRAN Border is transparent on genlock (Note 3)
+ 03         X
+ 02      +ZDCLKEN  ZD pin outputs a 14mhz clock
+ 01      +EXTBLKZD External blank ORed into transparency
+ 00     +EXTBLNKEN External blank enable
+
+ + indicates a bit that was introduced with ECS
+ * indicates a bit exist on AGA ONLY.
+
+Note 1:  The color register scheme used on the AGA chipset is a bit
+kludged; there are NOT any further memory addresses put away for color
+register usage.  Instead, the old ones are used to specify the lower
+bits of a color register number, while the upper 3 bits are fetched from
+this register.  This still would only give you access to the normal
+12-bit colors; to write 24-bit colors, you have to write the upper part
+of the color (12 bits), then set LOCT, and then write the lower 12 bits.
+To get this to be as fast as possible, write to all 32 registers, then
+write once to bplcon3, and then write to all again.
+
+REMEMBER:  AGA is a temporary chipset, and _will_ be changed without
+notice.  You have been warned.
+
+Note 2:  The sprite resolution bits work just as the bitplane resolution
+bits - for the superhires bit to have any effect, the hires bit must
+also be set.
+
+REMEMBER:  AGA is a temporary chipset, and _will_ be changed without
+notice.  You have been warned.
+
+Note 3:  There seems to be a disagreement between the definitions in
+"custom.h" and the hardware documentation.  The hardware documentation
+state that bit 3 & 4 control BRDRBLNK and BRDRTRAN; "custom.h" state
+that these are bits 4 & 5.  As I am basing myself on the "custom.h" from
+V39, those are the definitions used above.
+
+BTW:  Modifying this register under AGA is supposed to make your color
+      modifications appear only at the next line, not at the display
+      position.  This must be under certain conditions, as it worked
+      fine for me....  It MAY have something to do with the
+      yet-to-be-identified bits left over, but set by the system.
+
+BTW2: I guess bit #3 may be double scan enable (educated guess from CBM
+	documentation)
+
+  SEE ALSO
+
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+BPLCON2 104 W D   Bit Plane control register (video priority control)
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+
+@EndNode
+
+@Node HW_BPLCON4 "The BitPLane MAGIC Register (AGA ONLY!)"
+@toc HW_Contents
+
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+
+AGA: (THIS WILL CHANGE!  DON'T RELY ON THIS FOR ANYTHING BUT DEMOS!!
+      NEVER rely on it for a commercial program, not even a game!)
+
+ BIT#   Function
+ ------------------------------
+ 15   Palette rotation for bitplanes bit 7
+ 14   Palette rotation for bitplanes bit 6
+ 13   Palette rotation for bitplanes bit 5
+ 12   Palette rotation for bitplanes bit 4
+ 11   Palette rotation for bitplanes bit 3
+ 10   Palette rotation for bitplanes bit 2
+ 09   Palette rotation for bitplanes bit 1
+ 08   Palette rotation for bitplanes bit 0
+ 07   Sprite colors bit 7
+ 06   Sprite colors bit 6
+ 05   Sprite colors bit 5
+ 04   Sprite colors bit 4
+ 03   X				\  These bits are also bank control,
+ 02   X				 \ as the sprite color bits, but
+ 01   X				 / I don't know the bank for WHAT.
+ 00   X				/  Default = $1 (Playfield 2?)
+
+The rotation bits are useful for swapping palettes in the middle of a
+copperlist; they affect what colors are displayed onscreen with a base
+in bitplanes only.
+
+As you can see, AGA allow the sprites to get their colors from any bank of
+16 colors, not just the one from color 16 to 31, as it was under ECS.
+The default sprite bank is $1, to make the sprites work as under ECS.
+
+  SEE ALSO
+
+BPLCON0 100 W A D Bit plane control register (misc. control bits)
+BPLCON1 102 W D   Bit plane control register (horizontal scroll control)
+BPLCON3 106 W D   Bit Plane control register (AGA/ECS control)
+BPLCON4 10C W D   Bit Plane control register (misc. control bits)
+
+@EndNode
+
+@Node HW_BPLxDAT "Bit plane x data (parallel-to-serial convert)"
+@toc HW_Contents
+
+BPLxDAT 110 W D Bit plane x data (parallel-to-serial convert)
+
+These registers receive the DMA data fetched from RAM by the bit plane
+address pointers described above.  They may also be written by either
+microprocessor.  They act as a sixt-word parallel-to-serial buffer for
+up to six memory bit planes (x=1-6).  The parallel-to-serial conversion
+is triggered whenever bit plane #1 is written, indicating the completion
+of all bit planes for that word (16 pixels).  The MSB is output first,
+and is, therefore, always on the left.
+
+AGA: 	These are probably obsolete, at least for the better fetchmodes.
+	You shouldn't need to bang 'em, anyway.
+
+@EndNode
+
+@Node HW_BPLxPT "The bitplane pointer registers"
+@toc HW_Contents
+
+BPLxPTH 0E0 W A       Bit plane x pointer (high 4 bits)
+BPLxPTL 0E2 W A       Bit plane x pointer (low 15 bits)
+
+This pair of registers contains the pointer to the address of bit-plane
+x (x=1,2,3,4,5,6) DMA data.  This pointer must be reinitialized by the
+processor or copper to point to the beginning of bit plane data every
+vertical blank time.
+
+@EndNode
+
+@Node HW_CLXCON "The collision control register"
+@toc HW_Contents
+
+CLXCON      098 W D Collision control
+
+This register controls which bit-planes are included (enabled) in
+collision detection and their required state if included.  It also
+controls the individual inclusion of odd-numbered sprites in the
+collision detection by logically OR-ing them with their corresponding
+even-numbered sprite.
+
+ BIT  FUNCTION   DESCRIPTION
+ -----------------------------------------------------
+ 15    ENSP7     Enable sprite 7 (ORed with sprite 6)
+ 14    ENSP5     Enable sprite 5 (ORed with sprite 4)
+ 13    ENSP3     Enable sprite 3 (ORed with sprite 2)
+ 12    ENSP1     Enable sprite 1 (ORed with sprite 0)
+ 11    ENBP6     Enable bit plane 6 (match required for collision)
+ 10    ENBP5     Enable bit plane 5 (match required for collision)
+ 09    ENBP4     Enable bit plane 4 (match required for collision)
+ 08    ENBP3     Enable bit plane 3 (match required for collision)
+ 07    ENBP2     Enable bit plane 2 (match required for collision)
+ 06    ENBP1     Enable bit plane 1 (match required for collision)
+ 05    NVBP6     Match value for bit plane 6 collision
+ 04    MVBP5     Match value for bit plane 5 collision
+ 03    MVBP4     Match value for bit plane 4 collision
+ 02    MVBP3     Match value for bit plane 3 collision
+ 01    MVBP2     Match value for bit plane 2 collision
+ 00    MVBP1     Match value for bit plane 1 collision
+
+NOTE: Disabled bit planes cannot prevent collisions. Therefore if all bit
+planes are disabled, collisions will be continuous, regardless of the
+match values.
+
+@EndNode
+
+@Node HW_CLXDAT "The collision data register"
+@toc HW_Contents
+
+CLXDAT      00E R D Collision data register (read and clear)
+
+This address reads (and clears) the collision detection register.  The
+bit assignments are below.
+
+NOTE:  Playfield 1 is all odd-numbered enabled bit planes.  Playfield 2
+is all even-numbered enabled bit planes
+
+ BIT# COLLISIONS REGISTERED
+ --------------------------------------
+ 15   not used
+ 14   Sprite 4 (or 5) to sprite 6 (or 7)
+ 13   Sprite 2 (or 3) to sprite 6 (or 7)
+ 12   Sprite 2 (or 3) to sprite 4 (or 5)
+ 11   Sprite 0 (or 1) to sprite 6 (or 7)
+ 10   Sprite 0 (or 1) to sprite 4 (or 5)
+ 09   Sprite 0 (or 1) to sprite 2 (or 3)
+ 08   Playfield 2 to sprite 6 (or 7)
+ 07   Playfield 2 to sprite 4 (or 5)
+ 06   Playfield 2 to sprite 2 (or 3)
+ 05   Playfield 2 to sprite 0 (or 1)
+ 04   Playfield 1 to sprite 6 (or 7)
+ 03   Playfield 1 to sprite 4 (or 5)
+ 02   Playfield 1 to sprite 2 (or 3)
+ 01   Playfield 1 to sprite 0 (or 1)
+ 00   Playfield 1 to playfield 2
+ 
+@EndNode
+
+@Node HW_COLORxx "The color registers"
+@toc HW_Contents
+COLORxx 180 W D Color table xx
+
+There are 32 of these registers (xx=00-31) and they are sometimes
+collectively called the "color palette." They contain 12-bit codes
+representing red, green, and blue colors for RGB systems.  One of these
+registers at a time is selected (by the BPLxDAT serialized video code) for
+presentation at the RGB video output pins.  The table below shows the
+color register bit usage.
+  The color registers also allow you to select which color registers
+to genlock away; this is selected by bit 15; marked as GT for Genlock
+Transparent.
+
+
+ BIT# 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+ ----------------------------------------------------
+  RGB GT  X  X  X R3 R2 B1 R0 G3 G2 G1 G0 B3 B2 B1 B0
+
+B=blue, G=green, R=red.
+
+Under AGA, the same address space is used for accessing 256 32-bit color
+registers.  See under @{"BPLCON3" link HW_BPLCON3 15} for more information. 
+
+@EndNode
+
+@Node HW_COPxLC "The Copper location Registers
+@toc HW_Contents
+
+COP1LCH     080 W A          Copper first location register
+                             (high 3 bits)
+COP1LCL     082 W A          Copper first location register
+                             (low 15 bits)
+COP2LCH     084 W A          Copper second location register
+                             (high 3 bits)
+COP2LCL     086 W A          Copper second location register
+                             (low 15 bits)
+
+These registers contain the jump addresses described above.
+
+@EndNode
+
+@Node HW_COPCON "The COPper CONtrol register"
+@toc HW_Contents
+
+COPCON      02E W A Copper control register
+
+This is a 1-bit register that when set true, allows the Copper to access
+the blitter hardware.  This bit is cleared by power-on reset, so that
+the Copper cannot access the blitter hardware.
+(1-bit is the description of OCS; it is changed for AGA, and possibly
+for ECS too)
+
+
+BIT  NAME      FUNCTION
+
+01   CDANG     Copper danger mode. Allows Copper access to blitter if true.
+
+AGA: (THIS WILL CHANGE!  DON'T RELY ON THIS FOR ANYTHING BUT DEMOS!!
+      NEVER rely on it for a commercial program, not even a game!)
+
+This register DO contain more bits than CDANG, but I don't know what they
+do.  Try writing $FFFF top it, however, and you will find your Amiga locked
+up; this do NOT happen under ECS.
+Probably, one of the bits here control the 3 word mode of the copper; what
+the three-word mode DO, however, is still unclear.  Most of the third words
+are zero when the OS come up with this kind of copperlist.
+
+@EndNode
+
+@Node HW_COPINS " The COPINS register"
+@toc HW_Contents
+
+COPINS      08C W A Copper instruction fetch identify
+
+This ia a dummy address that is generated by the Copper whenever it is
+loading instructions into its own instruction register.  This actually
+occurs every Copper cycle except for the second (IR2) cycle of the MOVE
+instruction.  The three types of intructions are shown below.
+
+MOVE - Move immediate to destination.
+WAIT - Wait until beam counter is equal to, or greater than.  (keeps
+       Copper off of bus until beam position has been reached).
+SKIP - Skip if beam counter is equal to or greater than (skips following
+       MOVE instruction if beam position has been reached).
+
+ COPINS     MOVE        WAIT UNTIL      SKIP IF
+ 
+ BIT      IR1  IR2      IR1    IR2    IR1    IR2
+ ------------------------------------------------
+ 15       X    RD15     VP7    BFD *  VP7    BFD *
+ 14       X    RD14     VP6    VE6    VP6    VE6
+ 13       X    RD13     VP5    VE5    VP5    VES
+ 12       X    RD12     VP4    VE4    VP4    VE4
+ 11       X    RD11     VP3    VE3    VP3    VE3
+ 10       X    RD10     VP2    VE2    VP2    VE2
+ 09       X    RD09     VP1    VE1    VP1    VE1
+ 08      DA8   RD08     VP0    VE0    VP0    VE0
+ 07      DA7   RD07     HP8    HE8    HP8    HE8
+ 06      DA6   RD06     HP7    HE7    HP7    HE7
+ 05      DAS   RD05     HP6    HE6    HP6    HE6
+ 04      DA4   RD04     HP5    HE5    HPS    HES
+ 03      DA3   RD03     HP4    HE4    HP4    HE4
+ 02      DA2   RD02     HP3    HE3    HP3    HE3
+ 01      DA1   RD01     HP2    HE2    HP2    HE2
+ 00       0    RD00      1      0      1      1
+
+IR1  =First instruction register
+IR2  =Second instruction regiater
+DA   =Destination address for MOVE instruction.  Fetched during IR1
+      time, used during IR2 time on RGA bus.
+RD   =RAMdata moved by MOVE instruction at IR2 time directly from RAM to
+      the address given by the DA field.
+
+VP   =Vertical beam position comparison bit.
+HP   =Horizontal beam position comparison bit.
+VE   =Enable comparison (mask bit).
+HE   =Enable comparison (mask bit).
+
+* NOTE BFD-Blitter finished disable. When this bit is true, the Blitter
+       Finished flag will have no effect on the Copper.  When this bit
+       is zero, the Blitter Finished flag must be true (in addition to
+       the rest of the bit comparison) before the Copper can exit from
+       its wait state or skip over an instruction.  Note that the V7
+       comparison cannot be masked.
+
+The Copper is basically a two-cycle machine that requests the bus only
+during odd memory cycles (4 memory cycles per instruction). This prevents
+collisions with display, audio, disk, refresh, and sprites, all of which
+use only even cycles. It therefore needs (and has) priority over only the
+blitter and micro-processor.
+
+There are only three types of instructions: MOVE immediate, WAIT until,
+and SKIP if. All intructions (except for WAIT) require two bus cycles
+(and two instruction words). Since only the odd bus cycles are requested,
+four memory cycle times are required per instruction (memory cycles are
+280 ns.)
+
+There are two indirect jump registers, COP1LC and COP2LC.  These are
+pointer registers (chip RAM only) whose contents are used to modify the
+program counter for initialization or jumps.  They are transferred to
+the program counter whenever strobe addresses COPJMP1 or COPJMP2 are
+written.  In addition, COP1LC is automatically used at the beginning of
+each vertical blank time.
+
+It is important that one of the jump registers be initialized and its
+jump strobe address hit after power-up but before Copper DMA is
+initialized.  This insures a determined startup address and state.
+
+@EndNode
+
+@Node HW_COPJMP " The COPJMP registers"
+@toc HW_Contents
+
+COPJMP1 088 5 A       Copper restart at first location
+COPJMP2 08A 5 A       Copper restart at second location
+
+These addresses are strobe addresses. When written to, they cause the
+Copper to jump indirect using the address contained in the first or
+second location registers described below. The Copper itself can write to
+these addresses, causing its own jump indirect.
+
+@EndNode
+
+@Node HW_DDFxxxx "The Display Data Fetch registers"
+@toc HW_Contents
+
+DDFSTRT 092 W A       Display data fetch start (horiz. position)
+DDFSTOP 094 W A       Display data fetch stop  (horiz. position)
+
+These registers control the horizontal timing of the beginning and end
+of the bit plane DMA display data fetch.  The vertical bit plane DMA
+timing is identical to the display windows described above.  The bit
+plane modulos are dependent on the bit plane horizontal size and on this
+data-fetch window size.
+
+Register bit assignment
+
+ BIT 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+ ---------------------------------------------------
+ USE  X  X  X  X  X  X  X  X H8 H7 H6 H5 H4 H3  X  X
+ 
+(X bits should always be driven with 0 to maintain upward compatibility)
+
+The tables below show the start and stop timing for different register
+contents.
+
+
+DDFSTRT (left edge of display data fetch)
+
+ PURPOSE            H8 H7 H6 H5 H4	Hex value
+ -----------------------------------------------------
+ Extra wide (max)    0  0  1  0  1	   $28
+ Wide                0  0  1  1  0	   $30
+ Normal              0  0  1  1  1	   $38
+ Narrow              0  1  0  0  0	   $40
+
+DDFSTOP (right edge of display data fetch)
+
+ PURPOSE            H8 H7 H6 H5 H4	Hex value
+ -----------------------------------------------------
+ Narrow              1  1  0  0  1	   $C8
+ Normal              1  1  0  1  0	   $D0
+ Wide (max)          1  1  0  1  1	   $D8
+
+To calculate the number of words fetched by a given set of values for
+the DDFSTRT/DDFSTOP registers, use the following forumla (lo-res,
+multiply the number of pixels/words by two for hi-res):
+
+((DDFSTOP-DDFSTRT)/8)+1 = Number of words pr line.
+Example (standard OCS display, 320 pixels lo-res):
+(($D0-$38)/8)+1 = $98/8+1 = $14 = 20 words pr line (320 lo-res pixels)
+
+To calculate the DDFSTRT/DDFSTOP values for a certain width and
+centering, use these formulas (Derived from the one above):
+
+DDFSTRT: $88-Width/4+Center/2
+DDFSTOP: $80+Width/4+Center/2
+
+Where Width and Center is specified as lo-res pixels.
+
+AGA: (THIS WILL CHANGE!  DON'T RELY ON THIS FOR ANYTHING BUT DEMOS!!
+      NEVER rely on it for a commercial program, not even a game!)
+
+The way DDFSTOP is used seems to have changed under AGA.  It was set,
+for a standard 320 pixel lo-res display, to
+1X-mode: $D0
+2X-mode: $C8
+4X-mode: $A0
+
+This seems to suggest the following formulas for 2X and 4X modes:
+
+2X: ((DDFSTOP-DDFSTRT)/8)+2 = Number of words pr line.
+4X: ((DDFSTOP-DDFSTRT)/8)+7 = Number of words pr line.
+
+From which the following simple formulas for DDFSTOP can be derived:
+
+2X-DDFSTOP: $78+Width/4+Center/2
+4X-DDFSTOP: $50+Width/4+Center/2
+
+@EndNode
+
+@Node HW_DENISEID "The Denise Identification Register"
+@toc HW_Contents
+
+DENISEID  07C            Denise revision identification register
+(ECS+ only register)
+
+This show you what version of the denise chip you have.
+BEWARE:  This register give RANDOM VALUES on the older Denise (the one in
+most plain A500s, for instance), but seem to give values OFTEN corresponing
+to the AGA/ECS values; often in this case meaning at LEAST 1 of 10 times.
+(Probably more like 1 in 5)
+
+Anyway; the revision value for AGA is $F8 or $FC in the lower byte; this
+may change in the future.  You had better use the flags in GfxBase.
+
+@EndNode
+
+@Node HW_DIWxxxx " The DIWSTRT & DIWSTOP registers"
+@toc HW_Contents
+
+DIWSTRT 08E W A       Display window start (upper left
+                       vertical-horizontal position)
+
+DIWSTOP 090 W A       Display window stop (lower right
+                       vertical-horizontal position)
+
+These registers control display window size and position by locating the
+upper left and lower right corners.
+
+ BIT  15,14,13,12,11,10,09,08,07,06,05,04,03,02,01,00
+ ----------------------------------------------------
+ USE  V7 V6 V5 V4 V3 V2 V1 V0 H7 H6 H5 H4 H3 H2 H1 H0
+
+DIWSTRT is vertically restricted to the upper 2/3 of the display (V8=0)
+and horizontally restricted to the left 3/4 of the display (H8=0).
+
+DIWSTOP is vertically restricted to the lower 1/2 of the display
+(V8=/V7) and horizontally restricted to the right 1/4 of the display
+(H8=1).
+
+To specify larger, smaller, or more prescise values, you have to write
+to the @{"DIWHIGH" Link HW_DIWHIGH} ECS+ register.  It is not possible to specify better than
+the above constraints under the OCS.
+
+BTW: When DIWSTOP is greater than $xxC1, the ENTIRE horizontal display will
+     be used, BOTH sides.
+
+@EndNode
+
+@Node HW_DIWHIGH "The Display window high bits control register"
+@toc HW_Contents
+
+ BIT   FUNCTION     DESCRIPTION
+ ---------------------------------------------------
+ 15    			X
+ 14    			X
+ 13   H8		High bit of DIWSTOP
+ 12    			X
+ 11    			X
+ 10   V10		Vertical stop (low bits?)
+ 09   V9		"
+ 08   V8		"
+ 07    			X
+ 06    			-
+ 05   H8		DiwStart HIGH BIT
+ 04    			X
+ 03    			X
+ 02   V10		Vertical stop
+ 01   V9		"
+ 00   V8		"
+
+@EndNode
+
+@Node HW_DMACON " The DMA control register"
+@toc HW_Contents
+
+DMACON      096 W A D P DMA control write (clear or set)
+DMACONR     002 R A P DMA control (and blitter status) read
+
+This register controls all of the DMA channels and contains blitter DMA
+status bits.
+
+ BIT   FUNCTION     DESCRIPTION
+ ---------------------------------------------------
+ 15    SET/CLR      Set/clear control bit. Determines
+                    if bits written with a 1 get set or
+                    cleared. Bits written with a zero
+                    are unchanged.
+ 14    BBUSY        Blitter busy status bit (read only)
+ 13    BZERO        Blitter logic zero status bit (read only).
+ 12      X
+ 11      X
+ 10    BLTPRI       Blitter DMA priority (over CPU micro) (also called
+                    "blitter nasty") (disables /BLS pin, preventing
+                    micro from stealing any bus cycles while blitter DMA
+                    is running).
+ 09    DMAEN        Enable all DMA below
+ 08    BPLEN        Bit plane DMA enable
+ 07    COPEN        Copper DMA enable
+ 06    BLTEN        Blitter DMA enable
+ 05    SPREN        Sprite DMA enable
+ 04    DSKEN        Disk DMA enable
+ 03    AUD3EN       Audio channel 3 DMA enable
+ 02    AUD2EN       Audio channel 2 DMA enable
+ 01    AUD1EN       Audio channel 1 DMA enable
+ 00    AUD0EN       Audio channel 0 DMA enable
+
+@EndNode
+
+@Node HW_DSKBYTR "The disk data byte and status read register"
+@toc HW_Contents
+
+DSKBYTR     01A R      P Disk data byte and status read
+
+This register is the disk-microprocessor data buffer.  Data from the
+disk (in read mode) is loaded into this register one byte at a time, and
+bit 15 (DSKBYT) is set true.
+
+ BIT   FUNCTION     DESCRIPTION
+ ---------------------------------------------------
+ 15     DSKBYT    Disk byte ready (reset on read)
+ 14     DMAON     Mirror of bit 15 (DMAEN) in DSKLEN, ANDed with Bit 09
+                  (DMAEN) in DMACON
+ 13     DISKWRITE Mirror of bit 14 (WRITE) in DSKLEN
+ 12     WORDEQUAL This bit true only while the DSKSYNC register equals
+                  the data from disk.
+ 11-08  X         Not used
+ 07-00 DATA       Disk byte data
+
+@EndNode
+
+@Node HW_DSKDAT "The disk DMA data write register"
+@toc HW_Contents
+
+DSKDAT      026    W    P   Disk DMA data write
+DSKDATR     008    ER   P   Disk DMA data read (early read dummy
+                                  address )
+
+This register is the disk DMA data buffer.  It contains two bytes of
+data that are either sent (written) to or received (read) from the disk.
+The write mode is enabled by bit 14 of the LENGTH register.  The DMA
+controller automatically tranfer data to or from this register and RAM,
+and when the DMA data is finished (length=0) it causes a disk block
+interrupt.  See interrupts below.
+
+@EndNode
+
+@Node HW_DSKLEN "The disk length register"
+@toc HW_Contents
+
+DSKLEN      024    W    P   Disk length
+
+This register contains the length (number of words) of disk DMA data.
+It also contains two control bits, a DMA enable bit, and a DMA direction
+(read/write) bit.
+
+ BIT#   FUNCTION       DESRIPTION
+ -------------------------------------------------
+ 15     DMAEN          Disk DMA enable
+ 14     WRITE          Disk write (RAM to disk) if 1
+ 13-0   LENGTH         Length (# of words) of DMA data.
+
+@EndNode
+
+@Node HW_DSKPT "The disk pointer register"
+@toc HW_Contents
+
+DSKPTH      020    W    A   Disk pointer (high 3 bits)
+DSKPTL      022    W    A   Disk pointer (low 15 bits)
+
+This pair of registers contains the address of disk DMA data.  These
+address registers must be initialized by the processor or Copper before
+disk DMA is enabled.
+
+@EndNode
+
+@Node HW_DSKSYNC "The disk sync register register"
+@toc HW_Contents
+
+DSKSYNC     07E    W    P   Disk sync register
+
+Hold the match code for disk read synchronization.  See @{"ADKCON" Link HW_ADKCON} bit 10.
+
+@EndNode
+
+@Node HW_FMODE "The Burst Control Register"
+@toc HW_Contents
+
+FMODE    1FC  A        Burst control register 0 (misc bits)
+
+ BIT  FUNCTION   DESCRIPTION
+ -----------------------------------------------------
+ 15   SPRDBL     Double sprite height (show each line twice)
+ 14     X
+ 13     X
+ 12     X
+ 11     X
+ 10     X
+ 09     X
+ 08     X
+ 07     X
+ 06     X
+ 05     X
+ 04   FRCSB      Force Sprite Burst - sprites => 64 pixels
+ 03   SPRB1      Sprite burst bit 1
+ 02   SPRB0      Sprite burst bit 0
+ 01   BRST1      General burst bit 1
+ 00   BRST0      General burst bit 0
+
+This register control the use of the burst mode; bit 1 of each function
+control the use of memory burst; bit 0 control the use of 32 bit to
+chipram.  Setting BOTH bits for a function will enable full burst, reading
+two longwords at a time, needing 64 bit alignment in memory.
+
+Warning: Control words format vary for each sprite width!
+(See info under @{"SPRxCTL" Link HW_SPRxCTL})
+
+@EndNode
+
+@Node HW_INTxxx "The interrupt enable/request registers"
+@toc HW_Contents
+
+INTENAR     01C R P Interrupt enable bits  (read)
+INTREQR     01E R P Interrupt request bits (read)
+INTENA      09A W P Interrupt enable bits  (clear or set bits)
+INTREQ      09C W P Interrupt request bits (clear or set bits)
+
+These registers contain interrupt enable and request bits.  The bit
+assignment for both registers are the same, and are given below.
+If an interrupt bit at any time is set in both INTENA and INTREQ, an
+interrupt of the appropriate level will be issued.  Bits in INTENA are
+unchanged by the hardware; the bits in INTREQ will be set as the
+conditions appear.  They will NOT be cleared just by an interrupt
+occuring; you will need to clear them in the interrupt.
+This also means that reading the INTREQ register will not tell whether
+the condition is active at this moment; it will tell whether the
+condition have been active since the last clearing.  Bits will be set in
+INTREQ even if the corresponding bit in INTENA are cleared.
+
+ BIT#   FUNCT  LEVEL  DESCRIPTION
+ --------------------------------------------------------
+ 15    SET/CLR       Set/clear control bit.  Determines if bits written
+                     with a 1 get set or cleared.  Bits written with a
+                     zero are always unchanged.
+ 14    INTEN         Master interrupt (enable only, no request)
+ 13    EXTER     6   External interrupt
+ 12    DSKSYN    5   Disk sync register (DSKSYNC) matches disk data
+ 11    RBF       5   Serial port receive buffer full
+ 10    AUD3      4   Audio channel 3 block finished (See @{"AUDxDAT" Link HW_AUDxDAT} for
+ 09    AUD2      4   Audio channel 2 block finished  more information on when these
+ 08    AUD1      4   Audio channel 1 block finished  are set)
+ 07    AUD0      4   Audio channel 0 block finished
+ 06    BLIT      3   Blitter finished
+ 05    VERTB     3   Start of vertical blank
+ 04    COPER     3   Copper
+ 03    PORTS     2   I/O ports and timers
+ 02    SOFT      1   Reserved for software-initiated interrupt
+ 01    DSKBLK    1   Disk block finished
+ 00    TBE       1   Serial port transmit buffer empty
+
+@EndNode
+
+@Node HW_JOYxDAT "The joystick-mouse data registers"
+@toc HW_Contents
+
+JOY0DAT 00A R D Joystick-mouse 0 data (left vertical, horizontal)
+JOY1DAT 00C R D Joystick-mouse 1 data (right vertical, horizontal)
+
+These addresses each read a pair of 8-bit mouse counters. 0=left
+controller pair, 1=right controller pair (four counters total). The bit
+usage for both left and right addresses is shown below. Each counter is
+clocked by signals from two controller pins. Bits 1 and 0 of each counter
+may be read to determine the state of these two clock pins. This allows
+these pins to double as joystick switch inputs.
+
+Mouse counter usage:
+(pins 1,3=Yclock, pins 2,4=Xclock)
+
+BIT  15 14 13 12 11 10 09 08  07 06 05 04 03 02 01 00
+-----------------------------------------------------
+0DAT Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0  X7 X6 X5 X4 X3 X2 X1 X0
+1DAT Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0  X7 X6 X5 X4 X3 X2 X1 X0
+
+The following table shows the mouse/joystick connector pin usage. The
+pins (and their functions) are sampled (multiplexed) into the DENISE chip
+during the clock times shown in the table. This table is for reference
+only and should not be needed by the programmer. (Note that the joystick
+functions are all "active low" at the connector pins.)
+
+                            Sampled by DENISE
+Conn   Joystick   Mouse
+Pin    Function   Function  Pin  Name    Clock
+------------------------------------------------
+L1     FORW*        Y        38   M0V at CCK
+L3     LEFT*        YQ       38   M0V at CCK*
+L2     BACK*        X         9   M0H at CCK
+L4     RIGH*        XQ        9   M0H at CCK*
+R1     FORW*        Y        39   M1V at CCK
+R3     LEFT*        YQ       39   M1V at CCK*
+R2     BACK*        X         8   M1H at CCK
+R4     RIGH*        XQ        8   M1H at CCK*
+
+After being sampled, these connector pin signals are used in quadrature
+to clock the mouse counters. The LEFT and RIGHT joystick functions
+(active high) are directly available on the Y1 and X1 bits of each
+counter. In order to recreate the FORWARD and BACK joystick functions,
+however, it is necessary to logically combine (exclusive OR) the lower
+two bits of each counter. This is illustrated in the following table.
+
+TO DETECT                   READ THESE COUNTER BITS
+----------------------------------------------------------
+Forward                     Y1 xor Y0 (BIT#09 xor BIT#08)
+Left                        Y1
+Back                        X1 xor X0 (BIT#01 xor BIT#00)
+Right                       X1
+
+@EndNode
+
+@Node HW_JOYTEST "Write to all four joystick-mouse counters at once"
+@toc HW_Contents
+
+JOYTEST 036 W D Write to all four joystick-mouse counters at once.
+
+Mouse counter write test data:
+
+BIT# 15 14 13 12 11 10 09 08  07 06 05 04 03 02 01 00
+-----------------------------------------------------
+0DAT Y7 Y6 Y5 Y4 Y3 Y2 xx xx  X7 X6 X5 X4 X3 X2 xx xx
+1DAT Y7 Y6 Y5 Y4 Y3 Y2 xx xx  X7 X6 X5 X4 X3 X2 xx xx
+
+@EndNode
+
+@Node HW_POTxDAT "The pot counter data pairs (vert,horiz) registers"
+@toc HW_Contents
+
+POT0DAT     012 R        P Pot counter data left pair (vert,horiz)
+POT1DAT     014 R        P Pot counter data right pair (vert,horiz)
+
+These addresses each read a pair of 8-bit pot counters.  (Four counters
+total.) The bit assignment for both addresses is shown below.  The
+counters are stopped by signals from two controller connectors
+(left-right) with two pins each.
+
+BIT#  15 14 13 12 11 10 09 08  07 06 05 04 03 02 01 00
+------------------------------------------------------
+RIGHT Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0  X7 X6 X5 X4 X3 X2 X1 X0
+LEFT  Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0  X7 X6 X5 X4 X3 X2 X1 X0
+
+             CONNECTORS                PAULA
+         ----------------------------------------
+          Loc.  Dir.  Sym  Pin     Pin#  Pin Name
+         ----------------------------------------
+         RIGHT   Y     RY   9       36    (POT1Y)
+         RIGHT   X     RX   5       35    (POT1X)
+         LEFT    Y     LY   9       33    (POT0Y)
+         LEFT    X     LX   5       32    (POT0X)
+
+@EndNode
+
+@Node HW_POTGO "The pot port data write and start/data read registers"
+@toc HW_Contents
+
+POTGO       034 W        P Pot port data write and start.
+POTGOR      016 R        P Pot port data read (formerly called POTINP).
+
+This register controls a 4-bit bi-directional I/O port that shares the
+same four pins as the four pot counters above. (In other words, the
+mouse/joystick ports)
+
+BIT#  FUNCT   DESCRIPTION
+---------------------------------------
+15    OUTRY   Output enable for Paula pin 36
+14    DATRY   I/O data Paula pin 36
+13    OUTRX   Output enable for Paula pin 35
+12    DATRX   I/O data Paula pin 35
+11    OUTLY   Output enable for Paula pin 33
+10    DATLY   I/O data Paula pin 33
+09    OUTLX   Output enable for Paula pin 32
+08    DATLX   I/O data Paula pin 32
+07-01 0       Reserved for chip ID code (presently 0)
+00    START   Start pots (dump capacitors, start counters)
+
+Bit 10 correspond to the right mousebutton.
+
+@EndNode
+
+@Node HW_REFPTR "The refresh pointer register"
+@toc HW_Contents
+
+REFPTR      028 W A          Refresh pointer
+
+This register is used as a dynamic RAM refresh address generator.  It is
+writeable for test purposes only, and should never be written by the
+microprocessor.
+
+@EndNode
+
+@Node HW_SERDAT "The serial port data and stop bits write register"
+@toc HW_Contents
+
+SERDAT      030 W P Serial port data and stop bits write
+                                  (transmit data buffer)
+
+This address writes data to a transmit data buffer.  Data from this
+buffer is moved into a serial shift register for output transmission
+whenever it is empty.  This sets the interrupt request TBE (transmit
+buffer empty).  A stop bit must be provided as part of the data word.
+The length of the data word is set by the position of the stop bit.
+
+ BIT# 15 14 13 12 11 10 09 08 07 06 05 04 03 02 01 00
+ ----------------------------------------------------
+ USE   0  0  0  0  0  0  S D8 D7 D6 D5 D4 D3 D2 D1 D0
+ 
+Note: S = stop bit = 1, D = data bits.
+
+SEE ALSO
+ @{"SERDATR" Link HW_SERDATR}     018 R P Serial port data and status read
+                                   (receive data buffer)
+ @{"SERPER" Link HW_SERPER}      032 W P Serial port period and control
+
+@EndNode
+
+@Node HW_SERDATR "The serial port data and status read register"
+@toc HW_Contents
+
+SERDATR     018 R P Serial port data and status read
+                                 (receive data buffer)
+
+This address reads data from a receive data buffer.  Data in this buffer
+is loaded from a receiving shift register whenever it is full.  Several
+interrupt request bits are also read at this address, along with the
+data, as shown below.
+
+ BIT#  SYMBOL       FUNCTION
+ ----------------------------------------------
+ 15    OVRUN        Serial port receiver overrun.  Reset by resetting bit
+                    11 of @{"INTREQ" Link HW_INTxxx}.
+ 14    RBF          Serial port receive buffer full (mirror).
+ 13    TBE          Serial port transmit buffer empty (mirror).
+ 12    TSRE         Serial port transmit shift register empty.  Reset by
+                     loading into buffer.
+ 11    RXD          RXD pin receives UART serial data for direct bit test
+                     by the microprocessor.
+ 10    0            Not used
+ 09    STP          Stop bit
+ 08  STP-DB8        Stop bit if LONG, data bit if not.
+ 07    DB7          Data bit
+ 06    DB6          Data bit
+ 05    DBS          Data bit
+ 04    DB4          Data bit
+ 03    DB3          Data bit
+ 02    DB2          Data bit
+ 01    DB1          Data bit
+ 00    DB0          Data bit
+
+SEE ALSO
+ @{"SERDAT" Link HW_SERDAT}      030 W P Serial port data and stop bits write
+                                   (transmit data buffer)
+ @{"SERPER" Link HW_SERPER}      032 W P Serial port period and control
+
+@EndNode
+
+@Node HW_SERPER "The serial port period and control register"
+@toc HW_Contents
+
+SERPER      032 W P Serial port period and control
+
+This register contains the control bit LONG referred to above, and a
+15-bit number defining the serial port baud rate.  If this number is N,
+then the baud rate is 1 bit every (N+1) * 0.2794 microseconds.
+
+ BIT#   SYM        FUNCTION
+ --------------------------------------------------------------
+ 15     LONG       Defines serial receive as 9-bit word.
+ 14-00  RATE       Defines baud rate=1/ ( (N+1) * 0.2794 microsec.
+
+SEE ALSO
+ @{"SERDATR" Link HW_SERDATR}     018 R P Serial port data and status read
+                                   (receive data buffer)
+ @{"SERDAT" Link HW_SERDAT}      030 W P Serial port data and stop bits write
+                                   (transmit data buffer)
+
+@EndNode
+
+@Node HW_SPRxCTL "The sprite position and control data registers"
+@toc HW_Contents
+
+SPRxPOS 140 W A D Sprite x vert-horiz start position data
+SPRxCTL 142 W A D Sprite x vert stop position and control data
+
+These two registers work together as position, size and feature
+sprite-control registers.  They are usually loaded by the sprite DMA
+channel during horizontal blank; however, they may be loaded by either
+processor at any time.  SPRxPOS register:
+
+ BIT#   SYM      FUNCTION
+ ------------------------------------------------------------------
+ 15-08  SV7-SV0  Start vertical value. High bit(SV8) is in SPRxCTL
+                  register below.
+ 07-00  SH8-SH1  Start horizontal value. Low bit(SH0) is in SPRxCTL
+                  register below.
+
+SPRxCTL register (writing this address disables sprite horizontal
+comparator clrcuit, disabling the sprite from view):
+
+ BIT#    SYM       FUNCTION
+ ------------------------------------------------------------
+ 15-08   EV7-EV0   End (stop) vertical value low 8 bits
+ 07      ATT       Sprite attach control bit (odd sprites)
+ 06-04    X        Not used
+ 02      SV8       Start vertical value high bit
+ 01      EV8       End (stop) vertical value high bit
+ 00      SH0       Start horizontal value low bit
+
+Under the AGA chipset, you may set up 32-pixel wide and 64-pixel wide
+sprites from the @{"FMODE" Link HW_FMODE} register.  According to my sources (docs from PMC
+France) the standard sprite control words have to be repeated in a weird
+way for the sprites to work, and will be ORed together upon use.  I
+think there may be some misunderstanding here; as he says, "Well, I
+still have bug there [sic] with sprites in 32 or 64 pixels.  Sorry but
+the followings [sic] informations [sic] may have to be corrected." I
+have at least re-written it to a format where you don't have to guess
+what he is saying...  8-) Everything below relate to 16-bit words, as
+this seem to be what the hardware still is based on.
+
+16-bit mode
+A,B			; Control data
+... Sprite data, 16 pixel wide *2 for each line ...
+0,0			; Sprite terminator
+
+where A is the SPRxPOS-data and B is the SPRxCTL-data.
+
+32-bit mode
+A,B,B,0			; Control data
+... Sprite data, 32 pixel wide *2 for each line ...
+0,0,0,0			; Sprite terminator
+
+where A is the SPRxPOS-data and B is the SPRxCTL-data.
+
+64-bit mode
+A,B,B,0,B,0,0,0		; Control data
+... Sprite data, 64 pixel wide *2 for each line ...
+0,0,0,0,0,0,0,0		; Sprite terminator
+
+where A is the SPRxPOS-data and B is the SPRxCTL-data.
+
+My guess is that either some other register also plays a role, and that
+is why PMC got bugs, or this strange repetition is actually false, and
+it is just luck that it works.  The second theory seems probable; on the
+other hand, there are quite a few other kludges in the AGA system...
+
+@EndNode
+
+@Node HW_SPRxDAT "The Sprite x image data registers"
+@toc HW_Contents
+
+SPRxDATA 144 W D Sprite x image data register A
+SPRxDATB 146 W D Sprite x image data register B
+
+These registers buffer the sprite image data.  They are usually loaded
+by the sprite DMA channel but may be loaded by either processor at any
+time.  When a horizontal comparison occurs, the buffers are dumped into
+shift registers and serially output to the display, MSB first on the
+left.
+
+NOTE: Writing to the A buffer enables (arms) the sprite.
+Writing to the SPRxCTL register disables the sprite.  If enabled, data
+in the A and B buffers will be output whenever the beam counter
+equals the sprite horizontal position value in the SPRxPOS register.
+
+@EndNode
+
+@Node HW_SPRxPT "The sprite x pointer register"
+@toc HW_Contents
+
+SPRxPTH 120 W A       Sprite x pointer (high 3 bits)
+
+SPRxPTL 122 W A       Sprite x pointer (low 15 bits)
+
+This pair of registers contains the address of sprite x (x=0,1,2,3,4,5,6,7)
+DMA data.  These address registers must be initialized by the processor or
+Copper every vertical blank time.
+
+@EndNode
+
+@Node HW_STRxxx "The strobes for horizontal sync registers"
+@toc HW_Contents
+
+STREQU      038 S      D Strobe for horizontal sync with VB and EQU
+STRHOR      03C 5      D Strobe for horizontal sync
+STRLONG     03E 5      D Strobe for identification of long horizontal line
+STRVBL      03A 5      D Strobe for horizontal sync with VB (vertical blank)
+
+One of the first three strobe addresses above is placed on the destination
+address bus during the first refresh time slot.  The fourth strobe shown
+above is used during the second refresh time slot of every other line to
+identify lines with long counts (228).  There are four refresh time slots,
+and any not used for strobes will leave a null (FF) address on the
+destination address bus.
+
+@EndNode
+
+@Node HW_VHPOSR "The read/write vertical and horizontal position of register"
+@toc HW_Contents
+
+VHPOSR      006 R A          Read vertical and horizontal position of
+                               beam or lightpen
+VHPOSW      02C W A          Write vertical and horizontal position
+                               of beam or lightpen
+
+ BIT# 15,14,13,12,11,10,09,03,07,06,05,04,03,02,01,00
+ -----------------------------------------------------
+ USE  V7 V6 V5 V4 V3 V2 V1 V0,H8 H7 H6 H5 H4 H3 H2 H1
+
+ RESOLUTION=1/160 of screen width (280 ns)
+
+VPOSR       004 R A Read vertical most significant bit
+                                 (and frame flop)
+VPOSW       02A W A Write vertical most significant bit
+                                 (and frame flop)
+
+ BIT 15,14,13,12,11,10,09,08,07,06,05,04,03,02,01,00
+ 
+ USE LOF-- -- -- -- -- -- -- -- -- -- -- -- -- -- V8
+ 
+ LOF=Long frame (auto toggle control bit in BPLCON0)
+
+@EndNode
+
+@Node "Blitter" "Hardware/Blitter"
+@toc HW_Contents
+
+    @{" Basics   " Link "BltBasic"  }  @{"BLTAxWM" Link HW_BLTAFWM}
+    @{" Clearing " Link "BltClear"  }  @{"BLTCONx" Link HW_BLTCON }
+    @{" Copying  " Link "BltCopy"   }  @{"BLTxDAT" Link HW_BLTxDAT}
+    @{" Filling  " Link "BltFill"   }  @{"BLTSIZE" Link HW_BLTSIZE}
+    @{" Minterms " Link "BltMINTERM"}  @{"BLTxPT"  Link HW_BLTxPT}
+                @{"BLTxMOD" Link HW_BLTxMOD}
+    @{" Linedraw " Link "BltLine"   }  
+    @{" BOBs     " Link "BltBOB"    }  
+    @{"Using the blitter with the copper" Link "CopBlit"}
+
+@EndNode
+
+@Node "BltBasic" "The basics of the blitter"
+@toc Blitter
+
+Blitter stands for Block Image Transferrer.  This is a quick & cryptic way
+of referencing one of the most useful and complex parts of the Amiga
+custom hardware.
+Primarily, the blitter manipulates "rectangular" blocks of the Amiga
+chip-memory.  There are many different kinds of manipulations it can do;
+from plain clearing, to inserting one part of one picture into another
+picture (BOB, or Blitter OBject), to scrolling, to stacking 12 blits upon
+each other, and creating a simulation of a cell colony in "Conrad's Game of
+Life".
+The primary uses, however, are @{"clearing" Link "BltClear"}, @{"copying" Link "BltCopy"}, @{"filling" Link "BltFill"}, and making @{"BOBs" Link "BltBOB"}.
+@{"Line drawing" Link "BltLine"} is not counted one of the primary uses of the blitter, as this
+require a seperate mode from the other functions.
+
+Clearing can clear with any 16-bit (word) value; ie, it can store any word
+value in a range of consequentive memory locations.
+
+Copying can also be used for scrolling, as it can copy from any position in
+the words to any other position.  It can also be used to scroll up and
+down.
+
+Filling is used for filling polygons, most often for filled vector.
+
+BOBs are used for placing objects on the screen, for games or other fun.
+
+************************************************************************
+
+The blitter basically manipulate words.  Three words read from sources
+called A, B and C are joined together after your specifications to form
+what is written out to the destination.
+Your specification is called the @{"minterm" Link "BltMINTERM"}. It just says whether
+to output 0 or 1 when A, B and C are certain values.
+Before combining the sources A, B and C, the blitter can do manipualtions on
+them:  C cannot be manipulated, A and B can be shifted (scrolled), and
+A can be ANDed with other words at the edges of a blit.
+
+For more information, see @{"BOBs" Link "BltBOB"}.
+For more information on how to specify combinations, see @{"MINTERMs" Link "BltMINTERM"}.
+
+@EndNode
+
+@Node "BltClear" "Clearing with the blitter"}
+@toc Blitter
+
+@EndNode
+
+@Node "BltCopy" "Copying with the blitter"}
+@toc Blitter
+
+@EndNode
+
+@Node "BltFill" "Filling with the blitter"}
+@toc Blitter
+
+@EndNode
+
+@Node "BltBOB" "Making BOBs - Blitter OBjects."}
+@toc Blitter
+
+The objects you see moving around in demos and games are most often BOBs or
+@{"sprites" Link "BmpSprites"}.
+A BOB is really a part of the @{"bitmap" Link "Bitmap"}, but when you create a bob, you put
+a new picture into the bitmap, just like a brush in DPaint, except that _you_
+probably are smart enough to stop it from flashing.
+To be able to make the impression of the BOBs passing over the rest of the
+display, you will have to store the old data ("behind" the bob), put the
+bob there, with a mask to indicate where "there" is, and restore what was
+"there" before you placed the bob there when you move it again.
+There is one thing you need to be attentive of when doing this:  You have
+to restore the bobs in the opposite order of how you placed them in the
+display, otherwise overlapping bobs will leave parts of the bob that was
+'behind' in the display.
+I'll now do a walkthrough of how to make a bob:
+Preparations:
+(1) Find a suitable object to place on the screen.
+(2) Make a mask for it.  That is, make a bitplane containing 1 bits in all
+    positions where the bob is supposed to be non-transparent. This is
+    generally done by selecting color 0 as the transparent color, and
+    then ORing together all the bitplanes to form the mask plane.
+
+Actual display:
+Let us call the mask plane MP, the bob data BD, the bitplane to display the
+bob in BP, and the plane to save the data in SD.
+If we add a W at the end, we get the Width of the same entenities.
+
+Then we will blit something like this:
+SrcA=MP
+SrcB=BP
+Dest=SD
+
+@EndNode
+
+@Node "BltLine" "Drawing lines with the blitter"}
+@toc Blitter
+
+@EndNode
+
+@Node "BltMINTERM" "Calculating MINTERMs"
+@toc Blitter
+
+@EndNode
+
+@Node HW_BltAFWM "BLTAFWM & BLTALWM"
+@toc Blitter
+
+BLTAFWM 044 W A       Blitter first-word mask for source A
+BLTALWM 046 W A       Blitter last-word mask for source A
+
+The patterns in these two registers are ANDed with the first and last words
+of each line of data from source A into the blitter.  A zero in any bit
+override data from source A.  These registers should be set to all 1's for
+fill mode or for line-drawing mode.
+
+@EndNode
+
+@Node HW_BLTCON "Blitter Control Registers"
+@toc Blitter
+
+BLTCON0  040 W A       Blitter control register 0
+BLTCON1  042 W A       Blitter control register 1
+BLTCON0L 05B W A       Blitter control register 0 minterms only access
+
+These two control registers are used together to control blitter
+operations.  There are two basic mode, area and line, which are selected by
+bit 0 of BLTCON1, as shown below.
+
+AREA MODE ("normal")
+
+BIT BLTCON0    BLTCON1
+
+15    ASH3      BSH3  \   Shift values for source A/B.  The shifts
+14    ASH2      BSH2   \  are to the right if the blit is done the
+13    ASH1      BSH1   /  the normal direction, 
+12    ASA0      BSH0  /
+
+11    USEA        X   Mode control bit to use source A
+10    USEB        X   Mode control bit to use source B
+09    USEC        X   Mode control bit to use source C
+08    USED        X   Mode control bit to use destination D
+
+07    LF7         X
+06    LF6         X
+05    LF5         X
+04    LF4       EFE
+
+03    LF3       IFE
+02    LF2       FCI
+01    LF1       DESC
+00    LF0       LINE(=0)
+
+LF 7-0 Logic function minterm select lines.  These can be set without
+       affecting the rest of the register by writing to BLTCON0L, which is
+       a byte access only register available only under ECS+.
+EFE Exclusive fill enable
+IFE Inclusive fill enable
+FCI Fill carry input
+DESC Descending (decreasing address) control bit
+LINE Line mode control bit (set to 0, this is specification for area mode)
+				            
+********************************In line mode********************************
+
+BIT# BLTCON0  BLTCON1
+
+ 15   START3  TEXTURE3
+ 14   START2  TEXTURE2
+ 13   STARTl  TEXTURE1
+ 12   START0  TEXTURE0
+ 11   1       0
+ 10   0       0
+ 09   1       0
+ 08   1       0
+ 07   LF7     0
+ 06   LF6     SIGN
+ 05   LF5     0 (Reserved)
+ 04   LF4     SUD
+ 03   LF3     SUL
+ 02   LF2     AUL
+ 01   LF1     SING
+ 00   LF0     LINE(=1)
+
+ START 3-0 Starting point of line
+           (0 thru 15 hex)
+
+LF7-0 Logic function minterm select lines should be preloaded with 4A to
+select the equation D=(AC+ABC).  Since A contains a single bit true (8000),
+most bits will pass the C field unchanged (not A and C), hut one bit will
+invert the C field and combine it with texture (A and B and not C).  The A
+bit is automatically moved across the word by the hardware.
+
+LINE Line mode control bit (set to 1)
+SIGN Sign flag
+0 Reserved for new mode
+SING Single bit per horizontal line for use with subsequent area fill
+
+SUD Sometimes up or down (=AUD*)
+SUL Sometimes up or left
+AUL Always up or left
+
+The 3 bits above select the octant for line drawing:
+
+OCT     SUD SUL AUL
+
+ 0       1   1   0
+ 1       0   0   1
+ 2       0   1   1
+ 3       1   1   1
+ 4       1   0   1
+ 5       0   1   0
+ 6       0   0   0
+ 7       1   0   0
+
+@EndNode
+
+@Node HW_BLTxDAT "The Blitter Data Registers"
+@toc Blitter
+
+BLTxDAT 074 W A       Blitter source x data register
+
+This register holds source x (x=A,B,C) data for use by the blitter.  It is
+normally loaded by the blitter DMA channel; however, it may also be
+preloaded by the microprocessor.
+
+BLTDDAT 000 - A       Blitter destination data register
+
+This register holds the data resulting from each word of blitter operation
+until it is sent to a RAM destination.  This is a dummy address and cannot
+be read by the micro.  The transfer is automatic during blitter operation.
+
+********************************In line mode********************************
+
+BLTADAT is used as an index register and must be preloaded with 8000.
+BLTBDAT is used for texture; it must be preloaded with $FFFF if no texture
+(solid line) is desired.
+
+@EndNode
+
+@Node HW_BLTSIZE "The Blitter Size Register"
+@toc HW_Index
+
+BLTSIZE 058 W A       Blitter start and size (window width, height)
+BLTSIZV 05C W A       Blitter size vertical (window height)    ECS+
+BLTSIZH 05E W A       Blitter start & size (window width)      ECS+
+
+This register contains the width and height of the blitter operation (in
+line mode, width must = 2, height = line length).  Writing to this register
+will start the blitter, and should be done last, after all pointers and
+control registers have been initialized.
+
+BIT 15,19,13,12,11,10,09,08,07,06,05,04,03,02,01,00
+---------------------------------------------------
+    h9 h8 h7 h6 h5 h4 h3 h2 h1 h0,w5 w4 w3 w2 w1 w0
+
+h=height=vertical lines (10 bits=1024 lines max)
+w=width=horizontal pixels (6 bits=64 words=1024 pixels max)
+
+Under ECS+, the registers BLTSIZEV & BLTSIZH let you do much larger blits;
+nuff said?
+
+********************************In line mode********************************
+
+BLTSIZE controls the line length and starts the line draw when written to.
+The h field controls the line length (10 bits gives lines up to 1024 dots
+long).  The w field must be set to 02 for all line drawing.
+
+@EndNode
+
+@Node HW_BLTxPT "The Blitter Pointer Registers"
+@toc Blitter
+
+BLTxPTH 050 W A       Blitter pointer to x (high 4 bits)
+BLTxPTL 052 W A       Blitter pointer to x (low 16 bits)
+
+This pair of registers contains the address of blitter source (x=A,B,C) or
+destination (x=D) DMA data.  This pointer must be preloaded with the
+starting address of the data to be processed by the blitter.  After the
+blitter is finished, it will contain the last data address (plus increment
+and modulo).  Generally, these registers will be loaded either by the
+processor with a single move.l instruction (most common), or by the copper,
+if the programmer is going to do a lot of blitting and don't want to tie up
+the processor.  Normally, the programmer will reference BLTxPT, which is an
+alias for BLTxPTH.
+
+********************************In line mode********************************
+
+BLTAPTL is used as an accumulator register and must be preloaded with the
+starting value of (2Y-X) where Y/X is the line slope.  BLTCPT and BLTDPT
+(both H and L) must be preloaded with the starting address of the line.
+
+THE Xs AND Ys ARE DELTA VALUES...  IE:  The length of the line in the X and
+Y directions.
+
+@EndNode
+
+@Node HW_BLTxMOD "The modulo registers of the blitter"
+@toc HW_Index
+
+BLTxMOD 064 W A       Blitter modulo x
+
+This register contains the modulo for blitter source (x=A,B,C) or
+destination (x=D).  A modulo is a number that is automatically added to the
+address at the end of each line, to make the address point to the start of
+the next line.  Each source or destination has its own modulo, allowing
+each to be a different size, while an identical area of each is used in the
+blitter operation.
+
+********************************In line mode********************************
+
+BLTAMOD and BLTBMOD are used as slope storage registers and must be
+preloaded with the values (4Y-4X) and (4Y) respectively.  Y/X=line slope.
+BLTCMOD and BLTDMOD must both be preloaded with the width (in bytes) of the
+image into which the line is being drawn (normally two times the screen
+width in words, or the screen width in pixels/8)
+
+THE Xs AND Ys ARE DELTA VALUES...  IE:  The length of the line in the X and
+Y directions.
+
+@EndNode
+
+##************************************************************************
+
+@Node HW_Audio "The Audio Hardware"
+
+@{"ADKCON" Link HW_ADKCON}     09E W     P    Audio, disk, UART control
+@{"AUDxLC" Link HW_AUDxLC}  +  0A0 W A        Audio channel x location
+@{"AUDxLEN" Link HW_AUDxLEN}    0A4 W     P    Audio channel x length
+@{"AUDxPER" Link HW_AUDxPER}    0A6 W     P    Audio channel x period
+@{"AUDxVOL" Link HW_AUDxVOL}    0A8 W     P    Audio channel x volume
+@{"AUDxDAT" Link HW_AUDxDAT} &  0AA W     P    Audio channel x data
+@{"Interrupts" Link HW_INTxxx}
+@{"Audio State Machine" link HW_AudState}
+@{"How to allocate and free the audio hardware" link HW_AllocAudio}
+
+@EndNode
+
+@Node HW_AudState "The Audio State Machine (INTERESTING!)"
+@toc HW_Audio
+
+The states are for each channel; effects are the effects of the state
+transitions, not the effect of ending up in the given state.
+Some states have effects of remaining in the state, too.
+
+000 => 000
+Cause:	None
+Effect: Reload period counter from AUDxPER, written either by the
+	processor or attach mode.
+
+000 => 001
+Cause:	DMA turned on for channel
+Effect:	Reload length counter from AUDxLEN.
+	Reload period counter from AUDxPER.
+	Request one word of data from Agnus by DMA.
+	Enable restart request.
+
+000 => 010
+Cause:	Audio data load signal with DMA off and no interrupt pending.
+Effect:	Reload volume counter from AUDxVOL.
+	Reload period counter from AUDxPER.
+	Load output buffer from holding latch written by AUDxDAT.
+	Audio interrupt request (from channel to interrupt circuitry)
+
+001 => 000
+Cause:	DMA turned off for channel.
+Effect:	None
+
+001 => 101
+Cause:	Audio data load signal with DMA on.
+Effect:	Audio interrupt request (from channel to interrupt circuitry)
+	If the length counter is unfinished (<>1), then count it down one
+	notch.	
+
+010 => 010
+Cause:	Period counter not counted down.
+Effect:	Count down period counter one latch.
+
+010 => 011
+Cause:	Period counted down, with value = 1.
+Effect:	If internal length counted down to 1, DMA is on, and audio data
+	load signal is on, then reload length counter from AUDxLEN, and
+	set intreq2.
+	If internal length ISN'T counted down, but DMA is on and audio
+	data load signal is on, then count down the internal length
+	counter.
+	If DMA is on, the channel is attached for period, and intreq2 is
+	set, then request an audio interrupt.
+	If the channel is attached for period, then load output buffer
+	from holding latch written to by AUDxDAT.
+	If the channel is attached and the DMA is on, then request one
+	word of data from Agnus by DMA (and transfer to the AUD(x+1)PER.
+	Reload period counter from AUDxPER.
+
+011 => 000
+Cause:  Internal period counter counted down and either DMA off or audio
+	interrupt pending.
+Effect:	None
+
+011 => 010
+Cause:	Internal period counter counted down and either DMA on or no audio
+	interrupt pending. (Opposite of 011 => 000)
+Effect: If the length register is counted down, the DMA is on, and the
+	audio data load signal is on, then the length counter is
+	reloaded from AUDxLEN, and intreq2 is set.
+	If the length register is NOT counted down, the DMA is on, and
+	the audio data load signal is on, then count the length counter
+	down one more.
+	The output buffer is loaded from the holding latch written by
+	AUDxDAT.
+	If the DMA is on and period isn't attached, then request one
+	word of data from Agnus by DMA.
+	The period counter is reloaded from AUDxPER.
+	If intreq2 is set, the DMA is on, and the period is not
+	attached, then request an audio interrupt (from channel to
+	interrupt circuitry).
+
+011 => 011
+Cause:	Period register not counted down.
+Effect:	Count the period latch down one count.
+
+101 => 000
+Cause: DMA turned off for channel
+Effect: None
+
+101 => 010
+Cause:	DMA and audio data load signal on.
+Effect:	Reload volume counter from AUDxVOL.
+	Reload period counter from AUDxPER.
+	Load output buffer from holding latch written by AUDxDAT.
+	Request one word of data from Agnus by DMA if no period attach.
+
+
+The states 100, 110, and 111, are not used, and are mapped to state 000
+(presumably automatically on turning the machine on).
+@EndNode
+
+@Node HW_AllocAudio "How to allocate the audio hardware"
+This code allocate the audio hardware; an explanation of how it work is
+given below. (This will work almost without include-files, unlike my
+normal code)
+
+********************************************************************
+	move.l	4.w,a6
+	lea	AIOReqPort(pc),a0	; Messageport, start as ZEROS.
+	move.l	ThisTask(a6),16(a0)	; ThisTask(a6),mp_SigTask(a0)
+	moveq	#-1,d0			; Any signal
+	jsr	_LVOAllocSignal(a6)	; If we had a signal from
+	tst.l	d0			; before, we could use it here
+	bmi.s	.NoAudio		; too...
+	move.b	d0,15(a0)		; mp_SigBit
+	
+	lea	20(a0),a1		; mp_MsgList(a0),a1
+					;Set up new list
+	move.l  a1,8(a1)		; a1,lh_TailPred(a1)
+	addq.l  #4,a1			; Get address of lh_Tail
+	clr.l   (a1)			; Clear lh_Tail
+	move.l  a1,-(a1)		; Address of lh_Tail to lh_Head
+
+	move.b	#4,8(a0)		; #nt_MsgPort,ln_Type(a0)
+;PA_SIGNAL=0	; Signal task in MP_SIGTASK, ie, not needed to set.
+
+	lea	AIOReq(pc),a1	; Fetch the IORequest
+	move.l	a0,14(a1)	;#AIOReqPort,mn_ReplyPort(a1)
+	move.w	#68,18(a1)	;#ioa_SIZEOF,mn_Length(a1)
+				; Finished initializing MESSAGE.
+	lea	AudioAllocArray(pc),a0	;Array of bytes, spec what
+					; channel combinations OK.
+	move.l	a0,34(a1)	;,ioa_Data; what channels to grab.
+	moveq	#1,d0
+	move.l	d0,38(a1)	;,ioa_Length; = number of options.
+	move.b	#127,9(a1)	;#127,ln_Pri(a1); Get it if possible
+
+				; All structs initialized - now open.
+
+	lea	tAudioDevName(pc),a0
+	moveq	#0,d0		; Unit number - shouldn't be needed...
+	moveq	#0,d1		; Flags - shouldn't be needed.
+	jsr	_LVOOpenDevice(a6)	; Grab audio.device...
+	tst.l	d0		; Got an error?
+	beq.s	.NoAudio
+	st.b	bGotSound
+
+	lea	AIOReq(pc),a1	; Have to get again...
+	move.w	#13,28(a1)	;#ADCMD_LOCK,io_Command(a1)
+	jsr	_LVODoIO(a6)	;Avoid channel being stolen, and
+				;allow HW hitting (according to CBM)
+
+	lea	AIOReq(pc),a1	; Have to get again...
+	move.w	#1,28(a1)	;#CMD_RESET,io_Command(a1)
+	jsr	_LVODoIO(a6)	;Flush out HW to known state... (Will
+				; reset audio interrupt vectors; these
+				; should NOT have been set before,
+				; anyway...
+.AudioThrough:
+.NoAudio:
+	... Continue with more code ...
+
+AIOReq:		dcb.b	68,0	; HAS TO BE INITIALIZED TO ZERO!!!!!!
+AIOReqPort:	dcb.b	34,0	; HAS TO BE INITIALIZED TO ZERO!!!!!!
+tAudioDevName:	dc.b	'audio.device',0
+AudioAllocArray:dc.b	$f	; Only interested in allocating all
+				; channels...
+bGotSound:	dc.b	0	; Have we got sound?
+********************************************************************
+This code first initialize a MsgPort and an Audio IO request, and then
+allocate the audio channels at maximum priority.  This ensure that no
+other task can steal the audio channels until we have executed our
+LOCK command, which also stop stealing. This shouldn't be required,
+as the channels can't be stolen because we have the highest priority
+anyway, but CBM says to use LOCK, so we do (only three extra lines of
+code, anyway 8-)
+Then we flush out the audio hardware & audio.device by using the RESET
+command.  Now we can hit away, but remember to test whether we really
+GOT the sound HW before banging (which calling the playroutine also
+is)...
+Some playroutines might allocate the audio hardware themselves, but I
+haven't yet seen this...
+
+To free the audio system after using it, use the following code:
+********************************************************************
+CloseAudio:
+	tst.b	BGotSound
+	beq.s	.HadNoSound
+	move.w	4.w,a6
+	lea	AIOReq(pc),a1		; IORequest to free...
+	jsr	_LVOCloseDevice(a6)	; DO IT.
+	moveq	#0,d0			; No high bits
+	move.b	AIOReqPort+15,d0	; SigBit to free
+	jsr	_LVOFreeSignal(a6)
+.HadNoSound:
+	... Continue with more de-allocation code here ...
+********************************************************************
+This code just frees the IORequest we used for allocation, and the
+signal associated with the messageport.
+
+@EndNode
+
+##**************************************************************************
+
+@Node Timings "The Processor timings of the Mc68000"
+
+To calculate the timings of most 68000 instructions, you will need to first
+find the number of cycles used by the addressing mode in the table below
+('Effective Address Operand Calculation Timing') and then the timing for
+the actual instruction in the appropriate table.
+
+@{"Move Instruction Execution Times" Link "TimMove"}
+@{"Standard Instruction Execution Times" Link "TimStandard"}
+@{"Immediate Instruction Execution Times" Link "TimImmediate"}
+@{"Single Operand Instruction Execution Times" Link "TimSingleOp"}
+@{"Rotate Instruction Execution Times" Link "TimRotate"}
+@{"Bit Manipulation Instruction Execution Times" Link "TimBits"}
+@{"Specificational Instruction Execution Times" Link "TimSpec"}
+@{"JMP, JSR, LEA, PEA and MOVEM Instruction Execution Times" Link "TimJMPetc"}
+@{"Multi-Precision Instruction Execution Times" Link "TimMultiPrec"}
+@{"Miscellaneous Instruction Execution Times" Link "TimMisc"}
+@{"Move Peripheral Instruction Execution Times" Link "TimMOVEP"}
+@{"Exception Processing Execution Times" Link "TimExcept"}
+
+Effective Address Operand Calculation Timing
+
+This table lists the number of clock periods required to compute an
+instruction's effective address. It includes fetching of any extension
+words, the address computation , and fetching of the memory operand.
+The number of bus read and write cycles is shown in parenthesis as (r/w).
+Note there are no write cycles involved in processing the effective address.
+
+
+		Effective Address Calculation Times
+
+		register			Byte,Word	Long
+
+Dn	 data register direct			 0(0/0)		 0(0/0)
+An	 address register direct		 0(0/0)		 0(0/0)
+								
+		memory						
+
+(An)	 address register indirect		 4(1/0)		 8(2/0)
+(An)+	 address register indirect with post-	 4(1/0)		 8(2/0)
+	 increment						
+-(An)	 address register indirect with predec.	 6(1/0)		10(2/0)
+d(An)	 address register indirect with dis-	 8(2/0)		12(3/0)
+	 placement						
+d(An,ix) address register indirect with index	10(2/0)		14(3/0)
+xxx.W	 absolute short				 8(2/0)		12(3/0)
+xxx.L	 absolute long				12(3/0)		16(4/0)
+d(PC)	 program counter with displacement	 8(2/0)		12(3/0)
+d(PC,ix) program counter with index		10(2/0)		14(3/0)
+#xxx	 immediate				 4(1/0)		 8(2/0)
+
+The size of the index register (ix) does not affect execution time
+
+@EndNode
+
+@Node TimMove "Move Instruction Execution Times"
+
+These following two tables indicate the number of clock periods for the move
+instruction. This data includes instruction fetch, operand reads, and operand
+writes. The number of bus read and write cycles is shown in parenthesis 
+as (r/w).
+
+
+		Move Byte and Word Instruction Execution Times
+
+     	 Dn	 An	 (An)	 (An)+	-(An)	 d(An)	d(An,ix) xxx.W	|xxx.L
+
+Dn	 4(1/0)	 4(1/0)	 8(1/1)	 8(1/1)  8(1/1)	12(2/1) 14(2/1) 12(2/1) 16(3/1)
+An	 4(1/0)	 4(1/0)	 8(1/1)	 8(1/1)	 8(1/1)	12(2/1) 14(2/1) 12(2/1) 16(3/1)
+(An)	 8(2/0)	 8(2/0)	12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+(An)+	 8(2/0)	 8(2/0) 12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+-(An)	10(2/0) 10(2/0) 14(2/1) 14(2/1) 14(2/1) 18(3/1) 20(4/1) 18(3/1) 22(4/1)
+d(An)	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+d(An,ix)14(3/0) 14(3/0) 18(3/1) 18(3/1) 18(3/1) 22(4/1) 24(4/1) 22(4/1) 26(5/1)
+xxx.W	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+xxx.L	16(4/0) 16(4/0) 20(4/1) 20(4/1) 20(4/1) 24(5/1) 26(5/1) 24(5/1) 28(6/1)
+d(PC)	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+d(PC,ix)14(3/0) 14(3/0) 18(3/1) 18(3/1) 18(3/1) 22(4/1) 24(4/1) 22(4/1) 26(5/1)
+#xxx	 8(2/0)	 8(2/0) 12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+
+The size of the index register (ix) does not affect execution time
+
+
+		Move Long Instruction Execute Times 
+
+     	 Dn	 An	 (An)	 (An)+	-(An)	 d(An)	d(An,ix) xxx.W	|xxx.L
+
+Dn	 4(1/0)	 4(1/0)	12(1/2)	12(1/2)	12(1/2)	16(2/2)	18(2/2)	16(2/2)	20(3/2)
+An	 4(1/0)	 4(1/0)	12(1/2)	12(1/2)	12(1/2)	16(2/2)	18(2/2)	16(2/2)	20(3/2)
+(An)	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+(An)+	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+-(An)	14(3/0)	14(3/0)	22(3/2)	22(3/2)	22(3/2)	26(4/2)	28(4/2)	26(4/2)	30(5/2)
+d(An)	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(6/2)
+d(An,ix)18(4/0)	18(4/0)	26(4/2)	26(4/2)	26(4/2)	30(5/2)	32(5/2)	30(5/2)	34(6/2)
+xxx.W	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(6/2)
+xxx.L	20(5/0)	20(5/0)	28(5/2)	28(5/2)	28(5/2)	32(6/2)	34(6/2)	32(6/2)	36(7/2)
+d(PC)	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(5/2)
+d(PC,ix)18(4/0)	18(4/0)	26(4/2)	26(4/2)	26(4/2)	30(5/2)	32(5/2)	30(5/2)	34(6/2)
+#xxx	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+
+The size of the index register (ix) does not affect execution time
+
+@EndNode
+
+@Node TimStandard "Standard Instruction Execution Times"
+
+The number of clock periods shown in this table indicates the time required
+to perform the operations, store the results and read the next instruction.
+The number of bus read and write cycles is shown in parenthesis as (r/w).
+The number of clock periods and the number of read and write cycles must be
+added respectively to those of the effective address calculation where 
+indicated.
+
+In the following table the headings have the following meanings: 
+An = address register operand, Dn = data register operand, ea = an operand
+specified by an effective address, and M = memory effective address operand.
+
+
+		Standard Instruction Execution Times
+
+instruction	Size		op<ea>,An ^	op<ea>,Dn	op Dn,<M>
+
+ADD		byte,word	8(1/0) +	  4(1/0) +	 8(1/1) +
+		  long		6(1/0) +**	  6(1/0) +**	12(1/2) +
+AND		byte,word	   -		  4(1/0) +	 8(1/1) +
+		  long		   -		  6(1/0) +**	12(1/2) +
+CMP		byte,word	6(1/0) +	  4(1/0) +	   -
+		  long		6(1/0) +	  6(1/0) +	   -
+DIVS		    -		   -		158(1/0) +*	   -
+DIVU		    -		   -		140(1/0) +*	   -
+EOR		byte,word	   -		  4(1/0) ***	 8(1/1) +
+		  long		   -		  8(1/0) ***	12(1/2) +
+MULS		    -		   -		 70(1/0) +*	   -
+MULU		    -		   -		 70(1/0) +*	   -
+OR		byte,word	   -		  4(1/0) +**	 8(1/1) +
+		  long		   -		  6(1/0) +**	12(1/2) +
+SUB		byte,word	8(1/0) +	  4(1/0) +	 8(1/1) +
+		  long		6(1/0) +**	  6(1/0) +**	12(1/2) +
+
+notes:	+ Add effective address calculation time
+	^ Word or long only
+	* Indicates maximum value
+       ** The base time of six clock periods is increased to eight		
+	  if the effective address mode is register direct or 
+	  immediate (effective address time should also be added)
+      *** Only available effective address mode is data register direct
+	  
+	DIVS,DIVU - The divide algorithm used by the MC68000 provides less
+		    than 10% difference between the best and the worst case
+		    timings.
+	MULS,MULU - The multiply algorithm requires 38+2n clocks where
+		    n is defined as:
+		MULU: n = the number of ones in the <ea>
+		MULS: n = concatanate the <ea> with a zero as the LSB;
+			  n is the resultant number of 10 or 01 patterns
+			  in the 17-bit source; i.e., worst case happens
+			  when the source is $5555
+@EndNode
+
+@Node TimImmediate "Immediate Instruction Execution Times"
+
+The number of clock periods periods shown in this table includes the time to
+fetch immediate operands, perform the operations, store the results and read 
+the next operation. The number of bus read and write cycles is shown in
+parenthesis as (r/w). The number of clock periods and the number of read and 
+write cycles must be added respectively to those of the effective address
+calculation where indicated.
+
+
+		Immediate Instruction Execution Times
+
+instruction	size		op #,Dn		op #,An		op #,M
+
+ADDI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/2) +
+ADDQ		byte,word	 4(1/0)		8(1/0) *	 8(1/1) +
+		  long		 8(1/0)		8(1/0)		12(1/2) +
+ANDI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/1) +
+CMPI		byte,word	 8(2/0)		  -		 8(2/0) +
+		  long		14(3/0)		  -		12(3/0) +
+EORI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/2) +
+MOVEQ		  long		 4(1/0)		  -		   -
+ORI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/2) +
+SUBI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/2) +
+SUBQ		byte,word	 4(1/0)		8(1/0) *	 8(1/1) +
+		  long		 8(1/0)		8(1/0)		12(1/2) +
+
+	+ Add effective address calculation time
+	* word only
+
+@EndNode
+
+@Node TimSingleOp "Single Operand Instruction Execution Times"
+
+This table indicates the number of clock periods for the single operand
+instructions. The number of bus read and write cycles is shown in parenthesis
+as (r/w). The number of clock periods and the number of read and write cycles
+must be added respectively to those of the effective address calculation
+where indicated.
+
+
+		Single Operand Instruction Execution Times
+
+instruction	size		register	 memory
+
+CLR		byte,word	4(1/0)		 8(1/1) +
+		  long		6(1/0)		12(1/2) +
+NBCD		  byte		6(1/0)		 8(1/1) +
+NEG		byte,word	4(1/0)		 8(1/1) +
+		  long		6(1/0)		12(1/2) +
+NEGX		byte,word	4(1/0)		 8(1/1) +
+		  long		6(1/0)		12(1/2) +
+NOT		byte,word	4(1/0)		 8(1/1) +
+		  long		6(1/0)		12(1/2) +
+Scc		byte,false	4(1/0)		 8(1/1) +
+		byte,true	6(1/0)		 8(1/1) +
+TAS		  byte		4(1/0)		10(1/1) +
+TST		byte,word	4(1/0)		 4(1/0) +
+		  long		4(1/0)		 4(1/0) +
+
+	+ add effective address calculation time
+@EndNode
+
+@Node TimRotate "Rotate Instruction Execution Times"
+
+This table indicates the number of clock periods for the shift and rotate
+instructions. The number of read and write cycles is shown in parenthesis
+as (r/w). The number of clock periods and the number of read and write
+cycles must be added respectively to those of the effective address
+calculation where indicated.
+
+
+		Shift/Rotate Instruction Execution Times
+
+instruction	size		register	memory
+
+ASR,ASL		byte,word	6+2n(1/0)	8(1/1) +
+		  long		8+2n(1/0)	  -
+LSR,LSL		byte,word	6+2n(1/0)	8(1/1) +
+		  long		8+2n(1/0)	  -
+ROR,ROL		byte,word	6+2n(1/0)	8(1/1) +
+		  long		8+2n(1/0)	  -
+ROXR,ROXl	byte,word	6+2n(1/0)	8(1/1) +
+		  long		8+2n(1/0)	  -
+
+	+ add effective address calculation time
+	n is the shift or rotate count
+@EndNode
+
+@Node TimBits "Bit Manipulation Instruction Execution Times"
+
+This table indicates the number of clock periods required for the bit
+manipulation instructions. The number of read and write cycles is shown in 
+parenthesis as (r/w). The number of clock periods and the number of read and 
+write cycles must be added respectively to those of the effective address
+calculation where indicated.
+
+
+		Bit Manipulation Instruction Execution Times
+
+instruction	size		dynamic			static
+			register   memory	register   memory	
+BCHG		byte	   -	   8(1/1) +	   -	   12(2/1) +
+		long	 8(1/0) *    -		12(2/0) *     -
+BCLR		byte	   -	   8(1/1) +	   -	   12(2/1) +
+		long	10(1/0) *    -		14(2/0) *     -
+BSET		byte	   -	   8(1/1) +	   -	   12(2/1) +
+		long	 8(1/0) *    -		12(2/0) *     -
+BTST		byte	   -  	   4(1/0) +	   -	    8(2/0) +
+		long	 6(1/0)	     -		10(2/0)       -
+
+	+ add effective address calculation time
+	* indicates maximum value
+@EndNode
+
+@Node TimSpec "Specificational Instruction Execution Times"
+
+This table indicates the number of clock periods for the conditional
+instructions. The number of read and write cycles is shown in parenthesis
+as (r/w). The number of clock periods and the number of read and write
+cycles must be added respectively to those of the effective address
+calculation where indicated.
+
+
+		Conditional Instruction Execution Times
+
+instruction	displacement	branch		 branch
+				taken		not taken
+
+Bcc		byte		10(2/0)		 8(1/0)
+		word		10(2/0)		12(1/0)
+BRA		byte		10(2/0)		   -
+		word		10(2/0)		   -
+BSR		byte		18(2/2)		   -
+		word		18(2/2)		   -
+DBcc		CC true		   -		12(2/0)
+		CC false	10(2/0)		14(3/0)
+@EndNode
+
+@Node TimJMPetc "JMP, JSR, LEA, PEA and MOVEM Instruction Execution Times"
+
+This Table indicates the number of clock periods required for the jump,
+jump-to-subroutine, load effective address, push effective address and
+move multiple registers instructions. The number of bus read and write 
+cycles is shown in parenthesis as (r/w).
+
+
+	JMP, JSR, LEA, PEA and MOVEM Instruction Execution Times
+
+instr	size	(An)		(An)+		-(An)	d(An)	
+JMP	-	  8(2/0)	   -		  -	10(2/0)
+JSR	-	 16(2/2)	   -		  -	18(2/2)
+LEA	-	  4(1/0)	   -		  -	 8(2/0)
+PEA	-	 12(1/2)	   -		  -	16(2/2)
+MOVEM	word	   12+4n	   12+4n	  -	  16+4n
+M->R		 (3+n/0)	 (3+n/0)	  -	(4+n/0)
+	long	   12+8n	   12+8n	  -	  16+8n
+		(3+2n/0)	(3+2n/0)	  -    (4+2n/0)
+MOVEM	word	    8+4n	   -		  8+4n	  12+4n
+R->M		   (2/n)	   -		 (2/n)	  (3/n)
+	long	    8+8n	   -		  8+8n	  12+8n
+		  (2/2n)	   -		(2/2n)	 (3/2n)
+
+instr	size	d(An,ix)+   xxx.W      xxx.L      d(PC)      d(PC,ix)*
+JMP	 -	 14(3/0)    10(2/0)    12(3/0)	  10(2/0)    14(3/0)
+JSR	 -	 22(2/2)    18(2/2)    20(3/2)	  18(2/2)    22(2/2)
+LEA	 -	 12(2/0)     8(2/0)    12(3/0)	   8(2/0)    12(2/0)
+PEA	 -	 20(2/2)    16(2/2)    20(3/2)	  16(2/2)    20(2/2)
+MOVEM	word	   18+4n      16+4n      20+4n	    16+4n      18+4n
+M->R		 (4+n/0)    (4+n/0)    (5+n/0)	  (4+n/0)    (4+n/0)
+	long	   18+8n      16+8n      20+8n	    16+8n      18+8n
+		(4+2n/0)   (4+2n/0)   (5+2n/0)	 (4+2n/0)   (4+2n/0)
+MOVEM	word	   14+4n      12+4n      16+4n	    -		-
+R->M		   (3/n)      (3/n)      (4/n)	    -		-
+	long	   14+8n      12+8n      16+8n	    -		-
+		  (3/2n)     (3/2n)     (4/2n)	    -		-
+
+n is the number of registers to move
+* is the size of the index register (ix) does not affect the instruction's
+  execution time
+@EndNode
+
+@Node TimMultiPrec "Multi-Precision Instruction Execution Times"
+
+This table indicates the number of clock periods for the multi-precision
+instructions. The number of clock periods includes the time to fetch both
+operands, perform the operations, store the results and read the next 
+instructions. The number of read and write cycles is shown in parenthesis 
+as (r/w).
+
+The headings have the following meanings: Dn = data register operand and
+M = memory operand.
+
+
+		Multi-Presicion Instruction Execution Times
+
+instruction	size		op Dn,Dn	op M,M
+
+ADDX		byte,word	4(1/0)		18(3/1)
+		  long		8(1/0)		30(5/2)
+CMPM		byte,word	  -		12(3/0)
+		  long		  -		20(5/0)
+SUBX		byte,word	4(1/0)		18(3/1)
+		  long		8(1/0)		30(5/2)
+ABCD		  byte		6(1/0)		18(3/1)
+SBCD		  byte		6(1/0)		18(3/1)
+@EndNode
+
+@Node TimMisc "Miscellaneous Instruction Execution Times"
+
+This table indicates the number of clock periods for the following 
+miscellaneous instructions. The number of bus read and write cycles is shown 
+in parenthesis as (r/w). The number of clock periods and plus the number
+of read and write cycles must be added to those of the effective address
+calculation where indicated.
+
+
+		Miscellaneous Instruction Execution Times
+
+instruction	size	register	memory
+
+ANDI to CCR	byte	 20(3/0)	   -
+ANDI to SR	word	 20(3/0)	   -
+CHK		 -	 10(1/0) +	   -
+EORI to CCR	byte	 20(3/0)	   -
+EORI to SR	word	 20(3/0)	   -
+ORI to CCR	byte	 20(3/0)	   -
+ORI to SR	word	 20(3/0)	   -
+MOVE from SR	 -	  6(1/0)	 8(1/1)+
+MOVE to CCR	 -	 12(1/0)	12(1/0)+
+MOVE to SR	 -	 12(1/0)	12(1/0)+
+EXG		 -	  6(1/0)	   -
+EXT		word	  4(1/0)	   -
+		long	  4(1/0)	   -
+LINK		 -	 16(2/2)	   -
+MOVE from USP	 -	  4(1/0)	   -
+MOVE to USP	 -	  4(1/0)	   -
+NOP		 -	  4(1/0)	   -
+RESET		 -	132(1/0)	   -
+RTE		 -	 20(5/0)	   -
+RTR		 -	 20(5/0)	   -
+RTS		 -	 16(4/0)	   -
+STOP		 -	  4(0/0)	   -
+SWAP		 -	  4(1/0)	   -
+TRAPV (No Trap)	 -	  4(1/0)	   -
+UNLK		 -	 12(3/0)	   -
+
+	+ add effective address calculation time
+@EndNode
+
+@Node TimMOVEP "Move Peripheral Instruction Execution Times"
+
+instruction	size	register->memory	memory->register
+
+MOVEP		word	16(2/2)			16(4/0)	
+		long	24(2/4)			24(6/0)
+@EndNode
+
+@Node TimExcept "Exception Processing Execution Times"
+
+This table indicates the number of clock periods for exception processing.
+The number of clock periods includes the time for all stacking, the vector
+fetch and the fetch of the first two instruction words of the handler routine.
+The number of bus read and write cycles is shown in parenthesis as (r/w).
+
+
+		Exception Processing Execution Times
+
+	exception			periods
+
+	address error			50(4/7)
+	bus error			50(4/7)
+	CHK instruction (trap taken)	44(5/3)+
+	Divide by Zero			42(5/3)
+	illegal instruction		34(4/3)
+	interrupt			44(5/3)*
+	privilege violation		34(4/3)
+	RESET **			40(6/0)
+	trace				34(4/3)
+	TRAP instruction		38(4/3)
+	TRAPV instruction (trap taken)	34(4/3)
+
+	+ add effective address calculation time
+	* the interrupt acknowledge cycle is assumed to take four
+	  clock periods
+       ** indicates the time from when RESET and HALT are first
+	  sampled as negated to when instruction execution starts
+@EndNode
+
+@Node AsmDoc "Generic Assembler Documentation"
+
+@{"Assembler options" LINK AsmOpts}
+
+TO		Specify output filename
+WITH		Specify a file that contains a list of options to be
+used.  There may only be one WITH file per assembly, and this option may
+only be used on the command line.  Such files may be created using the
+editor's command for saving an assembler settings file.  Be careful when
+using this as any main file that is set via the editor will be included
+in the WITH file.
+-.		(or QUIER) disable assembly messages
+-B		No binary file will be created.
+-C		Caseinsensitve labels (OPT NOCASE)
+-D		Debug (OPT DEBUG)
+-E		allows labels to be set; assignements must be separated
+by commas.  Labels will be set as if they were on line 2 of the main
+source file.
+-H		(or HEADER) specify the pre-assembled header files that
+are to be loaded before assembly starts.  Multiple files may be
+separated with a comma.
+-I		(or INCDIR) specify include directories to be searched
+(follow _immediatly_ with path).  These directories will be searched
+when the assembler is opening include files.  These should normally be
+terminated with a slash.
+-L		Amiga® linakbe code (OPT ALINK)
+-L6		output Motorola S-records (OPT SREC)
+-M		use low memory (slower) assemlby mode.  See the section
+on integrated options in the previous chapter.  _Not_ the same as OPT M+.
+-O		specify output filename.
+-P		specify listing filename, defaults to source filename
+with extension of .LST
+-Q		pasue for key press after assembly.
+-S		include a symbol table at the end oflisting
+-T		specifies tab setting for listing
+-V		specify options as if they were specified using OPT on
+the second line of the main source file.
+-X		use just exported labels in debugging (OPT XDEBUG)
+-Z		enable listing on pass 1.  The information in the code
+filed may be incorrect but this can be used to find mistakes when
+omitting an ENDC (OPT LIST1).  This is provided for backwards
+compatibility; OPT TRACEIF can normally be used to find such errors more
+quickly.
+
+
+
+@EndNode
+
+@Node AsmOpts "Assembler Options"
+
+@EndNode
+
+@Node InstDoc "68000 Instruction Documentation"
+
+    @{" Timings " Link "Timings"}
+    @{" The status register " Link "StatusReg"}
+    @{" The instructions " Link "InstructionList"}
+
+@EndNode
+
+@Node InstructionList "List of Mc68000 instructions"
+
+@{"ABCD" Link InstrABCD}			Add Binary Coded Decimal
+@{"ADD/ADDI/ADDQ" Link InstrADD}		Add operands
+@{"ADDA" Link InstrADDA}			Add Addresses
+@{"ADDX" Link InstrADDX}			Add with eXtend
+@{"AND" Link InstrAND}			And operands (binary)
+@{"ANDI" Link InstrANDI}			And immediate data to destination
+@{"ASL/ASR" Link InstrASL}			Arithmetic shift left/right
+@{"Bcc" Link InstrBcc}			Branch on Condition Codes
+@{"BCHG" Link InstrBCHG}			Bit test and CHanGe
+@{"BCLR" Link InstrBCLR}			Bit test and CLeaR
+@{"BKPT" Link InstrBKPT}			BreaKPoinT
+@{"BSET" Link InstrBSET}			Bit test and SET
+@{"BSR" Link InstrBSR}			Branch to SubRoutine
+@{"BTST" Link InstrBTST}			Bit TeST
+@{"CHK" Link InstrCHK}			CHecK register against boundaries
+@{"CLR" Link InstrCLR}			CLeaR operand
+@{"CMP/CMPA/CMPI/CMPM" Link InstrCMP}	Compare operands
+@{"DBcc" Link InstrDBcc}			Decrement and Branch on Condition Codes
+@{"DIVS/DIVSL" Link InstrDIVS}		
+@{"DIVU/DIVUL" Link InstrDIVU}		
+@{"EOR/EORI" Link InstrEOR}		
+@{"EXG" Link InstrEXG}			
+@{"EXT/EXTB" Link InstrEXT}		
+@{"ILLEGAL" Link InstrILLEGAL}		
+@{"JMP" Link InstrJMP}			
+@{"JSR" Link InstrJSR}			
+@{"LEA" Link InstrLEA}			
+@{"LINK" Link InstrLINK}		
+@{"LSL/LSR" Link InstrLSL}		
+@{"MOVE" Link InstrMOVE}		
+@{"MOVEA" Link InstrMOVEA}		
+@{"MOVE from CCR" Link InstrMOVEfrCCR}	
+@{"MOVEC" Link InstrMOVEC}		
+@{"MOVEM" Link InstrMOVEM}		
+@{"MOVEP" Link InstrMOVEP}		
+@{"MOVEQ" Link InstrMOVEQ}		
+@{"MOVES" Link InstrMOVES}		
+@{"MULS/MULU" Link InstrMULS}		
+@{"NBCD" Link InstrNBCD}		
+@{"NEG" Link InstrNEG}			
+@{"NEGX" Link InstrNEGX}		
+@{"NOP" Link InstrNOP}			
+@{"NOT" Link InstrNOT}			
+@{"OR/ORI" Link InstrOR}		
+@{"PEA" Link InstrPEA}			
+@{"RESET" Link InstrRESET}		
+@{"ROL/ROR" Link InstrROL}		
+@{"ROXL/ROXR" Link InstrROXL}		
+@{"RTD" Link InstrRTD}			
+@{"RTE" Link InstrRTE}			
+@{"RTR" Link InstrRTR}			
+@{"RTS" Link InstrRTS}			
+@{"Scc" Link InstrScc}			
+@{"SBCD" Link InstrSBCD}		
+@{"SUB/SUBI/SUBQ" Link InstrSUB}	
+@{"SUBA" Link InstrSUBA}		
+@{"SUBX" Link InstrSUBX}		
+@{"SWAP" Link InstrSWAP}		
+@{"TRAP/TRAPcc/TRAPV" Link InstrTRAP}	
+@{"TST" Link InstrTST}			
+@{"UNLK" Link InstrUNLK}		
+
+@EndNode
+
+##*******************************************************************
+
+@Node CCInstrs "Conditional Instruction Conditions"
+
+The following conditions apply to the 680x0
+
+/---------------Condition value in the instruction code in memory
+|
+| /-------------Condition mnemonic
+| |    
+| |   /---------Applies to (S)igned, (U)nsigned, or (B)oth (- means that
+| |   |         Unsigned/Signed doesn't apply to this instruction)
+| |   |
+| |   |                    This condition triggers when
+0 T   -  True                   Always     1
+1 F   -  False                  Never      0
+2 HI  U  High                    X<Y      -C & -Z
+3 LS  U  Low or Same             X>=Y      C !  Z
+4 CC  U  Carry clear             X<=Y     -C
+5 CS  U  Carry set               X>Y       C
+6 NE  B  Not Equal               X<>Y     -Z
+7 EQ  B  Equal                   X=Y       Z
+8 VC  -  O(V)erflow flag clear   --       -V
+9 VS  -  O(V)erflow flag set     --        V
+A PL  S  Plus                    X<=Y     -N
+B MI  S  Minus                   X>Y       N
+C GE  S  Greater or equal        X<=Y     (N&V)!(-N&-V)
+D LT  S  Less Than               X>Y      (N&-V)!(-N&V)
+E GT  S  Greater Than            X<Y      (N&V&Z)!(-N&-V&-Z)
+F LE  S  Less or equal           X>=Y     Z!(N&-V)!(-N&V)
+
+The dual field "This condition triggers when" contains both what I consider
+"human readable" descriptions of when the condition trigger (eg, X<Y) and
+the way the computer considers this internally (eg, -C & -Z).
+
+The Less Than, Greater Than, etc, is whether Y was that to X (This
+doesn't feel right; so REMEMBER it, don't try to use logic!) in a compare
+of the form
+	CMP	X,Y
+
+The machine form is read as follows: 
+The letters represent the the bits in the condition code register (CCR).
+Z represent the Zero flag.
+C represent the Carry flag.
+V represent the oVerflow flag.
+N represent the Negative flag.
+When a flag is preceded by a -, then you should NOT that falg before using
+  it (0->1, 1->0).
+! represent OR.
+& represent AND.
+
+The conditions are used in only two types of instructions:
+ Branch Instructions, and Set instructions.
+
+Both of these instructions are based on the same set of conditions; and 
+
+@EndNode
+
+@Node Branches "The conditional branches"
+@EndNode
+
+@Node StatusReg "The status register"
+
+1 1 1 1 1 1
+5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+T   S     I I I       X N Z V C
+
+The lower byte of the SR (Status Register) is called the CCR
+(Condition Code Register).  This part is used for determining what
+outcome a @{"conditional instruction" Link "CCInstrs"} shall have.
+This is the only part of the SR used by normal programs; the other
+part is generally used by the operating system.  The bits in the CCR
+means as follows:
+X - eXtend bit.  Used in rotations and maths involving bigger numbers
+    than those that can fit in a single longword; generally track the
+    C bit.
+N - Negative bit.
+Z - Zero bit.
+V - oVerflow bit.
+C - Carry bit.
+
+In the upper byte of the SR:
+T - Trace mode enabled.
+S - Supervisor mode enabled (will be 0 for user mode)
+III - three bits for storing the current interrupt level.
+
+See also:  @{"Instructions affect on flags" link "InstFlags"}, @{"Conditional Instructions" Link CCInstrs"}.
+
+@EndNode
+
+@Node InstFlags "What instructions affect what flags, and how (Sort 1)"
+
+Reference: @{"Grouped after instruction type" Link InstFlags2}
+
+Instruction				N Z V C  X
+
+@{"ABCD" Link InstrABCD}					? * ? C  C
+@{"ADD/ADDI/ADDQ" Link InstrADD}				N Z V C  C
+@{"ADDA" Link InstrADDA}					- - - -  -
+@{"ADDX" Link InstrADDX}					? * ? C  C
+@{"AND" Link InstrAND}					N Z 0 0  -
+@{"ANDI" Link InstrANDI}					N Z 0 0  -
+@{"ASL/ASR" Link InstrASL}					N Z A S  S
+@{"Bcc" Link InstrBcc}					- - - -  -
+@{"BCHG" Link InstrBCHG}					- T - -  -
+@{"BCLR" Link InstrBCLR}					- T - -  -
+@{"BKPT" Link InstrBKPT}					- - - -  -
+@{"BSET" Link InstrBSET}					- T - -  -
+@{"BSR" Link InstrBSR}					- - - -  -
+@{"BTST" Link InstrBTST}					- T - -  -
+@{"CHK" Link InstrCHK}					? ? ? ?  ?
+@{"CLR" Link InstrCLR}					0 1 0 0  -
+@{"CMP/CMPA/CMPI/CMPM" Link InstrCMP}			N Z V B  -
+@{"DBcc" Link InstrDBcc}					- - - -  -
+@{"DIVS/DIVSL" Link InstrDIVS}				N Z V 0  -
+@{"DIVU/DIVUL" Link InstrDIVU}				N Z V 0  -
+@{"EOR/EORI" Link InstrEOR}				N Z 0 0  -
+@{"EXG" Link InstrEXG}					- - - -  -
+@{"EXT/EXTB" Link InstrEXT}				N Z 0 0  -
+@{"ILLEGAL" Link InstrILLEGAL}					- - - -  -
+@{"JMP" Link InstrJMP}					- - - -  -
+@{"JSR" Link InstrJSR}					- - - -  -
+@{"LEA" Link InstrLEA}					- - - -  -
+@{"LINK" Link InstrLINK}					- - - -  -
+@{"LSL/LSR" Link InstrLSL}					N Z 0 S  S
+@{"MOVE" Link InstrMOVE}					N Z 0 0  -
+@{"MOVEA" Link InstrMOVEA}					- - - -  -
+@{"MOVE from CCR" Link InstrMOVEfrCCR}				- - - -  -
+@{"MOVEC" Link InstrMOVEC}					- - - -  -
+@{"MOVEM" Link InstrMOVEM}					- - - -  -
+@{"MOVEP" Link InstrMOVEP}					- - - -  -
+@{"MOVEQ" Link InstrMOVEQ}					N Z 0 0  -
+@{"MOVES" Link InstrMOVES}					- - - -  -
+@{"MULS/MULU" Link InstrMULS}				N Z V 0  -
+@{"NBCD" Link InstrNBCD}					? Z ? B  B
+@{"NEG" Link InstrNEG}					N Z V z  z
+@{"NEGX" Link InstrNEGX}					N Z V B  B
+@{"NOP" Link InstrNOP}					- - - -  -
+@{"NOT" Link InstrNOT}					N Z 0 0  -
+@{"OR/ORI" Link InstrOR}					N Z 0 0  -
+@{"PEA" Link InstrPEA}					- - - -  -
+@{"RESET" Link InstrRESET}					- - - -  -
+@{"ROL/ROR" Link InstrROL}					N Z 0 S  S
+@{"ROXL/ROXR" Link InstrROXL}				N Z 0 S  S
+@{"RTD" Link InstrRTD}					- - - -  -
+@{"RTE" Link InstrRTE}					* * * *  *
+@{"RTR" Link InstrRTR}					* * * *  *
+@{"RTS" Link InstrRTS}					- - - -  -
+@{"Scc" Link InstrScc}					- - - -  -
+@{"SBCD" Link InstrSBCD}					? * ? B  B
+@{"SUB/SUBI/SUBQ" Link InstrSUB}				N Z V B  B
+@{"SUBA" Link InstrSUBA}					- - - -  -
+@{"SUBX" Link InstrSUBX}					N * V B  B
+@{"SWAP" Link InstrSWAP}					N Z 0 0  -
+@{"TRAP/TRAPcc/TRAPV" Link InstrTRAP}			- - - -  -
+@{"TST" Link InstrTST}					N Z 0 0  -
+@{"UNLK" Link InstrUNLK}					- - - -  -
+
+
+@{fg highlight} What do the different markings mean? @{fg text}
+
+? - Undefined
+N - Set if result is negative (high order bit set), cleared otherwise.
+    (SWAP has bit 31 as high order bit, not bit 15)
+Z - Set if result is zero, cleared otherwise
+z - Set if result is non-zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if carry generated, cleared otherwise
+B - Set if borrow was needed, cleared otherwise
+
+A - Overflow flag set if high order bit changes during shift operation,
+    cleared otherwise
+S - Set according to the last bit shifted out of operand (cleared if no
+    shifting occur)
+T - Set according to previous state of bit changed (Bxxx instructions)
+
+
+* - Special, see description for individual instructions below.
+
+@EndNode
+
+@Node InstFlags2 "What instructions affect what flags, and how (Sort 2)"
+
+Instruction				N Z V C  X
+
+@{"ADDA" Link InstrADDA}					- - - -  -
+@{"Bcc" Link InstrBcc}					- - - -  -
+@{"BKPT" Link InstrBKPT}					- - - -  -
+@{"BSR" Link InstrBSR}					- - - -  -
+@{"DBcc" Link InstrDBcc}					- - - -  -
+@{"EXG" Link InstrEXG}					- - - -  -
+@{"ILLEGAL" Link InstrILLEGAL}					- - - -  -
+@{"JMP" Link InstrJMP}					- - - -  -
+@{"JSR" Link InstrJSR}					- - - -  -
+@{"LEA" Link InstrLEA}					- - - -  -
+@{"LINK" Link InstrLINK}					- - - -  -
+@{"MOVEA" Link InstrMOVEA}					- - - -  -
+@{"MOVE from CCR" Link InstrMOVEfrCCR}				- - - -  -
+@{"MOVEC" Link InstrMOVEC}					- - - -  -
+@{"MOVEM" Link InstrMOVEM}					- - - -  -
+@{"MOVEP" Link InstrMOVEP}					- - - -  -
+@{"MOVES" Link InstrMOVES}					- - - -  -
+@{"NOP" Link InstrNOP}					- - - -  -
+@{"PEA" Link InstrPEA}					- - - -  -
+@{"RESET" Link InstrRESET}					- - - -  -
+@{"RTD" Link InstrRTD}					- - - -  -
+@{"RTS" Link InstrRTS}					- - - -  -
+@{"Scc" Link InstrScc}					- - - -  -
+@{"SUBA" Link InstrSUBA}					- - - -  -
+@{"TRAP/TRAPcc/TRAPV" Link InstrTRAP}			- - - -  -
+@{"UNLK" Link InstrUNLK}					- - - -  -
+
+@{"AND" Link InstrAND}					N Z 0 0  -
+@{"ANDI" Link InstrANDI}					N Z 0 0  -
+@{"EOR/EORI" Link InstrEOR}				N Z 0 0  -
+@{"EXT/EXTB" Link InstrEXT}				N Z 0 0  -
+@{"MOVE" Link InstrMOVE}					N Z 0 0  -
+@{"MOVEQ" Link InstrMOVEQ}					N Z 0 0  -
+@{"NOT" Link InstrNOT}					N Z 0 0  -
+@{"OR/ORI" Link InstrOR}					N Z 0 0  -
+@{"SWAP" Link InstrSWAP}					N Z 0 0  -
+@{"TST" Link InstrTST}					N Z 0 0  -
+
+@{"BCHG" Link InstrBCHG}					- T - -  -
+@{"BCLR" Link InstrBCLR}					- T - -  -
+@{"BSET" Link InstrBSET}					- T - -  -
+@{"BTST" Link InstrBTST}					- T - -  -
+
+@{"ABCD" Link InstrABCD}					? * ? C  C
+@{"ADDX" Link InstrADDX}					? * ? C  C
+@{"SBCD" Link InstrSBCD}					? * ? B  B
+@{"NBCD" Link InstrNBCD}					? Z ? B  B
+@{"NEGX" Link InstrNEGX}					N Z V B  B
+
+@{"SUBX" Link InstrSUBX}					N * V B  B
+
+@{"ASL/ASR" Link InstrASL}					N Z A S  S
+@{"LSL/LSR" Link InstrLSL}					N Z 0 S  S
+@{"ROL/ROR" Link InstrROL}					N Z 0 S  S
+@{"ROXL/ROXR" Link InstrROXL}				N Z 0 S  S
+
+@{"ADD/ADDI/ADDQ" Link InstrADD}				N Z V C  C
+@{"SUB/SUBI/SUBQ" Link InstrSUB}				N Z V B  B
+@{"CMP/CMPA/CMPI/CMPM" Link InstrCMP}			N Z V B  -
+@{"NEG" Link InstrNEG}					N Z V z  z
+
+@{"DIVS/DIVSL/DIVU/DIVUL" Link InstrDIVS}			N Z V 0  -
+@{"MULS/MULU" Link InstrMULS}				N Z V 0  -
+
+@{"RTE" Link InstrRTE}					* * * *  *
+@{"RTR" Link InstrRTR}					* * * *  *
+
+@{"CHK" Link InstrCHK}					? ? ? ?  ?
+@{"CLR" Link InstrCLR}					0 1 0 0  -
+
+@{fg highlight} What do the different markings mean? @{fg text}
+
+? - Undefined
+N - Set if result is negative (high order bit set), cleared otherwise.
+    (SWAP has bit 31 as high order bit, not bit 15)
+Z - Set if result is zero, cleared otherwise
+z - Set if result is non-zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if carry generated, cleared otherwise
+B - Set if borrow was needed, cleared otherwise
+
+A - Overflow flag set if high order bit changes during shift operation,
+    cleared otherwise
+S - Set according to the last bit shifted out of operand (cleared if no
+    shifting occur)
+T - Set according to previous state of bit changed (Bxxx instructions)
+
+
+* - Special, see description for individual instructions below.
+
+@EndNode
+
+@Node InstrABCD "ABCD - Add Binary Coded Decimal (w/extend)"
+
+@{fg highlight} Syntax: @{fg text}
+	ABCD	Dn,Dm
+	ABCD	-(An),-(Am)
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Undefined
+Z - Special (EDIT!!!)
+V - Undefined
+C - Set if carry generated, cleared if no carry
+X - Set if carry generated, cleared if no carry
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+ABCD	Dn,Dn		6(1/0)
+ABCD	-(An),-(Am)	18(3/1)
+
+@EndNode
+
+@Node InstrADD "The ADD/ADDI/ADDQ instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if carry generated, cleared if no carry
+X - Set if carry generated, cleared if no carry
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+instruction	size		op<ea>,Dn	op<ea>,An	op<ea>,M
+
+ADDI		byte,word	 8(2/0)		  -		12(2/1) +
+		  long		16(3/0)		  -		20(3/2) +
+ADDQ		byte,word	 4(1/0)		8(1/0) *	 8(1/1) +
+		  long		 8(1/0)		8(1/0)		12(1/2) +
+ADD		byte,word	 4(1/0)+	8(1/0)+*	 8(1/1)^+
+		  long		 6(1/0)+**	6(1/0)+**	12(1/2)^+
+notes:	+ Add effective address calculation time
+	* Word only
+       ** The base time of six clock periods is increased to eight		
+	  if the effective address mode is register direct or 
+	  immediate (effective address time should also be added)
+	^ For the ADD instruction, the only available 
+
+@EndNode
+
+@Node InstrADDA "The ADDA instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrADDX "The ADDX instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Undefined
+Z - Special (EDIT!!!)
+V - Undefined
+C - Set if carry generated, cleared if no carry
+X - Set if carry generated, cleared if no carry
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrAND "The AND instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrANDI "The ANDI instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrASL "The ASL/ASR instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if high order bit changes during shift operation, cleared otherwise
+C - Set according to last bit shifted out of operand
+X - Set according to last bit shifted out of operand
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBcc "The Bcc instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBCHG "The BCHG instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Set is bit tested is zero, cleared otherwise
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBCLR "The BCLR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Set is bit tested is zero, cleared otherwise
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBKPT "The BKPT instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBSET "The BSET instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Set is bit tested is zero, cleared otherwise
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBSR "The BSR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrBTST "The BTST instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Set is bit tested is zero, cleared otherwise
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrCHK "The CHK instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Undefined
+Z - Undefined
+V - Undefined
+C - Undefined
+X - Undefined
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrCLR "The CLR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Cleared
+Z - Set
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrCMP "The CMP/CMPA/CMPI/CMPM instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if borrow was needed, cleared otherwise
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrDBcc "The DBcc instruction (4 bytes)"
+@{fg highlight} The DBcc instruction (4 bytes) @{fg text}
+
+@{fg highlight} Syntax: @{fg text}
+	DBcc	Dn,displacement
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+ DBcc is used primarily for repeating something a set number of times,
+sometimes involving a test to terminate early.  The dataregister will be
+decremented, and if it do not reach -1, and the given condition is NOT met,
+it will branch to the given address.
+
+ The DBcc will, UNLIKE THE Bcc INSTRUCTION, take the branch only if the set
+of conditions are NOT satified.  The loop will be terminated if the
+condition is true, or the counter is zero BEFORE a decrement, and wrap to
+-1.  This mean that if you execute code like
+	move.w	#30,d0
+.Loop:	move.l	(a0)+,(a1)+
+	dbf	d0,.Loop
+then the copy will be executed *31* times, and 124 bytes of memory will be
+copied, not 120.
+A good practice is therefore to write
+	move.w	#31-1,d0
+.Loop:	move.l	(a0)+,(a1)+
+	dbf	d0,.Loop
+
+Beware that dbf only operate on the WORD of the counting register, and that
+the counting register will contain $ffff on exit from the loop due to
+countdown.
+
+To compare two strings that may be in excess of 64k length for beeing
+equal, you could execute the following code:
+
+	...
+
+	move.l	#$53452,d0
+	subq.l	#1,d0		; Remember; DBcc do one more than speced.
+	beq.s	.NoLength	; Zero length!
+	bra.s	.StartOuterLoop	; The upper word contain count of 65536's...
+.OuterLoop:
+	swap	d0
+.InnerLoop:
+	cmp.b	(a0)+,(a1)+
+	dbne	d0,.InnerLoop	; Remember, drop trough on condition TRUE.
+.StartOuterLoop:		; d0 will be $FFFF on 2.+ run-through
+	bne.s	.NotEqual	; Dropped through due to Not Equal?
+	swap	d0		; Get upper part of word...	
+	dbf	d0,.OuterLoop
+	...
+
+It would not be possible to use two sets of DBNEs, as SWAP changes the
+condition codes - and we don't want the drop-though to be on account of D0,
+instead of the compares...
+
+Another neat trick is to use instruction as a conditional decrementer;
+this code will decrement d0.w if the last instruction returned NOT EQUAL:
+
+	...
+	dbeq	d0,.Next
+.Next:	...
+
+(Thanks to TEC/Cryptoburners!)
+
+References: @{"Conditional Instruction Conditions" Link CCInstrs}
+
+@{fg highlight} Timings: @{fg text}
+
+Condition true  - Dropthrough  - 12(2/0)
+Condition false - Branch taken - 10(2/0)
+Condition false - Dropthrough  - 14(3/0)
+(Loop ended, Dn.w = -1)
+
+@EndNode
+
+@Node InstrDIVS "The DIVS/DIVSL instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrDIVU "The DIVU/DIVUL instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrEOR "The EOR/EORI instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrEXG "The EXG instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrEXT "The EXT/EXTB instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrILLEGAL "The ILLEGAL instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrJMP "The JMP instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrJSR "The JSR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrLEA "The LEA instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrLINK "The LINK instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrLSL "The LSL/LSR instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Set according to last bit shifted out of operand
+X - Set according to last bit shifted out of operand
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVE "The MOVE instruction"
+@{fg highlight} Syntax: @{fg text}
+<
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+		Move Byte and Word Instruction Execution Times
+
+     	 Dn	 An	 (An)	 (An)+	-(An)	 d(An)	d(An,ix) xxx.W	|xxx.L
+
+Dn	 4(1/0)	 4(1/0)	 8(1/1)	 8(1/1)  8(1/1)	12(2/1) 14(2/1) 12(2/1) 16(3/1)
+An	 4(1/0)	 4(1/0)	 8(1/1)	 8(1/1)	 8(1/1)	12(2/1) 14(2/1) 12(2/1) 16(3/1)
+(An)	 8(2/0)	 8(2/0)	12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+(An)+	 8(2/0)	 8(2/0) 12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+-(An)	10(2/0) 10(2/0) 14(2/1) 14(2/1) 14(2/1) 18(3/1) 20(4/1) 18(3/1) 22(4/1)
+d(An)	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+d(An,ix)14(3/0) 14(3/0) 18(3/1) 18(3/1) 18(3/1) 22(4/1) 24(4/1) 22(4/1) 26(5/1)
+xxx.W	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+xxx.L	16(4/0) 16(4/0) 20(4/1) 20(4/1) 20(4/1) 24(5/1) 26(5/1) 24(5/1) 28(6/1)
+d(PC)	12(3/0) 12(3/0) 16(3/1) 16(3/1) 16(3/1) 20(4/1) 22(4/1) 20(4/1) 24(5/1)
+d(PC,ix)14(3/0) 14(3/0) 18(3/1) 18(3/1) 18(3/1) 22(4/1) 24(4/1) 22(4/1) 26(5/1)
+#xxx	 8(2/0)	 8(2/0) 12(2/1) 12(2/1) 12(2/1) 16(3/1) 18(3/1) 16(3/1) 20(4/1)
+
+The size of the index register (ix) does not affect execution time
+
+
+		Move Long Instruction Execute Times 
+
+     	 Dn	 An	 (An)	 (An)+	-(An)	 d(An)	d(An,ix) xxx.W	|xxx.L
+
+Dn	 4(1/0)	 4(1/0)	12(1/2)	12(1/2)	12(1/2)	16(2/2)	18(2/2)	16(2/2)	20(3/2)
+An	 4(1/0)	 4(1/0)	12(1/2)	12(1/2)	12(1/2)	16(2/2)	18(2/2)	16(2/2)	20(3/2)
+(An)	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+(An)+	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+-(An)	14(3/0)	14(3/0)	22(3/2)	22(3/2)	22(3/2)	26(4/2)	28(4/2)	26(4/2)	30(5/2)
+d(An)	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(6/2)
+d(An,ix)18(4/0)	18(4/0)	26(4/2)	26(4/2)	26(4/2)	30(5/2)	32(5/2)	30(5/2)	34(6/2)
+xxx.W	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(6/2)
+xxx.L	20(5/0)	20(5/0)	28(5/2)	28(5/2)	28(5/2)	32(6/2)	34(6/2)	32(6/2)	36(7/2)
+d(PC)	16(4/0)	16(4/0)	24(4/2)	24(4/2)	24(4/2)	28(5/2)	30(5/2)	28(5/2)	32(5/2)
+d(PC,ix)18(4/0)	18(4/0)	26(4/2)	26(4/2)	26(4/2)	30(5/2)	32(5/2)	30(5/2)	34(6/2)
+#xxx	12(3/0)	12(3/0)	20(3/2)	20(3/2)	20(3/2)	24(4/2)	26(4/2)	24(4/2)	28(5/2)
+
+The size of the index register (ix) does not affect execution time
+
+@EndNode
+
+@Node InstrMOVEA "The MOVEA instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVEfrCCR  "The MOVE from CCR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVEC "The MOVEC instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVEM "The MOVEM instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVEP "The MOVEP instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVEQ "The MOVEQ instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMOVES "The MOVES instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrMULS "The MULS/MULU instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrNBCD "The NBCD instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Undefined
+Z - Set if result is zero, cleared otherwise
+V - Undefined
+C - Set if borrow was needed, cleared otherwise
+X - Set if borrow was needed, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrNEG "The NEG instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if result was non-zero, cleared otherwise
+X - Set if result was non-zero, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrNEGX "The NEGX instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if borrow was needed, cleared otherwise
+X - Set if borrow was needed, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrNOP "The NOP instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrNOT "The NOT instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrOR "The OR/ORI instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrPEA "The PEA instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrRESET "The RESET instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrROL "The ROL/ROR instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Set according to last bit shifted out of operand
+X - Set according to last bit shifted out of operand
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrROXL "The ROXL/ROXR instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Set according to last bit shifted out of operand
+X - Set according to last bit shifted out of operand
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrRTD "The RTD instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrRTE "The RTE instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Special (EDIT!!!)
+Z - Special (EDIT!!!)
+V - Special (EDIT!!!)
+C - Special (EDIT!!!)
+X - Special (EDIT!!!)
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrRTR "The RTR instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Special (EDIT!!!)
+Z - Special (EDIT!!!)
+V - Special (EDIT!!!)
+C - Special (EDIT!!!)
+X - Special (EDIT!!!)
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrRTS "The RTS instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrScc "The Scc instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrSBCD "The SBCD instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Undefined
+Z - Special (EDIT!!!)
+V - Undefined
+C - Set if borrow was needed, cleared otherwise
+X - Set if borrow was needed, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrSUB "The SUB/SUBI/SUBQ instructions"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Set if overflow is generated, cleared otherwise
+C - Set if borrow was needed, cleared otherwise
+X - Set if borrow was needed, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrSUBA "The SUBA instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrSUBX "The SUBX instruction"
+@{fg highlight} Syntax: @{fg text}
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Special (EDIT!!!)
+V - Set if overflow is generated, cleared otherwise
+C - Set if borrow was needed, cleared otherwise
+X - Set if borrow was needed, cleared otherwise
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+
+@EndNode
+
+@Node InstrSWAP "The SWAP instruction"
+@{fg highlight} Syntax: @{fg text}
+	SWAP	Dn
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+68000: 4(1/0) cycles
+Some lists claim this to be 8 cycles; this seems more likely with the
+ALU structure of the 68000, but that would also slow down word access to
+address registers.  4 cycles is probably the correct timing.
+
+@EndNode
+
+@Node InstrTRAP "The TRAP/TRAPcc/TRAPV instructions"
+@{fg highlight} Syntax: @{fg text}
+	TRAP	#n
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+68000: 38(4/3) (Includes saving of stackframe)
+This instruction is slowed down on the higher processors due to larger
+stackframe.  This is particularly noticable on the 68010, as it doesn't
+usually have higher clock frequency than the 68000.
+
+@EndNode
+
+@Node InstrTST "The TST instruction"
+@{fg highlight} Syntax: @{fg text}
+	TST.s	Operand
+where Operand are one of the following:
+Dn  An  (An)  (An)+  -(An)  d(An,X)  XXXX.W  XXXXXXXX.L
+
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Set if result is negative (high bit set), cleared otherwise
+Z - Set if result is zero, cleared otherwise
+V - Cleared
+C - Cleared
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+68000:  4(1/0) cycles + effective address calculation time.
+Same timing for all sizes.
+
+@EndNode
+
+@Node InstrUNLK "The UNLK instruction"
+@{fg highlight} Syntax: @{fg text}
+	UNLK	An
+@{fg highlight} Condition Codes: @{fg text}
+
+N - Unaffected
+Z - Unaffected
+V - Unaffected
+C - Unaffected
+X - Unaffected
+
+@{fg highlight} Description: @{fg text}
+
+@{fg highlight} Timings: @{fg text}
+68000: 12(3/0)
+
+@EndNode

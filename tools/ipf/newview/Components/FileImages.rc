@@ -1,0 +1,8 @@
+BITMAP FolderOpen OS2FolderOpen.Bmp
+BITMAP FolderClosed OS2FolderClosed.Bmp
+
+BITMAP FloppyDrive Floppy2.Bmp
+BITMAP HardDrive FixedDisk.Bmp
+BITMAP CDDrive CD.Bmp
+BITMAP NetworkDrive NetworkDrive.Bmp
+BITMAP RemovableDrive Removeable.Bmp

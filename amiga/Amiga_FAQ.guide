@@ -1,0 +1,3774 @@
+@database "Amiga_FAQ.guide"
+@master "Amiga_FAQ.doc"
+
+
+@node Main "Table of Contents"
+
+    - Table of Contents -
+
+              _#      **MMp     g#00   `N##0"    _agN#0P0N#           _#L
+             g##       jN##    j##F     J##    _dN0"      "          g##L
+           _#]##      _0 ##L  jN##F     ###   g#0"                 _03##L
+          gE_j##      #  0## jF ##F    j##F  j##     ______       gE_j##L
+        _0"""N##     d"  J##L0  ##F    0##   0##     "9##F"     _0"""5##L
+      _gF    ]##    jF    ##0   ##F    ##F   `##k     d##     _gF    j##L
+    _g#_    _j##L__g#__   ]N  _j##L_ _d##L_   `#Nh___g#N'   _g#_    _j##L_
+   `""""    """""'""""'    "  """""" """"""      """""""   `""""    """"""
+                   Amiga Frequently Asked Questions List
+                            ©1993 David Tiberio
+
+    @{" Introduction     " link intro }
+    @{" About the Author " link author}
+
+       I.  History of the Amiga
+      II.  Features Only Found on the Amiga
+     III. @{" Features of the Amiga              " link features    }
+      IV. @{" Benchmarks and Speedtests          " link benchmarks  }
+       V. @{" Models and Statistics              " link stats       }
+      VI. @{" Custom Chip Set                    " link chips       }
+     VII. @{" Intuition and the Operating System " link os          }
+    VIII.  Famous Amiga Uses
+      IX. @{" Emulators                          " link emulators   }
+       X. @{" Periodicals and Magazines          " link magazines   }
+      XI. @{" Public Domain Software             " link software    }
+     XII. @{" Graphics Boards                    " link graphics    }
+    XIII. @{" Frequently Asked Questoins         " link faq         }
+     XIV. @{" Amiga Product Guide                " link products    }
+      XV. @{" Compression                        " link compression }
+     XVI.  Computer Networks
+
+    @{" Index " link index}
+
+               ©1993 David Tiberio - Do not distribute for profit.
+
+        All Amiga dealers and sales groups are encouraged to use AmigaFAQ
+    for demonstrations and informative purposes only.
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node notes "NOTES"
+@toc main
+
+    - NOTES -
+
+        This area is for scratch info to be included in future versions
+    of the FAQ. It is also used to verify information or to provide
+    contradictory information.
+
+    +----------------------------------+
+
+        remember to add to REVISION table!
+
+    +----------------------------------+
+
+    - contacts -
+
+        dtiberio@libserv1.ic.sunysb.edu, (SLOW) dtiberio@xamiga.linet.org
+        jamesk@netcom3.netcom.com
+
+        mharwood@bruny.cc.utas.edu.au
+        rkovaliv@alfred.ccs.carleton.ca
+
+    +----------------------------------+
+
+        winstone benchmarks need to be redone sometime soon
+
+    +----------------------------------+
+
+        DELETE THIS:
+
+                - Video Port
+                    - VGA and Multiscan monitor support
+                    - horizontal Scan Rates 15kHz-31kHz
+                    - vertical scan rates 50Hz-72Hz
+
+    +----------------------------------+
+
+    <Aikido> dtib: Chunky displays use one byte per pixel, so all 8-bits of a
+    +pixel (on a 256 color mode) are in the same byte, instead of being in 8
+    +different bytes.
+
+    Pixel1Byte|Pixel2Byte|Pixel3Byte|Pixel4Byte...
+
+    <ScottE> _IF_ the data is near 8 bits deep (or a multiple of 8)
+
+    +----------------------------------+
+
+    4000/040: 3 Z3<->AT, one Z3<->video, 4000T: 2 Z3<->AT, 2 Z3<->video, 2AT, 1 Z3
+
+    +----------------------------------+
+
+        from xterm on IRC:
+        bms D=system GET bms:pub/files to bms:systems/system.files
+              ^^^^^^      change these                ^^^^^^^^^^^^
+
++-----------------------------------------------------------------------------+
+
+
+@node future_proposals "Proposals"
+@toc main
+
+    - Proposals -
+
+        - benchmarks of compression programs
+        - info on using FTP or FTP mail servers
+        - info on motherboard revisions for all amigas
+
+        - including other Amiga FAQ's such as
+            - CD-ROM FAQ (Dan Barrett)
+            - ARexx FAQ (Dan Barrett)
+            - UUCP FAQ (unknown)
+            - Emplant FAQ (Jim Drew)
+            - David Salamon's Golden Gate II compatibility list
+
+        - distributing the FAQ with Fred Fish or possibly disk magazines
+        - distributing via news.lists or something like that
+        - getting CBM to put the FAQ on every Amiga shipped
+
+        - making a monthly update
+
+        - giving up all together and calling it quits (and buy a clone)
+        - shoot whoever made that last comment
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node revision_info "Revision Information"
+@toc main
+
+    - Revision Information -
+
+
+            March 1993 - Amiga FAQ started (due to Mac FAQ I saw)
+                         AmigaGuided from original ASCII FAQ
+            April 1993 - more stuff added
+            April 1993 (about two weeks later) - more stuff added
+
+            April 19th - most of the Amiga model stats finished
+       3049 April 20th - Revision Information added (secretly)
+                         GUI Test benchmarks deleted
+                         Winstone v1.01b benchmark program written
+                         GUI Test benchmarks added
+                         calculated pixels per screenmode
+                         modified Revision Information format
+       3074              added Agnus model numbers and chip ram info
+                         added list of Amiga magazines
+                         added file types
+       3196 April 21st - added game system comparisons
+       3237              added Features of the Amiga section
+       3296              added Workbench 2.1 menu info
+                         added multitasking information
+                         concluded that Winstones has a big bad bug!
+       3378 April 22nd - added multiple screen information
+                         began organizing 'lost' nodes
+       3494 April 23rd - added compression programs/topic
+                         deleted the letter 'r' from line 30
+                         added computer networks topic
+       3513              modified Agnus chip lists, from jamesk
+                         added Retina graphics board
+                         added public domain software list
+                         added Fred Fish info (needs more info)
+       3578              added music program list
+                         wrote cron to auto archive FAQ twice daily
+                         decided to have some fun!
+                         made the notes readable by Amiga Guide
+       3774              added the Future Proposals to the FAQ section
+                         rearranged the RevInfo to make larger comments
+
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node intro "Introduction"
+@toc main
+
+    - Introduction -
+
+        Many of you may be wondering what the Amiga FAQ is and why it has
+    been created. A FAQ is a list of Frequently Asked Questions, compiled
+    and provided on a regular basis to people interested in the subject of
+    the FAQ. In this case, I am attempting to provide as much thorough
+    information as possible for both beginners and expert Amiga users as
+    well as for non-Amiga users. In fact many Amiga users request this file
+    in order to provide it to students, teachers, local dealers, or friends
+    in an attempt to promote the Amiga.
+
+        This file is provided as is, and any typos or factual mistakes are
+    in no way intended or purposeful. I do not gaurantee the full accuracy
+    of every item in this document as many items have been known to exist
+    in numerous circumstances which may cause incompatiblities. I have
+    however checked through the file and verified as much data as possible.
+
+        This file is not intended for distribution by anyone other than
+    myself, and may not be used in any form of publication whether print or
+    disk based, temporary or permanent, without the written permission of
+    me, the author. Any and all freely distributable forms of this document
+    will be clearly labelled both in this Introduction and in the Table of
+    Contents.
+
+        If you are interested in contributing to this, or in receiving
+    any form of distribution for private, commercial, or public purpose,
+    please contact me at one of the addresses provided in the About the
+    Author section in this document.
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node author "About the Author"
+@toc main
+
+    - About the Author -
+
+        Please send additions, bug reports, or comments to me at one of the
+    following addresses. I anxiously am looking forward to hearing from
+    third party developers, programmers, and authors who are willing to
+    contribute.
+
+
+        usenet: dtiberio@libserv1.ic.sunysb.edu
+                amiga_faq@xamiga.linet.org
+
+
+        during school year: David Tiberio
+                            6 Lodge Lane
+                            East Setauket, NY 11733
+                            VOICE: (516) 473-5156
+                              BBS: (516) 473-6351
+
+        during summer:      David Tiberio
+                            100 Meadow River Drive
+                            Liverpool, NY 13090
+
+
+
+        Thanks to the following people for all their continuing help:
+
+            - James Knowlton from IRC.
+
+            - Bjorn Stenberg for the AGA monitor compatibility list.
+
+            - Tomas Arce who says I never get anything done.
+
+            - Whoever did the Macintosh FAQ (which encouraged me to do
+              this one).
+
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node features "Features of the Amiga"
+@toc main
+
+    - Features of the Amiga -
+
+       A. Animation
+
+
+       B. Hardware
+
+           Audio Support
+           Blitter
+           Copper
+           CPU Expansion Slot
+           Custom Chip Set
+           Expansion Slots
+           IBM XT/AT Expansion Slots
+           Video Expansion Slot
+
+
+       C.  Operating System
+
+           AmigaDOS
+           Command Line Interface
+           Devices
+           @{" Multiple Screens " link features.multiple_screens}
+           @{" Multitasking     " link features.multitasking}
+           @{" Shared Libraries " link os.libraries}
+           @{" Workbench        " link features.workbench}
+
+
+       D. Video Support
+
+           Interlaced Video Modes
+           NTSC/PAL Video Ready
+           Record Directly to VCR
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node features.multiple_screens "Multiple Screens"
+@toc features
+
+    - Multiple Screens -
+
+            One area where the Amiga excels above all other platforms is
+        in how screens are manipulated. An Amiga is capable of presenting
+        multiple screens in the same way another computer can open multiple
+        windows. For example, a window has a title bar which allows the
+        window to be dragged horizontally, diagonally, or verticaly. The
+        Amiga adds to this by adding a title bar the the top of the display
+        area, which allows the entire screen to also be dragged vertically,
+        horizontally, or diagonally. In moving a screen, all windows also
+        move with that screen. If a screen is opened behind the front screen,
+        the contents of both screens are shown.
+
+            When dragging a window on most systems, a small rubber-band or
+        outline of the window is drawn. When dragging Amiga screens however,
+        the entire bitmap is dragged. In fact, dragging a screen moves data
+        more smoothly and faster than dragging an individual window.
+
+
+
+        - Screens can have palettes independant of other screens, so a
+          Workbench screen can use one palette of 256 colors while a paint
+          program behind it can have another palette of 256 colors.
+
+        - Screens can have resolutions independant of other screens. It is
+          possible to open the Workbench in 640x400 and open a video titling
+          program in 1280x400.
+
+        - Screens can have screenmodes independant of other screens. It is
+          possible to open one screen in 640x400 interlaced, another in
+          320x200 non-interlaced, another in 1432x478 interlaced overscan,
+          another in 320x512 interlaced PAL in 8 bitplanes, another in
+          a programmable resolution such as 100x100 in 3 bitplanes, etc.
+
+        - Screens can have gadgets. At the moment two gadgets are suported,
+          including the drag bar and the push gadget. The drag bar allows
+          screens to be moved and the push gadget allows the screen to be
+          placed in front of or behind other windows.
+
+        - It is possible to perform graphics operations behind screens. A
+          256 color paint program can open a small palette along the bottom
+          of the screen with a palette of 262,144 colors, and allow you
+          to draw behind the toolbox or clip and paste graphics behind the
+          toolbox. A screen can also render all of its gadgets behind other
+          screens and then push to the front when it is done rendering.
+
+        - Screens can be attached to other screens. When a parent screen is
+          dragged, all children will drag with it. A child screen can be
+          dragged independant of the other screens. When a parent screen is
+          pushed, all children are pushed with it. When a child screen is
+          pushed, it moves independent of the other screens however within
+          the domain of the parent screen, such that the parent screen is
+          always behind all children.
+
+        - Screens can be arranged in any order just as windows.
+
+        - Screens can be animated by pushing a newly drawn screen to the
+          front and drawing the next frame in a screen behind all other
+          screens. Then when the back screen is rendered, it may be pushed
+          to the front.
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node features.multitasking "Multitasking"
+@toc features
+
+    - Multitasking -
+
+            The Amiga has made multitasking an art. This started in 1985,
+        with the release of the first Amiga and the first AmigaOS. Before
+        the Macintosh and before the IBM clones, the Amiga had pre-emptive
+        multitasking. Pre-emptive multitasking allows all programs to
+        multitask without the programmer worrying about special commands
+        or special routines to handle multitasking.
+
+
+            - Pre-emptive Multitasking OS's -
+
+        PRE-EMPTIVE    MACHINES   MIN_RAM SUG_RAM   MIN_DISK SUG_DISK
+        AmigaOS       ALL AMIGAS   .5 MB    2 MB      2 MB      5 MB
+        WindowsNT        486       16 MB   25 MB     CDROM     CDROM
+        OS/2             486        8 MB   16 MB     15 MB     30 MB
+        UNIX
+
+            - Co-operative Multitasking OS's -
+
+        CO-OPERATIVE   MACHINES   MIN_RAM SUG_RAM   MIN_DISK SUG_DISK
+        Windows 3.1      486        2 MB    4 MB     10 MB
+        Multifinder    ALL MACS     4 MB    8 MB
+
+            - Singletasking OS's -
+
+        SINGLETASKING  MACHINES   MIN_RAM SUG_RAM   MIN_DISK SUG_DISK
+        Finder         ALL MACS     2 MB    4 MB
+
+
+
+    - Multiprocessing -
+
+            The Amiga custom chip set offers something found on no other
+        home computer. By dividing the tasks of graphics, audio, and
+        memory management among various chips, the Amiga is capable of
+        fast animation and sound without influencing other processes. For
+        example, it is possible on the Amiga to run a 3D raytracer, using
+        99% of the CPU time. However, the Paula chip is capable of playing
+        music or performing serial transfers  at full speed while CPU is
+        being used by other processes. On any other home computer, it is
+        not possible to do this. For example, on the Macintosh Quicktime
+        format, a slower processor will drop audio bytes or animation frames
+        to compensate. On the Amiga, the audio and graphics are independent
+        and will only negligibly affect each other. Since all Amigas contain
+        the same exact audio chip, there is no need to ever drop sound bytes
+        from Amiga movie animations.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node features.workbench "Workbench 2.1"
+@toc features
+
+    - Workbench 2.1 -
+
+        - Workbench
+
+           Backdrop             select Workbench as a window or a screen
+           Execute Command...   run an AmigaDOS, CLI, or Shell command
+           Redraw All
+           Update All
+           Last Message         report last status/error message
+           About...             version information for Workbench
+           Quit...              exit Workbench
+
+
+        - Window
+
+           New Drawer           create a new directory/drawer
+           Open Parent
+           Close
+           Update
+           Select Contents      select all contents of window
+           Cleanup              sort all files and arrange them nicely
+           Snapshot             lock window in its current position
+           Show
+
+
+        - Icons
+
+           Open
+           Copy
+           Rename...
+           Information...       edit/display information on file
+           Snapshot             lock icon in place
+           Unsnapshot
+           Leave Out            leave icon on Workbench
+           Put Away             return icon to original directory
+           View By              edit file display mode
+           Delete...            delete selected icons
+           Format Disk...       lauch disk formatting program
+           Empty Trash          delete all files in Trashcan
+
+
+        - Tools
+
+           ResetWB              reset Workbench
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node os "Intuition and the Operating System"
+@toc main
+
+    - Intuition and the Operating System -
+
+    ARexx
+    @{" Commodities     " link os.commodities}
+    @{" Devices         " link os.devices}
+    @{" File Types      " link os.file_types}
+    @{" Handlers        " link os.handlers}
+    @{" Libraries       " link os.libraries}
+    @{" Monitors        " link os.monitors}
+    @{" Preferences     " link os.prefs}
+    @{" Startup Scripts " link os.scripts}
+    @{" Workbench       " link features.workbench}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.commodities "Commodities"
+@toc os
+
+    - Commodities -
+
+        ARQ             adds animated requesters to Intuition
+        AutoPoint       automatically selects windows under mouse pointer
+        ClickToFront    double click a window to pop to front
+        CrossDOS        MS-DOS floppy compatible interface
+        Exchange        Commodities control interface
+        FKey            function key definitions
+        HidePointer     mouse pointer blanker
+        IHelp
+        MouseBlanker    mouse pointer blanker
+        MouseOff        mouse pointer blanker
+        NewShell
+        NoCapsLock      disables CapsLock key
+        Spliner         screen blanker that draws spline patterns
+        ToolsX          Tool menu editor
+        UnixDirsII      support for UNIX style cd .. command
+        WindowShuffle
+        XFH             run-time file compression
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.file_types "File Types"
+@toc os
+
+    - File Types -
+
+        8SVX    - IFF audio
+        ACBM    -
+        ANIM    - IFF animation
+        BMHD    - bitmap header
+        CAT     - IFF catalog contains 8SVX, ANIM, ILBM, etc
+        CMAP    - colormap
+        FTXT    -
+        GIF     -
+        IFF     - interchange file format
+        ILBM    - IFF interleaved bitmap
+        JFIF    - JPEG compressed 24BIT picture
+        LH5     - lharc or lha compressed archive
+        LWOB    - Lightwave 3D object
+        PICT    -
+        TDDD    - Imagine 3D object
+        TIFF    -
+        XPKF    - XPK compressed file
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.libraries "Shared Libraries"
+@toc os
+
+    - Shared Libraries -
+
+        The Amiga Kickstart uses a system of shared run-time libraries
+    to conserve on memory usage. This chart shows which libraries are
+    available and the most current versions I have found.
+
+
+                         VERSION
+
+        amigaguide        34.4              hypertext AmigaGuide documents
+        arp               39.1              support for ARP DOS commands
+        asdg-low-mem
+        asl               38.3              Intuition system requesters
+        bullet            38.5              outline scalable fonts
+        commodities       38.1              commodity access library
+        conhandler        35.13
+        ctswlib            3.1
+        dctv               1.31             DCTV 24 BIT graphics card
+        din
+        diskcode
+        diskfont          38.8
+        dopus             17.2              Directory Opus
+        dos                                 Intuition disk commands
+        duplexfont         1.0
+        emplant                             EMPLANT Macintosh emulator
+        explode                             Imploder run-time compression
+        fifo              37.4
+        future             1.0              Future Sound audio samples
+        gadget            38.6              Intuition gadget control
+        gdarexxsupport     1.0
+        golddisk
+        hisoftbasic                         HiSoft BASIC programming language
+        icon              37.11             Intuition icon control
+        iff               22.1
+        iffparse          37.2
+        info
+        inovamusic         2.8              Directory Opus music modules
+        isup               1.15
+        jam                                 EMPLANT Macintosh emulator
+        kd_freq                             system requesters
+        locale            38.27             Intuition verbal languages
+        mathieeedoubbas   38.1
+        mathieeedoubtrans 37.1
+        mathieeesingtrans 37.1
+        mathtrans         37.1
+        medplayer          1.0              MED music modules
+        metaxpr            3.3
+        midi                                MIDI
+        owndevunit         2.1              lock devices
+        pic               16.1              Swicther IFF library
+        powerpacker       35.344            PowerPacker run-time compression
+        ppipc
+        req                2.5
+        reqtools          38.81             Nico Francois' system requesters
+        review             1.14
+        rexxapp
+        rexxarplib         1.0
+        rexxhost
+        rexxmath1.3        1.31
+        rexxmathlib        1.2
+        rexxmathsbii       1.0
+        rexxsupport       34.9
+        rexxsyslib        36.23
+        screenshare        1.46
+        scsidirect          .88
+        skytec             1.2
+        stopus             1.1              Directory Opus
+        streplay
+        sybil                               EMPLANT Macintosh emulator
+        tdisk
+        toolmanager        2.0              ToolManager file organizer
+        translater        37.1
+        version           38.28             Intuition version information
+        virtualpage
+        xemamiga                            terminal emulation tables
+        xemascii                            terminal emulation tables
+        xemibm                              terminal emulation tables
+        xpkmaster          2.4              XPK run-time compression
+        xprascii           1.0              XPR serial transfer protocol
+        xprbimodem         1.02             XPR serial transfer protocol
+        xprbplus           1.0              XPR serial transfer protocol
+        xprgmodem          1.9              XPR serial transfer protocol
+        xprjmodem           .1              XPR serial transfer protocol
+        xprkermit          1.112            XPR serial transfer protocol
+        xprquickb                           XPR serial transfer protocol
+        xprvms              .8              XPR serial transfer protocol
+        xprxmodem         34.3              XPR serial transfer protocol
+        xprymodem          2.2              XPR serial transfer protocol
+        xprzmodem          2.1              XPR serial transfer protocol
+        xprzmodem.030                       XPR serial transfer protocol
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.devices "Devices"
+@toc os
+
+    - Devices -
+
+        audio.device
+        clipboard.device
+        console.device
+        gameport.device
+        input.device
+        keyboard.device
+        narrator.device
+        parallel.device
+        printer.device
+        serial.device
+        timer.device
+        trackdisk.device
+
+        AUX
+        CON
+        DF0         floppy drive
+        DH0         hard drive
+        ECOM        Excelsior! BBS external doors
+        NULL        empty output
+        PAR         parallel port
+        RAD         recoverable RAM disk
+        RAM         dynamic RAM disk
+        RAW
+        PC0         MS-DOS compatible floppy drive
+        PIPE
+        PRT
+        SER         serial port
+        SPEAK       speech synthesis
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.handlers "Handlers"
+@toc os
+
+    - Handlers -
+
+        aux-handler
+        CrossDOSFileSystem      MS-DOS file system
+        dpipe-handler
+        FastFileSystem          AmigaDOS file system
+        fifo-handler
+        MessyFileSystem         MS-DOS file system
+        netdnet-handler         DNET serial port networking
+        nfs-handler             NFS networking
+        null-handler            NULL output
+        pipe-handler
+        port-handler
+        powersnap-handler       PowerSnap clip driver
+        queue-handler
+        speak-handler           Narrator speech driver
+        wbstart-handler         WBStartup drawer driver
+        XFH-handler             XPK run-time compression driver
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.monitors "Monitors"
+@toc os
+
+    - Monitors -
+
+        Euro36      73Hz 15.69kHz
+        Euro72      70Hz 31.43kHz
+        Multiscan   60Hz 31.44kHz
+        NTSC        60Hz 15.72kHz      genlockable
+        PAL         50Hz 15.60kHz      genlockable
+        Super72     72Hz 24.62kHz
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.prefs "Preferences"
+@toc os
+
+    - Preferences -
+
+        Busy Pointer        edit busy pointer; requires NickPrefs
+        Floppy              floppy drive speed, disable click; NickPrefs
+        Font                select Intuition fonts
+        IControl            Intuition settings
+        Input               edit input device settings
+        Locale              foreign language database
+        Overscan            alter screen display borders
+        Palette             edit screen display colors
+        Pointer             edit mouse pointer image
+        Printer
+        PrinterGFX
+        PrinterPS
+        SASC_Options        alter SAS C compiler options
+        ScreenMode          alter Workbench screenmode
+        Serial              edit serial port settings
+        Sound               edit audio settings
+        Time                calender
+        ToolManager         Tools menu, file docks, hotkeys
+        ToolsXConfig        Tools menu
+        WBPattern           Workbench backdrop picture
+        WBPicture           Workbench pattern, window pattern
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node os.scripts "Scripts"
+@toc os
+
+    - Scripts -
+
+        Shell-startup       invoked whenever a shell is opened
+        startup-sequence    used for booting the system
+        user-startup        customizable script for booting the system
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node benchmarks "Benchmarks and Speedtests"
+@toc main
+
+    - Benchmarks and Speedtests -
+
+    @{" GUI Test              " link bench.gui}
+    @{" Animation Frame Rates " link bench.fps}
+    @{" Diskspeed Tests       " link bench.disk}
+    @{" System Performance    " link bench.system}
+    @{" Motorola CPU          " link bench.cpu}
+    @{" RAM Expansion         " link bench.ram}
+    @{" Amiga Models Compared " link bench.models}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node bench.models "Amiga Models Compared"
+@toc benchmarks
+
+    - Amiga Models Compared -
+
+    - Sieve -
+
+        A500   7.16MHz        1.00 *
+        A2000  7.16MHz        1.04 *
+        A3000 16.00MHz        4.50 *********
+        A3000 16.00MHz FPU    6.13 ************
+        A3000 25.00MHz        6.87 *************
+        A3000 25.00MHz FPU    9.28 ******************
+        A4000 25.00MHz       10.63 *********************
+        A4000 25.00MHz FPU   11.88 ***********************
+
+
+    - Sort -
+
+        A500   7.16MHz        1.00 **
+        A2000  7.16MHz        1.03 **
+        A3000 16.00MHz        4.82 *********
+        A3000 16.00MHz FPU    4.82 *********
+        A3000 25.00MHz        7.13 **************
+        A3000 25.00MHz FPU    7.13 **************
+        A4000 25.00MHz       19.81 ****************************************
+        A4000 25.00MHz FPU   19.67 ***************************************
+
+
+    - Matrix -
+
+        A500   7.16MHz        1.00 **
+        A2000  7.16MHz        1.02 **
+        A3000 16.00MHz        4.32 *********
+        A3000 16.00MHz FPU    6.76 *************
+        A3000 25.00MHz        6.43 ************
+        A3000 25.00MHz FPU   10.14 ********************
+        A4000 25.00MHz       12.25 ************************
+        A4000 25.00MHz FPU   16.22 ********************************
+
+
+    - IMath -
+
+        A500   7.16MHz        1.00 *
+        A2000  7.16MHz        1.01 *
+        A3000 16.00MHz        4.32 ****
+        A3000 16.00MHz FPU   11.88 ************
+        A3000 25.00MHz        6.75 *******
+        A3000 25.00MHz FPU   18.29 ******************
+        A4000 25.00MHz       17.26 *****************
+        A4000 25.00MHz FPU   41.66 ******************************************
+
+
+    - MemTest -
+
+        A500   7.16MHz        1.00 **
+        A2000  7.16MHz        1.03 **
+        A3000 16.00MHz        4.41 ********
+        A3000 16.00MHz FPU    4.41 ********
+        A3000 25.00MHz        6.72 *************
+        A3000 25.00MHz FPU    6.70 *************
+        A4000 25.00MHz       11.54 ***********************
+        A4000 25.00MHz FPU   11.54 ***********************
+
+
+    - TGTest -
+
+        A500   7.16MHz        1.00 **********
+        A2000  7.16MHz        1.25 ************
+        A3000 16.00MHz        1.98 ********************
+        A3000 16.00MHz FPU    1.98 ********************
+        A3000 25.00MHz        1.62 ****************
+        A3000 25.00MHz FPU    1.62 ****************
+        A4000 25.00MHz        2.93 *****************************
+        A4000 25.00MHz FPU    2.93 *****************************
+
+
+            A500        - 1 megabyte Chip RAM
+                        - MC68000
+            A2000       - 1 megabyte Chip RAM
+                          8 megabytes 16 BIT Fast RAM
+                          MC68000
+            A3000-16    - 2 megabytes Chip RAM
+                          8 megabytes 32 BIT Fast RAM
+                          MC68030, MC68881
+            A3000-25    - 2 megabytes Chip RAM
+                          8 megabytes 32 BIT Fast RAM
+                          MC68030, MC68882
+            A4000-25    - 2 megabytes Chip RAM
+                          4 megabytes Fast RAM
+                          MC68040
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node bench.gui "GUI Test"
+@toc benchmarks
+
+    - GUI Test -
+
+                             WINSTONES
+            @{" ECS " link chips.ecs} 320x200x1     4033
+            @{" ECS " link chips.ecs} 320x200x2     5016
+            @{" ECS " link chips.ecs} 320x200x3     6300
+            @{" ECS " link chips.ecs} 320x200x4     8033
+
+            @{" ECS " link chips.ecs} 320x400x1     4066
+            @{" ECS " link chips.ecs} 320x400x2     5017
+            @{" ECS " link chips.ecs} 320x400x3     6334
+            @{" ECS " link chips.ecs} 320x400x4     7950
+
+            @{" ECS " link chips.ecs} 640x200x1     4117
+            @{" ECS " link chips.ecs} 640x200x2     5584
+            @{" ECS " link chips.ecs} 640x200x3     8350
+            @{" ECS " link chips.ecs} 640x200x4    12851
+
+            @{" ECS " link chips.ecs} 640x400x1     4117
+            @{" ECS " link chips.ecs} 640x400x2     5600
+            @{" ECS " link chips.ecs} 640x400x3     8384
+            @{" ECS " link chips.ecs} 640x400x4    12934
+
+        WINSTONES measered using 40 320x200 windows. Lower winstone values
+    have faster window drawing.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node bench.fps "Animation Frame Rates"
+@toc benchmarks
+
+    - Animation Frame Rates -
+
+        Following are sample speed tests of various animations. Two tables are
+    provided of the same data.
+
+    320x200x8,      @{" HAM8 " link screenmodes.ham8},  30 frames, plays  8 times in 5 seconds,  48fps
+    192x288x6,      @{" HAM6 " link screenmodes.ham6},  79 frames, plays  5 times in 5 seconds,  79fps
+    640x400x3,   8 color, 152 frames, plays  2 times in 5 seconds,  60fps
+    352x240x5,  32 color,  91 frames, plays  4 times in 5 seconds,  72fps
+    352x440x6,      @{" HAM6 " link screenmodes.ham6},  72 frames, plays  4 times in 5 seconds,  56fps
+    320x200x6,      @{" HAM6 " link screenmodes.ham6},  75 frames, plays  8 times in 5 seconds, 120fps
+    320x200x8,      @{" HAM8 " link screenmodes.ham8},  58 frames, plays  4 times in 5 seconds,  46fps
+    352x220x6,      @{" HAM6 " link screenmodes.ham6},  42 frames, plays 10 times in 5 seconds,  84fps
+    320x200x4,  16 color,  94 frames, plays  6 times in 5 seconds, 112fps
+
+    320x200     262,144 colors      30 frames      48fps
+    320x200     262,144 colors      58 frames      46fps
+    352x440        4096 colors      72 frames      56fps
+    352x220        4096 colors      42 frames      84fps
+    320x200        4096 colors      75 frames     120fps
+    192x288        4096 colors      79 frames      79fps
+    352x240          32 colors      91 frames      72fps
+    320x200          16 colors      94 frames     112fps
+    640x400           8 colors     152 frames      60fps
+
+    All were displayed on a Super72 SuperHires Laced screen, which sucks as
+    much bandwidth as possible.
+
+                                                Skip Sauls
+                                                skip@tacky.cs.olemiss.edu
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node stats "Amiga Models and Statistics"
+@toc main
+
+    - Amiga Models and Statistics -
+
+    @{" Custom Chip Set             " link stats.custom_chips}
+    @{" Screenmodes                 " link stats.screenmodes}
+    @{" Colormodes                  " link stats.colormodes}
+    @{" Expansion                   " link stats.expansion}
+    @{" Processors and Custom Chips " link stats.processors}
+    @{" Monitors                    " link stats.monitors}
+    @{" Storage Devices             " link stats.storage}
+    @{" Game Systems                " link stats.game_systems}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.screenmodes
+@toc stats
+
+    - Screenmodes -
+
+          RESOLUTION     PIXELS    RATIO
+
+        320x200 1 NTSC    64,000    1.0
+        320x256 1 PAL     81,920    1.28
+        400x300 1 NTSC   120,000    1.875
+        320x400 1 NTSC   128,000    2.0
+        640x200 1 NTSC   128,000    2.0
+        320x512 1 PAL    163,840    2.56
+        640x256 1 PAL    163,840    2.56
+        400x600 1 NTSC   240,000    3.75
+        800x300 1 NTSC   240,000    3.75
+        640x400 1 NTSC   256,000    4.0
+       1280x200 1 NTSC   256,000    4.0
+        640x480 1 NTSC   307,200    4.8
+        640x512 1 PAL    327,680    5.12
+       1280x256 1 PAL    327,680    5.12
+        800x600 1 NTSC   480,000    7.5
+        640x800 1 NTSC   512,000    8.0
+       1280x400 1 NTSC   512,000    8.0
+        640x960 1 NTSC   614,400    9.6
+       1280x512 1 PAL    655,360   10.24
+       1000x800 1 NTSC   800,000   12.5
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ocs "Original Chip Set"
+@toc chips.ocs
+
+    - OCS Screenmodes -
+
+            Maximum Size            16368 x 16368
+            Monitor Types           @{" RGB " link video.rgb}, VGA, SVGA, Multiscan, @{" Composite " link video.composite}
+            Display Formats         NTSC, PAL
+            Horizontal Scan Rates   15kHz - 31kHz
+            Vertical Scan Rates     50Hz - 72Hz
+
+            NTSC:Low Res                    320x200 6   60Hz
+            NTSC:Low Res Laced              320x400 6   60Hz
+            NTSC:Low Res                            6
+            NTSC:Low Res Laced                      6
+            NTSC:High Res                   640x200 4   60Hz, 15.72kHz
+            NTSC:High Res Laced             640x400 4   60Hz, 15.72kHz
+            NTSC:High Res                   724x241 4   60Hz, 15.72kHz
+            NTSC:High Res Laced             724x482 4   60Hz, 15.72kHz
+            PAL:Low Res                             6
+            PAL:Low Res Laced                       6
+            PAL:High Res                    640x256 4   50Hz, 15.60kHz
+            PAL:High Res Laced              640x512 4   50Hz, 15.60kHz
+
+            [overscan modes wanted also]
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ecs "ECS Screenmodes"
+@toc chips.ecs
+
+    - ECS Screenmodes -
+
+            Maximum Size            16368 x 16368
+            Monitor Types           @{" RGB " link video.rgb}, VGA, SVGA, Multiscan, @{" Composite " link video.composite}
+            Display Formats         NTSC, PAL
+            Horizontal Scan Rates   15kHz - 31kHz
+            Vertical Scan Rates     50Hz - 72Hz
+
+            A2024_10Hz                     1000x800 2   60Hz, 15.72kHz
+            A2024_15Hz                     1000x800 2   60Hz, 15.72kHz
+            EURO:36Hz Low Res
+            EURO:36Hz Low Res Laced
+            EURO:36Hz High Res              640x200     73Hz, 15.69kHz ECS
+            EURO:36Hz High Res Laced        640x400     73Hz, 15.69kHz ECS
+            EURO:36Hz Super-High Res       1280x200     73Hz, 15.69kHz ECS
+            EURO:36Hz Super-High Res Laced 1280x400     73Hz, 15.69kHz ECS
+            EURO:72Hz Productivity          640x400     70Hz, 31.43kHz ECS
+            EURO:72Hz Productivity Laced    640x800     70Hz, 31.43kHz ECS
+            MULTISCAN:Extra-Low Res
+            MULTISCAN:Extra-Low Res Laced
+            MULTISCAN:Low Res
+            MULTISCAN:Low Res Laced
+            MULTISCAN:Productivity          640x480 2   60Hz, 31.44kHz ECS
+            MULTISCAN:Productivity Laced    640x960 2   60Hz, 31.44kHz ECS
+            NTSC:Low Res                    320x200 6   60Hz
+            NTSC:Low Res Laced              320x400 6   60Hz
+            NTSC:Low Res                            6
+            NTSC:Low Res Laced                      6
+            NTSC:High Res                   640x200 4   60Hz, 15.72kHz
+            NTSC:High Res Laced             640x400 4   60Hz, 15.72kHz
+            NTSC:High Res                   724x241 4   60Hz, 15.72kHz
+            NTSC:High Res Laced             724x482 4   60Hz, 15.72kHz
+            NTSC:Super-High Res            1280x200 2   60Hz, 15.72kHz ECS
+            NTSC:Super-High Res Laced      1280x400 2   60Hz, 15.72kHz ECS
+            NTSC:Super-High Res            1440x241 2   60Hz, 15.72kHz ECS
+            NTSC:Super-High Res Laced      1440x482 2   60Hz, 15.72kHz ECS
+            PAL:Low Res                             6
+            PAL:Low Res Laced                       6
+            PAL:High Res                    640x256 4   50Hz, 15.60kHz
+            PAL:High Res Laced              640x512 4   50Hz, 15.60kHz
+            PAL:Super-High Res             1280x256 2   50Hz, 15.60kHz ECS
+            PAL:Super-High Res Laced       1280x512 2   50Hz, 15.60kHz ECS
+            PAL:Super-High Res             1440x261 2   50Hz, 15.60kHz ECS
+            PAL:Super-High Res Laced       1440x522 2   50Hz, 15.60kHz ECS
+            SUPER72:Low Res
+            SUPER72:Low Res Laced
+            SUPER72:High Res                400x300     72Hz, 24.62kHz ECS
+            SUPER72:High Res Laced          400x600     72Hz, 24.62kHz ECS
+            SUPER72:Super-High Res          800x300     72Hz, 24.62kHz ECS
+            SUPER72:Super-High Res Laced    800x600     72Hz, 24.62kHz ECS
+
+            [overscan modes wanted also]
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.aga "Advanced Graphics Architecture"
+@toc chips.aga
+
+    - AAA Screenmodes -
+
+            Maximum Size            16368 x 16368
+            Monitor Types           @{" RGB " link video.rgb}, VGA, SVGA, Multiscan, @{" Composite " link video.composite}
+            Display Formats         NTSC, PAL
+            Horizontal Scan Rates   15kHz - 31kHz
+            Vertical Scan Rates     50Hz - 72Hz
+
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node colormodes.ocs "OCS - Original Chip Set"
+@toc chips.ocs
+
+    - OCS Colormodes -
+
+              Palette               4,096
+              Maximum Colors        4,096
+
+                Low Res             2 4 8 16 32
+                Low Res @{" EHB6 " link screenmodes.ehb6}                     64
+                Low Res @{" HAM6 " link screenmodes.ham6}                               4096
+                High Res            2 4 8 16
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node colormodes.ecs "ECS - Enhanced Chip Set"
+@toc chips.ecs
+
+    - ECS Colormodes -
+
+              Palette               4,096
+              Maximum Colors        4,096
+
+                Extra-Low Res
+                Low Res             2 4 8 16 32
+                Low Res @{" EHB6 " link screenmodes.ehb6}                     64
+                Low Res @{" HAM6 " link screenmodes.ham6}                               4096
+                High Res            2 4 8 16
+                Super-High Res      2 4
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node colormodes.aga "AGA - Advanced Graphics Architecture"
+@toc chips.aga
+
+    - AGA Colormodes -
+
+              Palette               16,777,216
+              Maximum Colors           262,144
+
+                Extra-Low Res       2 4 8 16 32 64 128 256
+                Low Res             2 4 8 16 32 64 128 256
+                Low Res @{" EHB6 " link screenmodes.ehb6}                  64
+                Low Res @{" HAM6 " link screenmodes.ham6}                               4096
+                Low Res @{" HAM8 " link screenmodes.ham8}                                    262,144
+                High Res            2 4 8 16 32 64 128 256
+                High Res @{" HAM6 " link screenmodes.ham6}                              4096
+                High Res @{" HAM8 " link screenmodes.ham8}                                   262,144
+                Super-High Res      2 4 8 16 32 64 128 256
+                Super-High Res @{" HAM6 " link screenmodes.ham6}                        4096
+                Super-High Res @{" HAM8 " link screenmodes.ham8}                             262,144
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ehb6 "EHB6"
+@toc index
+
+    - EHB6 -
+
+        EHB6 is the original Extended Half Brite mode found on most Amigas.
+    The original A1000 did not include support for EHB6 mode, however, later
+    versions of the A1000 did include support for the EHB6 mode. All machines
+    since then support EHB6. You can test your EHB6 mode by opening an EHB6
+    screen and viewing the palette. If the second set of 32 colors is
+    identicle to the first 32, then you do not have EHB6.
+        EHB6 allows the Amiga to double the number of colors allowed by
+    using half the intensity of every available color. The original EHB6
+    mode supports 64 colors, of which 32 are base colors and 32 are half
+    the intensity of the first 32 colors. There is an AGA version of the
+    EHB6 mode.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ehb8 "EHB8"
+@toc index
+
+    - EHB8 -
+
+        EHB8 is the AGA version of the EHB6 mode. This allows the Amiga
+    to double the number of colors by using half the intensity of every
+    available color. This mode supports 256 colors, of which 128 colors
+    are half the intensity of the first 128 colors.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ham6 "HAM6"
+@toc index
+
+    - HAM6 -
+
+        HAM6 is the original Hold and Modify mode supported by the OCS, ECS,
+    and AGA Chip Sets. This uses 6 BITs per plane to simulate 12 BITs using
+    internal hardware compression. HAM6 uses 4 BITs for base colors and 2
+    BITs to control and modify the base colors to produce more colors. By
+    using only base colors, HAM6 has a nice clear display, however taking
+    advantage of the 12 BIT palette causes fringing of the display. This
+    means that some pixels will affect the color of the pixels next to them.
+    A good HAM6 routine will show very little fringing, while a poor HAM6
+    routine will show excessive fringing.
+        HAM6 is supported by OCS and ECS only in low resolution. However,
+    AGA supports HAM6 in all resolutions. HAM6 is the slowest graphics mode
+    on OCS and ECS machines and supports 4096 colors from a palette of 4096
+    colors.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.ham8 "HAM8"
+@toc index
+
+    - HAM8 -
+
+        HAM8 is similar to HAM6 yet supports more colors and more bitplanes.
+    HAM8 is only supported by the AGA Chip Set. This uses 8 BITs per plane
+    to simulate 18 BITs using internal hardware compression. HAM8 uses 6 BITs
+    for base colors and 2 BITs to control and modify the base colors. Although
+    this causes fringing, this is mostly unnoticable especially when using
+    higher resolutions. Some pixels may affect the pixels next to them.
+        HAM8 is supported by the AGA Chip Set in any resolution and supports
+    262,144 colors from a palette of 16,777,216 colors. HAM8 is the slowest
+    graphics mode on AGA machines, yet produces very astonishing pictures
+    that closely resemble 24 BITs. It is possibly to simulate and display
+    24 BIT pictures with no loss of data using software and hardware tricks.
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node stats.expansion "Expansion"
+@toc stats
+
+    - Expansion -
+
+            Models Available
+
+                @{" OCS " link chips.ocs}     A500, A1000, A1500, A2000, A2500
+                @{" ECS " link chips.ecs}     A500+, A600, A1500+, A3000, A3000T/030, A3000T/040
+                @{" AGA " link chips.aga}     A1200, A4000/030, A4000/040
+
+
+                            A500  A600 A1000  1200 A2000 A3000 A4000  CDTV
+
+        List Price          $299  $299  N/A   $599  $699 $1399 $2499  $499
+
+        Currently Available   x     x           x     x     x     x     x
+        Supports @{" OCS " link chips.ocs}        x     x     x     x     x     x     x      x
+        Supports @{" ECS " link chips.ecs}        x     x     x     x     x     x     x      x
+        Supports @{" AGA " link chips.aga}                          x                 x
+
+
+        Exterior Bus          x           x
+        Trapdoor              x     x           x
+        PCMCIA                      x           x                        x
+        Zorro II    16 bit                            x     x     x
+        Zorro III   32 bit                                  x     x
+        PCAT        16 bit                            x     x     x
+        Video       24 bit                            x     x     x
+        CPU      16/32 bit                            x     x     x
+
+        External SCSI                                       x
+        External Floppy       x     x     x     x     x     x     x     x
+        External Serial       x     x     x     x     x     x     x     x
+        External Parallel     x     x     x     x     x     x     x     x
+        External VGA/SVGA                       x           x     x
+        External @{" RGB " link video.rgb}        x     x     x           x     x
+        External @{" Composite " link video.composite}  x     x     x     x
+
+        Internal SCSI                                       x
+        Internal IDE                x           x                 x
+        Internal Floppy       x     x     x     x     x     x     x
+        Internal CD-ROM                                                 x
+
+        Socketed CPU          x           x           x                 x
+        Socketed Custom Set   x           x           x     x           x
+        Socketed ROM          x     x           x     x     x     x     x
+
+        CPU Used              00    00    00    20    0  30/40 30/40    00
+        020 Available?        Y           Y     Y     Y                 Y
+        030 Available?        Y     Y     Y     Y     Y     Y     Y     Y
+        040 Available?        Y           Y           Y     Y     Y     Y
+
+        ROM Version (BASE)  1.3   2.1   1.3   3.0   1.3   2.0   3.0   1.3
+        ROM Version (MAX)   2.1   2.1   1.3   3.0   2.1   2.1   3.0   1.3
+
+        Motherboard RAM       1     1     1     2     1    18    18     1
+        Expansion Slot RAM    8     8          10     8  1GIG  1GIG     8
+
+            NOTE: RAM listed is that which is directly supported by the
+                  operating system. It is possible to add RAM above these
+                  limits using third party hardware.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.custom_chips "Custom Chip Set"
+@toc stats
+
+    - Custom Chip Set -
+
+                The Amiga custom chips come in three versions. The @{" OCS " link chips.ocs}
+            was used primarily from 1985 to 1992. @{" OCS " link chips.ocs} is known simply
+            as the Old Chip Set and has not been given any public official
+            definition by CBM. However, in 1989 CBM released the @{" ECS " link chips.ecs}
+            Extended Chip Set. This is still in production today, and
+            offers more scree resolutions and the same number of bitplanes
+            as used previously. In 1992 the @{" AGA " link chips.aga} Advanced Graphics
+            Architecture was released and introduced numerous new screenmodes
+            (compatible with @{" ECS " link chips.ecs}) and a large number of new colormodes.
+            The @{" AGA " link chips.aga} chip set is often referred to as the AA chip set in
+            the older literature.
+                Following is a complete listing of every Amiga and which chip
+            set it was shipped with, along with dates whenever possible. The
+            list includes the model number, chip set, rom version, year
+            introduced, rom storage format, and maximum ram accessible by the
+            custom chips (similar to video ram).
+
+                @{" A500       " link products.a500      }   - @{" OCS " link chips.ocs}   @{" KS1.2  " link null} 1987    ROM     512k
+                @{" A500       " link products.a500      }   - @{" OCS " link chips.ocs}   @{" KS1.3  " link null}         ROM     512k
+                @{" A500+      " link products.a500      }   - @{" ECS " link chips.ecs}   @{" KS1.3  " link null}         ROM    1024k
+                @{" A600       " link products.a600      }   - @{" ECS " link chips.ecs}   @{" KS2.05 " link null} 1992    ROM    1024k
+                @{" A1000      " link products.a1000     }   - @{" OCS " link chips.ocs}   @{" KS1.0  " link null} 1985    DISK    256k
+                @{" A1200      " link products.a1200     }   - @{" AGA " link chips.aga}   @{" KS3.0  " link null} 1992    ROM    2048k
+                @{" A1500      " link products.a1500     }   - @{" OCS " link chips.ocs}   @{" KS1.3  " link null}         ROM    1024k
+                @{" A1500+     " link products.a1500     }   - @{" ECS " link chips.ecs}   @{" KS2.04 " link null}         ROM    1024k
+                @{" A2000      " link products.a2000     }   - @{" OCS " link chips.ocs}   @{" KS1.2  " link null} 1987    ROM    1024k
+                @{" A2000      " link products.a2000     }   - @{" OCS " link chips.ocs}   @{" KS1.3  " link null}         ROM    1024k
+                @{" A2500      " link products.a2500     }   - @{" OCS " link chips.ocs}   @{" KS1.3  " link null}         ROM    1024k
+                @{" A3000      " link products.a3000     }   - @{" ECS " link chips.ecs}   @{" KS1.3  " link null}         DISK
+                                         @{" KS1.4  " link null}         ROM
+                                         @{" KS2.04 " link null} 1989    DISK   2048k
+                @{" A3000      " link products.a3000     }   - @{" ECS " link chips.ecs}   @{" KS2.04 " link null}         ROM    2048k
+                @{" A3000T/030 " link products.a3000t.030}   - @{" ECS " link chips.ecs}   @{" KS2.04 " link null} 1991    ROM    2048k
+                @{" A3000T/040 " link products.a3000t.040}   - @{" ECS " link chips.ecs}   @{" KS2.04 " link null} 1991    ROM    2048k
+                @{" A3000UX    " link products.a3000ux   }   - @{" ECS " link chips.ecs}     UNIX                  2048k
+                @{" A4000/030  " link products.a4000.030 }   - @{" AGA " link chips.aga}   @{" KS3.0  " link null} 1992    ROM    2048k
+                @{" A4000/040  " link products.a4000.040 }   - @{" AGA " link chips.aga}   @{" KS3.0  " link null} 1992    ROM    2048k
+                @{" A4000T     " link products.a4000t    }   - @{" AGA " link chips.aga}   @{" KS3.0  " link null} 1992    ROM    2048k
+
+                ROMs stored on disk offer some disadvantages and advantages.
+            First, using the computer requires an additional amount of RAM
+            equal to the size of the ROM, which is often 512k. However, access
+            to the ROM is faster when stored in RAM in many cases. Also,
+            multiple operating systems can be placed in one computer that
+            has disk based ROM. In order to use multiple ROM revisions on
+            the other computers, a ROM Swticher is used which is a hardware
+            toggle that seats each ROM chip on a small daughterboard. Some
+            machines, such as the @{" A3000 " link products.a3000}, also have a ROM Tower, which
+            includes an outdated ROM revision required to boot the system.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.processors "Processors and Custom Chips"
+@toc stats
+
+    - Processors and Custom Chips -
+
+                The command VERSION, when executed from the Amiga Shell or
+            CLI, returns the version of the Kickstart and the Workbench.
+            Following are the various versions of the Amiga ROM chips.
+
+
+                KS1.0
+                KS1.1
+                KS1.2
+                KS1.3
+                KS1.4
+                @{" KS2.04 " link null}  v37.175
+                KS2.1    v37.175    WB38.28
+                @{" KS3.0 " link null}
+
+
+                The command CPU displays the configuration of the CPU and
+            the memory burst modes. Following are the various CPU's used
+            by the various machines, along with FPU math coprocessors. All
+            are Motorola 68k series. The SHOWCONFIG command also returns
+            relevant information in more detial.
+
+                                   CPU                  FPU      MMU
+                @{" A500       " link products.a500      }      68000   7.16 MHz
+                @{" A600       " link products.a600      }      68000   7.16 MHz
+                @{" A1000      " link products.a1000     }      68000   7.16 MHz
+                @{" A1200      " link products.a1200     }      68020  14.32 MHz
+
+                @{" A1500      " link products.a1500     }      68000
+                @{" A2000      " link products.a2000     }      68000   7.16 MHz
+                @{" A2500      " link products.a2500     }      68020                 ???       ?
+                @{" A2500      " link products.a2500     }      68030                 ???       ?
+
+                @{" A3000      " link products.a3000     }      68030  16.00 MHz     68881      x
+                @{" A3000      " link products.a3000     }      68030  25.00 MHz     68882      x
+                @{" A3000T/030 " link products.a3000t.030}      68030  25.00 MHz     68882      x
+                @{" A3000T/040 " link products.a3000t.040}      68040  25.00 MHz     68040      x
+                @{" A3000UX    " link products.a3000ux   }      68030  25.00 MHz     68882      x
+
+                @{" A4000/030  " link products.a4000.030 }      68030                 ???
+                @{" A4000/040  " link products.a4000.040 }      68040  25.00 MHz     68040      x
+
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.monitors "AGA Compatible Monitors"
+@toc stats
+
+    - AGA Compatible Monitors -
+
+                The following monitors are capable of displaying all
+            modes of the @{" AGA " link chips.aga} chip set for Amiga computers.
+
+
+    MODEL             MANUFACTURER              PRICE   SIZE   kHz     VERT Hz
+
+    MS-8431           Amazing Tech.             $399     14   15-36       ?
+    AML-1402          Adara Technology,         $650     14   15-36     45-90
+    CM-324            AOC International         $549     14   15-36     50-90
+    CM-324H/M         AOC International           ?      14   15-36     50-90
+    CM-326            AOC International         $649     14   15-38     50-90
+    Auto-Trak 714     Conrac Display              ?      13   15.5-37   45-80
+    Auto-Trak 9250    Conrac Display            $3,850   13   15-37.5   48-90
+    Model 7126S       Conrac Display            $3,995   26   15-32     48-75
+    Model 7211        Conrac Display            $4,120   13   15-37.5   47-80
+    Model 7211        Conrac Display            $4,120   19   15-37.5   47-80
+    Model 7241        Conrac Display            $2,995   19   15-37     47-80
+    Model 9214        Conrac Display              ?      13   15-38     50-80
+    Multiscan 3436    CTX International         $780     14   15-38     50-90
+    TSM-1431          Darius Technology         $699     14   15.5-39   50-90
+    ECM 1410          Electrohome, Ltd.         $1,195   14   15-40     45-90
+    ECM 2010          Electrohome, Ltd.         $3,195   20   15-38     45-120
+    Eversync Color    Everex Systems            $599     14   15.5-35   50-70
+    FMS               Falco Data                $750     14   15-38     47-90
+    MTS-9608S         Forefront Technology      $499     14   15-38     50-90
+    TY-1411           Golden Dragon               ?      14   15.5-3    50-120
+    Idek MF-5017      IDEK/Iiyama North Amer    $1,275   17   15-40     50-90
+    Idek MF-5021      IDEK/Iiyama North Amer    $2,695   21   15.5-38   50-90
+    C21LV-65MAX       Image Systems Corp.         ?      21   15-65     55-90
+    C24LV-65MAX       Image Systems Corp.         ?      24   15-65     55-90
+    CM-1403           Intra Electronics USA     $300     14   15-38     40-100
+    GD-H4220US        JVC Information           $2,895   19   15-37     45-87
+    CMON M            Leading Edge              $599     14   15.75-39  50-90
+    MagicVIEW 20      Mac                       $1,999   20   15.75-36  50-100
+    Model 2014/LP     Microvitec,                 ?      14   15-40     45-100
+    Model 2020        Microvitec,               $2,495   20   15-38       ?
+    Model 710MH       Mitsuba Corp.             $415     14   15-38     50-90
+    Diamond Pro 26M   Mitsubishi Electronics    $11,300  25   15-38     45-90
+    HC-3505SK         Mitsubishi Electronics    $11,300  26   15.7-38   45-90
+    XC-3315C          Mitsubishi Electronics    $5,495   33   15-38     40-120
+    XC-3715C          Mitsubishi Electronics    $7,599   37   15-36     45-120
+    AM-2752A          Mitsubishi Electronics    $3,700   27   15.6-36   45-90
+    AM-3151A          Mitsubishi Electronics    $5,200   31   15.6-36   45-90
+    AM-3501R          Mitsubishi Electronics    $6,900   35   15-35.5   45-70
+    AM-1381A          Mitsubishi Electronics    $839     14   15.6-36   45-90
+    MG-3430           Modgraph,                 $985     9    15-35     50-70
+    DM-2710           NEC Technologies,         $3,995   27   15-38     40-100
+    PanaSync C1391    Panasonic Communicatio    $899     13   15.5-36   40-80
+    Ultra 1200        Princeton Graphic Syst    $450     12   15-38     45-120
+    Ultra 1400        Princeton Graphic Syst    $899     14   15-38     45-120
+    Ultra 1600        Princeton Graphic Syst    $775     16   15-38     45-120
+    AlphaScan         Sampo Corp. of America    $649     14   15.75-36  50-87
+    CE-8              Sceptre Technologies,     $995     14   15-38     50-90
+    CM-3              Sceptre Technologies,     $795     14   15.5-36   50-70
+    CPD-1302          SONY Corporation          $995     13   15.75-36  50-100
+    GVM-1310          SONY Corporation          $1,295   13   15.75-36  50-100
+    GVM-2020          SONY Corporation          $1,595   20   15.75-36  50-100
+    Tuff/CRT          Talon Technology Corp.    $6,000   14   15-35     47-73
+    Omniscan CM-1495H Tatung Co. of America,    $899     14   15-37     40-120
+    MultiVision 770+  TAXAN America             $895     14   15-37     50-90
+    MediaScan 3+      TVM Professional Monit      ?      14   15-38     46-100
+    TM-5414           TW Casper Corp.             ?      14   15.5-35   50-70
+
+                                                            Bjorn Stenberg
+                                                            Stockholm, Sweden
+                                                            bjst@sth.frontec.se
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.storage "Storage Devices"
+@toc stats
+
+    - Storage Devices -
+
+                           AMIGADOS      MS-DOS     MACINTOSH
+            @{" KS1.0  " link null}      720k
+            @{" KS1.2  " link null}      880k
+            @{" KS1.3  " link null}      880k          720k
+            @{" KS2.04 " link null}      900k 1.76mb   720k 1.44mb    1.44mb
+            @{" KS3.0  " link null}      900k 1.76mb   720k 1.44mb    1.44mb
+
+                In order to read 1.76mb AmigaDOS or 1.44mb MS-DOS a high
+            density disk drive is required. These include the CBM drive,
+            the Aplied Engineering drive, a floptical drive, or a high density
+            IBM floppy drive. Some floptical drives do not support standard
+            Amiga disks. IBM floppy drives may require a special driver. To
+            read IBM disks from WB revisions older than 2.1, public domain
+            software or WB upgrades are required. The Atari ST uses the same
+            format as MS-DOS so no special conversion is necessary. In order
+            to read Macintosh 800k disks, third party hardware is required
+            or a Macintosh emulator card.
+
+
+
+                                                      THIRD PARTY HARDWARE
+
+                        FLOPPY HD-FLOPPY SCSI IDE   FLOPPY HD-FLOPPY SCSI IDE
+            @{" A500    " link products.a500   }      x                           x        x      x   x
+            @{" A600    " link products.a600   }      x                   x       x        x      ?  N/A
+            @{" A1000   " link products.a1000  }      x                           x        x      x   x
+            @{" A1200   " link products.a1200  }      x                   x       x        x      ?  N/A
+            @{" A1500   " link products.a1500  }      x                           x        x      x   x
+            @{" A2000   " link products.a2000  }      x                           x        x      x   x
+            @{" A2500   " link products.a2500  }      x               x           x        x      x   x
+            @{" A3000   " link products.a3000  }      x               x           x        x      x   x
+            @{" A3000T  " link products.a3000t }      x        x      x           x        x      x   x
+            @{" A3000UX " link products.a3000ux}      x               x           x        x      x   x
+            @{" A4000   " link products.a4000  }      x        x          x       x        x      x  N/A
+
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.game_systems "Game Systems"
+@toc stats
+
+    - Game Systems -
+
+                     CPU   MHZ  BITS    RES    COLORS PALETTE   RAM
+
+        SNES        65816  3.6   16   256x224     256   32768   192k
+        Genesis     68000  7.6   16   320x224     128     512   136k
+        Neo Geo     68000 12.5   16   320x224    4096   65536   132k
+        Amiga 600   68000  7.16  16  1280x512    4096    4096  1024k
+        Amiga 1200  68020 14.32  32  1280x512  262144  262144  2048k
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node emulators "Emulators"
+@toc main
+
+    - Emulators -
+
+    @{" IBM XT        " link emulators.xt}
+    @{" IBM AT        " link emulators.at}
+    @{" Macintosh     " link emulators.mac}
+    @{" UNIX          " link emulators.unix}
+    @{" Atari ST      " link emulators.atari}
+    @{" Commodore 64  " link emulators.64}
+    @{" Miscellaneous " link emulators.misc}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.xt "IBM XT Emulators"
+@toc emulators
+
+    - IBM XT Emulators -
+
+                                        TEXT  CGA EGA VGA A500 ZorroII ALL
+            Transformer      XT 8088      x                 x           x
+            PC Task          XT 8088      x    x            x           x
+            IBeM             XT 8088      x    x            x           x
+            Cross PC         XT 8088      x    x            x           x
+            Power PC Board   XT 8088      x    x       x    x     x     x
+            2088 Bridgeboard XT 8088      x    x   x              x
+
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.at "IBM AT Emulators"
+@toc emulators
+
+    - IBM AT Emulators -
+
+                                        TEXT  CGA EGA VGA A500 ZorroII ALL
+            2286 Bridgeboard AT  286      x    x   x   x          x
+            2386 Bridgeboard AT  386      x    x   x   x          x
+            ATOnce           AT  286      x    x            x     x     x
+            GoldenGate       AT  386      x    x   x   x          x
+            GoldenGate       AT  486SLC   x    x   x   x          x
+            EMC 486SLC       AT  486SLC   x    x   x   x          x
+            GVP 286          AT  286      x    x   x   x    x     x
+
+
+
+                            GVP286    ATOnce   PowerPC
+                NortonSI      15
+                Hercules       x        ?         ?
+                CGA            x        x         x
+                EGA/VGA      MONO       ?         ?
+                Multitask?     x        x
+                Shared RAM?    x        x         x
+                FPU         80C287   80C387SX     ?
+
+
+                              GG386  GG486 2088 2286 2386 EMC486
+                mHz                   25                    33
+                NortonSI       23     45     ?    ?    ?    66
+                Landmark 2.0          78                   103
+                Hercules        x      x     ?    x    x     ?
+                CGA             x      x     x    x    x     x
+                EGA/VGA         x      x     x    x    x     x
+                Multitask?      x      x     x    x    x     x
+                Shared RAM?     x      x     ?    ?    ?     ?
+                FPU             ?      ?     ?    ?    ?     ?
+                IDE PORT        x      x     ?    x    x     x
+                FLOPPY PORT     x      x     x    x    x     x
+                SERIAL PORT    SW     SW     ?    ?    ?     2
+                PARALLEL PORT  SW     SW     ?    ?    ?     1
+                GAME PORT                    ?    ?    ?     1
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.mac "Macintosh Emulators"
+@toc emulators
+
+    - Macintosh Emulators -
+
+                                     PLUS IIx ZorroII ALL SYSTEM7 COLOR
+            AMax             @{" 68000 " link null}   x               x     x
+            AMax II+         @{" 68000 " link null}             x           x
+            EMPLANT          @{" 68030 " link null}   x   x     x           x      x
+
+                       ROM  SERIAL_PORT APPLETALK MIDI_PORT SCSI_PORT
+            AMax II+  128k       x          x         x
+            EMPLANT   256k       x          x                   x
+
+                All ports listed above are exterior ports.
+
+
+                AMax allows emulation of black and white Macintosh
+            software designed for the Macintosh Plus. It does not allow
+            the user to run Amiga software at the same time as Macintosh
+            software.
+
+                Emplant is capable of multitasking Amiga and Macintosh
+            software at the same time on independent screens. Emplant
+            also allows emulation of other computers simultaneously.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.unix "UNIX Operating Systems"
+@toc emulators
+
+    - UNIX Operating Systems -
+
+                                      ALL ZorroII MULTIUSER
+            Amiga UNIX       @{" 68030 " link null}         x        x
+            LINUX
+            MINIX
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.64 "Commodore 64 Emulators"
+@toc emulators
+
+    - Commodore 64 Emulators -
+
+            GO 64 Emulator      6502    Commercial
+            A64 Package         6502    Shareware
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.atari "Atari ST Emulators
+@toc emulators
+
+    - Atari ST Emulators -
+
+                                        A500 ZorroII ALL MULTITASK
+            Medusa           @{" 68000 " link null}      x
+            Cameleon         @{" 68000 " link null}      x
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.misc "Miscellaneous"
+@toc emulators
+
+    - Miscellaneous -
+                                       ALL
+            BBC Micro                   x
+            ZX80 Spectrum        Z80    x
+            Apple II            6502    x
+            GameBoy              Z80    x
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node emulators.secret "Secret Message"
+@toc emulators
+
+    - Secret Message -
+
+        Only the Amiga! Thanks to Readysoft, Jim Drew & Joe Fenton, GVP,
+    Vortex, EMC, David Salamon, and all the other hardware and software
+    authors out there who make these beautiful gifts!
+
+        Oh and Commodore too!
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node graphics "Graphics Boards"
+@toc main
+
+    - Graphics Boards -
+
+    @{"  8 bit Graphics Boards    " link graphics.8}
+    @{" 24 bit Graphics Boards    " link graphics.24}
+    @{" Video Production Hardware " link graphics.video}
+    @{" Genlocks                  " link graphics.genlocks}
+    @{" Workbench Support         " link graphics.workbench}
+    @{" External Graphics Boards  " link graphics.external}
+    @{" Index                     " link graphics.index}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node graphics.8 "8 bit Graphics Boards"
+@toc graphics
+
+    - 8 BIT Graphics Boards -
+
+
+                      BITS PALT    RES    RGB COMP NTSC PAL   SLOT     FPU
+        Resolver        8   24  2048x2048  x         x   x   ZorroII  34010
+        Lowell A2410    8       1280x1024  x         x   x   ZorroII
+        AVideo12       12                  x         x   x    DENISE
+        HAM-E          16       1600x1280  x         x   x   RGB PORT
+        AGA            18   24  1280x512   x    x    x   x
+        Retina          8   24  2400x1200  x         x   x   ZorroII
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node graphics.24 "24 bit Graphics Boards"
+@toc graphics
+
+    - 24 BIT Graphics Boards -
+
+
+                      BITS    RES    RGB COMP NTSC PAL DIGI GLOCK VIDEOSLOT
+        Retina         24  1024x768   x         x   x
+        Harlequin      24   910x486   x         x   x
+        Vivid 24       24  2048x2048  x         x   x          x
+        Rembrandt      24  1024x1024  x         x   x    x     x
+        Visiona        24  8192x4096  x         x   x          x
+        OpalVision     24   768x476   x         x   x    x     x      x
+        FireCracker    24  1024x480   x         x   x          x
+        EGS            24             x         x   x          x
+        IV24           24   768x480   x    x    x   x    x     x      x
+        AVideo24       24             x         x   x          ?
+        Video Toaster  22   768x480        x    x        x     x      x
+        DCTV           22   768x480        x    x   x    x     x
+        AGA            18  1280x480   x    x    x   x
+        HAM-E           ?  1600x1280  ?    ?    x   ?          ?
+        AVideo12       12             x         x   x          ?
+        Resolver        8  2048x2048  x         x   x
+        Lowell A2410    8  1280x1024  x         x   x
+
+
+                            Denise ZorroII ALL  FPU      PIP
+        Retina         24             x
+        Harlequin      24             x
+        Resolver        8             x        34010
+        Vivid 24       24             x        34020 (4)
+        Rembrandt      24             x        34020
+        Visiona        24             x        INMOS
+        OpalVision     24             x                   x
+        FireCracker    24             x
+        Lowell A2410    8             x
+        EGS            24           COMBO
+        IV24           24             x                   x
+        AVideo12       12      x
+        AVideo24       24      x
+        Video Toaster  22             x
+        DCTV           22                   x
+        HAM-E           ?                   x
+
+                        A500 A600 A1000 A2000 A3000 A4000 CDTV
+        Retina                             x     x     x
+        Harlequin                          x     x     x
+        Resolver                           x     x     x
+        Vivid 24                           ?     x     x
+        Rembrandt                          ?     x     x
+        Visiona                            x     x     x
+        OpalVision                         x     x     x
+        FireCracker                        x     x     x
+        Lowell A2410                       x     x     ?
+        EGS                                x
+        IV24                               x     x     x
+        AVideo12          x          x     x                x
+        AVideo24          x          x     x                x
+        Video Toaster                      x     x     ?
+        DCTV              x    x     x     x     x     x    x
+        HAM-E             x    x     x     x     x     x    x
+
+            NOTES: A2000 includes @{" A1500 " link products.a1500}, @{" A2000 " link products.a2000}, @{" A2500 " link products.a2500}
+                   A3000 includes @{" A3000 " link products.a3000}, @{" A3000T " link products.a3000t}
+
+                   EGS Requires an @{" A2000 " link products.a2000} with a GVP Combo accelerator.
+                   DCTV and HAM-E are external units.
+                   Video Toaster requires endplate adjustment for @{" A3000 " link products.a3000}.
+                   @{" A3000UX " link products.a3000ux} may use Lowell A2410 or Resolver.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node graphics.index "Index - Graphics Boards"
+@toc graphics
+
+    - Index of Graphics Boards -
+                                       PALETTE BITS
+    @{" Retina           " link null}     24    24
+    @{" Harlequin        " link null}     24    24
+    @{" Vivid 24         " link null}     24    24
+    @{" Rembrandt        " link null}     24    24
+    @{" Visiona          " link null}     24    24
+    @{" OpalVision       " link null}     24    24
+    @{" FireCracker      " link null}     24    24
+    @{" EGS              " link null}     24    24
+    @{" IV24             " link null}     24    24
+    @{" AGA              " link null}     24    18
+    @{" AVideo24         " link null}     24    24
+    @{" Video Toaster    " link null}     24    22
+    @{" Video Toaster II " link null}     24
+    @{" DCTV             " link null}     22    22
+    @{" HAM-E            " link null}     16    16
+    @{" AVideo12         " link null}     12    12
+    @{" OCS              " link null}     12    12
+    @{" ECS              " link null}     12    12
+    @{" Resolver         " link null}     24     8
+    @{" Lowell A2410     " link null}      8     8
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node faq "Frequently Asked Questions"
+@toc main
+
+    - Frequently Asked Questions -
+
+    @{" Video Toaster             " link faq.toaster}
+    @{" Operating System Software " link faq.os}
+    @{" Kickstart and Workbench   " link faq.rom}
+    @{" Processors                " link faq.cpu}
+    @{" Custom Chip Set           " link faq.custom_chips}
+    @{" Emulators                 " link faq.emulators}
+    @{" Hardware Expansion        " link faq.expansion}
+    @{" Software Drivers          " link faq.drivers}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.toaster "Video Toaster Questions"
+@toc faq
+
+        - Can a Video Toaster work in an @{" A3000 " link products.a3000} or @{" A3000T " link products.a3000t}?
+
+          YES. In order for this to fit in the case, you must either
+          desolder the Toaster endplate and slide it over, break off
+          two of the video inputs from the Toaster, cut a hole in the
+          case of the @{" A3000 " link products.a3000}, or leave the case off the @{" A3000 " link products.a3000}.
+
+          If you are using Toaster software older than 2.0 than you
+          will have ot remove the @{" ECS " link chips.ecs} Super @{" Denise " link null} chip and replace it
+          with an old non-@{" ECS " link chips.ecs} @{" Denise " link null}.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.toaster.02 "Video Toaster Questions"
+@toc faq
+
+        - Can a Video Toaster work in an @{" A4000 " link products.a4000}?
+
+          POSSIBLY. It is rumored that an @{" A4000 " link products.a4000} specific version of the
+          Toaster will be out sometime this year. It is not known if
+          a Toaster is @{" AGA " link chips.aga} compatible.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.toaster.03 "Video Toaster Questions"
+@toc faq
+
+        - Is there a version of the Video Toaster for the Amiga?
+
+          YES. The Video Toaster only works on Amiga computers. It does
+          not work on any other computer. If you own a Video Toaster
+          Workstation then you are in fact using an Amiga 2000. There
+          is currently no version of the Video Toaster for the Macintosh
+          or for IBM PC clones. However, via the seriel port, data can be
+          transferred between the systems. If you require running Macintosh
+          software and a Video Toaster at the same time, then I highly
+          advise you to use the EMPLANT Macintosh II emulator board inside
+          a Video Toaster equipped Amiga. At one time NewTek VAR'd Amiga
+          2000's and sold then as Toaster Workstations but they no longer
+          do so.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.toaster.04 "Video Toaster Questions"
+@toc faq
+
+        - Do I need a Time Based Corrector (TBC)?
+
+          POSSIBLY. The Toaster is capable of recording live video
+          without a time based corrector. However, if you wish to
+          use a video recorder to input to the Toaster than a time
+          based corrector is needed.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+        - What type of Time Based Corrector (TBC) do I need?
+        - Should I get 2 megabytes of @{" Chip RAM " link null}?
+        - Where can I get demo tapes?
+        - Where can I get tutorials?
+        - What telecommunications support is available?
+        - How do I contact NewTek?
+        - What is a Video Toaster Workstation?
+        - What can the Video Toaster do?
+        - What type of people use the Video Toaster?
+
+
+@node faq.cpu "Processor Questions"
+@toc faq
+
+        - Why is my stock computer slow?
+
+          YOU NEED @{" Fast RAM " link null}. If your computer only contains @{" Chip RAM " link null}, than
+          it may be as much as 4 times slower than a computer equipped
+          with @{" Fast RAM " link null}. This is true for all but the @{" A3000 " link products.a3000} and @{" A4000 " link products.a4000},
+          which come with adequate @{" Fast RAM " link null}. At least 512k of @{" Fast RAM " link null} is
+          suggested, although a minimum of 1 megabyte is greatly preferred.
+          Any @{" Fast RAM " link null} above 1 megabyte has a negligible impact on CPU
+          speed.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.cpu.02 "Processor Questions"
+@toc faq
+
+        - Can I replace my @{" 68000 " link null} with a @{" 68010 " link null}?
+
+          POSSIBLY. If you have an @{" A1000 " link products.a1000}, @{" A500 " link products.a500}, @{" A1500 " link products.a1500}, or @{" A2000 " link products.a2000} then
+          you can. On an @{" A600 " link products.a600}, the @{" 68000 " link null} is not socketed and cannot be
+          removed.
+
+          The @{" 68010 " link null} allows you to access FPU chips via a special disk
+          based library. Speed increases are on the order of 10-15%.
+          However, software compatibility suffers, so it is advised that
+          you do not do this. @{" 68010 " link null} chips sell for under $10.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.cpu.03 "Processor Questions"
+@toc faq
+
+        - Can an 040 accelerator work on KS1.3 or lower?
+
+          NO. If you intend on using an 040 accelerator, it is suggested
+          that you either use @{" KS2.04 " link null} or greater. The KS must also be in
+          ROM and not on disk. Some older 040 accelerators permit the
+          use of KS1.3 or @{" KS2.04 " link null} in RAM but this is not widely used. The
+          @{" KS2.04 " link null}, if needed, sell for $50 or less.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.rom "Kickstart and Workbench Questions"
+@toc faq
+
+        - Can I have different versions of the Kickstart and Workbench?
+
+          YES. If you have KS1.2 you can also run WB1.3. If you have
+          @{" KS2.04 " link null} you can also run WB2.1. It is also possible to run
+          older versions of system software but it is suggested to use
+          the most compatible versions as older versions may suffer
+          from software incompatibilities.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.rom.02 "Kickstart and Workbench Questions"
+@toc faq
+
+        - What is a Tower ROM?
+
+          KS1.4 for the @{" A3000 " link products.a3000}. It is available on early model @{" A3000 " link products.a3000}'s.
+          It is not suggested that you use KS1.4 as it is outdated and
+          not supported. These should not be removed.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.rom.03 "Kickstart and Workbench Questions"
+@toc faq
+
+        - Why should I upgrade my Kickstart or Workbench?
+
+          If you are running anything lower than KS1.2, you have an
+          obsolete version that is no longer generally supported. If
+          You are running KS1.2, you may wish to upgrade to KS1.3 if you
+          require better compatibility or autobooting hard drives. If
+          you have KS1.3 or less, you will want @{" KS2.04 " link null} if you intend
+          to use a @{" 68040 " link chips.68040} accelerator. Also, @{" KS2.04 " link null} offers much more
+          compatibility with productivity software, while KS1.3 is more
+          compatible with entertainment software. If you are running
+          @{" KS2.04 " link null}, you may wish to look into WB2.1 if you need to read
+          MD-DOS disks. @{" KS3.0 " link null}, although a major upgrade, is not yet
+          required by existing software.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware "Hardware Questions"
+@toc faq
+
+        - What is the difference between @{" Chip RAM " link null} and @{" Fast RAM " link null}?
+
+          @{" Chip RAM " link null} is similar to video RAM found on other computers. On the
+          Amiga, the custom chip set can only directly access the RAM found
+          in the @{" Chip RAM " link null}. Chip is required by all Amigas, while @{" Fast RAM " link null}
+          is not required but highly suggested. @{" Chip RAM " link null} stores screen data
+          and audio data among other things.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.02 "Hardware Questions"
+@toc faq
+
+        - Why does the Amiga come with so little RAM or disk space?
+
+          The Amiga requires less RAM and disk space than other computers.
+          It is possible to use the Amiga operating system with less than
+          20k of disk space and less than 100k of RAM. It is possible to
+          run most Amiga software with 1 megabyte of RAM and one floppy
+          drive.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.03 "Hardware Questions"
+@toc faq
+
+        - Does the Amiga support high density floppy disks?
+
+          YES. The @{" A4000 " link products.a4000} includes a 1.76 megabyte floppy drive which also
+          reads IBM 1.44 megabyte and IBM 720k disks. This floppy drive
+          should work with most Amigas. Some @{" A3000 " link products.a3000}'s in Australia were
+          shipped with high density floppy drives. Applied Engineering
+          also manufactured a high density floppy drive, but it did
+          not sell well due to its high price. The Amiga high density
+          drive from CBM sells for under $100. Many people have used
+          standard IBM high density drives using a special device driver.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.04 "Hardware Questions"
+@toc faq
+
+        - Is it possible to access the IBM slots in my computer without
+          buying a Bridgeboard?
+
+          YES. The Golden Gate II card allows one to use the IBM slots
+          without purchasing a bridgeboard. IBM peripherals can therefor
+          be used by Amiga software. The Golden Gate II is not an IBM
+          emulator and should not be confused with the Golden Gate IBM
+          emulator.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.05 "Hardware Questions"
+@toc faq
+
+        - If I purchase an Amiga, what additional hardware will I need?
+
+          Generally, the only additional hardware required is a monitor
+          or television to be used as a display device. The Amiga comes
+          with all the necessary hardware to provide a fully working
+          system. Some models do not include hard drives, however are fully
+          capable of operating from floppy drives since Amiga software
+          occupies less disk space than software for other formats.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.06 "Hardware Questions"
+@toc faq
+
+        - What is the difference between the @{" A500 " link products.a500}, @{" A500+ " link products.a500}, and @{" A500 " link products.a500} Plus?
+
+          The @{" A500 " link products.a500} contains either KS1.2 or KS1.3. The @{" A500+ " link products.a500} contains
+          @{" KS2.04 " link null} with the @{" ECS " link chips.ecs} chipset and is only available in Europe.
+          The @{" A500 " link products.a500} Plus is an @{" A500 " link products.a500} with a special set of software
+          packages and is similar in hardware to an @{" A500 " link products.a500}.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.07 "Hardware Questions"
+@toc faq
+
+        - Can the Amiga run IBM PC software?
+
+          YES. Every Amiga is capable of running IBM PC software, including
+          MS-DOS, Windows 3.1, OS/2, and all supporting software. This
+          also includes SVGA cards, SoundBlaster, and time-based video
+          correctors. In fact, many of these emulators can multitask PC
+          and Amiga software simultaneously with minimal usage of CPU time.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.08 "Hardware Questions"
+@toc faq
+
+        - Does the Amiga multitask?
+
+          YES. The Amiga has multitasked since its conception in 1985.
+          It works pre-emptively similar to UNIX and OS/2, as opposed
+          to Windows 3.1 and System 7 which multitask co-operatively.
+          It is generally accepted that pre-emptive multitasking is much
+          cleaner and more reliable than co-operative multitasking. Also
+          supported is multiprocessing. It is possible for the Amiga's
+          custom chip sets to perform different operations simultaneously.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.09 "Hardware Questions"
+@toc faq
+
+        - Is the Amiga text based or window based?
+
+          BOTH. The Amiga offers a windowing system called Intuition, that
+          is accessed through the Workbench and most software. There is
+          also a command line interface know as the CLI, and an advanced
+          shell known as the AmigaShell. Also available is CSH, KSH, and
+          BASH. The newer Kickstarts offer more shell commands in ROM than
+          the previous versions.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node faq.hardware.10 "Hardware Questions"
+@toc faq
+
+        - Is the Amiga for games only?
+
+          NO. The Amiga is used by numerous television stations and other
+          studios to produce broadcast quality video images and animations.
+          The Amiga is used by Nickelodian, MTV, Prevue Guide, many
+          cable TV stations, and movie studios. For example, the computer
+          graphics in the science fiction movie Babylon 5 was produced
+          using Amiga video and morphing software.
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node products "Amiga Product Guide"
+@toc main
+
+    - Amiga Product Guide -
+
+    @{" A500       " link products.a500      }
+    @{" A500+      " link products.a500+     }
+    @{" A600       " link products.a600      }
+    @{" A600HD     " link products.a600      }
+    @{" A1000      " link products.a1000     }
+    @{" A1200      " link products.a1200     }
+    @{" A1200HD    " link products.a1200     }
+    @{" A1500      " link products.a1500     }
+    @{" A2000      " link products.a2000     }
+    @{" A2000HD    " link products.a2000     }
+    @{" A2000HDA   " link products.a2000     }
+    @{" A2500      " link products.a2500     }
+    @{" A3000      " link products.a3000     }
+    @{" A3000T/030 " link products.a3000t.030}
+    @{" A3000T/040 " link products.a3000t.040}
+    @{" A3000UX    " link products.a3000ux   }
+    @{" A4000/030  " link products.a4000.030 }
+    @{" A4000/040  " link products.a4000.040 }
+    @{" A4000T     " link products.a4000t    }
+    @{" CDTV       " link products.cdtv      }
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a500 "Amiga 500"
+@toc products
+
+    - Amiga 500 -
+
+                                OS         CHIPSET
+                    A500    KS1.2 WB1.2     @{" OCS " link chips.ocs}
+                    A500    KS1.3 WB1.3     @{" OCS " link chips.ocs}
+                    A500+   KS2.0 WB2.0     @{" ECS " link chips.ecs}
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 512k Chip RAM or 1 megabyte Chip RAM on motherboard
+                    - maximum 512k Chip RAM or 1 megabyte Chip RAM
+                - 512k Fast RAM in trapdoor expansion bus (optional)
+                    - maximum 8 megabytes Fast RAM
+                - 512k RAM or 1 megabyte RAM on motherboard
+                - 256k ROM or 512k ROM on motherboard
+
+                - 3.5" drive bay
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+
+                - integrated keyboard
+                - 2 button mouse
+
+                - A1000 sidecar expansion bus
+                - A500 trapdoor expansion bus
+
+                - compact case
+                - external power supply port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - monochrome composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a500+ "Amiga 500+"
+@toc products
+
+    - Amiga 500+ -
+
+                                OS         CHIPSET
+                    A500    KS1.2 WB1.2     @{" OCS " link chips.ocs}
+                    A500    KS1.3 WB1.3     @{" OCS " link chips.ocs}
+                    A500+   KS2.0 WB2.0     @{" ECS " link chips.ecs}
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 512k Chip RAM or 1 megabyte Chip RAM on motherboard
+                    - maximum 512k Chip RAM or 1 megabyte Chip RAM
+                - 512k Fast RAM in trapdoor expansion bus (optional)
+                    - maximum 8 megabytes Fast RAM
+                - 512k RAM or 1 megabyte RAM on motherboard
+                - 256k ROM or 512k ROM on motherboard
+
+                - 3.5" drive bay
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+
+                - integrated keyboard
+                - 2 button mouse
+
+                - A1000 sidecar expansion bus
+                - A500 trapdoor expansion bus
+
+                - compact case
+                - external power supply port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - monochrome composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a600 "Amiga 600"
+@toc products
+
+    - Amiga 600 -
+
+                                OS         CHIPSET
+                    A600    KS2.05 WB2.1    @{" ECS " link chips.ecs}
+                    A600HD  KS2.05 WB2.1    @{" ECS " link chips.ecs}
+
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 1 megabyte Chip RAM on motherboard
+                    - maximum 2 megabytes Chip RAM
+                    - maximum 8 megabytes Fast RAM
+                - 512k RAM or 1 megabyte RAM on motherboard
+                - 512k ROM on motherboard
+
+                - 3.5" drive bay
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 2.5" 40 megabyte IDE hard drive (optional)
+
+                - integrated keyboard
+                - 2 button mouse
+
+                - A600 trapdoor expansion bus
+                - PCMCIA 2.0 expansion bus
+
+                - compact case
+                - external power supply port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - color composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a1000 "Amiga 1000"
+@toc products
+
+    - Amiga 1000 -
+
+                                OS         CHIPSET
+                    A1000   KS1.2 WB1.2     @{" OCS " link chips.ocs}
+
+
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 256k Chip RAM on motherboard
+                - 256k Chip RAM in frontpanel expansion bus (optional)
+                    - maximum 512k megabyte Chip RAM
+                    - maximum 8 megabytes Fast RAM
+                - 256k RAM on motherboard
+                - 256k Writable Control Store for OS on daughterboard
+                - 256k ROM on floppy disk
+
+                - 3.5" drive bay
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+
+                - detached keyboard
+                - 2 button mouse
+
+                - A1000 sidecar expansion bus
+                - A1000 frontpanel expansion bus
+
+                - pizza box case
+                    - keyboard storage garage
+                    - signature case
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - color composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.secret "Marketing the Amiga"
+@toc products
+
+    - Marketing the Amiga -
+
+        I would like to take this time to say that CBM better get its
+    marketting department moving in the US. CBM used to have a decent
+    name recognition, and it still does. However, many people have NOT
+    heard of the Amiga. My suggestion is plain and simple; hit the
+    educational market and the kids only. Advertise during Saturday
+    morning cartoons. Give posters for free with the purchase of an A500,
+    A600 or A1200. Kids will put the posters up in their rooms, and their
+    friends will see them, and their parents, and the kids will go to
+    elementary school and brag about their Amigas, just like they do now
+    with Nintendos and Segas. The kids have the want and the parents got
+    the money. The time to advertise is not in the Fall during the Christmas
+    season. The time to advertise is over the summer, when parents have yet
+    to decide what to buy their kids for Christmas. Then by September they
+    start making decisions. Then in November, if sales are high and stores
+    are out of stock, the media will declare A600's and A1200's as hot
+    products.
+        Create a package for teachers. Include word processing and a
+    database, and put it with an A600 or A1200 and sell them or give them
+    to teachers for below retail prices. Teachers decide what computers the
+    schools buy. Get teachers addicted to cheap computers and they will
+    surely push their schools during the budget proposals to buy the more
+    affordable Amigas.
+        Do the same with businesses. To enter the business market, find
+    the top business schools in the United States and offer great astounding
+    deals to incoming freshmen. By the time they graduate, if they learn to
+    use Amigas, that is what they will order for their future companies.
+    People buy computers for various reasons. Some buy because of the price.
+    Literate users buy due to power and support. Illiterate users buy due to
+    name recognition and peer pressure. Peer into the future; then apply
+    pressure.
+
+                                                    - David Tiberio -
+
+        Now, onto the Amiga 1200 (if you are browsing forward that is,
+    otherwise the Amiga 1000 is next)...
+
+                            WARNING: AMIGA INSIDE
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a1200 "Amiga 1200"
+@toc products
+
+    - Amiga 1200 -
+
+                                OS         CHIPSET
+                  A1200     @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A1200HD   @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+
+
+
+                - Motorola MC68EC020 14.32 MHz CPU
+                - 2 megabytes Chip RAM on motherboard
+                    - maximum 2 megabytes Chip RAM
+                    - maximum 8 megabytes Fast RAM
+                - 512k ROM on motherboard
+
+                - 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 2.5" 40 megabyte IDE hard drive (optional)
+
+                - integrated keyboard
+                    - 96 keys
+                    - 10 function keys
+                    - numeric keypad
+                    - cursor keys (inverted T layout)
+                - 2 button mouse
+
+                - A1200 trapdoor 150 pin local bus expansion
+                - PCMCIA 2.0 expansion bus
+
+                - compact case
+                - external power supply port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - color composite video port
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - 2 stereo audio output ports
+                - 32 BIT data path
+                - 24 BIT address space
+                - optional battery backed clock
+
+                - weight: 8 lbs.
+                - 9.5" deep x 18.5" wide x 3" high
+                - 110 volt/60Hz 23 watts power supply (external)
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a1500 "Amiga 1500"
+@toc products
+
+    - Amiga 1500 -
+
+                                OS         CHIPSET
+                  A1500     @{" KS1.3 " link null} WB1.3   @{" OCS " link chips.ocs}
+                  A1500+    @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 1 megabyte 16 BIT Chip RAM on motherboard
+                    - maximum 1 megabyte Chip RAM
+                    - maximum 8 megabytes Fast RAM
+                - 256k ROM or 512k ROM on motherboard
+
+                - 1 5.25" internal drive bay
+                - 2 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 2 3.5" 880k internal floppy drives
+
+                - detached keyboard
+                - 2 button mouse
+
+                - 5 Zorro II 16 BIT Amiga internal expansion slots
+                - 2 IBM AT internal expansion slots
+                - 2 IBM XT internal expansion slots
+                - internal CPU expansion slot
+                - internal video expansion slot
+                - slot for external connectors
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - monochrome composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+            - The Amiga 2000 comes in a few models. Originally the A2000 was
+            designed both in Germany and in Pennsylvania. The Pennsylvania
+            design was eventually used and is termed the B2000, although it
+            is sold under the original project name of A2000. Very few German
+            A2000's were sold once the B2000 took its place.
+            - The A2000HD includes a hard drive and a hard disk controller.
+
+
+
++-----------------------------------------------------------------------------+
+
+
+@node products.a2000 "Amiga 2000"
+@toc products
+
+    - Amiga 2000 -
+
+                                OS         CHIPSET
+                  A2000     @{" KS1.3 " link null} WB1.3   @{" OCS " link chips.ocs}
+                  A2000HD   @{" KS1.3 " link null} WB1.3   @{" OCS " link chips.ocs}
+                  A2000     @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+                  A2000HD   @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+                  A2000HDA  @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 1 megabyte 16 BIT Chip RAM on motherboard
+                    - maximum 1 megabyte Chip RAM
+                    - maximum 8 megabytes Fast RAM
+                - 256k ROM or 512k ROM on motherboard
+
+                - 1 5.25" internal drive bay
+                - 2 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 52 megabyte SCSI hard drive (optional)
+
+                - detached keyboard
+                - 2 button mouse
+
+                - 5 Zorro II 16 BIT Amiga internal expansion slots
+                - 2 IBM AT internal expansion slots
+                - 2 IBM XT internal expansion slots
+                - internal CPU expansion slot
+                - internal video expansion slot
+                - slot for external connectors
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external floppy drive port
+                - external SCSI hard drive port (optional)
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - monochrome composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a2500 "Amiga 2500"
+@toc products
+
+    - Amiga 2500 -
+
+                                OS         CHIPSET
+                  A2500     @{" KS1.3 " link null} WB1.3   @{" OCS " link chips.ocs}
+
+
+
+
+                - Motorola MC68020 25 MHz CPU or MC68030 25 MHz CPU
+                    - A2630/4 accelerator card
+                - 1 megabyte 16 BIT Chip RAM on motherboard
+                    - maximum 1 megabyte Chip RAM
+                - 4 megabytes 32 BIT Fast RAM on CPU card
+                    - maximum 8 megabytes Fast RAM
+                - 256k ROM on motherboard
+
+                - 1 5.25" internal drive bay
+                - 2 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 105 megabyte SCSI hard drive
+
+                - detached keyboard
+                - 2 button mouse
+
+                - 5 Zorro II 16 BIT Amiga internal expansion slots
+                - 2 IBM AT internal expansion slots
+                - 2 IBM XT internal expansion slots
+                - internal CPU expansion slot
+                - internal video expansion slot
+                - slot for external connectors
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external SCSI hard drive port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - monochrome composite video port
+                - 15kHz color RGB analog video port
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a3000 "Amiga 3000"
+@toc products
+
+    - Amiga 3000 -
+
+                                OS         CHIPSET
+                  A3000     @{" KS1.3 " link null} WB1.3   @{" ECS " link chips.ecs}
+                            @{" KS1.4 " link null} WB1.4   @{" ECS " link chips.ecs}
+                            @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+                  A3000     @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+
+
+                - Motorola MC68030 16 MHz CPU or MC68030 25 MHz CPU
+                - 68881 16 MHz or 68882 25 MHz FPU
+                - 1 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 1 megabyte Fast RAM or 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                - 256k ROM and 512k ROM on hard disk
+                  or 512k ROM on hard disk
+                  or 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 3 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 52 megabyte or 3.5" 105 megabyte SCSI hard drive
+
+                - detached keyboard
+                - 2 button mouse
+
+                - 4 Zorro III 32 BIT Amiga internal expansion slots
+                - 2 IBM AT internal expansion slots
+                - internal 32 BIT CPU expansion slot
+                - internal video expansion slot
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external SCSI hard drive port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - built in video de-interlacer
+                - display enhancer bypass switch
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a3000ux "Amiga 3000UX"
+@toc products
+
+    - Amiga 3000UX -
+
+                                OS         CHIPSET
+                  A3000UX     @{" UNIX " link null}        @{" ECS " link chips.ecs}
+
+
+
+
+                - Motorola MC68030 25 MHz CPU
+                - 68882 25 MHz FPU
+                - 1 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 3 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 105 megabyte SCSI hard drive
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 4 Zorro III 32 BIT Amiga internal expansion slots
+                - 2 IBM AT internal expansion slots
+                - internal 32 BIT CPU expansion slot
+                - internal video expansion slot
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external SCSI hard drive port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - built in video de-interlacer
+                - display enhancer bypass switch
+                - 2 stereo audio output ports
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a3000t.030 "Amiga 3000T/030"
+@toc products
+
+    - Amiga 3000T/030 -
+
+                                  OS         CHIPSET
+                  A3000T/030  @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+
+
+
+
+                - Motorola MC68030 25 MHz CPU
+                    - 68030 surface mounted on motherboard
+                - 68882 25 MHz FPU
+                    - 68882 surface mounted on motherboard
+                - 1 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 3 5.25" internal drive bays
+                - 4 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 210 megabyte SCSI hard drive
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 5 Zorro III 32 BIT Amiga internal expansion slots
+                - 4 IBM AT internal expansion slots
+                - internal 32 BIT CPU expansion slot
+                - internal video expansion slot
+
+                - floor mountable tower case
+                - internal power supply
+                - internal fan
+                - external SCSI hard drive port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - built in video de-interlacer
+                - display enhancer bypass switch
+                - 2 stereo audio output ports
+
+                - internal audio speaker
+                - system lock key
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a3000t.040 "Amiga 3000T/040"
+@toc products
+
+    - Amiga 3000T/040 -
+
+                                  OS         CHIPSET
+                  A3000T/040  @{" KS2.0 " link null} WB2.0   @{" ECS " link chips.ecs}
+
+
+
+
+                - Motorola MC68040 25 MHz CPU
+                    - 68040 on expansion card in CPU slot
+                - 68040 25 MHz FPU (emulated)
+                    - 68040 FPU emulates 68882 FPU on expansion card
+                - 1 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 3 5.25" internal drive bays
+                - 4 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 880k internal floppy drive
+                - 3.5" 210 megabyte SCSI hard drive
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 5 Zorro III 32 BIT Amiga internal expansion slots
+                - 4 IBM AT internal expansion slots
+                    - 4 IBM AT slots inline
+                - internal 32 BIT CPU expansion slot
+                - internal video expansion slot
+                    - 1 video slot inline
+
+                - floor mountable tower case
+                - internal power supply
+                - internal fan
+                - external SCSI hard drive port
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - built in video de-interlacer
+                - display enhancer bypass switch
+                - 2 stereo audio output ports
+
+                - internal audio speaker
+                - system lock key
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a4000.030 "Amiga 4000/030"
+@toc products
+
+    - Amiga 4000/030 -
+
+                                OS         CHIPSET
+                  A4000/030 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000/040 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000T    @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+
+
+                - Motorola 680EC30 25 MHz CPU
+                    - CPU on expansion card in CPU slot
+                    - CPU card may be removed and exchanged for a faster card
+                    - CPU card compatible with A3000T, A4000/040, and A4000T
+                - 68882 25 MHz FPU
+                - 2 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                    - expandable using SIMM modules
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 5.25" internal drive bay
+                - 4 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 1.76 megabyte internal floppy drive
+                - 3.5" 120 megabyte IDE hard drive
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 4 Zorro III 32 BIT Amiga internal expansion slots
+                - 3 IBM AT internal expansion slots
+                - internal 32 BIT CPU expansion slot
+                - internal 24 BIT extended video expansion slot
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - 2 stereo audio output ports
+
+                - weight: 20 lbs.
+                - 15 1/4" deep x 15" wide x 5" high
+                - 110 volt/60Hz 150 watt power supply (internal)
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a4000.040 "Amiga 4000/040"
+@toc products
+
+    - Amiga 4000/040 -
+
+                                OS         CHIPSET
+                  A4000/030 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000/040 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000T    @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+
+
+                - Motorola MC68040 25 MHz CPU
+                    - CPU on expansion card in CPU slot
+                    - CPU card may be removed and exchanged for a different card
+                    - CPU card compatible with A3000T, A4000/030 and A4000T
+                - 68040 25 MHz FPU
+                    - 68040 FPU emulates 68882 FPU on expansion card
+                - 2 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                    - expandable using SIMM modules
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 5.25" internal drive bay
+                - 4 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 1.76 megabyte internal floppy drive
+                - 3.5" 120 megabyte IDE hard drive
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 4 Zorro III 32 BIT Amiga internal expansion slots
+                - 3 IBM AT internal expansion slots
+                - internal 32 BIT CPU expansion slot
+                - internal 24 BIT extended video expansion slot
+
+                - desktop case
+                - internal power supply
+                - internal fan
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - 2 stereo audio output ports
+
+                - weight: 20 lbs.
+                - 15 1/4" deep x 15" wide x 5" high
+                - 110 volt/60Hz 150 watt power supply (internal)
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.a4000t "Amiga 4000T"
+@toc products
+
+    - Amiga 4000T -
+
+                                OS         CHIPSET
+                  A4000/030 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000/040 @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+                  A4000T    @{" KS3.0 " link null} WB3.0   @{" AGA " link chips.aga}
+
+
+                - Motorola MC68040 25 MHz CPU
+                    - CPU on expansion card in CPU slot
+                    - CPU card may be removed and exchanged for a different card
+                    - CPU card compatible with A3000T, A4000/030 and A4000/040
+                - 68040 25 MHz FPU
+                    - 68040 FPU emulates 68882 FPU on expansion card
+                - 2 megabyte Chip RAM on motherboard
+                    - expandable to 2 megabytes 32 BIT Chip RAM
+                - 4 megabytes Fast RAM on motherboard
+                    - expandable to 16 megabytes 32 BIT Fast RAM
+                    - expandable using SIMM modules
+                - 512k ROM on motherboard
+                - 32 BIT architecture
+
+                - 5.25" internal drive bay
+                - 4 3.5" drive bays
+                - 2.5" drive mountable
+
+                - 3.5" 1.76 megabyte internal floppy drive
+                - 3.5" 210 megabyte SCSI II hard drive
+                - SCSI II hard drive controller
+
+                - detached keyboard
+                - 3 button mouse
+
+                - 5 Zorro III 32 BIT Amiga internal expansion slots
+                - 4 IBM AT internal expansion slots
+                    - 2 inline with 2 Zorro III slots
+                - internal 32 BIT CPU expansion slot
+                - 2 internal 24 BIT extended video expansion slots
+                    - 2 inline with 2 Zorro III slots
+
+                - floor mountable tower case
+                - internal power supply
+                - internal fan
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - 15kHz color RGB analog video port
+                - 31KHz SVGA video output
+                - 2 stereo audio output ports
+
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.cdtv "CDTV - Commodore Dynamic Total Vision"
+@toc products
+
+    - CDTV -
+
+                                OS         CHIPSET
+                    CDTV    KS1.3 WB1.3     @{" OCS " link chips.ocs}
+
+
+
+
+                - Motorola MC68000 7.16 MHz CPU
+                - 1 megabyte Chip RAM on motherboard
+                    - expandable to 1 megabyte Chip RAM
+                    - expandable to 8 megabytes Fast RAM
+                - 512k ROM on motherboard
+
+                - 5.25" internal drive bay
+                - 2.5" drive mountable
+
+                - 5.25" 640 megabyte CD-ROM drive
+                    - supports caddy based disc loading
+
+                - wireless control keypad
+                    - numeric keypad
+                    - cursor keys
+                    - volume control
+                    - power ON/OFF switch
+                    - CD-ROM control function
+                - detached wireless keyboard (optional)
+                - wireless 2 button mouse (optional)
+
+                - PCMCIA 1.0 expansion bus
+                - external video expansion bus
+
+                - consumer compact disc player style case
+                - internal power supply
+                - external floppy drive port
+                - RS-232 serial port
+                - Centronics parallel port
+                - 2 mouse/joystick ports
+                - color composite video port
+                - 15kHz color RGB analog video port
+                - S-Video color output
+                - 2 stereo audio output ports
+                - external MIDI input/output ports
+                - stereo headphone output jack
+                - channel select switch (3 or 4)
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.1084s "1084S Monitor"
+@toc products
+
+    - 1084S Monitor -
+
+                    The 1084S monitor is compatible with all Amiga
+                computers and CDTV multimedia players.
+
+                - 15kHz color RGB analog video input
+                - color composite video input
+                - audio input jack
+                - built in speaker
+                - overscan compatible
+                - interlace compatible
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node products.1950 "1950 Monitor"
+@toc products
+
+    - 1950 Monitor -
+
+                    The 1950 monitor is compatible with the A1200,
+                A3000 series, and A4000 series of Amiga computers.
+
+                - 15kHz and 31kHz multiscan SVGA video input
+                - overscan compatible
+                - interlace compatible
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node chips "Custom Chip Set"
+@toc main
+
+    - Custom Chip Set -
+
+    @{" OCS " link chips.ocs} - Original Chip Set
+    @{" ECS " link chips.ecs} - Enhanced Chip Set
+    @{" AGA " link chips.aga} - Advanced Graphics Architecture
+    @{" AAA " link chips.aaa} - High End Chip Set
+
+    @{" Agnus  " link chips.agnus } OCS/ECS
+    @{" Alice  " link chips.alice } AGA
+    @{" Amber  " link chips.amber } ECS
+    @{" Buster " link chips.buster} OCS/ECS/AGA
+    @{" Denise " link chips.denise} OCS/ECS
+    @{" Gary   " link chips.gary  } OCS/ECS
+    @{" Lisa   " link chips.lisa  } AGA
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.ocs "OCS - Original Chip Set"
+@toc chips
+
+    - Original Chip Set -
+
+    @{" Screenmodes    " link screenmodes.ocs}
+    @{" Colormodes     " link colormodes.ocs}
+    @{" Hardware Stats " link stats.ocs}
+
+        The OCS chips originated in 1985 and were designed by the original
+    Amiga crew of Los Gatos, California. These people included Jay Miner
+    (Father of the Amiga) and RJ Michael. In its day OCS was the most
+    advanced graphics set available on any home computer.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.ecs "ECS - Enhanced Chip Set"
+@toc chips
+
+    - Enhanced Chip Set -
+
+    @{" Screenmodes    " link screenmodes.ecs}
+    @{" Colormodes     " link colormodes.ecs}
+    @{" Hardware Stats " link stats.ecs}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.aga "AGA - Advanced Graphics Architecture"
+@toc chips
+
+    - Advanced Graphics Architecture -
+
+    @{" Screenmodes    " link screenmodes.aga}
+    @{" Colormodes     " link colormodes.aga}
+    @{" Hardware Stats " link stats.aga}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.aaa "AAA - High End Chip Set"
+@toc chips
+
+    - High End Chip Set -
+
+    @{" Screenmodes    " link screenmodes.aaa}
+    @{" Colormodes     " link colormodes.aaa}
+    @{" Hardware Stats " link stats.aaa}
+
+        The High End Chip Set is often referred to as the AA+ or AAA Chip
+    Set, and is not currently available. However it has been discussed at
+    various World of Amiga shows in keynote speeches by CBM, and here is
+    all information that has been provided at this time.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node screenmodes.aaa "AAA Screenmodes"
+@toc chips.aaa
+
+    - AAA Screenmodes -
+
+        - Chunky Pixel Modes in 2, 4, 8, 16 BITs
+
+        - Hybrid Chunky Pixel Modes in combinations of Chunky Pixel Modes
+
+        - 800x560x9 using @{" DRAM " link null}
+
+        - 800x560x24 using @{" VRAM " link null} hybrid modes
+
+        - 1280x1024x24 using @{" VRAM " link null} and multiple sets of AAA chips
+
+        - 640x200x2 scroll 6x faster than ECS
+          640x400x4 scroll 9x faster than ECS
+
+        - 1280x1024x24 @{" VRAM " link null} systems operate as fast as ECS 640x200x4
+
+        - 640x400x16 plus numerous other new screenmodes not yet released
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.aaa "AAA Hardware Stats"
+@toc chips.aaa
+
+    - AAA Hardware Stats -
+
+        - 4 VLSI integrated chips
+
+        - @{" DRAM " link null} and @{" VRAM " link null} support
+
+        - 40 DMA channels with dynamic allocation
+
+        - 32 BIT Blitter
+
+        - 32 BIT Copper
+
+        - chunky pixel modes, hybrid chunky pixel modes
+
+        - video pixel bus reversal
+
+        - 16 BIT audio, 8 voices, 50KHz sampling rates, 8 BIT sampling
+
+        - 1, 2, and 4 megabyte floppy disk support
+
+        - 2 FIFO UARTS (buffered serial ports)
+
+        - built in frame grabber
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node stats.secret "Secret Message"
+@toc chips.aaa
+
+    - Secret Message -
+
+            The hands hold the power of the creative mind. One hand, the
+        right, feeds the body. The other hand, the left, sculpts and molds
+        the mind. The right hand is now burnt in the fire. If the left hand
+        doesn't help the right hand, the body will starve.
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node chips.agnus "Agnus Hardware Stats"
+@toc index
+
+    - Agnus Hardware Stats -
+
+
+                        MODEL   VIDEO    CHIPRAM         CHIP TYPE
+        Agnus           8361    NTSC       512k     A1000 Subsystem DIP
+        Agnus           8361    NTSC       512k     A1000 Subsystem DIP
+        Fat Agnus       8370    NTSC       512k     DIP
+        Fat Agnus       8370    NTSC       512k     PLCC
+        Fat Agnus       8371    PAL        512k     DIP
+        Fat Agnus       8371    PAL        512k     PLCC
+        Fat Agnus       8372    NTSC/PAL   512k     PLCC
+        Fatter Agnus    8372a   NTSC/PAL  1024k     PLCC
+        Super Agnus     8372b   NTSC/PAL  2048k     PLCC A3000
+        Super Agnus     8375    NTSC/PAL  2048k     PLCC A500+
+        Alice                   NTSC/PAL  2048k     PLCC A4000/A1200
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.secret "Thanks"
+
+    - Thanks -
+
+            I would like to thank James Knowlton, who on a regular basis
+        helped make suggestions and research information (and correct
+        mistakes). The AmigaFAQ is now 3621 lines and 140,793 bytes. I
+        never expected it to grow so large since my first FAQ posting
+        which was less than 30 lines! My personal goal is to reach around
+        800,000 bytes of information by September 1993. That gives me
+        five months, and if I match what I have already done I just might
+        reach that goal. I am expecting much of the work to come from the
+        frequently asked questions lists directly.
+
+            So here are some of my questions:
+
+            - Who the heck is Agnus anyway?
+
+            - What are the revision numbers of the Amiga motherboards?
+
+            - What is BLAZEMONGER?
+
+            - Who designed the various Amiga computers, and who writes the
+              software?
+
+            - How does one find the various secret messages in the Amiga
+              ROMs and software distributions?
+
+            - Will I ever graduate from college? Gee I hope not. Then I may
+              lose my access to USENET.
+
+            Farewell to all for the summer. I will be going home at the end
+        of May 1993 and will not return until September 1993. And I promise
+        not to waste so much time on my Amiga. :)
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.68040 "68040 Hardware Stats"
+@toc index
+
+    - 68040 Hardware Stats -
+
+            - 68040, 68EC040
+            - 25 MHz, 33 MHz, 40 MHz
+            - 32-bit microprocessor
+            - .8 micron CMOS technology
+            - 1.2 million transistors
+            - optimized 68030 integer unit
+                - 3x faster than a 68030 integer unit
+            - memory management unit (not available in 68EC040)
+
+            - integrated FPU
+                - no external floating point unit required
+                - ANSI/IEEE 754 standard floating point math
+                - compatible with 68881 and 68882
+                - 10x faster than a 68882 floating point unit
+            - internal caches
+                - 4K data cache
+                - 4K instruction cache
+                - caches can be accessed simultaneously
+                - copyback mode
+                - 93% hit ratio
+
+            - 179 pin grid array
+            - not pin compatible with earlier 680x0 chips
+            - executes on average one instruction per cycle
+            - 25MHz version runs at 20 MIPs
+            - 3.5 MFLOPs
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node chips.intel "Intel Hardware Stats"
+@toc index
+
+    - Intel Hardware Stats -
+
+            - i486, i486DX. i486DX2
+            - 25 MHz, 33 MHz, 50 MHz, 66 MHz
+            - 32-bit microprocessor
+            - .8 moron CMOS technology
+            - 1.2 million transvestites
+            - optimized i386 integer unic
+                - 3x faster than an i8088 CPU
+            - marketing management unit (MMU)
+                - looks good on the outside, but Intel inside
+
+            - integrated FPU
+                - no external floating point unit required
+                - IBM 000 standard floating point math
+                - compatible with nothing
+                - 10x faster than a 6502 CPU
+            - internal caches
+                - 8K instruction/data cache
+                - loop-copyback mode
+                - .99% hit ratio
+
+            - 4 pin grid array
+            - not pin compatible with earlier dried banana chips
+            - executes on average one false instruction per cycle
+            - 25 MHz version runs at 15 MIPs
+            - 3.5 MFLOPPIEs required just for the OS!
+
+            - a pain to program for, but fun to pick on
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node video.rgb "RGB Video"
+@toc index
+
+    - RGB Video -
+
+            - 15kHz RGB analog output signal
+            - color video signal
+            - 23 pin Amiga video output port
+            - NTSC and PAL compatible
+            - A520 compatible RF modulated video converter
+            - interlaced and non-interlaced signals
+
+
+    - See also:
+
+            @{" 1084S Monitor " link products.1084s}
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node video.composite "Composite Video"
+@toc index
+
+    - Composite Video -
+
+            - RF modulated video output signal
+            - monochrome or color composite video signal
+            - RCA standard output jacks
+            - VCR compatible video signal
+            - TV compatible video signal
+            - NTSC and PAL compatible
+            - interlaced and non-interlaced signals
+
+
+    - See also:
+
+            @{" 1084S Monitor " link products.1084s}
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node Index "Index"
+@toc main
+
+    - Index -
+
+    @{" A500       " link products.a500      } @{" OCS " link chips.ocs} @{" EHB6 " link screenmodes.ehb6} @{" Denise  " link null} @{" 68000 " link null}
+    @{" A600       " link products.a600      } @{" ECS " link chips.ecs} @{" EHB8 " link screenmodes.ehb8} @{" Gary    " link null} @{" 68010 " link null}
+    @{" A1000      " link products.a1000     } @{" AGA " link chips.aga} @{" HAM6 " link screenmodes.ham6} @{" Paula   " link null} @{" 68020 " link null}
+    @{" A1200      " link products.a1200     } @{" AAA " link chips.aaa} @{" HAM8 " link screenmodes.ham8} @{" Agnus   " link null} @{" 68030 " link null}
+    @{" A1500      " link products.a1500     }              @{" Lisa    " link null} @{" 68040 " link chips.68040}
+    @{" A2000      " link products.a2000     } @{" ZorroII    " link null} @{" Alice   " link null} @{" 68050 " link null}
+    @{" A2200      " link products.a2200     } @{" ZorroIII   " link null} @{" Blitter " link null} @{" 68060 " link null}
+    @{" A2500      " link products.a2500     } @{" Video Slot " link null} @{" Buster  " link null} @{" 68881 " link null}
+    @{" A3000      " link products.a3000     } @{" CPU Slot   " link null} @{" Blitter " link null} @{" 68882 " link null}
+    @{" A3000T/030 " link products.a3000t.030}
+    @{" A3000T/040 " link products.a3000t.040}
+    @{" A3000UX    " link products.a3000ux   } @{" KS1.0  " link null} @{" DRAM     " link null} @{" Composite " link video.composite}
+    @{" A4000/030  " link products.a4000.030 } @{" KS1.2  " link null} @{" VRAM     " link null} @{" SVGA      " link null}
+    @{" A4000/040  " link products.a4000.040 } @{" KS1.3  " link null} @{" Chip RAM " link null} @{" RGB       " link video.rgb}
+    @{" A4000T     " link products.a4000t    } @{" KS2.04 " link null} @{" Fast RAM " link null}
+    @{" CDTV       " link products.cdtv      } @{" KS2.05 " link null}
+    @{" CDTV II    " link products.cdtv2     } @{" KS3.0  " link null}
+
+    @{" KS3.0  " link null}@{" KS3.0  " link null}
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node magazines "Periodicals and Magazines"
+@toc main
+
+    - Periodicals and Magazines -
+
+        - .Info
+
+        - Amazing Amiga
+
+        - Amazing Computing's Guide to the Amiga
+
+        - Amazing Computing's Tech Journal
+
+        - Amiga Format
+
+        - Amiga Video/Graphics Magazine
+
+        - Amiga News
+
+        - Amiga Report
+
+        - Amiga User International
+
+        - Amiga World
+
+        - Amiga World Tech Journal
+
+        - AVID
+
+        - Breadbox
+
+        - Compute!'s Amiga Resource
+
+        - Computer Graphics World
+
+        - DeskTop Video Magazine
+
+        - Imagine Mailing List
+
+        - Lightwave Mailing List
+
+        - The One
+
+        - Video Toaster User
+
+        - Viewport
+
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node compression "Compression"
+@toc main
+
+    - Compression -
+
+                      VERSION     FILE DISK GUI EXE LIB
+
+        ARC            .23 87 .arc       x              outdated
+        CFX           2.2b 90                x          identifier
+        Compress              .Z         x              UNIX compatible
+        DMS           1.11 91 .dms       x              Disk Masher
+        DMSWIN                .dms       x   x          Disk Masher Windows
+        Imploder      4.0  92       x        x   x   x
+        LHA           1.50 93 .lha  x
+        LHARC                 .lzh       x              outdated
+        LHARCA                .lzh  x        x          outdated
+        LHUNARC               .lzh       x              outdated
+        LHWARP                .lhw       x              outdated
+        LX                          x
+        LZ            1.92 92 .lha  x                   outdated
+        NIBWARP               .wrp       x              outdated
+        Power Packer          .pp   x    x   x   x   x
+        PPAnim                .pp   x                x  loader
+        PPLoadSeg             .pp   x            x   x  file handler
+        PPMore                .pp   x        x       x  loader
+        PutTraxx              .trax      x              outdated
+        SHAR                  .uu   x                   UNIX binary/ascii
+        UNSHAR                .uu   x                   UNIX binary/ascii
+        TAR                   .tar  x                   UNIX tape backup
+        UNARC                 .arc  x                   outdated
+        UUencode              .uu   x                   UNIX binary/ascii
+        UUdecode              .uu   x                   UNIX binary/ascii
+        WARP                  .wrp       x              outdated
+        UNWARP                .wrp       x              outdated
+        XDIR                  xpk                    x  identifier
+        XDROP                 xpk   x        x       x  xpk appicon
+        XFH                   xpk   x        x   x   x  file handler
+        XPK                   xpk   x            x   x
+        XUP                   xpk   x                x  xpk unpacker
+        ZAP                   .zap       x              outdated
+        ZIP           1.0     .zip  x        x          outdated
+        ZOO           2.00 92 .zoo  x                   outdated
+        ZOOM                  .zoom      x   x          outdated
+
+@endnode
++-----------------------------------------------------------------------------+
++-----------------------------------------------------------------------------+
+
+
+@node software "Public Domain Software"
+@toc main
+
+    - Public Domain Software -
+
+        @{" Compression Programs " link compression   }
+        Eric Schwartz Animations
+        Euro Demos
+        @{" File Formats         " link os.file_types }
+        @{" Fred Fish Disks      " link software.fish }
+        @{" Music Programs       " link software.music}
+        Text Editors
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node software.music "Music Programs"
+@toc software
+
+    - Music Programs -
+
+                        EDIT  MOD MED GUI
+        DeliTracker            x       x
+        EdPlayer               x   x   x
+        IntuiTracker           x       x
+        MED               x    x   x   x
+        MEDPlayer                  x   x
+        Module Master          x       x
+        OmniPlay
+        ProTracker        x    x       x
+        SoundTracker      x    x       x
+        SuperPlay
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+@node software.fish "Fred Fish Disks"
+@toc software
+
+    - Fred Fish Disks -
+
+            Fred Fish Disks are a collection of public domain and freely
+        distributable software for the Amiga. Volumes are often shipped
+        in batches of 10-15 disks once every two months. The current total
+        number of disks is about 850.
+
+            There are catalogs available for Fred Fish software. Two
+        popular disk based catalogs are the Aquarium and King Fisher sets,
+        which include programs to update the catalogs from the Fred Fish
+        Disk announcements. The programs allow you to search for public
+        domain software by category.
+
+            Subscription to the Fred Fisk Disk collection is $50 per year.
+        The collection is available on CD-ROM, FTP sites, and BBS systems.
+
+@endnode
++-----------------------------------------------------------------------------+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,271 @@
+:msgI
+Just Add OS2 Warp
+:end
+
+:msgL
+Welcome to JUST ADD OS/2 WARP!
+
+  JUST ADD OS/2 WARP contains:
+
+- The OS/2 Warp Upgrade Advisor                                   
+- Windows 95 to OS/2 Warp Dual Boot Utility                       
+- Windows 95 to OS/2 Warp Long File Name Conversion Utility       
+- Lots of information on making Windows cooperate with OS/2 Warp  
+- Loads of great OS/2 Warp technical info                         
+- The OS/2 Warp and OS/2 Warp Connect Demo                        
+
+This program will install JUST ADD OS/2 WARP on your computer,
+but first, a word from our Lawyers ...
+Press Enter to continue
+:end
+
+:msgL1
+Ok, here's the stuff our lawyers made us say ....
+
+       IBM PROGRAM LICENSE AGREEMENT FOR "JUST ADD OS/2 WARP"
+
+IF YOU RECEIVED THE "JUST ADD OS/2 WARP" PACKAGE ON DISKETTES, THE
+FOLLOWING TERMS AND CONDITIONS APPLY TO THE DISKETTES AND ALL PROGRAMS AND
+DOCUMENTATION CONTAINED ON THE DISKETTES (HEREINAFTER COLLECTIVELY REFERRED
+TO AS THE "PROGRAM"). IF YOU RECEIVED THE "JUST ADD OS/2 WARP" PACKAGE
+ELECTRONICALLY, THE FOLLOWING TERMS AND CONDITIONS APPLY TO ALL PROGRAMS
+AND DOCUMENTATION YOU DOWNLOADED (HEREINAFTER COLLECTIVELY REFERRED TO AS
+THE "PROGRAM"). BEFORE YOU CONTINUE TO USE THE PROGRAM YOU SHOULD CAREFULLY
+READ THE FOLLOWING TERMS AND CONDITIONS.  CONTINUING TO USE THE PROGRAM
+INDICATES YOUR ACCEPTANCE OF THESE TERMS AND CONDITIONS. IF YOU DO NOT
+AGREE TO THESE TERMS AND CONDITIONS YOU MUST STOP USING THE PROGRAM AND
+EITHER:
+
+1. RETURN THE PROGRAM TO IBM,
+2. TRANSFER THE PROGRAM, PROVIDED THE TRANSFEREE AGREES TO BE BOUND IN
+   ALL RESPECTS BY THIS LICENSE AGREEMENT, OR
+3. DESTROY THE PROGRAM.
+
+     The PROGRAM is licensed not sold.  International Business Machines
+Corporation or the applicable IBM country organization (IBM) grants you a
+license for the PROGRAM only in the country where you acquired the PROGRAM.
+You obtain no rights other than those granted you under this license.
+IBM owns or has licensed from the owner copyrights in the PROGRAM.  You are
+responsible for the selection of the PROGRAM and for the installation of,
+use of, and results obtained from, the PROGRAM.
+
+1. License
+
+     Under this license, you may:
+
+     1) use the PROGRAM on only one machine at any one time and
+     2) transfer the possession of the PROGRAM to another party.
+
+If you transfer the PROGRAM, you must transfer your copy of the PROGRAM and
+a copy of this license to the other party. Your license is then terminated.
+The other party agrees to these terms and conditions by its first use of
+the PROGRAM.
+
+     Under this license, you may not:
+
+     1) use or transfer the PROGRAM except as provided in this license;
+     2) post the PROGRAM electronically;
+     2) copy, modify, merge, or distribute the PROGRAM;
+     3) reverse assemble or reverse compile the PROGRAM; or
+     4) sublicense, rent, lease, or assign the PROGRAM.
+
+2. Warranty
+
+THE PROGRAM IS PROVIDED "AS IS" WITHOUT ANY WARRANTIES (CONDITIONS) OF ANY
+KIND.  IBM DISCLAIMS ALL WARRANTIES (CONDITIONS) FOR THE PROGRAM, EITHER
+EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+
+Some jurisdictions do not allow exclusion of implied warranties, so the
+above exclusions may not apply to you.
+
+3. Limitation of Remedies
+
+IN NO EVENT WILL IBM BE LIABLE FOR ANY LOST PROFITS, LOST SAVINGS,
+INCIDENTAL OR INDIRECT DAMAGES OR OTHER ECONOMIC CONSEQUENTIAL DAMAGES,
+EVEN IF IBM OR ITS AUTHORIZED SUPPLIER HAS BEEN ADVISED OF THE POSSIBILITY
+OF SUCH DAMAGES.  IN ADDITION, IBM WILL NOT BE LIABLE FOR ANY DAMAGES
+CLAIMED BY YOU BASED ON ANY THIRD-PARTY CLAIM.
+
+The above limitations of remedies also applies to any developer and/or
+supplier of the PROGRAM. Such developer and/or supplier is an intended
+beneficiary of this Section.
+
+Some jurisdictions do not allow these limitations or exclusions, so they
+may not apply to you.
+
+4. General
+
+You may terminate your license at any time.  IBM may terminate your license
+if you fail to comply with the terms and conditions of this license.  In
+either event, you must destroy your copy of the PROGRAM.
+
+You agree that you have no agreement that prohibits your use of this
+PROGRAM.  You agree to abide by the terms and conditions of all applicable
+program license agreements including those related to Microsoft products.
+
+You are responsible for payment of any taxes, including personal property
+taxes, resulting from this license.
+
+Neither party may bring an action, regardless of form, more than two years
+after the cause of the action arose.
+
+If you acquire the PROGRAM in the United States, this license is governed
+by the laws of the State of New York.  If you acquired the PROGRAM in
+Canada, this license is governed by the laws of the Province of Ontario.
+Otherwise, this license is governed by the laws of the country in which you
+acquired the PROGRAM.
+:end
+
+:msg0
+JUST ADD OS/2 WARP v1.1 
+:end
+
+:msg1
+This installation program can be run from OS/2 Warp, Windows 95,
+or Windows 3.1, but it must be run from a FULL SCREEN DOS session,
+not in a DOS window.  If you are not running from a FULL SCREEN
+DOS session, press Ctrl Break now and restart
+in a FULL SCREEN DOS session.
+
+Press Ctrl Break to abort, or press ENTER to continue
+:end
+
+
+:msg2
+Enter the drive letter of your source files
+(example - a:)
+
+Note: if you are installing from a directory on your
+hard drive, enter the drive\path (example - c:\download)
+:end
+
+
+:msg3
+Enter destination drive
+(ex: c:)
+
+DRIVES AVAILABLE      SPACE ON DRIVE
+
+
+
+
+
+:end
+
+:msg4
+Please put DISKETTE 2 in your source drive
+Press ENTER to continue
+:end
+
+:msg5
+Please put DISKETTE 3 in your source drive
+Press ENTER to continue
+:end
+
+:msg6
+JUST ADD OS/2 WARP installation is complete
+
+To start from OS/2 Warp, double click the "Just Add OS/2 Warp" icon
+from your OS/2 desktop
+
+To start from Windows 95, double click the "Just Add OS/2 Warp" icon
+from your Windows 95 desktop
+
+To start from Windows 3.1, open the Just Add OS/2 Warp program group
+and double click on the Just Add OS/2 Warp icon.  If you installed
+from Windows 3.1, you will need to exit and restart Windows.
+
+Thank you for loading JUST ADD OS/2 WARP!  Enjoy!
+:end
+
+:msg7
+Now installing JUST ADD OS/2 WARP Disk 1
+Please wait
+:end
+
+:msg7a
+Now installing JUST ADD OS/2 WARP Disk 2
+Please wait
+:end
+
+:msg7b
+Now installing JUST ADD OS/2 WARP Disk 3
+Please wait
+:end
+
+:msg8
+JUST ADD OS/2 WARP Installation file missing!
+Insert JUST ADD OS/2 WARP disk 1 into SOURCE drive
+Press ENTER to continue
+:end
+
+:msg9
+JUST ADD OS/2 WARP Installation file missing!
+Insert JUST ADD OS/2 WARP disk 2 into SOURCE drive
+Press ENTER to continue
+:end
+
+:msg10
+JUST ADD OS/2 WARP Installation file missing!
+Insert JUST ADD OS/2 WARP disk 3 into SOURCE drive
+Press ENTER to continue
+:end
+
+:msg11
+Now checking disk configuration 
+Please wait
+:end
+
+:msg12
+Removal Utility
+
+This program will remove JUST ADD OS/2 WARP 
+from you computer.  To get it back, simply
+reinstall.
+
+Press C to continue, or any other key to exit 
+without removing.
+:end
+
+:msg13
+JUST ADD OS/2 WARP has been removed 
+
+Press ENTER to finish
+:end
+
+:msg14
+CAUTION!
+You have installed the Windows to OS/2 Warp Dual Boot and
+Long File Name Conversion Utility.  Do you wish to remove it? 
+Type Y to remove, N to keep.
+:end
+
+:msg15
+The destination drive you entered is not valid
+
+Press ENTER to re-enter
+:end
+
+:msg16
+PgUp & PgDn to scroll ... Press Y to agree, any other key to exit
+:end
+
+:msg17
+ Preparing System 
+Please Wait
+:end
+
+:msg18
+WARNING: Not enough disk space
+
+JUST ADD OS/2 WARP requires 3MB of disk space
+available on drive C: plus 5MB of disk space
+available on some other drive, or 8MB available
+on drive C: if C: is your only drive.
+
+Press ENTER to return to your system and free up
+additional disk space, then restart the
+JUST ADD OS/2 WARP installation.
+:end
+

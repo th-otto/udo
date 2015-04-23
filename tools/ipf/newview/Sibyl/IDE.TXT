@@ -1,0 +1,341 @@
+IDE
+
+----------------------------------------------------------------------
+1. Find In Files always picks up word at cursor, even if option is deselected
+- Fixed sometime
+
+----------------------------------------------------------------------
+2. In project manager, files are not sorted.
+- Workaround, use SPT tool
+
+----------------------------------------------------------------------
+3. Debugger does not show PChar variables or large arrays 
+  in any useful way (locks up). Have to use storage 
+- Not fixed
+3a. String^ could be resolved also
+
+----------------------------------------------------------------------
+4. Can't inspect (right mouse) local variables. Have to use Watch.
+- Not fixed
+
+----------------------------------------------------------------------
+5. Menu not keyboard accessible from control centre.
+- Not fixed
+
+----------------------------------------------------------------------
+6. Debugger cannot run on OS/2 FP9 - 12 (?)
+- Unimportant. Use < FP9 or > Fp12. Works with FP13 and on.
+
+----------------------------------------------------------------------
+7. Inconsistent useage of directories between build/compile make
+If you're building (-B) then the compiler does not find SPU units in
+the output directory. The error message is, 'File not found: forms.pas'. 
+
+But
+
+If you're making (-M) then the compiler DOES find SPU units in the
+output directory.
+
+This is the same for command line and IDE.
+
+In fact Project - Build is exactly the same as Make except that it excludes
+the output directory from looking for units.
+Hence - it does not work if the output directory is one of the unit directories.
+
+This is perhaps really a compiler bug, that it does not have a proper
+BUILD mode.
+
+- Not fixed
+
+----------------------------------------------------------------------
+8. Relative output directories do not work
+- Fixed in SP4
+
+If you specify an output directory for your project, relative to the
+project directory (e.g. '.\output', or just 'output'), then the
+debugger will refuse to run, saying 'Could not find starting CS:EIP'.
+To workaround: don't use relative directories. Use the current
+directory (leave the output dir blank) or specify the full path...
+
+FIX:
+It is a very simple error, the debug function HandleThreadCreate in
+dbghlp.pas is being passed the string
+c:\blah\projectdir\\output\filename.exe
+Note the two slashes between the project dir and the relative output
+dir.
+
+This is due to a bug (or omission) in the ExpandPath function, as
+far as I can tell. It takes two parameters:
+ExpandPath( Path, BaseDirectory)
+If BaseDirectory ends with a \ then relative directories end up with
+the two slashes.
+
+I used the previously released source code for the IDE, which I was not
+able to get functioning very well (won't load forms or compile :-) 
+BUT I was able to make a Sibyl.exe that can debug when the exe is in a
+relative directory, as proof of the fix. (I didn't fix ExpandPath, 
+instead I fixed the following in projects.pas:
+
+FUNCTION FExpandProject(Path:STRING):STRING;
+var
+   projDir :  string;
+BEGIN
+  Result := '';
+  IF Path = '' THEN exit;
+  Path := ReplaceEnvStrings(Path);
+  IF Path = '' THEN exit;
+  //relative Pfade sind relativ zum SPR File
+  IF ProjectBaseDir <> '' THEN
+// begin fix
+  begin
+     projdir:= ProjectBaseDir;
+     if projdir[ length( projdir ) ] = '\' then
+        delete( projdir, length( projdir ), 1 );
+
+    Result := ExpandPath(Path, projdir)
+  end
+// end fix
+  ELSE
+    Result := DOS.FExpand(Path);
+END;
+
+-- END FIX ---
+
+----------------------------------------------------------------------
+9. Always reloads "last" project after compiling complib
+
+After installing components, it should not reload the last
+project if there wasn't one open before installing
+
+- Not fixed.
+
+(Similarly, if set to not open last project at startup, 
+opens a blank one instead).
+
+----------------------------------------------------------------------
+10. Multiple error messages for missing components when loading project
+
+Say a single error message for all components that are not
+installed, when loading a project, or at least one per class, not 
+for every single component (very tedious)
+
+- ?
+
+----------------------------------------------------------------------
+11. "Illegal SCU" error message after installing components
+
+Often after installing a component(s), it reloads the project but then
+says "illegal SCU format". But shutting down Sibyl and restarting, it
+can load the project OK. That one sounds hard to find...
+
+- ?
+
+----------------------------------------------------------------------
+12. Asks if want to save unchanged project
+
+If you start Sibyl with a new project (e.g. have deselected 'load last
+project' then it asks you if you want to save the new project even if
+you haven't made any changes. Would be better to start with no project
+at all.
+
+- Not fixed
+12a. Maybe these options:
+ 1) Start with blank project (initial setting)
+ 2) Reload last project
+ 3) Start with no project
+
+12b. There is not really any "no project" mode 
+
+----------------------------------------------------------------------
+13. Copy and paste adds "1" to all components
+
+When you copy and paste, all the controls are renamed to XXX1  even if
+there isn't any existing XXX. This means cutting and pasting lots of
+controls takes a lot of fiddling since you have to go and correct all
+the names back to what they used to be. 
+
+- Not fixed
+
+----------------------------------------------------------------------
+14. Non-visual components off form are unmoveable
+
+If you accidentally move a non-visual control (e.g. a popup menu) out of
+sight (e.g. past the edge of a panel) it's almost impossible to do
+anything with it any more. There is no way to move it back again.
+
+- Sort of fixed in FP4
+ When selected from list in object inspector, they are moved onscreen
+
+----------------------------------------------------------------------
+15. Popup menu editor bugs
+
+15a - when you click outside the menu it seems to dissappear, but doesn't
+come up properly next time (doesn't fully draw itself). It only seems
+to be properly closed if you hit escape with the menu open. 
+
+15b - when you insert new items, then click on them, other menu items are
+left as if they are still selected. 
+
+15c - Double clicking a menu item does nothing, you have to go to the event
+panel and select the onClick event there. 
+
+15d - You can't move items up and down.
+
+----------------------------------------------------------------------
+16. The big error "removing this event requires the manual removal" or
+whatever it is, when you blank out a event handler, is useless and annoying.
+
+- Fixed in FP4?
+
+----------------------------------------------------------------------
+17. After menu from alt key, sometimes focus does not come back to edit
+window
+
+----------------------------------------------------------------------
+18. After searching finishes without finding anything, next edit window is selected
+
+----------------------------------------------------------------------
+19. Debugger - Local variables do not always work (may be blank)
+- Fixed in FP4
+Workaround: make sure Local Variables pane is visible before first
+break (?)
+
+19a Variables inside a nested procedure/function are not visible to debugger
+  (Also compiler bug: self does not work with a nested p/f inside a method)
+----------------------------------------------------------------------
+21. Startup splash screen not on top
+
+- Not fixed
+- Not so bad
+
+----------------------------------------------------------------------
+22. Always recompiling main file (?)
+
+- ?
+
+----------------------------------------------------------------------
+23. Last 'edit' item in object inspector remains 
+Sometimes when changing to another component, if there is an edit box
+showing, it gets left behind.
+
+----------------------------------------------------------------------
+24. Sibyl debugger does not handle all opcodes
+
+----------------------------------------------------------------------
+25. Install component does not remember it's directory or start from current
+
+----------------------------------------------------------------------
+26. Title of editor window is often not refreshed when a file is loaded.
+
+----------------------------------------------------------------------
+27. Setting application font
+Did not update all forms until FP4?
+
+----------------------------------------------------------------------
+28. Browser-information is partially not correct (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+29. Search function finds only the first matching string in large files (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Relative path names for compiler OUTPUT doesn't work in the IDE (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Source code generator has problems with forward class definitions (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Inspector combobox containts an item for pictures if you insert a TImage (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Alt+F3 hangs the IDE in Win32 (FB)
+Fixed in FP4
+
+----------------------------------------------------------------------
+- Reinstalling component is not an error
+
+A more useful message when reinstalling a component.
+
+- ?
+
+----------------------------------------------------------------------
+- Application icon does not usually work
+- Fixed in FP4?
+Possibly because, the default Sibyl icon has various sizes, so that
+OS/2 picks those rather than scaling your supplied icon?
+Or, need to set form icon.
+
+----------------------------------------------------------------------
+- Setting form icon crashes the IDE
+
+----------------------------------------------------------------------
+- If the EXE contains no debug information the IDE
+  pops up 3 errors instead of one, when doing Debug - Go
+
+----------------------------------------------------------------------
+- The inspector comboboxes are only 8 items in length
+
+----------------------------------------------------------------------
+- The inspector component combobox does nothing useful with keypresses
+  (incremental search might be nice)
+
+----------------------------------------------------------------------
+- Find in files offers no efficient method to search only the
+  files in the project or the project directory
+
+----------------------------------------------------------------------
+- No way to change components ZOrder amongst themselves
+
+----------------------------------------------------------------------
+- Inspector crashes when working with record properties that have
+  unions (alternative forms) e.g. TRect
+  Expand then collapse to reproduce.
+  Workaround: don't use record types with unions.
+----------------------------------------------------------------------
+- Inspector doesn't work for char properties.
+----------------------------------------------------------------------
+- Line numbers displayed in CPU window are one less than correct.
+  Compare with the main edit windows.
+----------------------------------------------------------------------
+
+Enhancements/Other issues
+-------------------------
+
+Incremental search improvements:
+- retrieve last search
+- repeat
+- back
+
+Ability to show address of variables
+- e.g. evaluate @ Variable and Addr( variable)
+
+It would be nice to implement Delphi's behaviour of, if you have an
+empty event handler, to delete it for you - this is especially good
+for when you accidentally double click a control.
+
+Keep same property selected when changing from one component to
+another (object inspector) 
+
+Improve incremental search 
+- repeat
+- backward
+
+Customisable keys
+
+Enhance the component install. Allow selecting multiple files.
+
+Automatically delete empty event handlers 
+
+Simpler keystroke to do debug - go
+
+Split editor window
+
+Put form data in separate files (safety)
+
+Help always on top (option)
+
+

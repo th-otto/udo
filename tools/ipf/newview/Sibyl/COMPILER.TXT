@@ -1,0 +1,69 @@
+COMPILER
+
+----------------------------------------------------------------------
+1. 'Finally' clause is not called when exit is encountered
+
+----------------------------------------------------------------------
+2. Optimisation causes incorrect code.
+Compiler optimisation often generates incorrect code for expressions. 
+Must be turned off in most programs. This makes Sibyl somewhat slow
+for intensive calculations
+
+----------------------------------------------------------------------
+3. Internal errors.
+( see 9 for one example )
+
+----------------------------------------------------------------------
+4. Allowed to construct abstract classes
+- ?
+
+----------------------------------------------------------------------
+5. Compiler and resource compiler won't open readonly source files.
+
+----------------------------------------------------------------------
+6. Resource compiler includes files, relative to current dir, not current file path.
+- Fixed in Fp4
+
+----------------------------------------------------------------------
+7. No quick way to append to AnsiString
+Need to optimise s:= s + 'blah'; like delphi, or make a procedure
+? Perhaps with optimisation on, this would be done?
+
+----------------------------------------------------------------------
+8. .rc files are not included in make
+(Same as Delphi ;-( )
+
+----------------------------------------------------------------------
+9. IDE compiler crashes if command line compiler used while IDE running.
+(On units that the IDE project is using)
+"Internal compiler error" or "Undefined identifier: TForms.CreateWnd!O7272!"
+
+----------------------------------------------------------------------
+10. Cannot pass nil as a value for procedure/function/method variable parameters 
+For example:
+
+TDoBob = procedure of object;
+Procedure DoABobFunction( Function: TDoBob );
+...
+
+DoABobFunction( nil )
+crashes.
+
+----------------------------------------------------------------------
+11. Functions nested inside class methods generate faulty references to self
+The nested function can refer to properties/methods of the class it is in
+the method of, but the code crashes. 
+Workaround: refer to self explicitly.
+
+----------------------------------------------------------------------
+12. Make does not notice "implicit" dependencies
+e.g. ArchiveStore contains TRevision. Interace changes.
+CachedArchive uses ArchiveStore
+FIlelistArchive uses elements of revision via an array property but does not ave ArchiveStore in Uses
+
+----------------------------------------------------------------------
+13. Produces corrupt debug data in Publics section on large projects
+- On large projects the IDE cannot debug with a message like:
+  Debugger Error: 'Object 387 in module D:...newview.exe 
+  not found (PUBLICS)'
+The end of the publics table is garbage.

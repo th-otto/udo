@@ -1,0 +1,110 @@
+#BGH 000 000 000
+
+ BubbleGEM Help-File by RSM2OUT v1.95 fÅr ResourceMaster ab v2.06 by ARDISOFT
+
+#Dial 000 
+# 003 Hier kînnen Sie die|Quelldatei wÑhlen
+# 005 Hier kînnen Sie die|Zieldatei wÑhlen
+# 020 Bei Pascal und C die|JumpID's ausgeben lassen
+# 021 Bei WinHelp(4) Ausgabe wird eine|Map-Datei fÅr C geschrieben
+# 022 Bei WinHelp(4) Ausgabe wird eine|Map-Datei fÅr Pascal/Delphi geschrieben
+# 023 Bei WinHelp(4) Ausgabe wird eine|Map-Datei fÅr GFA-Basic geschrieben
+# 024 Bei WinHelp(4) Ausgabe wird eine|Map-Datei fÅr Visual-Basic geschrieben
+# 026 Zieldatei(en) werden in einen|Ordner ausgegeben -> Das|Symbol 'UseFolders' wird gesetzt
+# 027 UDO wartet nach dem öbersetzen|auf einen Tastendruck
+# 028 UDO gibt wÑhrend der|öbersetzung Meldungen aus
+# 029 UDO Åbersetzt nur im Speicher
+# 030 Checkmodus von UDO aktivieren
+# 031 Projektdatei (-(at) file) benutzen|Schaltet alle anderen Angaben ab
+# 032 Aufruf von UDO.TTP
+# 033 UDO-Shell verlassen
+# 034 Aufruf Projekt-Dialog
+# 035 Befehlssyntax von UDO
+# 036 Die Hilfe der|UDO-Shell
+# 038 Logfile im|Editor laden
+# 039 Hyphenfile im|Editor laden
+# 040 Treefile im|Editor laden
+#Dial 001 
+# 013 Info-Dialog schlieûen
+#Dial 002 
+# 003 Vor- und Zunahme des Benutzers
+# 005 Postleitzahl und Ort|des Benutzers
+# 007 SchlÅssel|des Benutzers
+# 008 UDO-Shell registrieren
+# 009 Registrierung abbrechen
+#Dial 003 
+# 002 Der Zielpfad|wird angepasst
+# 004 Der gesamte Zielpfad|wird angepasst
+# 005 Name u. Endung der Zieldatei|werden angepasst
+# 006 Endung der Zieldatei|wird angepasst
+# 007 Es werden kleingeschriebene|Pfadnamen erzeugt
+# 008 Es werden kleingeschriebene|Dateinamen erzeugt
+# 010 UDO gibt lange|Dateinamen aus
+# 011 UDO gibt kurze|Dateinamen aus
+# 013 Vor Programmende|nochmal nachfragen?
+# 014 Vorhandene Zieldateien~werden Åberschrieben
+# 016 UDO legt ein Logfile an
+# 017 UDO legt ein Hyphenfile an
+# 018 UDO legt ein Treefile an
+# 019 Warnungen werden beim|öbersetzen nicht ausgegeben
+# 020 Optionen Åbernehmen
+# 021 Optionen-Dialog schlieûen
+# 022 Die Hilfe zum|Optionen-Dialog
+#Dial 004 
+# 002 Symbol 1 aktivieren
+# 003 Symboltext 1
+# 004 Symbol 2 aktivieren
+# 005 Symboltext 2
+# 006 Symbol 3 aktivieren
+# 007 Symboltext 3
+# 008 Symbol 4 aktivieren
+# 009 Symboltext 4
+# 010 Symbol 5 aktivieren
+# 011 Symboltext 5
+# 012 Symbol 6 aktivieren
+# 013 Symboltext 6
+# 014 Symbol 7 aktivieren
+# 015 Symboltext 7
+# 016 Symbol 8 aktivieren
+# 017 Symboltext 8
+# 018 Symbole-Dialog schlieûen
+# 019 Die Hilfe zum|Symbole-Dialog
+#Dial 005 
+# 002 Format auswÑhlen, zu dem|ein Programm gesucht werden soll
+# 005 Programm auswÑhlen
+# 006 Programm versteht|VA_START
+# 007 Programm ist|ein TOS-Programm
+# 009 Parameter eintragen
+# 010 Externes-Dialog schlieûen
+# 011 Hinweis zu|den Parametern
+# 012 Die Hilfe zum|Externes-Dialog
+#Dial 007 
+# 004 UDO-Shell verlassen
+# 005 UDO-Shell nicht verlassen
+#Dial 009 
+# 024 Hinweis-Dialog schlieûen
+#Dial 010 
+# 015 UDO-Shell Projekt benutzen
+# 016 UDO Projektdatei benutzen
+# 019 Infiles gewÅnscht?
+# 020 Outfiles gewÅnscht?
+# 021 Bilder gewÅnscht?
+# 022 Raws gewÅnscht?
+# 023 Kapitel gewÅnscht?
+# 024 Headings gewÅnscht?
+# 025 Alias gewÅnscht?
+# 026 Labels gewÅnscht?
+# 027 Indizes gewÅnscht?
+# 028 AusgewÑhlte Datei(en)|îffnen lassen
+# 029 Projektdatei (UDO-Shell)|neu erstellen
+# 030 Projekt-Dialog schlieûen
+# 031 Die Hilfe zum|Projekt-Dialog
+#Dial 011 
+# 003 Wie heiût der|UDO-Hypertext?
+# 005 Projektdatei (-(at) file) auswÑhlen
+# 008 Olga-Server zum|Starten von Bildern|benutzen
+# 009 Die UDO-Shell ruft automatisch UDO.TTP|auf, wenn der Quelltext im Editor|gesichert ist
+# 010 Die UDO-Shell fordert einen Olga-Client|zum Auffrischen seines Dokumentes auf
+# 011 Einstellungen Åbernehmen
+# 012 Allgemeines-Dialog schlieûen
+# 013 Die Hilfe zum|Allgemeines-Dialog

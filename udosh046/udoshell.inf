@@ -1,0 +1,198 @@
+# [Main]
+SOURCE=H:.
+DEST=H:.txt
+
+# [Options]
+FORMAT=2
+ADAPTION=-1,-1,0,0,-1,-1,-1,0
+OPTIONS=-1,-1,-1,0,-1,0,0,0,0,0,0,0,-1,0,0,0,0
+FILTER=0,0,0,0,0,0,0,0,0,-1
+SYMBOLS=0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+# [Symbols]
+SYMBOL1=
+SYMBOL2=
+SYMBOL3=
+SYMBOL4=
+SYMBOL5=
+SYMBOL6=
+SYMBOL7=
+SYMBOL8=
+SYMBOL9=
+SYMBOL10=
+SYMBOL11=
+SYMBOL12=
+SYMBOL13=
+SYMBOL14=
+SYMBOL15=
+SYMBOL16=
+
+# [Tools]
+EXT-FORMAT=1
+
+# [UDO-Konverter]
+PROG=
+PARAM=
+OPT=0
+
+# [Editor]
+PROG=
+PARAM=
+OPT=0
+
+# [Shower]
+PROG=
+PARAM=
+OPT=0
+
+# [Graphics-Editor]
+PROG=
+PARAM=
+OPT=0
+
+# [Extern Programms]
+
+# [Amiga Guide]
+PROG=
+PARAM=
+OPT=0
+
+# [Apple Quickview]
+PROG=
+PARAM=
+OPT=0
+
+# [ASCII]
+PROG=
+PARAM=
+OPT=0
+
+# [C]
+PROG=
+PARAM=
+OPT=0
+
+# [DRC]
+PROG=
+PARAM=
+OPT=0
+
+# [GNU-Texinfo]
+PROG=
+PARAM=
+OPT=0
+
+# [HTML]
+PROG=
+PARAM=
+OPT=0
+
+# [HTML-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [IPF]
+PROG=
+PARAM=
+OPT=0
+
+# [LaTeX]
+PROG=
+PARAM=
+OPT=0
+
+# [Linuxdoc-SGML]
+PROG=
+PARAM=
+OPT=0
+
+# [Lyx]
+PROG=
+PARAM=
+OPT=0
+
+# [Manualpage]
+PROG=
+PARAM=
+OPT=0
+
+# [NROFF]
+PROG=
+PARAM=
+OPT=0
+
+# [Pascal]
+PROG=
+PARAM=
+OPT=0
+
+# [PDF-LaTeX]
+PROG=
+PARAM=
+OPT=0
+
+# [Postscript]
+PROG=
+PARAM=
+OPT=0
+
+# [Pure C-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [Rich-Text-Format]
+PROG=
+PARAM=
+OPT=0
+
+# [ST-Guide]
+PROG=
+PARAM=
+OPT=0
+
+# [Turbo-Vision-Help]
+PROG=
+PARAM=
+OPT=0
+
+# [UDO-Code]
+PROG=
+PARAM=
+OPT=0
+
+# [WinHelp]
+PROG=
+PARAM=
+OPT=0
+
+# [WinHelp 4.0]
+PROG=
+PARAM=
+OPT=0
+
+# [XML]
+PROG=
+PARAM=
+OPT=0
+
+# [Main too]
+UDO-HELP=
+PROJECTFILE(-@)=
+EXTERNAL-PRINTER=
+
+# [Registration]
+USER-NAME=
+USER-PLACE=
+USER-KEY=
+
+# [Coordinates]
+COORDS-SHELL=0,0,0,0
+OPEN-SHELL=1
+COORDS-PROJECT=0,0,0,0
+OPEN-PROJEKT=0
+COORDS-EXTERN=0,0,0,0
+OPEN-EXTERN=0
+COORDS-SYMBOL=0,0,0,0
+OPEN-SYMBOL=0

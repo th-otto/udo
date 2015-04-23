@@ -1,0 +1,1064 @@
+@database "ARX_Instr.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node main "ARexxGuide | Instruction and keyword reference"
+@toc ARexxGuide.guide/MAIN
+@prev ARx_Elements.ag/MAIN
+@next ARx_Func.ag/MAIN
+   @{fg highlight}AN AMIGAGUIDE® TO ARexx@{fg text}                 Second edition (v 2.0)
+   by Robin Evans
+
+ @{fg highlight}ARexx instruction and keyword reference@{fg text}
+   @{" About this section                                             " link ABOUT}
+
+   Primary keywords:
+      @{" ADDRESS     " link ADDRESS}   @{" ARG         " link ARG}   @{" BREAK       " link BREAK}   @{" CALL        " link CALL}
+      @{" DO          " link DO}   @{" DROP        " link DROP}   @{" ECHO        " link ARx_Instr3.ag/SAY}   @{" EXIT        " link EXIT}
+      @{" IF          " link IF}   @{" INTERPRET   " link INTERPRET}   @{" ITERATE     " link ITERATE}   @{" LEAVE       " link LEAVE}
+      @{" NOP         " link NOP}   @{" NUMERIC     " link ARx_Instr2.ag/NUMERIC}   @{" OPTIONS     " link ARx_Instr2.ag/OPTIONS}   @{" PARSE       " link ARx_Instr2.ag/PARSE}
+      @{" PROCEDURE   " link ARx_Instr3.ag/PROCEDURE}   @{" PULL        " link ARx_Instr3.ag/PULL}   @{" PUSH        " link ARx_Instr3.ag/PUSH}   @{" QUEUE       " link ARx_Instr3.ag/QUEUE}
+      @{" RETURN      " link ARx_Instr3.ag/RETURN}   @{" SAY         " link ARx_Instr3.ag/SAY}   @{" SELECT      " link ARx_Instr3.ag/SELECT}   @{" SIGNAL      " link ARx_Instr3.ag/SIGNAL}
+      @{" TRACE       " link ARx_Instr3.ag/TRACE}   @{" UPPER       " link ARx_Instr3.ag/UPPER}
+
+   @{fg highlight}Secondary keywords:@{fg text}
+      @{" END         " link END}   @{" ELSE        " link IF}   @{" WHEN        " link ARx_Instr3.ag/WHEN}   @{" OTHERWISE   " link ARx_Instr3.ag/OTHERWISE}
+
+   @{fg highlight}Sub-keywords:@{fg text}
+      @{" EXPOSE      " link ARx_Instr3.ag/EXPOSE}   @{" FOR         " link DOOPT3}   @{" WHILE       " link DOOPT4}   @{" UNTIL       " link DOOPT4}
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+    This guide is @{" shareware " link ARexxGuide.guide/REG}. If you find it useful, please register.
+
+@endnode
+
+@node ABOUT "ARexxGuide | Instruction ref | ABOUT"
+@next MAIN
+@prev MAIN
+This section is a reference to @{" keywords " link ARexxGuide.guide/GLOSSARY 135} and @{" instructions " link ARx_Elements3.ag/INSTRUCTION}. In the syntax
+diagrams that begin each node, a vertical bar is sometimes used to group
+together a series of exclusive choices:
+
+             | <option 1>
+   <keyword> | <option 2>
+             | <option 3>
+
+In this formulation, any one @{i}<option>@{ui} to the left of the bar may be used
+with @{i}<keyword>@{ui}
+
+Each node includes a template showing the format of the arguments accepted
+by the instruction. The following conventions are used:
+
+   <>    A word or term surrounded by angle brackets should be replaced
+         by a value of some type. The acceptable replacement values are
+         explained in the notes following the syntax diagrams.
+
+   []    Items enclosed in square brackets are optional.
+
+   {}    Items enclosed in curly braces and entered in uppercase are
+         literal values. The @{" expression " link ARx_Elements2.ag/EXPRESSION} used for such an argument must
+         return one of the values from the list.
+
+   |     A bar is used to separate a list of literal values within {}
+         braces.
+
+   <UC>  UPPERCASE characters are used to indicate literal values that may
+         be used in the instruction. The value may be entered in upper or
+         lowercase when the instruction is actually used.
+
+   >>>   Three angle-braces are used in examples to indicate what the
+         example would output if run from a shell. Those braces and the
+         following text are not part of the code and should not be
+         entered if the example is used.
+
+Next, Prev, & Contents: Instruction ref
+
+@endnode
+
+@node ADDRESS "ARexxGuide | Instruction Reference (1 of 25) | ADDRESS"
+@prev MAIN
+        | <name>  [<command expression>];
+ADDRESS | COMMAND [<command expression>];
+        | [VALUE] <address expression>;
+        | ; (no argument)
+
+Submits a @{" command " link ARx_Elements3.ag/COMMAND} to the @{i}<name>@{ui}d @{" host " link ARx_Elements3.ag/HOST} or changes the host to which
+subsequent commands will be submitted.
+
+@{i}<name>@{ui} must be a @{" symbol " link ARx_Elements.ag/SYMBOL} or @{" string " link ARx_Elements2.ag/STRINGEXPR} naming an ARexx port. COMMAND is the
+name of the operating system host and can be used to send any AmigaDOS
+command for execution. @{i}<name>@{ui} is treated as a literal value; ARexx will
+not make a variable substitution for a symbol used in this context.
+
+If supplied, @{i}<command expression>@{ui} will be evaluated and its result will
+be sent to the host @{i}<name>@{ui}, but the current host of the script will not
+change.
+
+If @{i}<command expression>@{ui} is not supplied, then the named address will
+become the @{" current host " link ARx_Elements3.ag/DEFHOST} for the script; all subsequent commands will be
+sent to that host until it is changed. ARexx maintains the name of
+the previous host which can be recalled using the toggle form of the
+instruction, as explained below.
+
+When ADDRESS is used by itself, without arguments, the effect is to
+toggle between the @{" current host address and the previous host " link ARx_Elements3.ag/DEFHOST 10}.
+
+ADDRESS VALUE allows use of an @{" expression " link ARx_Elements2.ag/EXPRESSION} -- often a variable -- to
+specify the host name. A @{i}<command expression>@{ui} may not be used with this
+form of ADDRESS, however.
+
+The @{" ADDRESS() " link ARx_Func3.ag/ADDRESS()} function returns the name of the current host.
+
+   Examples:
+      say address()               >>> REXX  /* for example             */
+      ADDRESS COMMAND 'list libs:'  /* a directory listing will appear
+                                       on the active shell             */
+      ADDRESS TURBOTEXT0 'ReplaceWord New' /* an editor command        */
+      say address()               >>> REXX /* it hasn't changed        */
+      ADDRESS TURBOTEXT0
+      say address()               >>> TURBOTEXT0
+      ADDRESS
+      say address()               >>> REXX   /* toggles to previous host*/
+      ADDRESS
+      say address()               >>> TURBOTEXT0
+      NextTTX = 'TURBOTEXT1'
+      ADDRESS VALUE NextTTX
+      say address()               >>> TURBOTEXT1
+
+ARexx will not generate an error if an ADDRESS instruction specifies a
+port that is not currently available. @{" Error 13 " link ARx_Error.ag/ERROR_13}, "Host environment not
+found", will occur, however, if a command is issued when a non-existent
+port is specified as the current host.
+
+The function @{" SHOW('p',<portname>) " link ARx_Func2.ag/SHOW()} can be used to verify that the desired
+port is available.
+
+   Also see @{" ADDRESS()     " link ARx_Func3.ag/ADDRESS()} function
+            @{" PARSE SOURCE  " link ARx_Instr2.ag/PARSESRC5}
+            @{" WAITFORPORT   " link ARx_Instr2.ag/PARSESRC5} command utility
+
+Next: ARG | Prev: Instruction reference | Contents: Instruction reference
+
+@endnode
+
+@node ARG "ARexxGuide | Instruction Reference (2 of 25) | ARG"
+ARG <template>;
+
+Retrieves the argument string supplied when a program or function is
+called. ARG is an abbreviation of @{" PARSE UPPER ARG <template> " link ARx_Instr2.ag/PARSESRC1}.
+
+   Also see @{" ARG()         " link ARx_Func3.ag/ARG()} function
+            @{" PARSE SOURCE  " link ARx_Instr2.ag/PARSESRC5}
+
+                 Technique note: @{" Check unique datatypes            " link ARx_Tknq.ag/VERIFYNOTE}
+
+Next: BREAK | Prev: ADDRESS | Contents: Instruction ref.
+
+@endnode
+
+@node BREAK "ARexxGuide | Instruction Reference (3 of 25) | BREAK"
+@next CALL
+BREAK ;
+
+Exits from the range of a @{" DO " link DO} instruction or from within a string being
+@{" INTERPRETed " link INTERPRET}.
+
+This instruction, unlike @{" LEAVE " link LEAVE}, will exit even from a non-iterative DO
+instruction.
+
+   Example:
+      /**/
+      if a = b then
+      do
+         c = b
+         if d = c then BREAK
+         /* more instructions */
+      end
+
+   Also see @{" LEAVE          " link LEAVE}
+            @{" ITERATE        " link ITERATE}
+
+               More information: @{" Breaking structure                " link BREAKSTRUCT}
+
+Next: CALL | Prev: address | Contents: Instruction ref
+
+@endnode
+
+@node BREAKSTRUCT "ARexxGuide | Instruction reference | NOTE: BREAKING STRUCTURE"
+@toc BREAK
+@next LEAVE
+@prev BREAK
+The instructions @{" BREAK " link BREAK}, @{" LEAVE " link LEAVE}, and @{" ITERATE " link ITERATE} interrupt the flow of
+control in a script. In the strict-constructionist view of structured
+programming, that is a situation that should be avoided.
+
+Indeed, the instructions can usually be replaced by use of the various
+conditional statements in ARexx, including @{" IF " link IF}, @{" SELECT " link ARx_Instr3.ag/SELECT}, and the
+conditional @{" WHILE and UNTIL " link DOOPT4} constructions of DO. The example given with
+@{" BREAK " link BREAK} could be rewritten as:
+
+      /**/
+      if a = b then do
+         c = b
+         if d ~= c then do
+         /* more instructions */
+         end
+      end
+
+Replacing BREAK in this case results in more elegant code, but there are
+times when the extra conditional needed to avoid use of one of these
+instructions will make a program more difficult to decipher -- something
+especially true when LEAVE and ITERATE are used.
+
+The BREAK instruction is useful in @{" in-line scripts " link ARx_Elements.ag/INLINE} such as those used
+with @{" INTERPRET " link INTERPRET}. In those cases, structured programming rules might make
+a one-line program more confusing:
+
+      INTERPRET 'if a=b then break;b=c;say c'
+
+This trivial task could also be done by using an IF/ELSE construction, but
+might be less clear if written in that manner. Using the BREAK instruction
+makes it obvious that interpretation will stop if the @{" conditional " link ARx_Elements3.ag/CONDITIONAL} is
+true.
+
+Before using one of these instructions, it is best to re-examine the code
+to make sure that the interruption in structure is necessary.
+
+Next: LEAVE | Prev: BREAK | Contents: BREAK
+
+@endnode
+
+@node CALL "ARexxGuide | Instruction Reference (4 of 25) | CALL"
+@prev BREAK
+CALL <name> [<expression>] [[,] <expression>] [[,]...
+
+Invokes a subroutine, function or another ARexx program.
+
+@{i}<name>@{ui} is treated as a literal value: variable substitutions will not be
+made. It is the name of the function or the label of the subroutine being
+called.
+
+Any @{" function " link ARx_Elements3.ag/FUNCTION} can be called with the instruction. If used, @{" <expression> " link ARx_Elements2.ag/EXPRESSION}
+should follow the defined syntax (including commas) for arguments to the
+function being called. Parentheses may be used around the argument list
+but are not required. (In some other versions of REXX, however, use of
+parentheses with CALL is not allowed.)
+
+This instruction must be used to call an @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} or external program
+that does not return a value, since calling such a routine as a function
+would result in an error.
+
+When control returns to the clause following the CALL instruction, any
+value returned by a function is assigned to the variable @{" RESULT " link ARx_Elements2.ag/RESULT}.
+
+When control is transferred to an internal subroutine or function, the
+system variable @{" SIGL " link ARx_Elements2.ag/SIGL} is set to the line number of the calling clause.
+
+   Example:
+      CALL addlib 'rexxsupport.library', 0, -30, 0
+      CALL delay 100                            /* Pause 1 second   */
+      CALL delay(200)                           /* or 2 seconds     */
+      CALL time 'R'          /* reset the @{" elapsed-time counter " link ARx_Func2.ag/TIMENOTE}  */
+
+   Also see @{" SIGNAL        " link ARx_Instr3.ag/SIGNAL}
+
+                 Technique note: @{" Output strings to printer         " link ARx_Tknq.ag/PRINTTEST}
+
+NOTE: If [ NameVar ] is a variable that has been assigned the name of a
+function, then the instruction @{" `INTERPRET " link INTERPRET} 'call' NameVar' will launch
+the function represented by [NameVar].
+
+Compatibility_issues:
+   A powerful addition to the CALL instruction's syntax was added in
+   @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. The syntax is not supported in ARexx but may be encountered in
+   programs written for other platforms. The addition looks like SIGNAL:
+
+   CALL ON <condition> [NAME <subroutine>]
+
+   The new syntax allows CALL to be used in the same way as SIGNAL to
+   respond to error conditions with this exception: When a condition is
+   trapped by CALL ON, the state of the program is saved. Control can be
+   returned from the error-handling routine to the point where the error
+   occurred. `CALL OFF <condition>' turns off the error trap.
+
+Next: DO | Prev: break | Contents: Instruction ref
+
+@endnode
+
+@node DO  "ARexxGuide | Instruction Reference (5 of 25) | DO"
+@next DROP
+   |@{"-------------- [<num>]----------------------------" link DOOPT1}|@{"[UNTIL <condition>] ,  " link DOOPT4}
+DO |@{"[<var>=<expr> [TO <expr>][BY <expr>]]"link DOOPT2} @{"[FOR <expr>]" link DOOPT3}|@{"  [WHILE <condition>] ;" link DOOPT4}
+   |@{"-------------- [FOREVER]                         " link DOOPT5}
+   <action list>;
+@{"END [<name>];" link END}
+
+         The more generalized form of this instruction is:
+
+DO [<index>] [<repetitor>] [<conditional>]
+   <action list>
+END [<name>]
+
+Groups a list of clauses together and may be used to execute the list
+repeatedly.
+
+The DO keyword must always be paired with an END keyword.
+
+In its simplest form -- used without any of the bracketed options -- the
+DO and END pair group a list of clauses together in much the way that the
+begin/end keywords in Pascal or curly { } braces in C create a program
+block. @{i}<action list>@{ui} will be executed once in such a case.
+
+This form of the instruction is often used following @{" THEN " link THEN} or @{" ELSE " link ELSE} in
+@{" IF " link IF} or @{" WHEN " link ARx_Instr3.ag/WHEN} instructions since the grouping allows for multiple clauses
+to be executed.
+
+   Example:
+         if Auth = 'Beckett' then
+         DO
+            say "I can't go on,"
+            say "I can't go on,"
+            say "I'll go on...'"
+         END
+
+The various options to DO create different forms of @{" iterative " link ARexxGuide.guide/GLOSSARY 127} @{" loops " link ARexxGuide.guide/GLOSSARY 145}.
+
+@{i}<action list>@{ui} can be any number of @{" clauses " link ARx_Elements3.ag/CLAUSE} -- @{" instructions " link ARx_Elements3.ag/INSTRUCTION},
+@{" assignments " link ARx_Elements3.ag/ASSIGNMENT}, or @{" commands " link ARx_Elements3.ag/COMMAND}  -- and can include @{" nested " link ARexxGuide.guide/GLOSSARY 155} DO instructions.
+
+                 Technique note: @{" CountWords() user function        " link ARx_Tknq.ag/COUNTWORDS()}
+                                 @{" Format a table of information     " link ARx_Tknq.ag/FORMATNOTE}
+                                 @{" Read one file, write to another   " link ARx_Tknq.ag/INOUTFILE}
+                                 @{" WordWrap() user function          " link ARx_Tknq.ag/WORDWRAP()}
+                                 @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+                                 @{" Copy data from source code        " link ARx_Tknq.ag/INLDATA}
+                                 @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+                                 @{" Getting output from a command     " link ARx_Tknq.ag/READCMD}
+
+Next: DROP | Prev: CALL | Contents: Instruction reference
+
+@endnode
+
+@node DOOPT1 "ARexxGuide | Instruction Reference | DO (1 of 6) | REPEATER"
+@toc DO
+@prev DO
+@{" DO " link DO} [<number>] [while <conditional>] [until <conditional>];
+   <action list>;
+END;
+
+In the simplest form of @{" iterative " link ARexxGuide.guide/GLOSSARY 127} @{" loop " link ARexxGuide.guide/GLOSSARY 145}, @{i}<action list>@{ui} is repeated
+@{i}<number>@{ui} times. @{i}<number>@{ui} can be any @{" expression " link ARx_Elements2.ag/EXPRESSION} that evaluates to a
+positive whole number.
+
+Either or both of the conditional options can be included, in which case
+@{i}<number>@{ui} becomes the maximum value for the loop: it will not be repeated
+more than @{i}<number>@{ui} times, but may be repeated fewer times if either of
+conditions is met.
+
+{ DO <number> } is slightly more efficient, but otherwise the same as
+{ DO FOR <number> } except that none of the other repetitors can be used
+with the former construction.
+
+   Examples:
+         /**/
+         Phrase = ''
+         DO 3
+            Phrase = Phrase'so on... '
+         END
+         say Phrase'drifting around'
+                           >>> so on... so on... so on... drifting around
+
+         /**/
+         call time 'R'        /* start the @{" elapsed time counter " link ARx_Func2.ag/TIMENOTE} */
+         DO 5 WHILE time('E') < .15
+            say 'Timer test'
+         END
+                         /*
+                            will probably output `Timer test' fewer
+                            than 5 times (depending on the speed of your
+                            machine) because of the conditional test
+                         */
+
+This is the quickest of various forms of counted loops. If an index
+variable is not required within the loop, this form will create the most
+efficient loop. It is used less frequently than it should be in ARexx,
+probably because it was not supported by early versions of the
+@{" interpreter " link ARexxGuide.guide/GLOSSARY 117}.
+
+Next: INDEX/TO/BY | Prev: DO | Contents: DO
+
+@endnode
+
+@node DOOPT2 "ARexxGuide | Instruction Reference | do (2 of 6) | INDEX/TO/BY"
+@toc DO
+@{" DO " link DO} [<var>=<exprI> [TO <exprT>][BY <exprB>]] [<for expr>] [<conditional>];
+   <action list>;
+END;
+
+Each of the @{i}<expr>@{ui} arguments specified in this diagram can be replaced by
+an @{" expression " link ARx_Elements2.ag/EXPRESSION} in any form, whether it is a constant (a number), a
+variable, a function call, or an operation.
+
+@{fg highlight}INDEX VARIABLE:@{fg text}
+   The first option gives the loop an index variable that is stepped by
+the value of @{i}<exprB>@{ui} (or by 1 if @{i}<exprB>@{ui} is not specified) on each
+iteration of the loop. Although the first sample is both more elegant and
+more robust, both of the following constructions would perform the same
+task:
+
+         DO <var> = <exprI> BY <exprB> TO <exprT>
+            /* <action list */
+         END
+
+is the same as:
+
+         <var> = <exprI>
+         DO <exprT>
+            /* <action list> */
+            <var> = <var> + <exprB>
+         END
+
+@{i}<var>@{ui} may be any valid variable symbol -- usually a @{" simple symbol " link ARx_Elements.ag/VARSYMBOL} or a
+@{" compound symbol " link ARx_Elements.ag/VARSYMBOL}, although a stem symbol could be used. The value of the
+variable prior to this instruction is lost and @{i}<var>@{ui} is assigned the value
+of @{i}<exprI>@{ui} which can be any @{" expression " link ARx_Elements2.ag/EXPRESSION} that yields a number. The number
+need not be positive and can include a fractional part.
+
+The index variable can be used without other options to create an endless
+loop similar to @{" DO FOREVER " link DOOPT5}. If BY is specified without TO or FOR, an
+endless loop will also be created.
+
+   Sample instruction         Comment
+   -------------------------  -------------------------------------------
+   DO i=1 TO 5;               Loop will repeat 5 times. [ i ] will be
+                              equal to 5 after the loop exits.
+   DO Counter = -6;           An endless loop will begin. [ Counter ] will
+                              have a value of -6 when <action list> is
+                              first executed. 1 will be added to [Counter]
+                              on each iteration of the loop.
+   DO Loop.0 = 1 TO -3 BY -1; The loop will repeat 5 times. [ Loop.0 ]
+                              will have a value of 1 on the first
+                              iteration, 0 on the second, and -3 when the
+                              loop ends.
+
+@{fg highlight}INDEX REPETITOR OPTIONS (BY and TO)@{fg text}
+   The BY option's @{i}<exprB>@{ui} can be an @{" expression " link ARx_Elements2.ag/EXPRESSION} that yields any number,
+positive or negative, whole or fractional. It specifies the amount to be
+added to @{i}<exprI>@{ui} on each iteration of the loop. If a BY expression is not
+included in the instruction, then the default step value is 1. An index
+variable must be specified when this option is used.
+
+The TO option and @{i}<exprT>@{ui} (again, an @{" expression " link ARx_Elements2.ag/EXPRESSION} that yields any number)
+provide an upper limit to the index variable. The loop will end if the
+index variable is equal to or greater than the value of @{i}<exprT>@{ui}. An index
+variable must be specified, although the BY option may be omitted.
+
+   Sample instruction         Comment
+   -------------------------  -------------------------------------------
+   DO TO 6;                   Will generate an error. An index variable
+                              must be specified with the TO option.
+   DO i=3 TO 6;               Loop will be repeated 4 times. [ i ] will
+                              have a value of 6 when it ends.
+   DO i=3.2 TO 5.5 BY .2;     Loop will be repeated 12 times. [ i ] will
+                              have a value of 6.4 when the loop ends.
+@{fg highlight}CONDITIONALS:@{fg text}
+   Either or both of the conditional options may be specified with any
+combination of the repetitor options. If a @{i}<conditional>@{ui} is specified,
+then the repetitors will supply a maximum limit for the loop, which might,
+however, end sooner if the specified condition is met.
+
+[STEM.0] is often a useful index variable because it has become a
+convention that the [0] element of a numerically-defined set of compound
+variables holds the number of elements in the set. A counter-trend seems
+to have developed, unfortunately. Two otherwise wonderful function
+@{" libraries " link ARx_Elements3.ag/LIBFUNC}, @{" rexxreqtools.library " link ARx_Elements3.ag/LIBFUNC 26} and @{" RexxDosSupport.library " link ARx_Elements3.ag/LIBFUNC 34}, use the
+tail value .COUNT to hold the count of compound variables. While the
+method might seem more intuitive than the `.0' convention, it is also more
+dangerous since a user might have asssigned a value to the variable
+[Count] which would turn something like [Files.Count] into a different
+value than expected.
+
+Next: FOR | Prev: Repetitor | Contents: do
+
+@endnode
+
+@node DOOPT3 "ARexxGuide | Instruction Reference | do (3 of 6) | FOR"
+@toc DO
+@{" DO " link DO} [<var>=<exprI> [to <exprT>][by <exprB>]] [FOR <exprF>][<conditional>];
+   <action list>;
+END;
+
+The FOR option and @{i}<exprF>@{ui}, which can be any @{" expression " link ARx_Elements2.ag/EXPRESSION} yielding a
+positive whole number, specify the number of times the loop is to be
+repeated, without regard to the value of the index variable, which is,
+however, still stepped. `DO FOR <expr>' is equivalent to @{" DO <expr> " link DOOPT1}.
+
+An index variable may be used with the FOR option, but is not required. If
+a BY option is used, the value of the index variable is stepped in the
+same way it would be in a TO construction even though the step value will
+not affect the number of times the loop is repeated.
+
+   @{fg highlight}Sample instruction         Comment@{fg text}
+   -------------------------  -------------------------------------------
+   DO FOR 6;                  Loop will be repeated 6 times.
+   DO i=3 FOR 6;              Loop will be repeated 6 times. [ i ] will
+                              have a value of 8 when it ends.
+   DO i=3.2 FOR 5.5 BY .2;    Will generate an error. The argument to FOR
+                              must be a positive whole number.
+   DO i=3.2 FOR 5 BY .2;      Loop will be repeated 5 times. [ i ] will
+                              have a value of 4 when it ends.
+
+Both FOR and TO can be used in the same instruction. The loop would then
+end when the limit condition for either of the options was reached.
+
+@{fg highlight}CONDITIONALS:@{fg text}
+   Either or both of the conditional options can be specified with any
+combination of the repetitor options. If a @{i}<conditional>@{ui} is specified,
+then the repetitors will supply a maximum limit for the loop, which might,
+however, end sooner if the specified condition is met.
+
+Next: CONDITIONALS | Prev: Index/to/by | Contents: do
+
+@endnode
+
+@node DOOPT4 "ARexxGuide | Instruction Reference | do (4 of 6) | CONDITIONALS"
+@toc DO
+@{" DO " link DO} [<index>] [<repetitor>] [WHILE <conditional>] [UNTIL <conditional>];
+   <action list>;
+END;
+
+The WHILE and UNTIL options provide a way to end iteration of a loop when
+a condition is met.
+
+@{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} can be any @{" expression " link ARx_Elements2.ag/EXPRESSION} that returns a Boolean value.
+
+An @{i}<index>@{ui} variable may, optionally, be specified with this form and will
+be stepped in the normal fashion on each iteration of the loop.
+
+Any of the various forms of @{" TO/BY/FOR " link ARx_Instr.ag/DOOPT2  50} repetitors may be used. If a TO or
+FOR value is specified, then that value becomes the maximum iterative
+limit for the loop, which will end when that value is reached even if the
+condition specified by WHILE or UNTIL has not been met. The loop will,
+however, end before reaching the TO or FOR limit when the condition is met.
+
+The difference between the two forms lies both in the nature of the
+@{i}<conditional>@{ui} and in the position at which it is evaluated.
+
+When a WHILE expression is specified, the instructions within the loop
+will be executed if the condition is true. The instruction `DO WHILE 1'
+will, therefore, cause an endless loop.
+
+When an UNTIL expression is specified, the loop will continue as long as
+that condition is false, or UNTIL it becomes true. The instruction `DO
+UNTIL 0' will, therefore, cause an endless loop.
+
+The expression associated with WHILE is evaluated before @{i}<action list>@{ui} is
+executed. If that @{i}<conditional>@{ui} is false when the DO instruction is first
+evaluated, then the @{i}<action list>@{ui} will not be executed at all.
+
+The expression associated with UNTIL is evaluated after @{i}<action list>@{ui} is
+executed, which means that @{i}<action list>@{ui} will always be executed at least
+once.
+
+Both WHILE and UNTIL can be used in the same instruction. When that
+construction is used, the loop will end when either of the conditionals is
+satisfied.
+
+Next: FOREVER | Prev: for | Contents: do
+
+@endnode
+
+@node DOOPT5 "ARexxGuide | Instruction Reference | do (5 of 6) | FOREVER"
+@toc DO
+@{" DO " link DO} FOREVER;
+   <action list>;
+END;
+
+The FOREVER option creates an endless loop. @{" LEAVE " link LEAVE} or @{" BREAK " link BREAK}
+instructions can be used within @{i}<action list>@{ui} to end the loop.
+
+None of the other forms of repetitor or conditional options can be used
+with FOREVER. It is, however, possible to create endless loops with other
+options. Each of the following will create an endless loop:
+
+         DO i = 1
+         DO WHILE 1
+         DO UNTIL 0
+
+The first sample is probably the most useful of the alternative forms of
+'FOREVER' since it provides an index variable which can be used within the
+loop and which will provide the count of the loop when something causes it
+to end.
+
+Next: OVERVIEW | Prev: Conditionals | Contents: do
+
+@endnode
+
+@node DOOPT6 "ARexxGuide | Instruction Reference | do (6 of 6) | OVERVIEW"
+@toc DO
+@next DO
+In this section most of the examples are presented with only the first
+clause (DO <options>) of the DO instruction, which normally includes at
+least three clauses in this form:
+
+   DO <options>
+      <action list>
+   END
+
+The variety of options available for making controlled loops with the DO
+instruction make it possible to perform the same task in a variety of
+ways. For instance, each of the following clauses will cause the <action
+list> to be repeated 5 times:
+
+  1)  DO 5;
+  2)  DO FOR 5;
+  3)  DO i=1 TO 5;
+  4)  DO i=1 WHILE i<=5;
+  5)  DO i=1 UNTIL i=5;
+
+Because it is the simplest and most direct way of performing the task,
+sample 1 would usually be preferable for a simple loop. The disadvantage
+of that form, however, is that it will not allow the use of an index
+variable (the variable that holds the current count of the loop). The
+{ i=1 } in samples 3, 4 and 5 is an example of such a variable, which is
+also sometimes called a `counter'. (Any valid symbol name could be used in
+place if the [i] in the samples, even a @{" compound symbol " link ARx_Elements.ag/VARSYMBOL}.)
+
+When an index variable is used, another option is available: the BY
+expression. This can be any number, whole or fractional, positive or
+negative. It specifies the amount to be added to the index variable on
+each iteration of the loop. Even though it is similar to sample 3, the
+following program will cause the loop to be repeated 9 times:
+
+  6)  /**/
+      DO i=1 BY .5 TO 5
+         say i
+      END
+
+The output of this program, if called from the shell, would be:
+
+      1
+      1.5
+      2.0
+      2.5
+      3.0
+      3.5
+      4.0
+      4.5
+      5.0
+
+The same results would be obtained if the expression `BY .5' were added to
+samples 4 or 5. Since the BY option, which is called a `step value,' was
+not specified in the first 5 fragments, a default value of 1 was used for
+each step of the loop.
+
+An index variable can also be used with the @{" FOR " link DOOPT3} option, but its effect
+will sometimes be different. The loop in the following program will still
+be repeated only 5 times, even though a step value is specified:
+
+  7)  /**/
+      DO i=1 BY .5 FOR 5
+         say i
+      END
+
+This time, the output would be:
+
+      1
+      1.5
+      2.0
+      2.5
+      3.0
+
+The value specified with the FOR option, which must be a positive whole
+number, does not refer to the value of the index variable. Instead, it
+refers to the actual count of passes through the loop.
+
+Although it is not recommended practice, the value of the index variable
+can be changed within the loop it is controlling. When the loop conditions
+are next evaluated, the new value of the index variable will be used.
+
+Next: DO | Prev: Forever | Contents: do
+
+@endnode
+
+@node END "ARexxGuide | Instruction Reference | DO (1 of 1) | END"
+@toc DO
+@next DO
+@prev DO
+do [<name = number> <options>]
+   [<actions>]
+END [<name>]
+           ---
+select
+   when @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} then; <actions>
+   otherwise
+END
+
+END is a secondary keyword that marks the close of the range of clauses
+bound to one of two keywords: either @{" DO " link DO} or @{" SELECT " link ARx_Instr3.ag/SELECT}. ARexx will continue
+to execute clauses as part of the DO or SELECT range until it encounters
+the END keyword.
+
+If ARexx encounters an END keyword that is not properly bound to an
+instruction, or completes interpretation of a program segment without
+encountering the proper number of END instructions, it will generate this
+error message:
+
+   +++ @{" Error 26 " link ARx_Error.ag/ERROR_26} in line <#>: Missing or unexpected END
+
+In the case of missing END keywords, the line number <#> reported will
+often be the last line in a script or @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} since ARexx will
+continue to execute as many clauses as possible following a DO instruction.
+
+When used with a DO instruction that includes an @{" index variable " link ARx_Instr.ag/DOOPT2  8}, the
+@{i}<name>@{ui} of that variable can be used with the END keyword. ARexx will then
+match END only to the named DO instruction. This can clarify the meaning
+of some code and can be used in program development to verify that END
+keywords are matched with the expected DO instructions.
+
+   Example:
+      /**/
+      DO SayLoop = 1 to 2
+         SAY SayLoop
+      END SayLoop
+
+Next, Prev, & Contents: DO
+
+@endnode
+
+@node DROP "ARexxGuide | Instruction Reference (6 of 25) | DROP"
+@prev DO
+DROP <variable> [<variable>] [<...>] ;
+
+Restores @{" <variable> " link ARx_Elements2.ag/VARIABLE} to its original `unassigned' state.
+
+   Example:
+      /**/
+      Foo = 'Flooey'
+      say Foo                    >>> Flooey
+      DROP Foo
+      say Foo                    >>> FOO
+      Foo.1 = 'Compound'
+      say Foo.1                  >>> Compound
+      DROP Foo.1
+      say Foo.1                  >>> FOO.1
+      Foo.1 = 'Reassigned'
+      Foo.2 = 'Another one'
+      say Foo.1 Foo.2            >>> Reassigned Another one
+      DROP Foo.                        /* The @{" stem " link ARx_Elements2.ag/COMPVAR2} is uninitialized */
+      say Foo.1 Foo.2            >>> FOO.1 FOO.2
+
+   NOTE: An unassigned variable in ARexx has the value of its name,
+   translated to upper case rather than having a null value as it would in
+   some languages.
+
+   Also see @{" Basic Elements: ASSIGNMENTS  " link ARx_Elements3.ag/ASSIGNMENT} explanation
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   The @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26} definition of REXX allows an indirect variable list as an
+   argument to this instruction. If @{i}<variable>@{ui} is enclosed in parentheses,
+   the standard will use the value of that variable as the list of
+   variable names to be dropped. It works this way:
+
+         /* Drop variable A and B  */
+      a=1;b=2;c=3;cl= 'a b'; drop (cl); say a b c    >>> A B 3
+
+   Because this option is not supported in ARexx, such a statement would
+   generate @{" Error 31 " link ARx_Error.ag/ERROR_31}. It can, however, be duplicated less elegantly
+   with the following:
+
+         /* Drop variable A and B in ARexx  */
+      a=1;b=2;c=3;cl= 'a b'; interpret 'drop' (cl); say a b c    >>> A B 3
+
+
+Next: EXIT | Prev: DO | Contents: Instruction ref.
+
+@endnode
+
+@node EXIT "ARexxGuide | Instruction Reference (7 of 25) | EXIT"
+EXIT <expression>;
+
+Unconditionally terminates a program. If supplied, @{" <expression> " link ARx_Elements2.ag/EXPRESSION} will be
+interpreted and sent back to the calling environment as the return string.
+
+If used within an internal subroutine, EXIT will terminate execution of
+the script without returning control to the calling environment. If it is
+used within a script called as an @{" external function " link ARx_Elements3.ag/EXTFUNC}, however, EXIT will
+terminate execution of sub-program, but will return control (and the
+@{i}<expression>@{ui} return code) to the calling script in the same way RETURN
+would.
+
+   Also see @{" RETURN        " link ARx_Instr3.ag/RETURN}
+
+Next: IF | Prev: DROP | Contents: Instruction ref.
+
+@endnode
+
+@node IF "ARexxGuide | Instruction Reference (8 of 25) | IF"
+@next INTERPRET
+IF <conditional>; @{" THEN " link THEN}; <action>; [ @{" ELSE " link ELSE}; <action> ];
+
+Conditionally executes @{i}<action>@{ui} when the @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} evaluates to TRUE.
+
+The @{i}<action>@{ui} following the optional ELSE will be executed when the
+@{i}<conditional>@{ui} evaluates to FALSE.
+
+@{i}<action>@{ui} can be any valid @{" assignment " link ARx_Elements3.ag/ASSIGNMENT}, @{" instruction " link ARx_Elements3.ag/INSTRUCTION}, or @{" command " link ARx_Elements3.ag/COMMAND}.
+
+Only one @{i}<action>@{ui} @{" clause " link ARx_Elements3.ag/CLAUSE} is recognized. If a series of clauses is to be
+associated with THEN or ELSE, then the @{" DO/END " link DO} instruction can be used to
+create a program block that will be executed as though it was a single
+instruction.
+
+   Example:
+      IF a = b THEN
+         c = d
+      ELSE
+         e = f
+
+   Also see @{" SELECT               " link ARx_Instr3.ag/SELECT}
+            @{" Comparison Functions " link ARx_Func.ag/CMPRLIST}
+
+                 Technique note: @{" Format() user function            " link ARx_Tknq.ag/FORMAT()}
+                                 @{" Check unique datatypes            " link ARx_Tknq.ag/VERIFYNOTE}
+                                 @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+                                 @{" Data scratchpad with PUSH & QUEUE " link ARx_Tknq.ag/SCRATCHPAD}
+
+Next: INTERPRET | Prev: EXIT | Contents: Instruction ref.
+
+@endnode
+
+@node THEN "ARexxGuide | Instruction Reference | IF (1 of 2) | THEN"
+@toc IF
+@prev IF
+if @{" <conditional> " link ARx_Elements3.ag/CONDITIONAL} THEN <action>
+             ---
+select
+   when <conditional> THEN <action>
+   otherwise
+end
+
+THEN is a secondary keyword that must always be paired with one of two
+instruction keywords: @{" IF " link IF} or @{" WHEN " link ARx_Instr3.ag/WHEN}.
+
+THEN always ends the clause in which it is used. It is not necessary to
+add an explicit @{" semicolon " link ARx_Elements.ag/SEMICOLON}, however, even if another clause follows on
+the same line, because ARexx automatically adds an implicit semicolon
+after the keyword.
+
+THEN can be included as part of the @{" clause " link ARx_Elements3.ag/CLAUSE} introduced by the IF or WHEN
+keyword, in which case it acts as a sub-keyword similar to BY, FOR, WHEN
+and other options to the @{" DO " link DO} instruction. It is used in that way in the
+examples in this guide.
+
+To allow for alternative coding styles, THEN can be used as the keyword of
+a new clause:
+
+   IF <conditional>
+      THEN <action>
+
+Next: ELSE | Prev: IF | Contents: IF
+
+@endnode
+
+@node ELSE "ARexxGuide | Instruction Reference | IF (2 of 2) | ELSE"
+@toc IF
+@next IF
+if <conditional> then
+   <action>;
+ELSE
+   <action>
+
+ELSE is a secondary keyword that has meaning only within the range of an
+IF instruction. It constitutes a one-word clause: it must be used as the
+first word in a clause and ARexx will supply an @{" implied semicolon " link ARx_Elements.ag/SEMICOLON} after
+the keyword even if it is followed by another program statement.
+
+Like @{" THEN " link THEN}, the ELSE keyword binds to the one clause that follows it,
+but the range can be extended by use of a @{" DO/END " link DO} construction.
+
+Some programming languages provide a special variation of `else' to allow
+for cascading ifs that perform a number of mutually exclusive comparisons.
+Although @{" SELECT " link ARx_Instr3.ag/SELECT} is expressly designed for that purpose, it is also
+possible to perform mutually exclusive comparisons with ELSE and IF.
+
+         if a = b then
+            <action>
+         else if a = c then
+            <action>
+         else if a = d then
+            <action>
+         else
+            <action>
+
+This construction could be replaced by a SELECT instruction, but it might
+be preferred in some situations by some programmers.
+
+Next: IF | Prev: Then | Contents: IF
+
+@endnode
+
+@node INTERPRET "ARexxGuide | Instruction Reference (9 of 25) | INTERPRET"
+@prev IF
+INTERPRET <expression>;
+
+Processes @{" <expression> " link ARx_Elements2.ag/EXPRESSION} before executing it as a REXX instruction.
+
+The instruction allows for the execution of dynamically constructed
+program elements. @{i}<expression>@{ui} can be of any form -- a variable or
+function call, for example -- that results in a valid ARexx clause of any
+type.
+
+   Example:
+      /**/
+      call setclip('PCODE', 'say Stmt')
+      Stmt = "That's how I reason"
+      interpret getclip('PCODE')                >>> That's how I reason
+      /**/
+      Key = 'SAY'
+      Expr = '"Hi there."'
+      interpret Key Expr                        >>> Hi there.
+
+Although the examples perform trivial tasks, they hint at the power of the
+instruction. Program code stored in a @{" clip " link ARx_Tknq.ag/CLIPLIST} or @{" variable " link ARx_Elements2.ag/VARIABLE} can be quite
+complex, and might include several instructions in an @{" in-line script " link ARx_Elements.ag/INLINE}.
+
+Once it has been fully evaluated, with substitutions made according to
+standard rules, the @{i}<expression>@{ui} is submitted to the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} in the
+same way it would be if the clause(s) had been entered directly in the
+program.
+
+   Also see @{" VALUE()       " link ARx_Func3.ag/VALUE()} function
+
+Next: ITERATE | Prev: IF | Contents: Instruction ref.
+
+@endnode
+
+@node ITERATE "ARexxGuide | Instruction Reference (10 of 25) | ITERATE"
+ITERATE [<name>];
+
+Causes an iterative @{" DO " link DO} loop (that is, any DO construction other than a
+simple DO/END block) to skip the following instructions, as though an END
+had been encountered, and to pass control back to the DO clause. The
+instruction has no effect on a DO block that does not include one of the
+@{" repetitor options " link DO}.
+
+When the DO instruction is reinterpreted, its @{" index variable " link ARx_Instr.ag/DOOPT2  8} will be
+stepped and all of the tests that would normally be made at the END of the
+loop will be made.
+
+If @{i}<name>@{ui} is not supplied, then the DO loop within which the instruction
+was encountered will be repeated.
+
+@{i}<name>@{ui} must be a symbol used previously as the name of an index variable
+in an iterative DO loop. It is treated as a literal value; the symbol's
+value as a variable is not substituted.
+
+If the @{i}<name>@{ui}d index belongs to a DO instruction in which another DO
+instruction is @{" nested " link ARexxGuide.guide/GLOSSARY 155}, then the inner DO in which ITERATE was
+encountered will be terminated (as though a BREAK or LEAVE instruction had
+been encountered) before the @{i}<name>@{ui}d loop is repeated.
+
+   Example:
+         /* This is a fragment from the program ARx_Cmpr.rexx which is **
+         ** used as the interactive example to the @{" COMPARISON " link ARx_Operator.ag/COMPARISON} node */
+      do forever
+         say LF'Enter two values to be compared.'
+         parse pull v
+            /* The value of [vn] and [vari.0] is set in this section.  **
+            ** The following uses @{" LEAVE " link LEAVE} and ITERATE to exit          **
+            ** from the @{" DO FOREVER " link DOOPT5} loop, or to start over if an      **
+            ** invalid entry was made.                                 */
+         if vn < 1 then do
+            if upper(vari.0) = 'QUIT' then LEAVE
+            say 'You must enter two values to be compared.'
+            say '   Enter "quit" to leave the demonstration.'
+               /* DO FOREVER will be repeated rather than the current  **
+               ** DO block. Only repetitive DO constructions are       **
+               ** affected by the instruction.                         */
+            ITERATE
+         end
+            /* The work of the program is done in this section */
+      end
+
+To avoid the possibility of an endless loop, a counter value can be used
+with the DO loop. Using the instruction `DO EnterLoop = 1 to 3' instead of
+`DO FOREVER' would cause an exit from the section even if an invalid entry
+was made on the third try. If this method is used, however, it will be
+necessary to check for valid input at the end of the loop.
+
+   Also see @{" BREAK           " link BREAK}
+            @{" LEAVE           " link LEAVE}
+
+               More information: @{" Breaking structure                " link BREAKSTRUCT}
+
+Next: LEAVE | Prev: INTERPRET | Contents: Instruction ref.
+
+@endnode
+
+@node LEAVE "ARexxGuide | Instruction Reference (11 of 25) | LEAVE"
+LEAVE <name>;
+
+Causes an exit from an @{" iterative " link ARexxGuide.guide/GLOSSARY 127} @{" DO " link DO} loop. If @{i}<name>@{ui} is included, then
+the DO loop using that @{i}<name>@{ui} as its @{" index variable " link ARx_Instr.ag/DOOPT2  8} will be exited along
+with any of the control structures @{" nested " link ARexxGuide.guide/GLOSSARY 155} within it. The instruction has
+no effect on a DO block that does not include one of the repetitor options.
+
+If @{i}<name>@{ui} is not supplied, then the DO loop within which the instruction
+was encountered will be repeated.
+
+@{i}<name>@{ui} must be a symbol used previously as the name of an index variable
+in an iterative DO loop. It is treated as a literal; the symbol's value as
+a variable is not substituted.
+
+If the @{i}<name>@{ui}d index belongs to a DO instruction in which another DO
+instruction is nested, then all control structures between the one in
+which the LEAVE is encountered and the one with the @{i}<name>@{ui}d index will be
+terminated.
+
+   See example in @{" ITERATE " link ITERATE} node.
+
+   Also see @{" BREAK          " link BREAK}
+
+               More information: @{" Breaking structure                " link BREAKSTRUCT}
+
+Next: NOP | Prev: ITERATE | Contents: Instruction ref.
+
+@endnode
+
+@node NOP "ARexxGuide | Instruction Reference (12 of 25) | NOP"
+@next ARx_Instr2.ag/NUMERIC
+NOP ;
+
+No operation. This is a dummy instruction that does nothing, but may
+sometimes be necessary as the @{i}<action>@{ui} to an @{" ELSE " link ELSE} clause. When developing
+a program, it is also useful as a `stub' statement -- something to hold
+the place for code to be added later.
+
+   Example:
+      /**/
+      if Alpha = Beta then
+         if Beta = Delta then
+            say 'B is D'
+         else
+            NOP
+      else
+         Delta = Beta
+
+Since ELSE will always bind to the nearest @{" IF " link IF} clause, the first ELSE
+must be included, even though there is nothing to do. Without it, the
+outer ELSE would be associated with the wrong conditional. Note, however,
+that the same effect can be achieved -- sometimes more clearly -- by using
+a @{" DO/END " link DO} block:
+
+      /* Same result as the example above */
+      if Alpha = Beta then do
+         if Beta = Delta then
+            say 'B is D'
+      end
+      else
+         Delta = Beta
+
+Next: NUMERIC | Prev: LEAVE | Contents: Instruction ref.
+
+@endnode

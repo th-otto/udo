@@ -1,0 +1,10 @@
+# **********************************************************
+# * The following items are no longer needed.              *
+# * You can delete them after checking they are of no use. *
+# **********************************************************
+emptyText ""
+normalText "abcd"
+textWithDoubleQuotes "aaa b ""c "" d  "
+textWithDoubleQuotesAtBeginning """abcd"
+textWithDoubleQuotesAtEnd "abcd"""
+textWithDoubleQuotesAtInside "ab""cd"

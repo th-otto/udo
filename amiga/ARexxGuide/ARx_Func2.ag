@@ -1,0 +1,1222 @@
+@database "ARx_Func2.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN ""
+@toc ARx_Func.ag/MAIN
+@prev ARx_Func.ag/MAIN
+@next ARx_Func.ag/MAIN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v 2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+@endnode
+@node WORDLIST "ARexxGuide | Functions reference (3 of 12) | WORD MANIPULATION"
+@toc ARx_Func.ag/MAIN
+@prev ARx_Func.ag/STRLIST
+@next TRANLIST
+   @{" DELWORD   " link DELWORD()}(<string>,<wordnum>, [<length>])
+   @{" SPACE     " link SPACE()}(<string>,<number>,[<padchar>])
+   @{" SUBWORD   " link SUBWORD()}(<string>,<wordnum>, [<length>])
+   @{" WORD      " link WORD()}(<string>,<wordnum>)
+   @{" WORDINDEX " link WORDINDEX()}(<string>,<wordnum>)
+   @{" WORDLENGTH" link WORDLENGTH()}(<string>,<wordnum>)
+   @{" WORDS     " link WORDS()}(<string>)
+
+Related function:
+   @{" FIND      " link ARx_Func.ag/FIND()}
+
+                     Also see @{" String manipulation functions" link ARx_Func.ag/STRLIST}
+                              @{" PARSE instruction            " link ARx_Instr2.ag/PARSE}
+
+A `word' is any collection of characters separated by one or more spaces
+from other characters in a string. These functions allow the programmer to
+manipulate such words in a quick and elegant manner.
+
+Next: Translation func. | Prev: String functions | Contents: Function ref.
+
+@endnode
+
+@node DELWORD() "ARexxGuide | Functions reference | Words (1 of 7) | DELWORD"
+@toc WORDLIST
+@prev WORDLIST
+@{i}rv@{ui} = DELWORD(<string>, <wordnum>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Deletes a portion of @{i}<string>@{ui} beginning at the word represented by
+@{i}<wordnum>@{ui} for @{i}<length>@{ui} number of words. If @{i}<wordnum>@{ui} is greater than the
+number of words in @{i}<string>@{ui} then @{i}<string>@{ui} is returned unchanged.
+
+If @{i}<length>@{ui} is omitted, everything to the right of (and including) the
+word at @{i}<wordnum>@{ui} position is deleted.
+
+   Examples:
+         say delword('the indestructible chaos of timeless things',3,3);
+                                         >>> the indestructible things
+
+   Also see @{" DELSTR        " link ARx_Func.ag/DELSTR()}
+            @{" SUBWORD       " link SUBWORD()}
+
+Next: SPACE() | Prev: Word functions | Contents: Word functions
+
+@endnode
+@node SPACE() "ARexxGuide | Functions reference | Words (2 of 7) | SPACE"
+@toc WORDLIST
+@{i}rv@{ui} = SPACE(<string>, [<number>], [<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Formats the original string by placing @{i}<number>@{ui} of @{i}<padchar>@{ui} characters
+between each set of blank-delimited words. Leading and trailing blanks are
+always removed. If @{i}<number>@{ui} is omitted or is 0, then all spaces in the
+string are removed.
+
+The default @{i}<number>@{ui} is 0. The default pad character is a blank.
+
+   Example:
+         say space('I don''t know what it is',3);
+                                 >>> I   don't   know   what   it   is
+         say space('In the end it was magic',1,'_');
+                                 >>> In_the_end_it_was_magic
+         say space('I    knew these  hills.')
+                                 >>> Iknewthesehills.
+
+   Also see @{" CENTER        " link ARx_Func.ag/CENTER()}
+            @{" COMPRESS      " link ARx_Func.ag/COMPRESS()}
+
+Next: SUBWORD() | Prev: DELWORD() | Contents: Word functions
+
+@endnode
+@node SUBWORD() "ARexxGuide | Functions reference | Words (3 of 7) | SUBWORD"
+@toc WORDLIST
+@{i}rv@{ui} = SUBWORD(<string>, <wordnum>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Returns a substring of the original, but the division is made by word
+position rather than character position. The result will contain @{i}<length>@{ui}
+blank-delimited words made up the words in @{i}<string>@{ui} beginning at the word
+in position @{i}<wordnum>@{ui}.
+
+If @{i}<length>@{ui} is omitted, then all of @{i}<string>@{ui} starting at @{i}<wordnum>@{ui} will be
+returned.
+
+@{i}<length>@{ui} must be positive.
+
+   Example:
+         say subword('yet nothing is changed',2,2);    >>> nothing is
+
+   Also see @{" WORD          " link WORD()}
+            @{" SUBSTR        " link ARx_Func.ag/SUBSTR()}
+            @{" FIND          " link ARx_Func.ag/FIND()}
+            @{" DELWORD       " link DELWORD()}
+
+Next: WORD() | Prev: SPACE() | Contents: Word functions
+
+@endnode
+@node WORD() "ARexxGuide | Functions reference | Words (4 of 7) | WORD"
+@toc WORDLIST
+@{i}rv@{ui} = WORD(<string>,<wordnum>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is the blank-delimited word in @{i}<string>@{ui} at position @{i}<wordnum>@{ui},
+or a null string if there are fewer than @{i}<wordnum>@{ui} words in @{i}<string>@{ui}.
+
+   Example:
+         say word('the most you can hope',5);    >>> hope
+
+   Also see @{" SUBWORD            " link SUBWORD()}
+            @{" WORDS              " link WORDS()}
+            @{" PARSE TOKENIZATION " link ARx_Instr2.ag/PARSETMP2} instruction
+
+Next: WORDINDEX() | Prev: SUBWORD() | Contents: Word functions
+
+@endnode
+@node WORDINDEX() "ARexxGuide | Functions reference | Words (5 of 7) | WORDINDEX"
+@toc WORDLIST
+@{i}rv@{ui} = WORDINDEX(<string>,<wordnum>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the character position of the first character in the word at
+position @{i}<wordnum>@{ui} in @{i}<string>@{ui} or 0 if there are less than @{i}<wordnum>@{ui} words.
+
+   Example:
+         say wordindex('to be a little less the creature',4);  >>> 9
+
+   Also see @{" FIND          " link ARx_Func.ag/FIND()}
+            @{" WORDS         " link WORDS()}
+            @{" WORDLENGTH    " link WORDLENGTH()}
+
+Next: WORDLENGTH() | Prev: WORD() | Contents: Word functions
+
+@endnode
+@node WORDLENGTH() "ARexxGuide | Functions reference | Words (6 of 7) | WORDLENGTH"
+@toc WORDLIST
+@{i}rv@{ui} = WORDLENGTH(<string>,<wordnum>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the length of the blank-delimited word at position @{i}<wordnum>@{ui}
+in @{i}<string>@{ui}.
+
+   Example:
+         say wordlength('you were in the beginning',3);        >>> 2
+
+
+   Also see @{" FIND          " link ARx_Func.ag/FIND()}
+            @{" WORDINDEX     " link WORDINDEX()}
+            @{" WORDS         " link WORDS()}
+
+Next: WORDS() | Prev: WORDINDEX() | Contents: Word functions
+
+@endnode
+@node WORDS() "ARexxGuide | Functions reference | Words (7 of 7) | WORDS"
+@toc WORDLIST
+@next WORDLIST
+@{i}rv@{ui} = WORDS(<string>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the number of blank-delimited words in @{i}<string>@{ui}.
+
+   Example:
+      say words('and the middle');      >>> 3
+
+   Also see @{" FIND          " link ARx_Func.ag/FIND()}
+            @{" WORDINDEX     " link WORDINDEX()}
+            @{" WORDLENGTH    " link WORDLENGTH()}
+
+                 Technique note: @{" CountWords() user function         " link ARx_Tknq.ag/COUNTWORDS()}
+
+Next: Word functions | Prev: WORDLENGTH() | Contents: Word functions
+
+@endnode
+@node TRANLIST   "ARexxGuide | Functions reference (4 of 12) | TRANSLATION"
+@toc ARx_Func.ag/MAIN
+@prev WORDLIST
+@next NUMLIST
+   @{" B2C       " link B2C()}(<binary-string>)
+   @{" C2B       " link C2B()}(<string>)
+   @{" C2D       " link C2D()}(<string>, [<numbytes>])
+   @{" C2X       " link C2X()}(<string>)
+   @{" D2C       " link D2C()}(<whole number>, [<length>])
+   @{" D2X       " link D2X()}(<whole number>, [<length>])
+   @{" X2C       " link X2C()}(<hex-string>)
+   @{" X2D       " link X2D()}(<hex-string>)
+
+The function in this list translate values from one form of representation
+to another. D2C(), for instance, performs a task similar to the CHR$()
+function in BASIC -- translating a number to its ASCII character value.
+
+Since ARexx stores all values as @{" strings " link ARx_Elements2.ag/STRINGEXPR}, it is difficult to decipher
+some of the values it returns -- such as the addresses returned by
+@{" GETSPACE() " link ARx_Func4.ag/GETSPACE()} or @{" WAITPKT() " link ARx_Func4.ag/WAITPKT()}. The @{" C2D() " link C2D()} function can translate those
+values into a more readily understood format.
+
+Next: Number functions | Prev: Word functions | Contents: Function ref.
+
+@endnode
+@node B2C() "ARexxGuide | Functions reference | Translation (1 of 8) | B2C"
+@toc TRANLIST
+@prev TRANLIST
+@{i}rv@{ui} = B2C(<binary number>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Translates a binary number into its ASCII character representation.
+
+Spaces are allowed at the byte boundaries in the input @{i}<binary number>@{ui}.
+
+   Example:
+         say b2c(01100001);                        >>> a
+         say b2c(01000110 01000110 01010011);      >>> FFS
+
+   Also see @{" C2B           " link C2B()}
+            @{" C2X           " link C2X()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+   TRL2 defines a b2x() function that is not supported in ARexx. It can be
+   duplicated with the nested functions c2x(b2c(<binary>)).
+
+Next: C2B() | Prev: Translation func. | Contents: Translation func.
+
+@endnode
+@node C2B() "ARexxGuide | Functions reference | Translation (2 of 8) | C2B"
+@toc TRANLIST
+@{i}rv@{ui} = C2B(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR} of binary digits
+
+Converts @{i}<string>@{ui} into binary digits.
+
+   Examples:
+         say c2b('FFS');                >>> 010001100100011001010011
+         say c2b('F') c2b('F') c2b('S');>>> 01000110 01000110 01010011
+         say c2b('a');                  >>> 01100001
+
+Each character in the argument string is converted to its binary
+representation. The value returned is a @{" concatenation " link ARx_Operator.ag/CONCATENATION} of each of those
+binary numbers. This is the way @{i}<string>@{ui} would be represented in the
+machine's memory.
+
+   Also see @{" B2C           " link B2C()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: C2D() | Prev: B2C() | Contents: Translation func.
+
+@endnode
+@node C2D() "ARexxGuide | Functions reference | Translation (3 of 8) | C2D"
+@toc TRANLIST
+@{i}rv@{ui} = C2D(<string>, [<chars>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+In its simplest form, when @{i}<string>@{ui} is one character, the function
+converts @{i}<string>@{ui} to its ASCII value expressed as a decimal number.
+
+   Examples:
+         say c2d('b');           >>> 98
+         say c2d(0)              >>> 49
+
+The function will accept a @{i}<string>@{ui} of up to four characters (four bytes)
+in length. When multiple characters are supplied, the function treats each
+character as a binary number, concatenates the result (see @{" c2b() " link C2B()} for an
+example) and then returns the decimal equivalent of concatenated number.
+
+   Example:
+         say c2d('FFS')          >>> 4605523
+
+The second argument, which must be a number from 1 to 4, allows a string
+shorter than that supplied by the first argument to be evaluated. The
+string is truncated from the right or padded with nulls to the number of
+characters specified.
+
+   Examples:
+   /**/
+         say c2d('miga')         >>> 1835624289
+         say c2d('Amiga', 4)     >>> 1835624289
+         say c2d('a')            >>> 97
+         say c2d('Amiga', 1)     >>> 97
+
+   Also see @{" C2B           " link C2B()}
+            @{" D2C           " link D2C()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+Next: C2X() | Prev: C2B() | Contents: Translation func.
+
+@endnode
+@node C2X() "ARexxGuide | Functions reference | Translation (4 of 8) | C2X"
+@toc TRANLIST
+@{i}rv@{ui} = C2X(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR} of @{" hex " link ARx_Elements.ag/HEXSTRING} digits and characters
+
+In its simplest form, when @{i}<string>@{ui} is one character, the function
+converts @{i}<string>@{ui} to its ASCII value expressed as a hexadecimal number.
+
+   Example:
+         say c2x('b');           >>> 62
+         say c2x('F') c2x('S');  >>> 46 53
+         say c2x('FFS');         >>> 464653
+
+When multiple characters are included in @{i}<string>@{ui}, each character is
+converted to its hexadecimal representation. The value returned is a
+@{" concatenation " link ARx_Operator.ag/CONCATENATION} of each of those hex numbers. This is way the programmers
+usually prefer to view values of a binary file.
+
+   Also see @{" X2C           " link X2C()}
+
+Next: D2C() | Prev: C2D() | Contents: Translation func.
+
+@endnode
+@node D2C() "ARexxGuide | Functions reference | Translation (5 of 8) | D2C"
+@toc TRANLIST
+@{i}rv@{ui} = D2C(<whole number>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Converts a decimal @{i}<whole number>@{ui} into a character string.
+
+If @{i}<length>@{ui} is supplied, the result will be truncated from the right or
+padded with nulls to that size.
+
+   Example:
+         say d2c(98);               >>> b
+
+   Also see @{" C2D           " link C2D()}
+
+Next: D2X() | Prev: C2X() | Contents: Translation func.
+
+@endnode
+@node D2X() "ARexxGuide | Functions reference | Translation (6 of 8) | D2X"
+@toc TRANLIST
+@{i}rv@{ui} = D2X(<whole number>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Converts a decimal @{i}<whole number>@{ui} into an equivalent hexadecimal string.
+
+If @{i}<length>@{ui} is supplied, the result will be truncated from the right or
+padded with 0's to to that size. d2x(<number>, <trunc>) produces the same
+result as @{" right(d2x(<number>), <trunc>, '0') " link ARx_Func.ag/RIGHT()}.
+
+   Example:
+         say d2x(98);               >>> 62
+         say d2x(464653);           >>> 7170D
+         say d2x(464653,6);         >>> 07170D
+         say d2x(464653,4);         >>> 170D
+
+Next: X2C() | Prev: D2C() | Contents: Translation func.
+
+@endnode
+@node X2C() "ARexxGuide | Functions reference | Translation (7 of 8) | X2C"
+@toc TRANLIST
+@{i}rv@{ui} = X2C(<string>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Converts a string of hexadecimal digits to their ASCII character
+representation.
+
+@{i}<string>@{ui} must be an @{" expression " link ARx_Elements2.ag/EXPRESSION} that evaluates to a valid hex number -- a
+string of digits and/or the characters {a} through {f} or {A} through {F}.
+It will be padded, if necessary, with a leading 0 to produce an even
+number of characters.
+
+   Examples:
+         say x2c(416D696761);      >>> Amiga
+         say x2c(464653);          >>> FFS
+
+
+Next: X2D() | Prev: D2X() | Contents: Translation func.
+
+@endnode
+@node X2D() "ARexxGuide | Functions reference | Translation (8 of 8) | X2D"
+@toc TRANLIST
+@next TRANLIST
+@{i}rv@{ui} = X2D(<string>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Converts a string of hexadecimal digits to a whole decimal number. The
+setting of @{" NUMERIC DIGITS " link ARx_Instr2.ag/NUMERIC} determines the size of number that can be
+returned without generating an error.
+
+@{i}<string>@{ui} must be an @{" expression " link ARx_Elements2.ag/EXPRESSION} that evaluates to a valid hex number -- a
+string of digits and/or the characters `a' through `f' or `A' through `F'.
+It will be padded, if necessary, with a leading 0 to produce an even
+number of characters.
+
+If @{i}<length>@{ui} is specified, then @{i}<string>@{ui} is either padded on the left with
+0's or truncated to that length before the translation.
+
+   Examples:
+         say x2d(416D6967);        >>> 1097689447
+         say x2d(464653);          >>> 4605523
+
+Next: Translation func. | Prev: X2C() | Contents: Translation func.
+
+@endnode
+
+@node NUMLIST    "ARexxGuide | Functions reference (5 of 12) | NUMBER MANIPULATION"
+@toc ARx_Func.ag/MAIN
+@prev TRANLIST
+@next INFOLIST
+   @{" ABS       " link ABS()}(<number>)
+   @{" HASH      " link HASH()}(<string>)
+   @{" MAX       " link MAX()}(<number>,<number> [,<number>,...])
+   @{" MIN       " link MIN()}(<number>,<number>, [,<number>,...])
+   @{" RANDOM    " link RANDOM()}([<min>],[<max>],[<seed>})
+   @{" RANDU     " link RANDU()}([<seed>])
+   @{" SIGN      " link SIGN()}(<number>)
+   @{" TRUNC     " link TRUNC()}(<number>, [<places>])
+
+                     Also see @{" String manipulation functions" link ARx_Func.ag/STRLIST}
+
+The functions take decimal digits as arguments. They perform some common
+alterations of the arguments, or return information about the number. The
+arguments sent to the function and the values returned are subject to
+alteration based on the setting of @{" NUMERIC DIGITS " link ARx_Instr2.ag/NUMERIC}. If a number is larger
+than the current @{" DIGITS() " link ARx_Func3.ag/DIGITS()} setting, it will be converted to the current
+precision.
+
+Next: Information func. | Prev: Translation func. | Contents: Function ref.
+
+@endnode
+
+@node ABS() "ARexxGuide | Functions reference | Number (1 of 9) | ABS"
+@toc NUMLIST
+@prev NUMLIST
+@{i}rv@{ui} = ABS(<number>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Returns the absolute value of @{i}<number>@{ui}. The result will not have a sign
+and will be formatted according to the current settings of @{" NUMERIC " link ARx_Instr2.ag/NUMERIC}.
+
+   Examples:
+         say abs(-100);                >>> 100
+         say abs(10.5);                >>> 10.5
+         say abs(-30);                 >>> 30
+
+   Also see @{" SIGN          " link SIGN()}
+            @{" DATATYPE      " link ARx_Func3.ag/DATATYPE()}
+
+Next: HASH() | Prev: Number functions | Contents: Number functions
+
+@endnode
+@node HASH() "ARexxGuide | Functions reference | Number (2 of 9) | HASH"
+@toc NUMLIST
+@{i}rv@{ui} = HASH(<string>)
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Returns the hash attribute of a string as a decimal number.
+
+A hash attribute is a number assigned to a string and is often used in
+indexing schemes to provide a quick initial value for locating the string
+within a range of data.
+
+   Examples:
+      say hash('AMIGA')        >>> 95
+      say hash('Amiga')        >>> 223
+      say hash('MAGIA')        >>> 95
+
+The hash value is determined by adding the decimal ASCII values of each
+character in the string and then performing a remainder-division (//) on
+the result. Given a variable [Word], the following program would return
+the same value as HASH(word):
+
+   /**/
+   Wtot = 0
+   do i = 1 to length(Word)
+      Wtot = Wtot + c2d(substr(Word,i,1))
+   end
+   return Wtot // 256
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: MAX() | Prev: ABS() | Contents: Number functions
+
+@endnode
+@node MAX() "ARexxGuide | Functions reference | Number (3 of 9) | MAX"
+@toc NUMLIST
+@{i}rv@{ui} = MAX(<number>,<number> [,<number>,...])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the largest of the @{i}<number>@{ui}s in the supplied list. It is
+returned in the format specified by the current @{" NUMERIC " link ARx_Instr2.ag/NUMERIC}
+settings.
+
+   Examples:
+      say max(3, 24/5, 2)                       >>> 4.8
+      say max(length('pale'), length('gloom'))  >>> 5
+
+   Also see @{" MIN           " link MIN()}
+
+                 Technique note: @{" Extract file name from full spec  " link ARx_Tknq.ag/FILENAME}
+
+Next: MIN() | Prev: HASH() | Contents: Number functions
+
+@endnode
+@node MIN() "ARexxGuide | Functions reference | Number (4 of 9) | MIN"
+@toc NUMLIST
+@{i}rv@{ui} = MIN(<number>,<number>, [,<number>,...])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the smallest of the @{i}<number>@{ui}s in the supplied list. It is
+returned in the format specified by the current @{" NUMERIC " link ARx_Instr2.ag/NUMERIC} settings.
+
+   Examples:
+   /**/
+      say min(3, 24/5, 2)                       >>> 2
+      say min(length('pale'), length('gloom'))  >>> 4
+
+   Also see @{" MAX           " link MAX()}
+
+Next: RANDOM() | Prev: MAX() | Contents: Number functions
+
+@endnode
+@node RANDOM() "ARexxGuide | Functions reference | Number (5 of 9) | RANDOM"
+@toc NUMLIST
+@{i}rv@{ui} = RANDOM([<min>],[<max>],[<seed>})
+  or
+@{i}rv@{ui} = RANDOM([<max>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is a quasi-random non-negative whole number in the range @{i}<min>@{ui}
+to @{i}<max>@{ui} inclusive. The default for @{i}<min>@{ui} is 0. The default for @{i}<max>@{ui} is
+999. If only one number is specified, it will be treated as the maximum
+value.
+
+If a @{i}<seed>@{ui} value (which must be an integer) is specified, it will begin a
+repeatable sequence of results.
+
+   Examples:
+         say random(10, 48)                          >>> 29  /* always */
+         say random()                                >>> 493 /* always */
+         say random(10,48,506)                       >>> 31  /* always */
+         say random(,, time(s))                      >>> 25  /* maybe  */
+         call random(,, time(s));say random(10, 48)  >>> 34  /* maybe  */
+
+   Also see @{" RANDU         " link RANDU()}
+
+Unless the function is seeded once within each script in which it is used,
+it will always return the same values for a specified range of numbers.
+When a seed is specified, each call to random() will return a range of
+numbers that can be repeated exactly when the same seed value is used
+again. The @{" TIME() " link TIME()} function can provide a seed value that is itself
+random enough to produce a more truly random set of numbers during
+subsequent calls to random() without a seed.
+
+Next: RANDU() | Prev: MIN() | Contents: Number functions
+
+@endnode
+@node RANDU() "ARexxGuide | Functions reference | Number (6 of 9) | RANDU"
+@toc NUMLIST
+@{i}rv@{ui} = RANDU([<seed>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is a quasi-random number between 0 and 1. The number of digits
+of precision is determined by the current setting of @{" NUMERIC " link ARx_Instr2.ag/NUMERIC} DIGITS.
+
+If a @{i}<seed>@{ui} value is specified, it will begin a repeatable sequence of
+results.
+
+   Examples:
+         say randu(48)                      >>> 0.423783344  /* always */
+         say randu()                        >>> 0.646834773  /* always */
+         say randu(506)                     >>> 0.867625551  /* always */
+         say randu(time(s))                 >>> 0.234561918  /* maybe  */
+         call randu(time(s));say randu(48)  >>> 0.739330433  /* maybe  */
+
+   Also see @{" RANDOM        " link RANDOM()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: SIGN() | Prev: RANDOM() | Contents: Number functions
+
+@endnode
+@node SIGN() "ARexxGuide | Functions reference | Number (7 of 9) | SIGN"
+@toc NUMLIST
+@{i}rv@{ui} = SIGN(<number>)
+     @{i}rv@{ui} is '-1', '0', or '1'
+
+A result of '-1' indicates that the supplied number is less than 0. '1'
+indicates that it is greater than 0. A result of '0' is returned when
+@{i}<number>@{ui} is 0.
+
+   Examples:
+         say sign(45)      >>> 1
+         say sign(-86);    >>> -1
+
+   Also see @{" ABS           " link ABS()}
+            @{" DATATYPE      " link ARx_Func3.ag/DATATYPE()}
+
+Next: TRUNC() | Prev: RANDU() | Contents: Number functions
+
+@endnode
+@node TRUNC() "ARexxGuide | Functions reference | Number (8 of 9) | TRUNC"
+@toc NUMLIST
+@next NUMLIST
+@{i}rv@{ui} = TRUNC(<number>, [<places>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result is the integer part of the supplied @{i}<number>@{ui} formatted to
+@{i}<places>@{ui} decimal places. 0's are added if @{i}<number>@{ui} did not have that many
+decimal places.
+
+If @{i}<places>@{ui} is less than the number of decimals supplied, the fraction is
+truncated without rounding.
+
+The function truncates the number without rounding so trunc(6.19,2)
+returns 6.1 rather than 6.2. The setting of @{" NUMERIC DIGITS " link ARx_Instr2.ag/NUMERIC} may be
+manipulated to create a rounded number.
+
+   Example:
+         say trunc(10.5, 2)               >>> 10.50
+         say trunc(6.7899, 3)             >>> 6.789
+         say trunc(3, 4)                  >>> 3.0000
+         say '$'right(trunc(25.7, 2),8)   >>> $   25.70
+         say '$'right(trunc(125.4, 2),8)  >>> $  125.40
+
+
+   Also see @{" SUBSTR        " link ARx_Func.ag/SUBSTR()}
+            @{" RIGHT         " link ARx_Func.ag/RIGHT()}
+
+                 Technique note: @{" Formatting tables                 " link ARx_Tknq.ag/FORMATNOTE}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   Although this function follows the standard definition, there is a
+   similar function defined in the standard that is not supported by
+   ARexx: The format() function in standard REXX rounds and formats a
+   number. Its simplest syntax is:
+
+      format(<number>, <before>, <after>)
+
+   A user function to provide those features for ARexx is described in the
+   following note.
+
+                 Technique note: @{" FORMAT(): A user function         " link ARx_Tknq.ag/FORMATNOTE}
+
+Next: Number functions | Prev: SIGN() | Contents: Number functions
+
+@endnode
+@node INFOLIST "ARexxGuide | Functions reference (6 of 12) | INFORMATIONAL"
+@toc ARx_Func.ag/MAIN
+@prev NUMLIST
+@next FILEMGTLIST
+   @{" DATE      " link DATE()}([<option>], [<date>, <format>])
+   @{" SHOW      " link SHOW()}(<option>, [<name>], [<separator>])
+   @{" SHOWDIR   " link SHOWDIR()}(<directory>, ['ALL'|'FILE'|'DIR'], <separator>)
+   @{" SHOWLIST  " link SHOWLIST()}(<option>, [<name>], [<separator>], ['A'])
+   @{" TIME      " link TIME()}(<option>)
+
+Related function:
+   @{" PRAGMA    " link ARx_Func3.ag/PRAGMA()}
+   @{" ADDRESS   " link ARx_Func3.ag/ADDRESS()}
+
+                     Also see @{" File management functions    " link FILEMGTLIST}
+
+Like the @{" SOURCE " link ARx_Instr2.ag/PARSESRC5} and @{" VERSION " link ARx_Instr2.ag/PARSESRC6} options to the @{" PARSE " link ARx_Instr2.ag/PARSE} instruction, these
+functions give an ARexx script information about the system on which a
+script is running and (since dates and times are important to most of us)
+a bit of information about the world at large.
+
+The DATE() function may also be used to translate dates from one format
+into another.
+
+Next: File I/O func. | Prev: Number functions | Contents: Function ref.
+
+@endnode
+
+@node DATE() "ARexxGuide | Functions reference | Informative (1 of 5) | DATE"
+@toc INFOLIST
+@prev INFOLIST
+@next SHOW()
+@{i}rv@{ui} = DATE([<option>], [<date>, <format>])
+     @{i}rv@{ui} is a formatted @{" string " link ARx_Elements2.ag/STRINGEXPR}
+        or a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Without arguments, the result is the current system date.
+
+The @{" <option> " link DATESUB} argument (B|C|E|I|J|M|N|O|S|U|W) determines the
+format of the result. It defaults to Normal format -- for example,
+'20 Apr 1993'.
+
+The second and third arguments provide information about other dates.
+<date> must be entered in either @{" Sorted " link ARx_Func2.ag/DATESUB  7} or @{" Internal " link ARx_Func2.ag/DATESUB  16} format and
+specified as the third argument (S|I). Unfortunately, ARexx will translate
+only dates from January 1, 1978 onward. If an earlier date is passed as an
+argument, the function will trigger @{" Error 18 " link ARx_Error.ag/ERROR_18}.
+
+   Examples:
+         say date();                    >>> 20 Apr 1993
+         say date(w);                   >>> Tuesday
+         say date(i,'19930419',s);      >>> 5587
+         say date(n,'5587',i);          >>> 19 Apr 1993
+         say date(w,'19991231',s);      >>> Friday
+
+   Also see @{" TIME          " link TIME()}
+
+               More information: @{" Persistence of DATE() value       " link TIMEPERSIST}
+
+@{" Compatibility issues " link ARx_Intro.ag/COMPATIBILITY}:
+   Although the definition may be extended in the future to recognize
+   translation features similar (but probably not identical) to those now
+   supported in ARexx, the current REXX standard recognizes only the first
+   of the arguments supported by ARexx. Use of the other arguments would
+   generate an error in other versions of REXX.
+
+Next: SHOW() | Prev: Information func. | Contents: Information func.
+
+@endnode
+
+@node TIMEPERSIST " ARexxGuide | Tutorials | Techniques ( of ) Persistence of DATE() and TIME() settings "
+@toc INFOLIST
+@next TIME()
+@prev DATE()
+The @{" DATE() " link DATE()} and @{" TIME() " link TIME()} settings are persistent within a single
+@{" clause " link ARx_Elements3.ag/CLAUSE}. A record is made of the initial value of both functions when
+either of them is first used in a clause. Thereafter, each call within the
+clause to one of the functions will return the initial value recorded at
+the first call.
+
+The following, entered as three distinct clauses will return a different
+value for time() because of the @{" delay() " link ARx_Func3.ag/DELAY()} between the clauses:
+
+   say time();call delay(100);say time()
+                                          >>> 11:45:29
+                                          >>> 11:45:31
+
+When the function calls are combined into a single clause, however, the
+value of the first call is returned on both calls to time():
+
+   say time() delay(100) time()
+                                          >>> 11:45:43 0 11:45:43
+
+A call to either date() or time() will freeze the values returned by both
+functions:
+
+   say time();say date() delay(100) time()
+                                          >>> 11:54:03
+                                          >>> 02 Nov 1993 0 11:54:03
+
+This persistence guarantees that calls to the functions will return a
+consistent value within a single clause.
+
+Next: TIME() | Prev: DATE() | Contents: Information func.
+
+@endnode
+
+@node DATESUB "ARexxGuide | Functions reference | Informative | DATE (1 of 1) | OPTIONS"
+@toc DATE()
+@prev DATE()
+@next DATE()
+These are the <option>s recognized by the @{" date " link DATE()} function, they are:
+All of these options can be shortened to the first character.
+
+      Option      Information returned
+      ~~~~~~~~~   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      @{b}N@{ub}ormal      the date in the form dd MMM yy e.g. 09 Mar 1993
+      @{b}O@{ub}rdered     the date in the form YY/MM/DD e.g. 93/09/03
+      @{b}S@{ub}orted      the date in the form YYYYMMDD e.g. 19930903
+      @{b}E@{ub}uropean    the date in the form DD/MM/YY e.g. 03/09/93
+      @{b}U@{ub}SA         the date in the form MM/DD/YY e.g. 09/03/93
+      @{b}B@{ub}asedate    number of days since January 1, 0001
+      @{b}J@{ub}ulian      the date in the form YYDDD e.g. 91246
+      @{b}C@{ub}entury     number of days since January 1 of the current
+                  century
+      @{b}D@{ub}ays        number of days since January 1 of the current
+                  year
+      @{b}I@{ub}nternal    the date in internal system days e.g. 4993
+      @{b}M@{ub}onth       the current month in mixed case e.g. September
+      @{b}W@{ub}eekday     the day of the week, mixed case e.g. Tuesday
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Next, Prev. & Contents: DATE()
+
+@endnode
+@node SHOW() "ARexxGuide | Functions reference | Informative (2 of 5) | SHOW"
+@toc INFOLIST
+@prev DATE()
+@{i}rv@{ui} = SHOW(<option>, [<name>], [<separator>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+        or a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Returns a list of ARexx resources matching the specified @{i}<option>@{ui}:
+
+   Option        Displays
+   ------------  ---------------------------------------------------------
+   @{b}C@{ub}lips         The names of clips created by @{" SETCLIP() " link ARx_Func3.ag/SETCLIP()} or @{" RXSET " link ARx_Cmd.ag/RXSET}.
+   @{b}F@{ub}ile          The logical names of files created with @{" OPEN() " link ARx_Func3.ag/OPEN()}, and the
+               names of @{" standard I/O files " link ARx_Func3.ag/STDIO}.
+   @{b}L@{ub}ibraries     The names on the ARexx @{" Library List " link ARx_Elements3.ag/LIBFUNC}, added by @{" ADDLIB() " link ARx_Func3.ag/ADDLIB()}
+   @{b}P@{ub}orts         The names of all system @{" message ports " link ARx_Func4.ag/PORTLIST 10}.
+
+Only the first character of the @{i}<option>@{ui} keyword need be used.
+
+An optional @{i}<separator>@{ui} can be used to divide the resource names, some of
+which may have embedded blanks. (Be sure to use two commas before the
+@{i}<separator>@{ui}.)
+
+If @{i}<name>@{ui} is specified, the function will check for the existence of that
+resource and return a Boolean success flag.
+
+   Example:
+         say show(p);            >>> REXX AREXX ConClip.rendezvous blanker
+         say show(c);            >>> Molloy
+         say show(c,'Molloy');   >>> 1
+         say show(p,,'0a'x);     >>> REXX
+                                     AREXX
+                                     ConClip.rendezvous
+                                     blanker
+
+If 'L' is specified as the argument, a list of currently available ARexx
+function libraries is returned. The support library function @{" SHOWLIST() " link SHOWLIST()},
+on the other hand, returns a list of all system libraries available when
+the same argument is used.
+
+SHOW('P') will return a list of all public message ports available on the
+system. Some of those ports cannot be used as @{" hosts " link ARx_Elements3.ag/HOST} for @{" commands " link ARx_Elements3.ag/COMMAND} from
+ARexx.
+
+   Also see @{" SHOWLIST      " link SHOWLIST()}
+
+                 Technique note: @{" Output text to printer            " link ARx_Tknq.ag/PRINTTEST}
+                                 @{" Using the clip list               " link ARx_Tknq.ag/CLIPLIST}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an ARexx extension that is not supported and not
+   duplicated in the standard language definition.
+
+Next: SHOWDIR() | Prev: DATE() | Contents: Information func.
+
+@endnode
+@node SHOWDIR() "ARexxGuide | Functions reference | Informative (3 of 5) | SHOWDIR"
+@toc INFOLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = SHOWDIR(<directory>, ['ALL'|'FILE'|'DIR'], <separator>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is a list of files matching the type specified by the second
+argument and located in the @{i}<directory>@{ui} specified.
+
+The @{i}<separator>@{ui} can be any character (including a null). It can be used to
+separate filenames with a character (such as '0a'x) that cannot be used in
+a filename.
+
+   Examples:
+         say showdir('sys:rexxc');
+                  >>> HI RX RXC RXLIB RXSET TCC TCO TE TS WaitForPort
+
+   Also see @{" SHOWLIST      " link SHOWLIST()}
+            @{" STATEF        " link STATEF()}
+            @{" PRAGMA        " link ARx_Func3.ag/PRAGMA()}
+
+The function library @{" rexxarplib.library " link ARx_Elements3.ag/LIBFUNC 13}, which is available on many
+networks and bulletin boards, includes a function, FILELIST(), that is more
+versatile since it will list only those files matching a specified pattern.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: SHOWLIST() | Prev: SHOW() | Contents: Information func.
+
+@endnode
+@node SHOWLIST() "ARexxGuide | Functions reference | Informative (4 of 5) | SHOWLIST"
+@toc INFOLIST
+@next TIME()
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = SHOWLIST(<option>, [<name>], [<separator>], ['A'])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+        or a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Returns a list of system resources matching the specified @{" <option> " link SHOWLISTSUB}
+and separated by the optional @{i}<separator>@{ui} character.
+
+If @{i}<name>@{ui} is specified, the function will check for the existence of that
+resource and return a Boolean success flag.
+
+The @{i}<separator>@{ui} can be any character, including '0a'x, which is a
+convenient way to separate names in the list.
+
+The optional fourth argument 'Address' or 'A' specifies that the function
+is to return the base address of the named node, and is valid only if a
+node name (second argument) has been supplied. The 'Address' option is
+valid for both EXEC and DOS lists.
+
+   Examples:
+         say showlist(L);  >>> utility.library graphics.library keymap.library ...
+         say showlist(L,'asl.library');      >>> 1
+         say showlist(M);           >>> expansion memory chip memory
+         say showlist(M,,'+');      >>> expansion memory+chip memory
+         say showlist(D);  >>> gameport.device timer.device keyboard.device ...
+         say showlist(V,,'|');      >>> XFER|WK|RAM DISK|HD1|HD0
+         say showlist(R);  >>> potgo.resource ciaa.resource ciab.resource ...
+         say showlist(A,'FONTS');   >>> 1
+         say c2d(showlist(L ,'amigaguide.library',,A))
+                                    >>> 5153220       /* for example */
+
+   Also see @{" SHOW          " link SHOW()}
+            @{" SHOWDIR       " link SHOWDIR()}
+            @{" PRAGMA        " link ARx_Func3.ag/PRAGMA()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: TIME() | Prev: SHOWDIR() | Contents: Information Func.
+
+@endnode
+@node SHOWLISTSUB "ARexxGuide | Functions reference | Informative | showlist (1 of 1) | OPTIONS"
+@toc SHOWLIST()
+@next SHOWLIST()
+@prev SHOWLIST()
+Any @{i}<option>@{ui} to SHOWLIST() (some of them esoteric) may be specified by
+using only the single character capitalized in the list below:
+
+   Option         Information returned
+   ------------   ------------------------------------------------------
+   @{b}P@{ub}orts          Same information as SHOW('P'): all named message ports.
+   @{b}L@{ub}ibraries      All system libraries, not just ARexx libs.
+   @{b}V@{ub}olumes        The volume names of all disks currently available.
+   @{b}A@{ub}ssign         The names of all assigned directories.
+   @{b}H@{ub}andlers       The AmigaDOS interfaces to hardware devices. Includes
+                  names like DF0, PRT, CON.
+   @{b}D@{ub}evices        The lower-level interface to hardware. Might include
+                  names like 'scsi.device', 'keyboard.device'.
+   @{b}R@{ub}esources      The lowest-level software interface to some hardware
+                  elements of the machine. The resources cannot be
+                  accessed from ARexx, but this option returns names like
+                  'potgo.resource'.
+   @{b}M@{ub}emory-types   Will usually return 'expansion memory chip memory'.
+   @{b}W@{ub}aiting        A list of all the many tasks waiting for something to
+                  happen on the system.
+   @{b}T@{ub}ask-ready     A list of tasks ready to be called to task by the
+                  scheduler.
+   @{b}S@{ub}emaphores     Used by some software to prevent conflicting access to
+                  facilities it controls. (Since AmigaGuide uses
+                  semaphores, there may be an item on the list for this
+                  application.)
+   @{b}I@{ub}nterrupts     A list of node names on the list of interrupts in the
+                  Exec Library structure.
+
+@{i}<option>@{ui} can, reportedly, be given as the (4-byte) absolute address of a
+list header; the function performs several tests to make sure that it
+really is a header.
+
+Next, Prev. & Contents: SHOWLIST()
+
+@endnode
+@node TIME() "ARexxGuide | Functions reference | Informative (5 of 5) | TIME"
+@toc INFOLIST
+@prev SHOWLIST()
+@next INFOLIST
+@{i}rv@{ui} = TIME(<option>)
+     rv is a formatted @{" string " link ARx_Elements2.ag/STRINGEXPR}
+        or a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Without arguments, the result is the current system time in Normal 24-hour
+clock format -- hh:mm:ss
+
+The @{" <option> " link TIMESUB} argument (C|E|H|M|N|R|S) determines the format
+of the result and controls the @{" elapsed time counter " link TIMENOTE}.
+
+   Examples:
+         say time()              >>> 20:08:52
+         say time(c)             >>> 8:08PM
+         say time(h)             >>> 20
+         say time(m)             >>> 1208
+         say time(s)             >>> 72532
+         call time(r);call delay 500;say time(e)  >>> 10.06
+
+   Also see @{" DATE          " link DATE()}
+            @{" DELAY         " link ARx_Func3.ag/DELAY()}
+
+               More information: @{" Persistence of TIME() value       " link TIMEPERSIST}
+
+Next: Information func. | Prev: SHOWLIST() | Contents: Information func.
+
+@endnode
+
+@node TIMENOTE " ARexxGuide | Tutorials | Techniques ( of ) The elapsed time counter "
+@toc TIME()
+@next TIME()
+@prev TIME()
+The 'E' and 'R' options to @{" TIME() " link TIME()} control a clock that allows an ARexx
+script to measure time intervals. The clock is started with the first call
+to either TIME(E) or TIME(R). The result of the first call will always be
+'0.00'. The next call to TIME(E) will report the interval in the form
+<ss.tt> where <s> is seconds and <t> is ticks of the internal clock (1/50
+second on NTSC systems).
+
+TIME(R) will reset the interval counter to 0.00.
+
+Changes to the interval counter made within a @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} are local to
+that subroutine and do not affect the settings of the clock in the calling
+environment.
+
+Next, Prev, & Contents: TIME()
+
+@endnode
+
+
+@node TIMESUB "ARexxGuide | Functions reference | Informative | TIME (1 of 1 ) | OPTIONS "
+@toc TIME()
+@prev TIME()
+@next TIME()
+      The following @{i}<option>@{ui} keywords are available for the TIME():
+
+         Keyword         Description
+         --------        ------------------------------------------
+         @{b}C@{ub}ivil           Current time in civil format: hh:mm[AM|PM]
+         @{b}E@{ub}lapsed         Elapsed time in seconds
+         @{b}H@{ub}ours           Current time in hours since midnight
+         @{b}M@{ub}inutes         Current time in minutes since midnight
+         @{b}N@{ub}ormal          Default 24-hour format: hh:mm:ss
+         @{b}R@{ub}eset           Reset the elapsed-time clock
+         @{b}S@{ub}econds         Current time in seconds since midnight
+
+      Only the first letter of the option need be used.
+
+Next, Prev. & Contents: TIME()
+
+@endnode
+
+@node FILEMGTLIST "ARexxGuide | Functions reference (8 of 12) | FILE MANAGEMENT"
+@toc ARx_Func.ag/MAIN
+@prev INFOLIST
+@next ARx_Func3.ag/ARXLIST
+   @{" DELETE    " link DELETE()}(<filespec>)
+   @{" EXISTS    " link EXISTS()}(<filespec>)
+   @{" MAKEDIR   " link MAKEDIR()}(<dirname>)
+   @{" RENAME    " link RENAME()}(<oldfile>, <newfile>)
+   @{" STATEF    " link STATEF()}(<filespec>)
+
+                     Also see @{" File input/output functions  " link ARx_Func3.ag/FILEIOLIST}
+
+Although each of these functions could be replaced by calls to AmigaDOS
+commands such as `address command "delete" @{i}<file>@{ui}', the functions here
+are significantly quicker more informative since they return a value
+within variable space of the calling script.
+
+Next: ARexx control func. | Prev: File I/O func. | Contents: Function ref.
+
+@endnode
+
+@node DELETE() "ARexxGuide | Functions reference | File Mgt. (1 of 5) | DELETE"
+@toc FILEMGTLIST
+@prev FILEMGTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = DELETE(<filespec>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Deletes the file specified by @{i}<filespec>@{ui}. Returns 1 if the file was found
+and successfully deleted.
+
+   Example:
+         say delete('t:tempfile');    >>> 1 /* if the file was found */
+
+                 Technique note: @{" Getting output from a command     " link ARx_Tknq.ag/READCMD}
+                                 @{" Get/set environmental variables   " link ARx_Tknq.ag/GETSETENV}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: EXISTS() | Prev: File mgt. func. | Contents: File mgt. func.
+
+@endnode
+@node EXISTS() "ARexxGuide | Functions reference | File Mgt. (2 of 5) | EXISTS"
+@toc FILEMGTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = EXISTS(<filespec>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Checks the Amiga file system for the presence of a file named @{i}<filespec>@{ui},
+which may include full path specifications. If only a partial path
+specification is included, the search is made relative to the current
+directory.
+
+   Example:
+         say exists('sys:system/rexxmast');      >>> 1
+
+   Also see @{" SHOWLIST      " link SHOWLIST()}
+            @{" PRAGMA        " link ARx_Func3.ag/PRAGMA()}
+            @{" MAKEDIR       " link MAKEDIR()}
+
+                 Technique note: @{" Get/set environmental variables   " link ARx_Tknq.ag/GETSETENV}
+
+Note: @{" SHOWLIST('A') " link SHOWLIST()} returns a list (in upper case and without the ':') of
+all currently assigned directories. SHOWLIST('V') returns a similar list
+of currently mounted volumes. The lists can be used to check for the
+presence of a file device specification.
+
+When EXISTS() is used to check for the existence of a file on a device
+that might not be available, the system requester that asks "Please insert
+volume..." can be suppressed through use of @{" PRAGMA('W', 'N') " link ARx_Func3.ag/PRAGMA()}.
+
+PRAGMA('D', <dir>) will change the default directory examined by EXISTS()
+to that specified by @{i}<dir>@{ui}.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: MAKEDIR() | Prev: DELETE() | Contents: File mgt. func.
+
+@endnode
+
+@node MAKEDIR() "ARexxGuide | Functions reference | File Mgt. (3 of 5) | MAKEDIR"
+@toc FILEMGTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = MAKEDIR(<dirname>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Creates a new directory, like the AmigaDOS command of the same name.
+
+This is one of the rare cases where an ARexx function works differently
+with different versions of the Amiga operating system. Under AmigaDOS 1.3,
+the function returns 1 (TRUE) even if the directory already exists, so the
+call can be made to ensure that a directory exists. Under Release 2.04 and
+higher, however, the return value is 0 (FALSE) if the directory already
+exists.
+
+A return of FALSE might also occur under any version of the OS if the
+specified volume is not available or is full.
+
+   Example:
+         say makedir('env:ARexxGuide')    >>> 1
+
+                 Technique note: @{" Get/set environmental variables   " link ARx_Tknq.ag/GETSETENV}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: RENAME() | Prev: EXISTS() | Contents: File mgt. func.
+
+@endnode
+@node RENAME() "ARexxGuide | Functions reference | File Mgt. (4 of 5) | RENAME"
+@toc FILEMGTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = RENAME(<oldfile>, <newfile>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Renames @{i}<oldfile>@{ui} to @{i}<newfile>@{ui}.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: STATEF() | Prev: MAKEDIR() | Contents: File mgt. func.
+
+@endnode
+@node STATEF() "ARexxGuide | Functions reference | File Mgt. (5 of 5) | STATEF"
+@toc FILEMGTLIST
+@next FILEMGTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = STATEF(<filespec>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Returns information about the file named @{i}<filespec>@{ui}. The status string for
+a file is formatted as
+
+   FILE|DIR <bytes> <blocks> <protect-flags> <days> <min> <ticks> <comment>
+
+   <protect-flags> are reported in the order HSPARWED with a dash "-" if
+      the attribute isn't present.
+   <days> is the number of days since January 1, 1978
+   <min> is the number of minutes since midnight
+   <ticks> is the number of tick intervals (1/50 second) in the minute.
+
+   Examples:
+         say statef('sys:rexxc');     >>> DIR 0 0 ----RWED 5362 727 2702
+         say statef('sys:rexxc/tco'); >>> FILE 364 1 --P-RWED 5362 727 2688
+
+   Also see @{" SHOWDIR       " link SHOWDIR()}
+            @{" PRAGMA        " link ARx_Func3.ag/PRAGMA()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: File mgt. func. | Prev: RENAME() | Contents: File mgt. func.
+
+@endnode

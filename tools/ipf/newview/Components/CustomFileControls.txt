@@ -1,0 +1,13 @@
+Enhanced replacements for the components from FileCtrl.pas in Sibyl.
+Enhancements include:
+
+TCustomFileListBox:
+ - Reload method
+ - Exclude filter
+
+TCustomDirectoryListBox;
+ - better drawing (doesn't overwrite top)
+ - nicer folder images (can be customised)
+ - keyboard works
+
+The drive combobox and filetype filter combobox are unchanged.

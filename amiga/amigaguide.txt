@@ -1,0 +1,211 @@
+v31 commands
+
+The original Amigaguide, containing 31 tags and commands, was never properly documented by Commodore.
+Escape codes
+
+Because of their special meaning in Amigaguide, the chracters @ and \ have to be escaped.
+
+\@
+    Escape code for @
+\\
+    Escape code for \
+
+Global tags and commands
+
+These can be placed outside of a node, on their own lines.
+
+@$VER:
+    The version information for the AmigaDOS version command. Example: @$VER: safalra.guide 1.0 (18/12/2003) 
+@(c)
+    The copyright information. This information is not currently used by Amigaguide. Example: @(c) 2003 Safalra (Stephen Morley) 
+@author
+    The name of the author or authors. This information is not currently used by Amigaguide. Example: @author Safalra (Stephen Morley) 
+@database
+    Identifies the file as an Amigaguide document (this allows Multiview to display it using the Amigaguide datatype). This must be the first line of the file. Example: @database 
+@dnode
+    Indicates a dynamic node. This was never implemented and should not be used. 
+@endnode
+    The end of a node. Example: @endnode 
+@font
+    Specifies the font to use, specified by name and size. Example: @font safalra.font 12 
+@height
+    Specifies the height (in rows) of the largest node. This information is not currently used by Amigaguide. Example: @height 42 
+@help
+    Specifies the node to be displayed when the user clicks the ‘Help’ button. Example: @help "A helpful node" 
+@index
+    Specifies the node to be displayed when the user clicks the ‘Index’ button. Example: @index "The index node" 
+@master
+    The name of the master copy of this amigaguide document. This information is not currently used by Amigaguide. Example: @master "Documents:Amigaguide/safalra.guide" 
+@node
+    The start of a node, followe by a name and title. The title is displayed in Amigaguide’s title bar, and the name is used to identify the node. Example: @node "Node name" "Node title" 
+@rem
+    A comment that is not displayed. Example: @rem Amigaguide won't display this 
+@remark
+    A comment that is not displayed. Example: @remark Amigaguide won't display this 
+@width
+    Specifies the width (in columns) of the largest node. This information is not currently used by Amigaguide. Example: @width 78 
+
+Node-level tags and commands
+
+These are placed inside a node, on their own lines, and effect the whole node.
+
+@font
+    The same as the global font command, but only effects this node. Example: @font safalra.font 12 
+@help
+    The same as the global help command, but only effects this node. Example: @help "A helpful node" 
+@index
+    The same as the global index command, but only effects this node. Example: @index "The index node" 
+@keywords
+    The keywords for this node. This information is not currently used by Amigaguide. Example: @keywords Torquay "English Riviera" Devon "Fawlty Towers" 
+@next
+    The next node, displayed when the user clicks the ‘Browser >’ button. This defaults to the next node in the document source. Example: @next "The next node" 
+@prev
+    The previous node, displayed when the user clicks the ‘< Browser’ button. This defaults to the previous node in the document source. Example: @prev "The previous node" 
+@title
+    Specifies the title of this node. This overrides the title specified in the @node tag. Example: @title "Node title" 
+@toc
+    The contents page, displayed when the user clicks the ‘Contents’ button. This defaults to the main node. Example: @toc "A contents node" 
+
+Local tags and commands
+
+These can be placed anywhere within a node.
+
+@{alink}
+    Specifies a hypertext link to open in a new window. Non-local links are specifed using the path to the amigaguide file, followed by / and the node name. A line number can also be specified. Example: @{"Link text" alink "local node" 7} 
+@{bg}
+    Specifies the background colour to use from the next character onwards. Valid values are ‘back’, ‘background’, ‘fill’, ‘filltext’, ‘highlight’, ‘shadow’, ‘shine’ and ‘text’. Example: @{bg background} 
+@{close}
+    Closes this window. This is used in combination with @{alink}. Example: @{"Back to previous node" close} 
+@{fg}
+    Specifies the text colour to use from the next character onwards. Valid values are ‘back’, ‘background’, ‘fill’, ‘filltext’, ‘highlight’, ‘shadow’, ‘shine’ and ‘text’. Example: @{fg text} 
+@{link}
+    Specifies a hypertext link to another node. Non-local links are specifed using the path to the amigaguide file, followed by / and the node name. A line number can also be specified. Example: @{"Link text" link "Documents:Amigaguide/safalra.guide/non local node name" 12} 
+@{rx}
+    Specifies a hypertext link that executes an ARexx script. Example: @{"Execute a script" rx "script.rexx"} 
+@{rxs}
+    Specifies a hypertext link that executes an ARexx string. Example: @{"Execute a string" rxs "Say 'hello'"} 
+@{system}
+    Specifies a hypertext link that executes an AmigaDOS command. Example: @{"Format DF0: now" system "Format DF0:"} 
+@{quit}
+    Specifies a hypertext link that closes Amigaguide. Example: @{"Close Amigaguide" quit} 
+
+ 
+
+v39 commands
+
+Changes
+
+With the release of Workbench 3.0, and the creation of the datatypes system, many changes were made to Amigaguide. With the creation of the datatypes system, a hyperlink can now point to any file (though it will only be displayed if a datatype is available for that filetype). The @{alink} tag now behaves the same as the @{link} tag, as it was considered bad practice to open new windows without the user's permission. As a result, the @{close} and @{quit} tags no longer work.
+New global tags and commands
+
+These can be placed outside of a node, on their own lines.
+
+@wordwrap
+    Wraps paragraphs without linefeeds. Example: @wordwrap 
+@xref
+    Specifies other amigaguide documents to refer to. Example: @xref "Documents:Amigaguide/safalra.guide" 
+
+New node-level tags and commands
+
+These are placed inside a node, on their own lines, and effect the whole node.
+
+@embed
+    Embeds a text document withing this node. Example: @embed "Documents:Text/speech.txt" 
+@proportional
+    Specifies that a proportional font is used for this node. Example: @proportional 
+@wordwrap
+    The same as the global @wordwrap command, but only effects this node. Example: @wordwrap 
+
+New local tags and commands
+
+These can be placed anywhere within a node.
+
+@{b}
+    Turns on bold text. Example: @{b} 
+@{beep}
+    Specifies a hypertext link that makes a ‘beep’ sound when clicked. Example: @{"Click me to beep" beep} 
+@{guide}
+    Specifies a hypertext link to another amigaguide document. Example: @{"Another amigaguide document" guide "Document:Amigaguides/safalra.guide"} 
+@{i}
+    Turns on italic text. Example: @{i} 
+@{u}
+    Turns on underlined text. Example: @{u} 
+@{ub}
+    Turns off bold text. Example: @{ub} 
+@{ui}
+    Turns off italic text. Example: @{ui} 
+@{uu}
+    Turns off underlined text. Example: @{uu} 
+
+
+v40 commands
+
+With the release of Workbench 3.1, many new tags and commands were added to Amigaguide, giving it formatting capabilities more advanced than the HTML of the time.
+New global tags and commands
+
+These can be placed outside of a node, on their own lines.
+
+@macro
+    Defines a macro. A macro consists of a name, and a string to substitute for it in the document. This string may contain arguments, refered to as $1, $2 and so on. A macro can override the built-in tags and commands. Example: @macro bulletlink @{" " link $2} $1 
+@onclose
+    Specifies an ARexx script to execute when the document is closed. The return value of the script is ignored. Example: @onclose "script.rexx" 
+@onopen
+    Specifies an ARexx script to execute when the document is opened. If the script returns an error code, the document is not opened. Example: @onopen "script.rexx" 
+@smartwrap
+    Wraps text in the same way as HTML. Paragraphs are separated by two linefeeds, or using the @{par} tag. Example: @smartwrap 
+@tab
+    Specifies the number of spaces in a tab. The default value is 8. Example: @tab 3 
+
+New node-level tags and commands
+
+These are placed inside a node, on their own lines, and effect the whole node.
+
+@macro
+    The same as the global @macro command, but only effects this node. Example: @macro bulletlink @{" " link $2} $1 
+@onclose
+    The same as the global @onclose command, but only effects this node. Example: @onclose "script.rexx" 
+@onopen
+    The same as the global @onpen command, but only effects this node. Example: @onopen "script.rexx" 
+@smartwrap
+    The same as the global @smartwrap command, but only effects this node. Example: @smartwrap 
+@tab
+    The same as the global @tab command, but only effects this node. Example: @tab 3 
+
+New local tags and commands
+
+These can be placed anywhere within a node.
+
+@{amigaguide}
+    Displays “Amigaguide(R)” in bold. Authors of other amigaguide viewers should change this to display their own information. Example: @{amigaguide} 
+@{apen}
+    Sets the pen number used for the text colour. The default value is 1. Example: @{apen 2} 
+@{body}
+    Use default formatting from the next character onwards. Example: @{body} 
+@{bpen}
+    Sets the pen number used for the background colour. The default value is 0. Example: @{bpen 3} 
+@{cleartabs}
+    Use the default tab stops from the next character onwards. Example: @{cleartabs} 
+@{code}
+    Turns off wordwrapping. Only linefeeds will cause new lines. Example: @{code} 
+@{jcenter}
+    Turns on centred text. Example: @{jcenter} 
+@{jleft}
+    Turns on left-aligned text. Example: @{jleft} 
+@{jright}
+    Turns on right-aligned text. Example: @{jright} 
+@{lindent}
+    Sets the indent, in spaces, to be used for lines of text. The default value is 0. Example: @{lindent 3} 
+@{line}
+    A linefeed that does not start a new paragraph. Example: @{line} 
+@{par}
+    Starts a new paragraph (equivalent to two linefeeds). Example: @{par} 
+@{pard}
+    Use default paragraph settings. Example: @{pard} 
+@{pari}
+    Sets the indent, in spaces, to be used for the first line of a paragraph. Example: @{pari 3} 
+@{plain}
+    Turns off bold, italics and underlining. Example: @{plain} 
+@{settabs}
+    Sets the tab stops, in characters. Example: @{settabs 4 8 12} 
+@{tab}
+    Inserts a tab character. Example: @{tab} 

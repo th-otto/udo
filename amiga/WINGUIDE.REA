@@ -1,0 +1,62 @@
+Short	 : Win95 prog to display AmigaGuide Files.
+Uploader : steve@intech.co.uk
+Author	 : Steven Eckles
+Type	 : misc/emu
+Version  : 4.0
+Requires : Windows 95/98,Windows NT or Win32
+
+This is a 32bit MS Windows program for viewing Amigaguide files. The idea
+being if you download Amiga stuff from the aminet (or wherever) using your PC,
+you can view the AmigaGuide file(s) that normally come with it, directly on your
+PC.
+
+This version supports most BUT NOT ALL commands and displays most documents
+correctly. Any commands currently not supported will simply be ignored. Most of
+the unsupported commands are text formatting commands like Word wrapping,
+margins, paragraphs, text justification etc. These will be added in a future
+version. Mail me for a complete list of what is and is not supported.
+
+
+http://tatooine.fortunecity.com/falcon/183/winguide.htm
+
+
+Version History
+===============
+
+V1.0  9/8/97
+
+  Initial Release.
+
+
+V2.0  25/8/97
+
+  Radically re-wrote the screen & display routines. It no longer chews up vast
+  amounts of memory, is faster to load/display documents and can display much
+  larger documents. Also fixed a bug whereby just the buttons were displayed
+  with the desktop visible through the WinGuide window.
+
+  Added a Prefs option to the File menu that enables you to change the font
+  and text colours.
+
+  Now supports links that link other (amigaguide) files.
+
+V3.0 17/2/98
+
+  Bug fixes - Including not crashing on @{bg BACK} command.
+  Links can be dsiplayed as text only ( simmilar to a Web browser).
+  Added a search.
+  can now display straight text files.  
+
+V4.0 20/1/99
+
+  Re-wrote the screen/display routines again! It now display things properly - In particular
+  blocks of formated/coloured text.
+  Gave it a "Win98 look" - eg buttons popping up when the mouse hovers over them.
+  Added printing.
+  Added highlight and copy to the clipboard.
+  Added a properties option which display Information about the Author, copyright, version etc
+  Added a History window.
+  Added View Source option.
+  Decided to make it Shareware - See the About box.
+
+

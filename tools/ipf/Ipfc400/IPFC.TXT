@@ -1,0 +1,21 @@
+Operating System/2 Information Presentation Facility Compiler
+Version 4.00.000 June 24 1996
+Copyright (C) IBM Corporation 1991-1996
+All rights reserved
+
+Usage: IPFC [-switch]... [-option]... infile [outfile]
+
+Switches: i - Compiles the source file as an online document
+          s - Suppresses the performance of the search function
+          x - Generates and displays a cross-reference list
+
+Options:  W:level    - Warning level
+          D:countrycode - Country code
+          C:codepage - Character code page
+          L:language - Language ID
+
+Environment variables:
+          IPFCARTWORK=artwork and linkfile path (used for :artwork.)
+          IPFCIMBED=imbed file path (used for .im)
+          IPFC=IPFC file path (location of APSY*.APS, IPF*.NLS)
+          TMP=temporary file path

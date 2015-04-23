@@ -1,0 +1,66 @@
+Short: Fixes problem scripts in ARexxGuide2_0*
+Type: util/rexx
+Uploader: robin@halcyon.com
+Author: Robin Evans
+
+
+This patch includes the fixed scripts to replace those that were
+included in the 2_0 releases of ARexxGuide. Copy these scripts
+to the directory where you stored the original scripts for 2_0.
+
+The 2_0a release includes these fixed scripts along with some
+minor changes to the text in several nodes.
+
+          ======================================
+
+I feel a bit like David Letterman after the Madonna interview: I
+want to stare into the camera and say "I'm sorry. I'm sorry."
+
+Unlike that interview, though, there was nothing funny about
+what preceded this. The scripts in the two 2_0 releases of
+ARexxGuide had a number of problems. The most obvious was a
+bonehead mistake in ARx_Setup.rexx: In last-minute modifica-
+tions, I moved the line that adds rexxarplib.library to a place
+_below_ the first call to a function in that library.
+
+It's very embarrasing, but... there it is.
+
+That's fixed in these scripts along with a few silly looping
+mistakes in ARx_Setup.rexx, and some more subtle errors. The
+most mysterious had to do with hung processes that were
+unpredictable, but reported on several systems. Most of the
+problems were associated with the routines that check for the
+existence of a library.
+
+The CheckLib() user function that is used in several of these
+scripts has the unfortunate side-effect of revealing rogue
+libraries -- libraries that are included on the ARexx list, but
+don't properly set a return code for ARexx when a function call
+cannot be resolved by the library.
+
+Version 34 of "amigaguide.library" is one such rogue library
+when used as an ARexx function library. Even in the original 2_0
+scripts, it was used only when absolutely necessary and removed
+as quickly as possible from the ARexx library list. The new
+scripts are even more careful to remove that library from the
+list.
+
+Other problematic libraries might be included on some systems,
+however, so the new versions of ARx_Setup.rexx and
+ARexxGuide.rexx check all libraries and temporarily remove
+unfamiliar names. The names are added back before the program
+exits, unless it's a name like "rexxsyslib.library" that doesn't
+belong on the list.
+
+Because of problems that are still mysterious to me, but are
+repeatable when the LibVer() function was used from a script
+called asynchronously (with "address AREXX"), that function is
+no longer used in ARx_GlossaryPort.rexx.
+
+Version 37.71 of "rexxreqtools.library" is recommended for these
+scripts. It is available in the archive "ReqTools22a_User.lha".
+Do not use a version less than 37.50.
+
+Special thanks to John A. Conant for fixes to the OS 3.x parts of
+ARx_Setup.rexx, and to Steve Plegge and Doug Tittle for pointing
+out some of the many problems with the initial version.

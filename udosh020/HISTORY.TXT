@@ -1,0 +1,571 @@
+0.1		Erste Version
+
+
+0.11	(06.03.1998)
+
+Bugs:
+
+-	In die Editfelder wird nur noch etwas eingetragen, wenn auch ein
+	Sourcefile vorhanden/ausgew„hlt ist.
+-	Im Dialog 'Externes' wird jetzt auch ASCII als Default eingetragen,
+	wenn keine Info-Datei vorhanden ist. Der Eintrag fehlte bei den
+	Defaultoptionen.
+-	Zieldatei konnte nicht eingetragen werden, wenn nicht	gleichzeitig
+	'Ordner' gew„hlt war.
+-	Die Option 'parameter.dest_ext' ge„ndert. Jetzt '.txt' statt EOS.
+-	Die Shell l„uft jetzt auch unter MultiTOS.
+-	Fehler bei der Parameterbergabe beseitigt.
+
+Changes:
+
+-	Die Checkbox 'Ordner' wird jetzt disabled, wenn keine Quelldatei
+	gew„hlt ist.
+-	Der Button 'Konvertieren' wird jetzt disabled, wenn keine Quelldatei
+	gew„hlt ist.
+
+
+0.11	(07.03.1998)
+
+Bugs:
+
+-	Kleinen Fehler beim Umschalten des Zielformates beseitigt, wenn
+	keine Quelldatei gew„hlt ist.
+
+News:
+
+-	Bei den Parametern kann jetzt eine beliebige Anzahl bergeben werden,
+	solange die L„nge 50 Zeichen nicht berschreitet. Die Krzel werden
+	entsprechend expandiert.
+
+
+0.11	(08.03.1998)
+
+News:
+
+-	Die UDO-Hilfedatei kann jetzt bestimmt werden, fr den Fall, da
+	sich der Name irgendwann „ndert.
+
+
+0.11	(10.03.1998)
+
+Changes:
+
+-	Beim Aufruf der Dateiauswahlbox wird jetzt der voreingestellte Name
+	bernommen.
+-	Das automatische Anzeigen einer Datei nach der Konvertierung wird
+	nicht gemacht, wenn der UDO-Lauf abgebrochen wurde.
+
+News:
+
+-	Dokument-History-Protokoll (DHST) eingebaut.
+-	Wenn der Schalter 'Ordner' gew„hlt ist, wird das Symbol 'UseFolders'
+	gesetzt.
+
+
+0.11	(11.03.1998)
+
+News:
+
+-	Der UDO-Shell kann jetzt per VA_START oder Kommandozeile eine Datei
+	bergeben werden.
+
+
+0.12	(16.03.1998)
+
+News:
+
+-	Es existiert ein neuer Dialog 'UDO-Projekt' in dem alle Dateien
+	eines Projektes im Quelleditor geladen werden k”nnen. Zu diesem
+	Zweck wird das 'Treefile' ausgelesen. Funktioniert also erst, wenn
+	UDO ein Treefile fr dieses Format erstellt hat.
+
+
+0.12	(19.03.1998)
+
+Changes:
+
+-	Es werden auch Dateinamen mit Leerzeichen gequoted bergeben.
+	Leider versteht UDO.TTP beim Start mit 'shel_write' die Parameter
+	nicht, nur wenn ber AV_STARTPROG gestartet wird.
+-	Die Parameter werden jetzt als Textdatei gespeichert, so da sie
+	auch mit einem Editor bearbeitet werden k”nnen. Die Funktionen
+	zum bin„ren Speichern sind weiterhin vorhanden. 
+
+Bugs:
+
+-	Bugs im Zusammenhang mit dem AV-Protokoll beseitigt, die zur
+	Suspendierung der Shell fhren konnten.
+
+0.13	(skipped)
+
+
+0.14	(22.03.1998)
+
+Bugs:
+
+-	Wenn Boxkite mit Message-Handler aufgerufen wird h„ngt der
+	Rechner sich auf, wenn man die Dateiauswahlbox verschiebt.
+	Daher wird Boxkite vorerst ohne Message-Handler aufgerufen.
+
+News:
+
+- Die UDO-Shell erstellt die Dateiliste jetzt selbst. Im Dialog
+	'Projekt' werden alle Dateien des Projektes aufgelistet
+	(Vorerst nur die Textdateien).
+
+
+0.14	(28.03.1998)
+
+Bugs:
+
+-	Die Hilfe-Buttons werden jetzt auch restauriert.
+-	Bei der Auswahl der Programme wird jetzt auch *.ACC angeboten.
+
+Changes:
+
+-	Buttons 'Status' und 'Testmodus' vom Optionsdialog in den
+	Hauptdialog verlegt. Dabei ist auch die Parameterstruktur
+	ge„ndert worden. Die alte Parameterdatei funktioniert leider
+	nicht mehr.
+-	Jetzt werden auch die Grafiken in der Dateiliste aufgefhrt.
+	Doppelte werden rausgefiltert, soweit das erkennbar ist.
+
+News:
+
+-	Registrierungsroutinen aktiviert.
+
+0.14	(03.04.1998)
+
+News:
+
+-	Bilder werden jetzt auch in der Dateiliste aufgelistet.
+	Ausnahme: (!img []) und (!ilink [])
+-	Bilder in der Dateiliste k”nnen jetzt in einen Grafikeditor
+	geladen werden. Dazu gibt es einen neuen Eintrag 'Grafik-Editor'
+	im Dialog 'Externes'.
+
+Changes:
+
+-	Der Button 'Konvertieren' ist nur noch anw„hlbar, wenn auch
+	der Pfad von UDO.TTP bekannt ist.
+
+0.14	(04.04.1998)
+
+Changes:
+
+-	Jetzt werden alle Bilder erkannt und doppelte auch rausgesucht.
+
+News:
+
+-	Drehendes Rad beim Auffrischen eingebaut.
+
+0.14	(09.04.1998)
+
+News:
+
+-	Die Bilder aus der Dateiliste k”nnen jetzt auch von einem
+	Olga-Server geladen werden.
+-	Neuer Button 'Olga-Server benutzen' im Dialog 'Allgemeines'.
+
+0.14	(10.04.1998)
+
+Bugs:
+
+-	Jetzt wird beim W„hlen von 'Abbruch' in der Dateiauswahlbox
+	der alte Name nicht mehr gel”scht.
+-	Jetzt werden bei allen Dateien in der Dateiliste die Slashes
+	in Backslashes gewandelt, damit die šbergabe klappt.
+
+News:
+
+-	Jetzt k”nnen auch die Texte per Olga bergeben werden.
+
+0.14	(11.04.1998)
+
+Bugs:
+
+-	Nach dem Konvertieren drfte die Shell jetzt nicht mehr
+	abstrzen.
+-	Das Zielformat sollte jetzt wieder erkannt werden beim
+	Konvertieren.
+
+Changes:
+
+-	Es lassen sich auch Bilder mit Leerzeichen im Dateinamen dem
+	Editor bergeben.
+-	Die šbergabe von Dateinamen mit Leerzeichen an UDO sollte jetzt
+	fr MagiC/MagicMac/MagicPC endlich vernnftig funktionieren.
+	Damit wird auch das Zielformat wieder erkannt.
+-	Im Dialog 'Externes' k”nnen im Feld 'Parameter' bei den
+	Eintr„gen 'UDO.TTP' und 'Grafikeditor' keine Parameter mehr
+	bergeben werden.
+-	Der Schalter 'Anzeigen' im Dialog 'Optionen' ist entfernt,
+	da ich keine M”glichkeit habe, zu erkennen, wann UDO mit
+	dem šbersetzen fertig ist.
+
+0.14	(12.04.1998)
+
+News:
+
+-	Krzel fr PDF-LaTeX und WIN-Help4 sowie den šberprfungsmodus
+	eingebaut.
+-	Krzel fr das Mapping fr WIN-Help eingebaut
+-	Zwei neue Schalter im Hauptdialog fr das Mapping und den
+	Check-Modus eingebaut.
+
+0.14	(15.04.1998)
+
+News:
+
+-	Weitere Krzel fr PDF-Latex und WinHelp4 eingebaut.
+-	Anleitung fr Betatester erweitert.
+
+0.15	(19.04.1998)
+
+Changes:
+
+-	Quelltexte umgestellt auf die spezielle MyDials-Version von
+	Christian Felsch, die auch mit proportionalen Systemfonts
+	zurecht kommt.
+-	HP Helptag SGML aus der Resource und den Quelltexten entfernt.
+
+0.15	(20.04.1998)
+
+Bugs:
+
+-	Fehler beim Speichern der Parameter beseitigt, wenn in $HOME
+	kein DEFAULTS-Ordner vorhanden war.
+
+Changes:
+
+-	Ordnernamen fr Turbo-Vision-Help in 'tvhelp' umbenannt.
+-	Ordnernamen fr Apple Quickview in 'quickvw' umbenannt.
+-	Jetzt werden auch Bilder bei den Schaltern 'html_modern_backimage'
+	und 'html_frames_backimage' erkannt.
+
+News:
+
+-	Ausgabeformat 'UDO' wird jetzt auch untersttzt.
+- Neuer Eintrag im Popup bei der Format-Auswahl und im Dialog
+	'Externes', z.B. zur Auswahl eines Packers.
+-	Fr PDF-LaTeX k”nnen jetzt Bilder im PNG-Format einem
+	Grafikprogramm bergeben werden.
+
+0.15	(21.04.1998)
+
+News:
+
+-	Angefangen, neue Import-Routine fr BGH zu schreiben.
+
+0.15	(22.04.1998)
+
+Bugs:
+
+-	Fehler behoben, der die UDO-Shell und 'Boxkite' zum Absturz
+	brachte, wenn Boxkite mit Redarwroutine im Fenster lag, und
+	verschoben wurde.
+-	Der Help-Demon funktioniert jetzt auch.
+-	Die Parameter im Dialog 'Externes' werden jetzt auch beim
+	ersten Aufruf wieder eingetragen.
+
+News:
+
+-	Import-Routinen fr BGH fertiggestellt.
+
+0.15	(24.04.1998)
+
+Changes:
+
+-	Den Schalter 'Hilfe-D„mon' im Dialog 'Allgemeines' wieder
+	ausgebaut. Der Hilfe-D„mon l„t sich ja ber das CPX an- und
+	abschalten.
+
+News:
+
+-	Auswertung von AV_SENDCLICK, damit man nicht zweimal drcken
+	mu ;-)
+
+0.15	(26.04.1998)
+
+Bugs:
+
+-	Fehler beseitigt, der dazu fhrte, da auch bei CTRL+ALT+ClrHome
+	die Fenster ikonifiziert wurden.
+
+News:
+
+-	Jetzt kann man eine Quell-Datei an die UDO-Shell bergeben, indem
+	man sie per Drag & Drop auf den Hauptdialog zieht.
+(-	Neue Routine zum Erkennen der Shortcuts in Dialogen geschrieben.
+	Die alte Routine ist aus den MyDials rausgeflogen.)
+
+0.15	(28.04.1998)
+
+Changes:
+
+-	Resource etwas berarbeitet; Shortcuts mit Umlauten entfernt.
+-	Button '™ffne' im 'Projekt'-Dialog ist jetzt disabled, wenn
+	keine Datei ausgew„hlt ist. Doppelclick auf eine Datei funktioniert
+	trotzdem.
+-	Alle Bubble-Texte geschrieben.
+-	Jetzt k”nnen auch Objekte, die disabled sind die Bubble-Hilfe
+	aufrufen.
+
+0.15	(Ende April/Angang Mai)
+
+-	Zurckumstellung auf die alten MyDials, wegen nicht	behebbarer Fehler.
+
+0.15	(11.05.1998)
+
+Changes:
+
+-	Shortcuts im Menu 'Ziel' von ALT auf Shift-Cntrl umgestellt wegen
+	der Shortcuts in den Dialogen.
+
+0.16	(15.05.1998)
+
+Bugs:
+
+-	Wenn der Zielpfad selbst„ndig ausgesucht wurde, wurde der Schalter
+	'Ordner' nicht beachtet.
+-	Beim Rechtsklick auf EXIT-Buttons wurden diese f„lschlicherweise
+	invertiert.
+
+0.16	(21.05.1998)
+
+Bugs:
+
+- MultiStrip gibt keine Antwort beim DHST-Protokoll. Die UDO-Shell
+	wartete daher bis zum St. Nimmerleinstag. Vorl„ufig ge„ndert, indem
+	nun 2 Sekunden gewartet wird und dann alles weiterl„uft statt auf
+	Antwort zu warten.
+
+0.16	(22.05.1998)
+
+Bugs:
+
+-	Fehler bei AV_PROGSTART beseitigt, der dazu fhrte, da unter Thing
+	Programme zweimal gestartet wurden.
+-	MinT liefert dummerweise EFILNF statt EPTHNF bei Dopendir zurck.
+	Jetzt wird auch auf EFILNF getestet.
+
+0.16	(23.05.1998)
+
+Bugs:
+
+-	Der Name der Hilfedatei sollte jetzt immer richtig bergeben werden.
+-	Das Drag & Drop von Dateinamen auf die UDO-Shell sollte jetzt auch
+	unter N.AES funktionieren. Anscheinend z„hlt N.AES das abschlieende
+	'\0' bei der L„nge eines Strings nicht mit.
+-	Jetzt sollte sich das System unter N.AES nicht mehr aufh„ngen,
+	wenn die UDO-Shell verlassen wird. MagiC f„ngt halt doch manche
+	Fehler ab ;-)
+-	Auf Minix-Dateisystemen sollte die Resource jetzt auch gefunden
+	werden.
+-	Kleinen Fehler beim Speichern der Parameter beseitigt, der beim
+	Schreiben eine Fehler verursachte.
+
+Changes:
+
+-	Der Meneintrag 'ST-Guide' wird jetzt disabled, wenn ein anderes
+	Format angew„hlt ist.
+-	Jetzt wird auch die Hilfe der jeweiligen Dialoge aufgerufen.
+
+0.16	(31.05.1998)
+
+Bugs:
+
+-	Speicher fr Aufrufe von ST-Guide, Bubble-Help und DHST-Server wird
+	jetzt mit Flag GLOBAL angefordert statt mit READABLE. Dadurch werden
+	die aufgerufenen Programme beim Lesen der Speicherbereiche nicht mehr
+	abgeschossen. (Ich dachte bisher immer, da READABLE ausreichend ist).
+-	Jetzt sollte auch unter N.AES der ST-Guide gefunden werden.
+-	Routine zum Abhandeln der Tasten-Events berarbeitet. Jetzt sollten
+	keine Tastaturdrcke mehr gleichzeitig von der Shell verarbeitet und
+	an den AV-Server weitergegeben werden.
+	Auerdem sollten die Redrawfehler bei Edit-Objekten in den Dialogen
+	nicht mehr vorkommen.
+
+0.16	(11.06.1998)
+
+Bugs:
+
+-	Kleinen, bl”den Fehler beseitigt, der verhinderte, da man den
+	Zielpfad angeben konnte.
+-	Das Anpassen bzw. Nichtanpassen der Zieldatei an die Quelldatei
+	sollte jetzt auch richtig funktionieren.
+
+Changes:
+
+-	Wenn der Zielformat-Ordner nicht existiert, kann in dem dann
+	erscheinenden Dialog der Konvertierungsvorgang auch abgebrochen
+	werden.
+
+0.16	(13.06.1998)
+
+Bugs:
+
+-	Version 1.3c von MultiStrip reagiert richtig auf das DHST-Protokoll.
+	Daher Quelltext wieder umgestellt.
+
+Changes:
+
+-	Es werden jetzt auch unter MagiC geshadete Fenster sauber ber
+	appl_getinfo und wind_get erkannt.
+-	Abhandlung der Fensternachrichten in der Bibliothek berarbeitet.
+	Jetzt k”nnen Fenster theoretisch an jeder Seite vergr”ert werden,
+	wenn die AES das untersttzen.
+	Leider hat die UDO-Shell ja nur Dialoge ;-)
+-	Jetzt wird nur noch eine Nachricht an den DHST-Server geschickt,
+	wenn auch wirklich eine neue Datei geladen wird.
+
+0.16	(16.06.1998)
+
+Bugs:
+
+-	Fehler behoben, wenn beim Konvertieren der Zielordner schon
+	vorhanden war. Es wurde 'Dopendir' ohne 'Dclosedir' aufgerufen.
+	Dadurch wurde der Ordner gesperrt und konnte z. B. nicht gel”scht
+	werden solange die Shell lief.
+
+0.17	(12.07.1998)
+
+Changes:
+
+-	Wenn kein Quelleditor und Zieleditor bzw. Shower eingetragen ist,
+	werden die entsprechenden Menueintr„ge disabled.
+-	Unter MagiC werden die Dialoge jetzt nicht mehr mit einem Outlined-
+	Rahmen versehen, da das unter MagiC6 nicht sonderlich sch”n
+	aussieht.
+
+0.17	(15.07.1998)
+
+News:
+
+-	Resourcedatei ins Englische bersetzt
+
+0.17	(18.07.1998)
+
+News:
+
+-	BubbleGEM-Datei ins Englische bersetzt
+
+0.17	(19.07.1998)
+
+Bugs:
+
+-	Der Beenden-Button wird jetzt auch deselektiert, wenn die Shell
+	doch nicht verlassen wird.
+-	Der Eintrag des Benutzers im About-Dialog wird jetzt auch
+	vernnftig eingetragen.
+-	Verschlsselungsroutine hatte Schwierigkeiten mit der 0 in der
+	Postleitzahl.
+-	Fehler beim Unikonifizieren unter N.AES (MultiTOS) beseitigt.
+	Es werden keine Koordinaten bei einzelnen Fenstern zurckgegeben,
+	daher wurden die Fenster immer auf (0,0,0,0) wieder ge”ffnet.
+
+Changes:
+
+-	Jetzt werden die Benutzerdaten nur noch dann in die Info-Datei
+	eingetragen, wenn sie auch richtig sind.
+-	Verschlsselungsroutine ge„ndert.
+
+0.18	(21.07.1998)
+
+News:
+
+-	Jetzt meldet die UDO-Shell jedes (Haupt-)Dokument beim OLGA-Manager
+	an (OLGA_OPENDOC) und ab (OLGA_CLOSEDOC).
+-	Sendet der Quelltexteditor OLGA_UPDATED wird automatisch UDO.TTP
+	gestartet (demn„chst auch abschaltbar).
+-	Zus„tzlich wird eine OLGA_UPDATE-Nachricht verschickt, so da ein
+	evtl. vorhandener Client (z. B. CAB) die Zieldatei automatisch
+	neu darstellen kann (demn„chst auch abschaltbar).
+-	Eintr„ge zum An- und Abschalten der Neuerungen in die deutsche
+	und englische Resource eingebaut.
+-	BubbleGEM-Eintr„ge in die deutsche und englische Version
+	eingetragen.
+
+Changes:
+
+-	OLGA-Link und -Unlink Funktionen sicherer gemacht in Hinsicht auf
+	Speicherschutzverletzungen.
+-	UDO.TTP wird jetzt nur noch per 'shel_write' gestartet, damit zur
+	richtigen Zeit CHILD_EXIT zurck kommt.
+
+0.18	(22.07.1998)
+
+News:
+
+-	Die neuen Funktionen mit Hilfe des Olga-Protokolls sind jetzt
+	auch abschaltbar.
+
+Changes:
+
+-	Die Parameterstruktur erweitert fr die Olga-Schalter; diese
+	werden jetzt auch abgespeichert.
+-	Vorl„ufig den Start von Programmen per 'AV_PROGSTART' rausgenommen,
+	da Jinnee kein 'VA_PROGSTART' zurckgibt.
+
+0.19	(24.07.1998)
+
+News:
+
+-	Resourcen (dt. & en.) ge„ndert fr das neue Ausgabeformat von UDO 6
+	PL 11 -> Postscript
+-	Quelltexte erweitert fr Ausgabeformat 'Postscript'.
+
+0.19	(25.07.1998)
+
+News:
+
+-	Neue Schalter fr Mapping-Dateien fr Pascal und Basic.
+-	Jetzt kann auch die Erstellung von Mapping-Dateien fr Pascal
+	und GFA-Basic an- und abgestellt werden.
+-	BubbleGEM-Dateien angepasst.
+
+0.20	(26.07.1998)
+
+Bugs:
+
+-	Der Olga-Manager wurde beim Nachstarten f„lschlicherweise als
+	TOS-Programm gestartet, statt als GEM-Programm.
+-	Fehler bei der Benutzung von Freedom beseitigt. Dummerweise wurde
+	immer 'Abbruch' zurckgegeben.
+
+News:
+
+-	Im Dialog 'Externes' k”nnen die Programme jetzt auch per Drag and
+	Drop bergeben werden.
+
+0.20	(02.08.1998)
+
+Bugs:
+
+-	Fehler mit AV_STARTPROG lag natrlich bei mir. Trotzdem wird ber
+	'shel_write' gestartet, damit 'child_exit' zurck kommt.
+-	Shell l„uft jetzt wieder unter SingleTOS; kleiner Fehler bei
+	nicht vorhandenem OLGA-Manager.
+-	Einige kosmetische nderungen fr SingleTOS vorgenommen.
+-	Darstellungsfehler im Dialog 'Externes' beseitigt.
+
+0.20	(15.08.1998)
+
+Changes:
+
+-	Einige kleine kosmetische Ver„nderungen.
+
+News:
+
+-	Jetzt auch mit franz”sischer Resource-Datei und BubbleHelp.
+	Meinen Dank an Christian Marillat fr die šbersetzung.
+
+0.20	(16.08.1998)
+
+Changes:
+
+-	Weitere kosmetische Ver„nderungen.
+-	Im Dialog 'Externes' wird das Feld 'Parameter' jetzt entfernt,
+	wenn UDO.TTP oder der Grafikeditor ausgesucht wird, da dort keine
+	Parameter bergeben werden k”nnen und um damit Miverst„ndnisse
+	auszur„umen.

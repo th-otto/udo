@@ -1,0 +1,866 @@
+@database "ARx_Func4.ag"
+@index ARx_Index/ARx_NdxCont
+
+@node MAIN ""
+@toc ARx_Func.ag/MAIN
+@prev ARx_Func.ag/MAIN
+@next ARx_Func.ag/MAIN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+@endnode
+@node PORTLIST "ARexxGuide | Functions reference (10 of 12) | MESSAGE PORT"
+@toc ARx_Func.ag/MAIN
+@prev ARx_Func3.ag/ARXLIST
+@next MEMLIST
+   @{" CLOSEPORT " link CLOSEPORT()}(<name>)
+   @{" GETARG    " link GETARG()}(<packet>, [<number>])
+   @{" GETPKT    " link GETPKT()}(<name>)
+   @{" OPENPORT  " link OPENPORT()}(<name>)
+   @{" REPLY     " link REPLY()}(<packet>, <rc>)
+   @{" TYPEPKT   " link TYPEPKT()}(<name>)
+   @{" WAITPKT   " link WAITPKT()}(<name>)
+
+                     Also see @{" ARexx control functions       " link ARx_Func3.ag/ARXLIST}
+
+Message ports are the primary means of communication among the many tasks
+and processes running on an Amiga. The ARexx resident process uses message
+ports extensively both for its own communication with the OS and to allow
+scripts to send @{" commands " link ARx_Elements3.ag/COMMAND} to other environments.
+
+These functions let an ARexx script set up and maintain its own message
+ports. The functions do not provide the level of control possible from a
+lower-level language like C, but they do allow for useful and powerful
+interaction among different scripts.
+
+Next: Low-level func. | Prev: ARexx control func. | Contents: Function ref.
+
+@endnode
+@node CLOSEPORT() "ARexxGuide | Functions reference | Message Ports (1 of 7) | CLOSEPORT"
+@prev PORTLIST
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = CLOSEPORT(<name>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Closes the port opened as @{i}<name>@{ui}. The port must have been opened within
+the current ARexx program through a call to @{" OPENPORT() " link OPENPORT()}.
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: GETARG() | Prev: VALUE() | Contents: Port mgt. func.
+
+@endnode
+@node GETARG() "ARexxGuide | Functions reference | Message Ports (2 of 7) | GETARG"
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = GETARG(<packet>, [<number>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+Extracts a command, function name, or argument string from a message
+packet. The @{i}<packet>@{ui} argument must be a valid @{" address string " link ARexxGuide.guide/GLOSSARY 2} obtained
+from a prior call to @{" GETPKT() " link GETPKT()}. If @{i}<number>@{ui} is specified, then only the
+argument in that position is extracted. @{i}<number>@{ui} must be less than or
+equal to the argument count for the packet.
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: GETPKT() | Prev: CLOSEPORT() | Contents: Port mgt. func.
+
+@endnode
+@node GETPKT() "ARexxGuide | Functions reference | Message Ports (3 of 7) | GETPKT"
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = GETPKT(<name>)
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Returns the @{" address string " link ARexxGuide.guide/GLOSSARY 2} of a message packet queued at the @{i}<name>@{ui}d
+port. The message port must have been opened within the current ARexx
+program by a call to @{" OPENPORT() " link OPENPORT()}. If no messages are available, the
+returned value will be '0000 0000'x (which is the same as @{" NULL() " link NULL()}).
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+   Also see @{" WAITPKT       " link WAITPKT()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: OPENPORT() | Prev: GETARG() | Contents: Port mgt. func.
+
+@endnode
+@node OPENPORT() "ARexxGuide | Functions reference | Message Ports (4 of 7) | OPENPORT"
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = OPENPORT(<name>)
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Creates a public message port with the specified (and case-sensitive)
+@{i}<name>@{ui}. A null address ('0000 0000'x) is returned if the port could not be
+initialized.
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+   Also see @{" CLOSEPORT     " link CLOSEPORT()}
+            @{" WAITPKT       " link WAITPKT()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: REPLY() | Prev: GETPKT() | Contents: Port mgt. func.
+
+@endnode
+@node REPLY() "ARexxGuide | Functions reference | Message Ports (5 of 7) | REPLY"
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = REPLY(<packet>, <rc>)
+     @{i}rv@{ui} is insignificant
+
+A message packet with the primary result field set to the value given by
+@{i}<rc>@{ui} is sent to @{i}<packet>@{ui}, which must be a valid 4-byte address (usually
+obtained by a prior call to @{" OPENPORT() " link OPENPORT()}.
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+   Also see @{" GETPKT        " link GETPKT()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: TYPEPKT() | Prev: OPENPORT() | Contents: Port mgt. func.
+
+@endnode
+@node TYPEPKT() "ARexxGuide | Functions reference | Message Ports (6 of 7) | TYPEPKT"
+@toc PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = TYPEPKT(<address>, [<mode>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+        or a @{" number " link ARx_Elements2.ag/NUMBER}
+        or a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Although it is rarely needed in message ports handled by the current
+version of ARexx, this function returns information about a message packet
+received at the @{i}<address>@{ui}. The @{i}<address>@{ui} argument must be a valid
+@{" address string " link ARexxGuide.guide/GLOSSARY 2} usually obtained from @{" WAITPKT() " link WAITPKT()}.
+
+When the @{i}<mode>@{ui} option is omitted, the function returns a packed 4-byte
+value, which can be unpacked to obtain information that is (with one
+exception) also available by specifying a mode argument. The meaning of
+each byte is explained below:
+
+The mode arguments (which may be specified with only the first letter) are:
+
+   Mode       Information provided
+   ---------  -------------------------------------------------------
+   @{b}A@{ub}rguments  Returns the number of arguments. This information is
+           contained in byte 0 of the unpacked return string.
+   @{b}C@{ub}ommand    Returns TRUE (1) if the packet was called as a command.
+           This information is contained in byte 3 of the return
+           string, which has a value of '01'x for commands.
+   @{b}F@{ub}unction   Returns TRUE (1) if the packet was called as a function.
+              This information is contained in byte 3 of the return ,
+              string, which has a value of '02'x for functions.
+
+Byte 2 of the packed return string specifies the modifier flags that
+were set when the packet was called. The @{" REPLY() " link REPLY()} function automatically
+handles any of the modifiers set by the calling command or function.
+
+Because a script written with the current version of ARexx cannot serve
+as a reliable function host, calls to a port opened with an ARexx script
+should be sent as commands (which have a single argument string by
+default). That makes this function somewhat superfluous, but since it
+echoes an interface function that is genuinely useful in those other
+languages, it can be useful in @{" prototyping " link ARexxGuide.guide/GLOSSARY 196} an ARexx interface that will
+be transferred to a lower-level language
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: WAITPKT() | Prev: REPLY() | Contents: Port mgt. func.
+
+@endnode
+
+@node WAITPKT() "ARexxGuide | Functions reference | Message Ports (7 of 7) | WAITPKT"
+@toc PORTLIST
+@next PORTLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = WAITPKT(<name>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Waits for a message to be received at the @{i}<name>@{ui}d port which must have
+been opened with a prior call to @{" OPENPORT() " link OPENPORT()}. The function @{" GETPKT() " link GETPKT()}
+is used to retrieve the packet.
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: Port mgt. func. | Prev: TYPEPKT() | Contents: Port mgt. func.
+
+@endnode
+
+@node MEMLIST "ARexxGuide | Functions reference (11 of 12) | LOW-LEVEL"
+@prev PORTLIST
+@next BITLIST
+   @{" ALLOCMEM  " link ALLOCMEM()}(<length>, [<attribute>])
+   @{" BADDR     " link BADDR()}(<BCPL address string>)
+   @{" EXPORT    " link EXPORT()}(<address>, [<string>], [<length>],[<padchar>])
+   @{" FORBID    " link FORBID()}()
+   @{" FREEMEM   " link FREEMEM()}(<address>,<length>)
+   @{" FREESPACE " link FREESPACE()}([<address>, <length>])
+   @{" GETSPACE  " link GETSPACE()}(<length>)
+   @{" IMPORT    " link IMPORT()}(<address>, [<length>])
+   @{" NEXT      " link NEXT()}(<address>,[<offset>])
+   @{" NULL      " link NULL()}()
+   @{" OFFSET    " link OFFSET()}(<address>,<displacement>)
+   @{" PERMIT    " link PERMIT()}()
+   @{" STORAGE   " link STORAGE()}([<address>], [<string>], [<length>],[<padchar>])
+
+Related function:
+   @{" SHOWLIST  " link ARx_Func2.ag/SHOWLIST()}
+
+Most ARexx scripts will never need these functions since the ARexx
+resident process takes care of things like the memory allocations needed
+to store variable references.
+
+The functions in this list will be familiar to those who use assembler or
+C languages to program the machine since they closely parallel the
+similarly-named Amiga system functions that are used extensively in those
+environments. That's probably one reason they are included in the support
+library. They provide a useful tool for @{" prototyping " link ARexxGuide.guide/GLOSSARY 196} a program -- a way
+to write an early version of a program in ARexx, an interpreted language
+that allows quick and simple changes and has powerful debugging tools.
+These support functions allow a programmer to test program logic and
+effectiveness in ARexx before committing the code to a compiled language.
+
+With care, they may also be used in any ARexx script that needs special
+access to aspects of the OS not normally available in ARexx. Note, though,
+that these are the most dangerous functions included in the ARexx package
+since many of them circumvent the checks and balances usually provided by
+the ARexx resident process.
+
+The address string
+~~~~~~~~~~~~~~~~~~
+The <address> argument used by many of these functions must be a 4-byte
+address string. This is a four-character string and not a number as might
+be used in other languages. Use the @{" c2x() " link ARx_Func2.ag/C2X()} or @{" c2d() " link ARx_Func2.ag/C2D()} functions to
+translate the <address> into more readable form. (See note at @{" OFFSET() " link OFFSET()}
+about computing new addresses with the @{" character translation " link ARx_Func2.ag/TRANLIST} functions.)
+
+The Amiga ROM Kernal Manuals explain in detail the system functions called
+by these ARexx functions. The @{" Sullivan & Zamara " link ARx_Intro.ag/REF} book, Using ARexx on the
+Amiga is recommended reading for those who want more information about how
+these functions can be used in ARexx scripts.
+
+Next: Bit-wise func. | Prev: Port mgt. func. | Contents: Function ref.
+
+@endnode
+
+@node ALLOCMEM() "ARexxGuide | Functions reference | Low-level (1 of 13) | ALLOCMEM"
+@toc MEMLIST
+@prev MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = ALLOCMEM(<length>, [<attribute>])
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Allocates a block of memory of the specified @{i}<length>@{ui} from the system
+free-memory pool.
+
+@{i}<attribute>@{ui} may be any of the standard flags used with the Exec AllocMem
+function, but must be supplied as a four-byte string. The default is public
+(MEMF_PUBLIC).
+
+   Example:
+         addr = allocmem(32);
+         call @{" freemem(addr,32) " link FREEMEM()};
+
+This support function calls the OS AllocMem() function. Care should be
+taken in using it since ARexx performs no special checks and will not
+automatically deallocate the memory block when the program exits.
+
+   Also see @{" GETSPACE      " link GETSPACE()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: BADDR() | Prev: Low-level func. | Contents: Low-level func.
+
+@endnode
+@node BADDR() "ARexxGuide | Functions reference | Low-level (2 of 13) | BADDR"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = BADDR(<BCPL address string>)
+     @{i}rv@{ui} is an address_string
+
+Converts a BPTR to an CPTR address.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: EXPORT() | Prev: ALLOCMEM() | Contents: Low-level func.
+
+@endnode
+@node EXPORT() "ARexxGuide | Functions reference | Low-level (3 of 13) | EXPORT"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = EXPORT(<address>, [<string>], [<length>],[<padchar>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Copies data from the optional @{i}<string>@{ui} into the area starting at
+@{i}<address>@{ui}. Sufficient memory should have been previously allocated with a
+call to @{" ALLOCMEM() " link ALLOCMEM()} or @{" GETSPACE() " link GETSPACE()}.
+
+If @{i}<string>@{ui} is shorter than @{i}<length>@{ui}, then the @{i}<padchar>@{ui} (which defaults
+to a null) will be used to fill out the space.
+
+The value returned is the number of bytes written to memory. A pointer to
+the new address can be obtained by adding the value returned to the
+current address using @{" OFFSET() " link OFFSET()}.
+
+   Example:
+      /* copies a file from disk and stores it in memory                 **
+      ** A file, 'Input', must have been opened previously, and an       **
+      ** address [CurAddr] obtained through @{" getspace() " link GETSPACE()}.                */
+      do until eof('Input')
+            /* @{" readch() " link ARx_Func3.ag/READCH()} reads the file, either the whole thing, or     **
+            **            the first 64k bytes                            **
+            ** export()   stores value returned by readch() in memory.   **
+            ** offset()   computes the next address based on the return  **
+            **            from export().                                 */
+         CurAddr = offset(CurAddr, export(CurAddr,readch('Input',65535)))
+      end
+
+   Also see @{" STORAGE       " link STORAGE()}
+            @{" IMPORT        " link IMPORT()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: FORBID() | Prev: BADDR() | Contents: Low-level func.
+
+@endnode
+@node FORBID() "ARexxGuide | Functions reference | Low-level (4 of 13) | FORBID"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = FORBID()
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Task switching can be controlled by calls to FORBID() and @{" PERMIT() " link PERMIT()}. The
+return value is the current nesting count which is -1 when task-switching
+is enabled. Since ARexx scripts run as separate tasks, no harm is done if
+the program ends with task switching forbidden, but it is good practice to
+enable multitasking as quickly as possible.
+
+This function should be used whenever items are read from the various
+system lists since, if multitasking is enabled, another task might cause a
+change in the list while it is being read by the ARexx script. The Amiga
+ROM Kernal Manauls warn, "To access these lists without forbidding
+jeopardizes the integrity of the entire system." The warning applies to
+any language, so this is not something unique to ARexx.
+
+The @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} will handle calls to forbid() and permit() when the
+SHOWLIST() function is used.
+
+All forms of @{" I/O " link ARexxGuide.guide/GLOSSARY 122} should be avoided while FORBID() is in effect, since
+any kind of I/O (including instructions like @{" SAY " link ARx_Instr3.ag/SAY} and @{" PULL " link ARx_Instr3.ag/PULL}, or
+functions like @{" WAITPKT() " link WAITPKT()} and @{" OPEN() " link ARx_Func3.ag/OPEN()}) will cause the system to wait for
+I/O completion and to disable the forbidden state while it waits.
+
+   See example at @{" IMPORT() " link IMPORT()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: FREEMEM() | Prev: EXPORT() | Contents: Low-level func.
+
+@endnode
+@node FREEMEM() "ARexxGuide | Functions reference | Low-level (5 of 13) | FREEMEM"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = FREEMEM(<address>,<length>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+Releases the block of memory of @{i}<length>@{ui} (an integer) size at @{i}<address>@{ui}
+to the system freelist. @{i}<address>@{ui} must be a valid 4-byte address, usually
+obtained by a prior call to @{" ALLOCMEM() " link ALLOCMEM()}.
+
+   Example:
+         addr = allocmem(32);
+         call freemem(addr,32);
+
+   Also see @{" FREESPACE     " link FREESPACE()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: FREESPACE() | Prev: FORBID() | Contents: Low-level func.
+
+@endnode
+@node FREESPACE() "ARexxGuide | Functions reference | Low-level (6 of 13) | FREESPACE"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = FREESPACE([<address>, <length>])
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+        or a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Releases to the internal pool maintained by the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} the block of
+memory of @{i}<length>@{ui} (an integer) size at @{i}<address>@{ui} (which should have been
+obtained through a previous call to @{" GETSPACE() " link GETSPACE()}) . If called without
+arguments, the function returns the amount of memory available in the
+interpreter's internal pool.
+
+The interpreter will release the memory when a script ends even if this
+function is not called.
+
+   Also see @{" FREEMEM       " link FREEMEM()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: GETSPACE() | Prev: FREEMEM() | Contents: Low-level func.
+
+@endnode
+@node GETSPACE() "ARexxGuide | Functions reference | Low-level (7 of 13) | GETSPACE"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = GETSPACE(<length>)
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Allocates a block of memory of @{i}<length>@{ui} size (a decimal number) from the
+interpreter's internal pool.
+
+The memory is automatically returned to the system when the ARexx script
+that calls this function terminates.
+
+   Example:
+      /**/
+      MemWant = 19764
+         /* Is there enough memory for the allocation? */
+      if storage() > MemWant then
+         StoreAddress = getspace(MemWant)
+      else
+         say 'Not enough memory.
+
+   Also see @{" FREESPACE     " link FREESPACE()}
+            @{" ALLOCMEM       " link ALLOCMEM()}
+            @{" STORAGE       " link STORAGE()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: IMPORT() | Prev: FREESPACE() | Contents: Low-level func.
+
+@endnode
+@node IMPORT() "ARexxGuide | Functions reference | Low-level (8 of 13) | IMPORT"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = IMPORT(<address>, [<length>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+A string of @{i}<length>@{ui} (an integer) bytes is returned. It is copied from
+memory starting at the specified @{i}<address>@{ui} (which must be specified as a
+4-byte address string. If @{i}<length>@{ui} is not specified, values will be copied
+until a null byte is encountered.
+
+   Example:
+      /* Imports name and size of default font */
+   gfxbase=showlist(l, 'graphics.library',,a)
+   call forbid
+   FntAddr = next(gfxbase,154)
+   DefFont = IMPORT(next(FntAddr, 10))
+   FSize = c2d(IMPORT(offset(FntAddr, 20),2))
+   call permit
+
+   Also see @{" EXPORT        " link EXPORT()}
+            @{" SHOWLIST      " link ARx_Func2.ag/SHOWLIST()}
+            @{" NEXT          " link NEXT()}
+            @{" OFFSET        " link OFFSET()}
+            @{" FORBID        " link FORBID()}
+            @{" PERMIT        " link PERMIT()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: NEXT() | Prev: GETSPACE() | Contents: Low-level func.
+
+@endnode
+@node NEXT() "ARexxGuide | Functions reference | Low-level (9 of 13) | NEXT"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = NEXT(<address>,[<offset>])
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Returns the 4-byte address string at @{i}<address>@{ui} plus @{i}<offset>@{ui}. The function
+combines features of @{" import() " link IMPORT()} and @{" offset() " link OFFSET()}. Like import(), it reads a
+value from memory, but is designed for the specific task obtaining an
+address. Like offset(), it will, when given a decimal offset, calculate a
+new address in the proper format.
+
+A linked-list maintained by the operating system can be followed by using
+the following format:
+
+   NextNode = NEXT(<node-address>)
+   PrevNode = NEXT(<node-address>, 4).
+
+   See example at @{" IMPORT() " link IMPORT()}
+
+   Also see @{" OFFSET         " link OFFSET()}
+
+The base address of most system resources can be obtained with the
+@{" SHOWLIST() " link ARx_Func2.ag/SHOWLIST()} function, using its fourth 'Address' argument.
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: NULL() | Prev: IMPORT() | Contents: Low-level func.
+
+@endnode
+@node NULL() "ARexxGuide | Functions reference | Low-level (10 of 13) | NULL"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = NULL()
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+The result is a null pointer as a 4-byte string ('0000 0000'x).
+
+   Also see @{" OFFSET        " link OFFSET()}
+
+                 Technique note: @{" Use message ports in a script     " link ARx_Tknq.ag/PORTXMP}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: OFFSET() | Prev: NEXT() | Contents: Low-level func.
+
+@endnode
+@node OFFSET() "ARexxGuide | Functions reference | Low-level (11 of 13) | OFFSET"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = OFFSET(<address>,<displacement>)
+     @{i}rv@{ui} is an @{" address string " link ARexxGuide.guide/GLOSSARY 2}
+
+Computes a new address as the signed offset from a base address.
+
+@{i}<address>@{ui} must be a valid 4-byte address string. @{i}<displacement>@{ui} must be an
+integer in decimal (not hexadecimal) form.
+
+This function will compute the address of a field in a data structure
+without requiring calls to @{" C2D() " link ARx_Func2.ag/C2D()} and @{" D2C() " link ARx_Func2.ag/D2C()}, and does so in a safer way
+since -- unlike the return value of the translation functions -- the value
+returned by offset() will always be a 4-byte address string.
+
+      Example:
+            say c2x(offset('0000 0000'x,4))   >>> 00000676
+
+   See example at @{" IMPORT()" link IMPORT()}
+
+   Also see @{" NEXT          " link NEXT()}
+            @{" NULL          " link NULL()}
+            @{" C2X           " link ARx_Func2.ag/C2X()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: PERMIT() | Prev: NULL() | Contents: Low-level func.
+
+@endnode
+@node PERMIT() "ARexxGuide | Functions reference | Low-level (12 of 13) | PERMIT"
+@toc MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = PERMIT()
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+Lowers by one the nesting count of @{" FORBID() " link FORBID()} and returns the current
+nesting count.
+
+Each call to FORBID() will raise the nesting count by 1 from its base
+count of -1. When the count reaches -1 after successive calls to FORBID()
+and PERMIT(), multitasking will be possible once again.
+
+If a task (a script) ends in a forbidden state, no harm is done since the
+state is cleared automatically when the task ends, but it is good practice
+to call PERMIT() as quickly as possible after entering a forbidden state.
+
+      See example at @{" IMPORT() " link IMPORT()}
+
+                 Technique note: @{" Determine library version number  " link ARx_Tknq.ag/LIBVER()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: STORAGE() | Prev: OFFSET() | Contents: Low-level func.
+
+@endnode
+@node STORAGE() "ARexxGuide | Functions reference | Low-level (13 of 13) | STORAGE"
+@toc MEMLIST
+@next MEMLIST
+                                    @{" a rexxsupport.library function " link ARx_Func.ag/RXSPTLIB}
+@{i}rv@{ui} = STORAGE([<address>], [<string>], [<length>],[<padchar>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+If all arguments are omitted, the function returns the amount of free
+memory in the system.
+
+If @{i}<address>@{ui} is given (as a valid 4-byte @{" address string " link ARexxGuide.guide/GLOSSARY 2}) then data from
+@{i}<string>@{ui} will be copied to that address for @{i}<length>@{ui} (an integer) bytes. If
+@{i}<string>@{ui} is shorter than @{i}<length>@{ui}, then the space will be filled with
+@{i}<padchar>@{ui}.
+
+The default pad character is a null.
+
+   Examples:
+         say storage()           >>> 7121608
+
+   Also see @{" EXPORT        " link EXPORT()}
+            @{" IMPORT        " link IMPORT()}
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   All support functions are system specific.
+
+Next: Low-level func. | Prev: PERMIT() | Contents: Low-level func.
+
+@endnode
+
+@node BITLIST "ARexxGuide | Functions reference (12 of 12) | BIT MANIPULATION"
+@toc ARx_Func.ag/MAIN
+@prev MEMLIST
+@next ARx_Func.ag/MAIN
+   @{" BITAND    " link BITAND()}(<string1>,<string2>, [<padchar>])
+   @{" BITCHG    " link BITCHG()}(<string>, <bit>)
+   @{" BITCLR    " link BITCLR()}(<string>, <bit>)
+   @{" BITCOMP   " link BITCOMP()}(<string>,<string2>,[<padchar>])
+   @{" BITOR     " link BITOR()}(<string1>,[<string2>],[<padchar>])
+   @{" BITSET    " link BITSET()}(<string>, <bit>)
+   @{" BITTST    " link BITTST()}(<string>, <bit>)
+   @{" BITXOR    " link BITXOR()}(<string1>,<string2>,[<padchar>])
+
+                     Also see @{" Comparison functions         " link ARx_Func.ag/CMPRLIST}
+                              @{" Number manipulation functions" link ARx_Func2.ag/NUMLIST}
+
+The primary argument to each of these functions, and the value returned
+by most of them is a character or character string. The functions work at
+the low bit-level so familiar to those who program in assembly language.
+The binary representation of the character 'a', for example, is '01100001'
+in the ASCII character set which can be expressed as '01100001'b or as
+c2b('a'). The function BITSET() can change just one bit in that 'field'.
+BITSET('a', 1) will return 'c' -- the character with the binary
+representation of '01100011'.
+
+A string 0's and 1's is not a proper argument to any of these functions
+since the 0 would be interpreted as ASCII character 48 (decimal) or
+00110000 (binary). Using a @{" binary string " link ARx_Elements.ag/HEXSTRING}, on the other hand, will cause
+the 0's and 1's to be translated to the character representation expected
+by the functions.
+
+@{" Compatibility issues " link ARx_Intro.ag/COMPATIBILITY}:
+   Some examples in the following nodes use alphabetic characters to show
+   how a function works. The results shown here are valid only for the
+   ASCII character set. Since REXX was developed and is still used largely
+   on systems that use a different character set, such examples are
+   frowned upon in the REXX standard.
+
+Next: Function ref. | Prev: Low-level func. | Contents: Function ref.
+
+@endnode
+@node BITAND() "ARexxGuide | Functions reference | Bit-wise (1 of 8) | BITAND"
+@toc BITLIST
+@prev BITLIST
+@{i}rv@{ui} = BITAND(<string1>,<string2>, [<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is equal to the length of longer of the two supplied strings
+which are logically AND'ed together bit by bit. If a pad character is
+supplied, then the shorter string is filled out with that character until
+it is the same length as the other string.
+
+The default @{i}<padchar>@{ui} is the null character.
+
+   Examples:
+      say     bitand('A', 'J')                  >>> @
+      say     bitand('01000001'b, '01001010'b)  >>> @
+      say c2b(bitand('01000001'b, '01001010'b)) >>> 01000000
+
+Next: BITCHG() | Prev: Bit-wise func. | Contents: Bit-wise func.
+
+@endnode
+@node BITCHG() "ARexxGuide | Functions reference | Bit-wise (2 of 8) | BITCHG"
+@toc BITLIST
+@{i}rv@{ui} = BITCHG(<string>, <bit>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The state of the specified @{i}<bit>@{ui} in @{i}<string>@{ui} is changed. Bit 0 is is the
+low-order bit of the rightmost byte of the string.
+
+   Examples:
+      /**/
+      say bitchg('a', 5)                     >>> A
+      say bitchg('A', 5)                     >>> a
+      say c2b(bitchg('01101100'b, 3))        >>> 01100100
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: BITCLR() | Prev: BITAND() | Contents: Bit-wise func.
+
+@endnode
+@node BITCLR() "ARexxGuide | Functions reference | Bit-wise (3 of 8) | BITCLR"
+@toc BITLIST
+@{i}rv@{ui} = BITCLR(<string>, <bit>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The specified @{i}<bit>@{ui} in @{i}<string>@{ui} is cleared (set to 0). Bit 0 is is the
+low-order bit of the rightmost byte of the string.
+
+   Examples:
+      /**/
+      say bitclr('a', 5)                     >>> A
+      say bitclr('A', 5)                     >>> A
+      say c2b(bitchg('01101100'b, 3))        >>> 01100100
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: BITCOMP() | Prev: BITCHG() | Contents: Bit-wise func.
+
+@endnode
+@node BITCOMP() "ARexxGuide | Functions reference | Bit-wise (4 of 8) | BITCOMP"
+@toc BITLIST
+@{i}rv@{ui} = BITCOMP(<string>,<string2>,[<padchar>])
+     @{i}rv@{ui} is a @{" number " link ARx_Elements2.ag/NUMBER}
+
+The result indicates the first position of the bit at which the two
+supplied strings differ or -1 if they are the same. The shorter string
+is padded with @{i}<padchar>@{ui} before the comparison.
+
+The default pad character is a null.
+
+   Examples:
+      say bitcomp('0011'b, '0111'b)             >>> 2
+      say bitcomp('c', 'C')                     >>> 5
+      say bitcomp('b', 'B')                     >>> 5
+      say bitcomp('0a'x, '1a'x)                 >>> 4
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: BITOR() | Prev: BITCLR() | Contents: Bit-wise func.
+
+@endnode
+@node BITOR() "ARexxGuide | Functions reference | Bit-wise (5 of 8) | BITOR"
+@toc BITLIST
+@{i}rv@{ui} = BITOR(<string1>,[<string2>],[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is equal to the length of longer of the two supplied strings
+which are logically (inclusively) OR'ed together bit by bit. If a pad
+character is supplied, then the shorter string is filled out with that
+character until it is the same length as the other string.
+
+The default @{i}<padchar>@{ui} is the null character.
+
+   Example:
+      say bitor('A', 'J')                    >>> K
+      say bitor('01000001'b, '01001010'b)    >>> K
+      say bitor('Amiga FOREVER')             >>> amiga forever
+      say bitor('FRANÇOIS')                  >>> françios
+      say bitor('THIS_THAT')                 >>> thisthat
+
+It is unsafe to use bitor() for character translation since characters
+like `[' and `_' (ASCII 91 to 96) that come between `Z' and `a' in the
+ASCII set are treated improperly. The @{" TRANSLATE() " link ARx_Func.ag/TRANSLATE()} function provides a
+safe way to implement a user-defined lower() function.
+
+Next: BITSET() | Prev: BITCOMP() | Contents: Bit-wise func.
+
+@endnode
+@node BITSET() "ARexxGuide | Functions reference | Bit-wise (6 of 8) | BITSET"
+@toc BITLIST
+@{i}rv@{ui} = BITSET(<string>, <bit>)
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The specified @{i}<bit>@{ui} in @{i}<string>@{ui} is set to 1.
+
+   Examples:
+      say bitset('A', 5)                     >>> a
+      say bitset('00101'b, 3)
+      say c2b(bitset('0000101'b, 3))         >>> 00001101
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: BITTST() | Prev: BITOR() | Contents: Bit-wise func.
+
+@endnode
+@node BITTST() "ARexxGuide | Functions reference | Bit-wise (7 of 8) | BITTST"
+@toc BITLIST
+@{i}rv@{ui} = BITTST(<string>, <bit>)
+     @{i}rv@{ui} is a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19}
+
+The result indicates the state of the specified @{i}<bit>@{ui} in @{i}<string>@{ui}.
+
+   Examples:
+      "say bittst('00001001'b, 3)            >>> 1 (True)
+      "say bittst('00001001'b, 1)            >>> 0 (False)
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: BITXOR() | Prev: BITSET() | Contents: Bit-wise func.
+
+@endnode
+@node BITXOR() "ARexxGuide | Functions reference | Bit-wise (8 of 8) | BITXOR"
+@toc BITLIST
+@next BITLIST
+@{i}rv@{ui} = BITXOR(<string1>,<string2>,[<padchar>])
+     @{i}rv@{ui} is a @{" string " link ARx_Elements2.ag/STRINGEXPR}
+
+The result is equal to the length of longer of the two supplied strings
+which are logically (exclusively) OR'ed together bit by bit. If a pad
+character is supplied, then the shorter string is filled out with that
+character until it is the same length as the other string.
+
+The default @{i}<padchar>@{ui} is the null character.
+
+   Examples:
+      say c2b(bitxor('00001101'b, '01000101'b)) >>> 01001000
+      say     bitxor('00001101'b, '01000101'b)  >>> H
+      say c2b(bitxor('A', 'J'))                 >>> 00001011
+
+@{" Compatibility issues: " link ARx_Intro.ag/COMPATIBILITY}
+   This function is an extension that is not defined in @{" TRL2 " link ARx_Intro.ag/COMPATIBILITY 26}. Although a
+   function of this name might be included in other REXX implementations,
+   there is no assurance that it will be.
+
+Next: Bit-wise func. | Prev: BITTST() | Contents: Bit-wise func.
+
+@endnode

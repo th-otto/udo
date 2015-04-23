@@ -1,0 +1,124 @@
+static struct MacroDesc MACRO_Builtins[] = {
+    {"About",               NULL, 0, "",       MACRO_About},
+    {"AddAccelerator",      "AA", 0, "UUS",    MACRO_AddAccelerator},
+    {"ALink",               "AL", 0, "SUS",    MACRO_ALink},
+    {"Annotate",            NULL, 0, "",       MACRO_Annotate},
+    {"AppendItem",          NULL, 0, "SSSS",   MACRO_AppendItem},
+    {"Back",                NULL, 0, "",       MACRO_Back},
+    {"BackFlush",           "BF", 0, "",       MACRO_BackFlush},
+    {"BookmarkDefine",      NULL, 0, "",       MACRO_BookmarkDefine},
+    {"BookmarkMore",        NULL, 0, "",       MACRO_BookmarkMore},
+    {"BrowseButtons",       NULL, 0, "",       MACRO_BrowseButtons},
+    {"ChangeButtonBinding", "CBB",0, "SS",     MACRO_ChangeButtonBinding},
+    {"ChangeEnable",        "CE", 0, "SS",     MACRO_ChangeEnable},
+    {"ChangeItemBinding",   "CIB",0, "SS",     MACRO_ChangeItemBinding},
+    {"CheckItem",           "CI", 0, "S",      MACRO_CheckItem},
+    {"CloseSecondarys",     "CS", 0, "",       MACRO_CloseSecondarys},
+    {"CloseWindow",         "CW", 0, "S",      MACRO_CloseWindow},
+    {"Command",             NULL, 0, "U",      MACRO_Command},
+    {"Compare",             NULL, 0, "S",      MACRO_Compare},
+    {"Contents",            NULL, 0, "",       MACRO_Contents},
+    {"ControlPanel",        NULL, 0, "SSU",    MACRO_ControlPanel},
+    {"CopyDialog",          NULL, 0, "",       MACRO_CopyDialog},
+    {"CopyTopic",           "CT", 0, "",       MACRO_CopyTopic},
+    {"CreateButton",        "CB", 0, "SSS",    MACRO_CreateButton},
+    {"DeleteItem",          NULL, 0, "S",      MACRO_DeleteItem},
+    {"DeleteMark",          NULL, 0, "S",      MACRO_DeleteMark},
+    {"DestroyButton",       NULL, 0, "S",      MACRO_DestroyButton},
+    {"DisableButton",       "DB", 0, "S",      MACRO_DisableButton},
+    {"DisableItem",         "DI", 0, "S",      MACRO_DisableItem},
+    {"EnableButton",        "EB", 0, "S",      MACRO_EnableButton},
+    {"EnableItem",          "EI", 0, "S",      MACRO_EnableItem},
+    {"EndMPrint",           NULL, 0, "",       MACRO_EndMPrint},
+    {"ExecFile",            "EF", 0, "SSUS",   MACRO_ExecFile},
+    {"ExecProgram",         "EP", 0, "SU",     MACRO_ExecProgram},
+    {"Exit",                NULL, 0, "",       MACRO_Exit},
+    {"ExtAbleItem",         NULL, 0, "SU",     MACRO_ExtAbleItem},
+    {"ExtInsertItem",       NULL, 0, "SSSSUU", MACRO_ExtInsertItem},
+    {"ExtInsertMenu",       NULL, 0, "SSSUU",  MACRO_ExtInsertMenu},
+    {"FileExist",           "FE", 1, "S",      MACRO_FileExist},
+    {"FileOpen",            "FO", 0, "",       MACRO_FileOpen},
+    {"Find",                NULL, 0, "",       MACRO_Find},
+    {"Finder",              "FD", 0, "",       MACRO_Finder},
+    {"FloatingMenu",        NULL, 0, "",       MACRO_FloatingMenu},
+    {"Flush",               "FH", 0, "",       MACRO_Flush},
+    {"FocusWindow",         NULL, 0, "S",      MACRO_FocusWindow},
+    {"Generate",            NULL, 0, "SUU",    MACRO_Generate},
+    {"GotoMark",            NULL, 0, "S",      MACRO_GotoMark},
+    {"HelpOn",              NULL, 0, "",       MACRO_HelpOn},
+    {"HelpOnTop",           NULL, 0, "",       MACRO_HelpOnTop},
+    {"History",             NULL, 0, "",       MACRO_History},
+    {"IfThen",              "IF", 0, "BS",     MACRO_IfThen},
+    {"IfThenElse",          "IE", 0, "BSS",    MACRO_IfThenElse},
+    {"Inet",                NULL, 0, "S",      MACRO_Inet),
+    {"InitMPrint",          NULL, 1, "",       MACRO_InitMPrint},
+    {"InsertItem",          NULL, 0, "SSSSU",  MACRO_InsertItem},
+    {"InsertMenu",          NULL, 0, "SSU",    MACRO_InsertMenu},
+    {"IsBook",              NULL, 1, "",       MACRO_IsBook},
+    {"IsMark",              NULL, 1, "S",      MACRO_IsMark},
+    {"IsNotMark",           "NM", 1, "S",      MACRO_IsNotMark},
+    {"JumpContents",        NULL, 0, "SS",     MACRO_JumpContents},
+    {"JumpContext",         "JC", 0, "SSU",    MACRO_JumpContext},
+    {"JumpHash",            "JH", 0, "SSU",    MACRO_JumpHash},
+    {"JumpHelpOn",          NULL, 0, "",       MACRO_JumpHelpOn},
+    {"JumpHtml",            NULL, 0, "S",      MACRO_JumpHtml),
+    {"JumpId",              "JI", 0, "SS",     MACRO_JumpID},
+    {"JumpKeyword",         "JK", 0, "SSS",    MACRO_JumpKeyword},
+    {"KLink",               "KL", 0, "SUSS",   MACRO_KLink},
+    {"Menu",                "MU", 0, "",       MACRO_Menu},
+    {"MPrintHash",          NULL, 0, "U",      MACRO_MPrintHash},
+    {"MPrintID",            NULL, 0, "S",      MACRO_MPrintID},
+    {"Next",                NULL, 0, "",       MACRO_Next},
+    {"NoShow",              "NS", 0, "",       MACRO_NoShow},
+    {"Not",                 NULL, 0, "U",      MACRO_Not),
+    {"PopupContext",        "PC", 0, "SU",     MACRO_PopupContext},
+    {"PopupHash",           NULL, 0, "SU",     MACRO_PopupHash},
+    {"PopupId",             "PI", 0, "SS",     MACRO_PopupId},
+    {"PositionWindow",      "PW", 0, "IIUUUS", MACRO_PositionWindow},
+    {"Prev",                NULL, 0, "",       MACRO_Prev},
+    {"Print",               NULL, 0, "",       MACRO_Print},
+    {"PrinterSetup",        NULL, 0, "",       MACRO_PrinterSetup},
+    {"RegisterRoutine",     "RR", 0, "SSS",    MACRO_RegisterRoutine},
+    {"RemoveAccelerator",   "RA", 0, "UU",     MACRO_RemoveAccelerator},
+    {"ResetMenu",           NULL, 0, "",       MACRO_ResetMenu},
+    {"SaveMark",            NULL, 0, "S",      MACRO_SaveMark},
+    {"Search",              NULL, 0, "",       MACRO_Search},
+    {"SetContents",         NULL, 0, "SU",     MACRO_SetContents},
+    {"SetHelpOnFile",       NULL, 0, "S",      MACRO_SetHelpOnFile},
+    {"SetPopupColor",       "SPC",0, "UUU",    MACRO_SetPopupColor},
+    {"ShellExecute",        "SE", 0, "SSUUSS", MACRO_ShellExecute},
+    {"ShortCut",            "SH", 0, "SSUUS",  MACRO_ShortCut},
+    {"TCard",               NULL, 0, "U",      MACRO_TCard},
+    {"Test",                NULL, 0, "U",      MACRO_Test},
+    {"TestALink",           NULL, 1, "S",      MACRO_TestALink},
+    {"TestKLink",           NULL, 1, "S",      MACRO_TestKLink},
+    {"UncheckItem",         "UI", 0, "S",      MACRO_UncheckItem},
+    {"UpdateWindow",        "UW", 0, "SS",     MACRO_UpdateWindow},
+    {NULL,                  NULL, 0, NULL,     NULL}
+
+INETWH_Initialize()
+RoboHelpExInitialize()
+RoboHelpExShowSeeAlso()
+RoboHelpExShowNavPane()
+RoboHelpExWatermark(filename, location, attributes)
+RoboHelpExWatermarkNonScroll(filename, location, attributes)
+Sound("filename.wav")
+SoundOnly("filename.wav")
+Video("filename.avi")
+VideoCaption("any caption")
+VideoMenu("on\off")
+VideoPath (path)
+
+
+
+Variable        Format Spec     Description
+
+hwndApp         U               32-bit handle to the main Help window. This variable is guaranteed to be valid only while the function is running.
+hwndContext     U               Handle to the current active window (either the main Help window or a secondary window).
+qchPath         S               Fully qualified path of the currently open Help file.
+qError          S               Long pointer to a structure containing information about the most recent WinHelp error.
+lTopicNo        U               Topic number. This number is relative to the order of topics in the topic files used to build the Help file.
+
+hfs             U               Handle to the file system for the currently open Help file.
+coForeground    U               Current foreground color.
+coBackground    U               Current background color.

@@ -1,0 +1,93 @@
+This is UDO Version 7.10 (1228) for Linux
+Copyright (C) 1995-2001 by Dirk Hagedorn
+Copyright (C) 2001-2013 by The UDO Community
+UDO is Open Source (see http://www.udo-open-source.org/ for further information).
+
+######## errors, warnings and notes:
+
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 106: too short line: 59: Kontrollelementen
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 78: check this paragraph: Kontrollelementen
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 80: couldn't read IMG header of <../images/dialog.img>
+../images/dialog.img: No such file or directory
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 94: couldn't read IMG header of <../images/files.img>
+../images/files.img: No such file or directory
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 130: too short line: 59: Dateiauswahldialog,
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 102: check this paragraph: Dateiauswahldialog,
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 131: too short line: 63: ausw„hlen
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 102: check this paragraph: ausw„hlen
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 152: too short line: 61: ver„nderbar
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 120: check this paragraph: ver„nderbar
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 157: too short line: 62: aufgerufen
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 129: check this paragraph: aufgerufen
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 138: couldn't read IMG header of <../images/formats.img>
+../images/formats.img: No such file or directory
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 151: couldn't read IMG header of <../images/options.img>
+../images/options.img: No such file or directory
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 154: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 201: too short line: 62: Informationen
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 177: check this paragraph: Informationen
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 204: too short line: 61: Tastendruck,
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 180: check this paragraph: Tastendruck,
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 208: too short line: 61: Ausgabeformat
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 187: check this paragraph: Ausgabeformat
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 209: too short line: 59: Ausgabedatei(en)
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 187: check this paragraph: Ausgabedatei(en)
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 196: couldn't read IMG header of <../images/symbols.img>
+../images/symbols.img: No such file or directory
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 225: too short line: 63: verschiedene
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 204: check this paragraph: verschiedene
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 236: couldn't read IMG header of <../images/files.img>
+../images/files.img: No such file or directory
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 275: too short line: 63: Konvertierung
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 243: check this paragraph: Konvertierung
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 251: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 299: too short line: 59: "Programmer's
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 274: check this paragraph: "Programmer's
+Error: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 287: couldn't read IMG header of <../images/formatconfig.img>
+../images/formatconfig.img: No such file or directory
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 323: too short line: 63: verwendet
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 302: check this paragraph: verwendet
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 328: too short line: 62: Horrorbeispiel:
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 311: check this paragraph: Horrorbeispiel:
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 332: too short line: 61: ausgew„hlte
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 311: check this paragraph: ausgew„hlte
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg 337: too short line: 62: C:\TeX\foo.tex
+Note: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 316: check this paragraph: C:\TeX\foo.tex
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 335: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 341: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 357: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 366: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 379: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 384: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 396: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 401: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 409: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+Warning: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u 414: '!short' is a deprecated attribute for environments. Please use '!compressed' instead.
+
+######## information:
+
+source file: /home/sebilla/src/udo/udosh/win32/Manual/udosh.u
+
+Warnings:                      28
+Notes:                         16
+Errors:                        7
+
+Nodes:                         6
+Subnodes:                      13
+Subsubnodes:                   5
+Subsubsubnodes:                0
+Subsubsubsubnodes:             0
+Subsubsubsubsubnodes:          0
+Subsubsubsubsubsubnodes:       0
+Subsubsubsubsubsubsubnodes:    0
+Subsubsubsubsubsubsubsubnodes: 0
+Macros:                        2
+Defines:                       0
+Hyphens:                       0
+
+started:  19:49:33
+finished: 19:49:34
+
+IMG written to /home/sebilla/src/udo/udosh/win32/Manual/stguide/udo_mw.img
+Hyphen file written to /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.uhs
+Output written to /home/sebilla/src/udo/udosh/win32/Manual/stguide/udosh.stg

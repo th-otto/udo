@@ -1,0 +1,475 @@
+NewView
+-------
+
+· partir de la version 2.18.1, la maintenance de ce programme est assur‚e par RBRi.
+Veuillez envoyer vos rapports de bugs … rbri@rbri.de ou utilisez le bugtracker de eComStation.
+
+Copyright 1999-2005 Aaron Lawrence
+Ml : aaronl {arobase} consultant {point} com
+
+NewView est une alternative gratuite au systŠme d'aide en ligne de OS/2 ou eComStation.
+
+Les principales am‚liorations sont :
+
+- Une nouvelle interface utilisateur (Visualisation partag‚e)
+- S‚lection et copie directes depuis la fenˆtre
+- Recherche globale (dans tous les fichiers) facile … utiliser
+- Sauvegarde des taille et position
+- Liste des fichiers r‚cemment utilis‚s
+- D‚filement fluide
+- Section en cours toujours mise en ‚vidence dans le contenu
+- Navigation en avant comme en arriŠre dans l'historique
+- Param‚trage des polices, couleurs et plus
+- Annotation des fichiers d'aide
+- Signets
+- ComplŠtement redimensionnable
+- Liens WWW, FTP et Ml automatiques (utilisation du navigateur d‚fini par d‚faut dans le WPS)
+- D‚pose de fichiers pour les ouvrir
+- Ouverture de fichiers suppl‚mentaires
+- S‚lection automatique de la langue
+- Cr‚ation automatique de l'index
+- BoŒte de dialogue am‚lior‚e avec titres des fichiers d'aide
+
+Pour un historique des versions, veuillez vous r‚f‚rer au fichier changes.txt.
+
+
+Installation
+------------
+
+Je vous suggŠre d'utiliser le fichier install.exe fourni avec NewView. C'est le moyen le plus simple de r‚aliser une installation complŠte.
+
+L'installateur vous propose aussi l'option d'installer NewView comme une application autonome, ou comme remplacement de View uniquement. Avec une installation en mode autonome vous aurez toujours l'option d'associer NewView aux fichiers d'aide.
+Vous noterez cependant que cela NE fera PAS en sorte que NewView soit utilis‚ pour les nombreuses ic“nes d'aide install‚es par les diverses applications, puisqu'il s'agit le plus souvent d'objets programmes qui font directement r‚f‚rence … "View.exe".
+
+Pour une mise … jour du produit, installez juste cette version par-dessus l'existant, mais v‚rifiez changes.txt pour voir s'il n'y aurait pas de remarques particuliŠres … propos de la nouvelle version.
+
+eComStation v1.1 est d‚j… livr‚ avec une version de NewView (l'afficheur en mode autonome, pas en remplacement complet). L'outil de maintenance d'eCS (eCS Maintenance Tool) ne le met pas … jour, mais l'installateur de NewView est suffisamment intelligent pour mettre … jour correctement la copie de NewView dans eCS.
+
+Un r‚amor‡age sera n‚cessaire pour un remplacement complet, mˆme lors d'une mise … jour.
+
+AprŠs un remplacement complet, vous aurez toujours accŠs … l'ancien afficheur : utilisez IBMVIEW <NomDeFichier>.
+
+Les informations au sujet de l'installation manuelle sont donn‚es au chapitre "Informations techniques" ci-dessous.
+
+
+D‚sinstallation
+---------------
+
+Eh bien... Il n'y a pas encore de d‚sinstallateur (Je ne peux toujours pas admettre l'id‚e d'utiliser WarpIn pour certaines raison.).
+
+Vous devrez copier les fichiers sauvegard‚s (.bak si vous avez utilis‚ Install.exe) vers leurs noms de fichiers originaux, vous devrez utiliser unlock/replmod pour remplacer HelpMgr.dll ou amor‡er le systŠme en ligne de commandes.
+Plus pr‚cis‚ment, vous devrez restaurer x:\os2\dll\helpmgr.dll, x:\os2\view.exe et x:\os2\viewdoc.exe.
+
+
+ProblŠmes
+---------
+
+Si vous deviez reporter un plantage ou autre problŠme, soyez alors aussi pr‚cis que possible quant aux fichiers qui ‚taient utilis‚s, sur ce que vous faisiez, etc..
+S'il est disponible, vous ˆtes PRI(E) d'inclure le fichier newview.log. Ce fichier de rapport se trouve SOIT
+ - dans le mˆme r‚pertoire que celui de NewView,
+ - dans le dossier d‚fini dans la variable d'environnement LOGFILES (dans le cas de eCS version 1.1 et ult‚rieures).
+Il pourrait aussi ˆtre utile de lancer NewView avec l'argument /profile (non document‚) et de m'envoyer le fichier newview.prf r‚sultant, en particulier s'il n'y a pas de fichier newview.log !
+
+- L'installation ne se lance pas
+
+RENMODUL.DLL doit ˆtre accessible. Normalement cela devrait fonctionner si vous lancez l'installation depuis le mˆme r‚pertoire et que "." est dans la variable d'environnement LIBPATH.
+
+- F1 fait planter l'application (installation complŠte)
+
+Bien qu'il soit toujours possible que cela provienne de NewView (en fait, mon fichier helpmgr.dll de remplacement), il y a(vait) un problŠme avec la bibliothŠque de Widgets de XWorkPlace, plus sp‚cifiquement avec rbutton.dll ou rgauge.dll; la d‚sactivation du XCenter ‚vitera ce problŠme.
+Je ne sais pas si un correctif est disponible.
+
+- Avertissement sur des fichiers dupliqu‚s
+
+L'installateur vous avertit si des programmes ou des fichier d'aide de NewView sont dupliqu‚s sur votre systŠme.
+Si vous ˆtes au courant de l'existence de tels doublons et que c'est normal (vous avez par exemple organis‚ les chemins de la variable d'environnement PATH pour ne pas que cela pose problŠme), vous pouvez alors ignorer l'avertissement.
+Les raisons principales pour lesquelles vous pourriez rencontrer un tel problŠme :
+  - vous avez d‚j… install‚ le produit dans un r‚pertoire diff‚rent.
+  - Vous effectuez une installation en mode autonome sur eCS v1.1 (*)
+Vous pouvez soit supprimer les dublons, soit installer les nouveaux fichiers par-dessus les anciens, comme vous voulez.
+* Ce problŠme ne devrait pas se poser lors d'une installation complŠte; dans ce cas, l'installateur mettra … jour les fichiers pr‚sents dans eCS.
+
+- ViewHelp reste ind‚finiment ouvert
+
+Si vous utilisez l'ancien programme viewhelp.exe, par exemple via les ic“nes d'aide pour TCP/IP, vous noterez alors que viewhelp reste aprŠs que vous ayez ferm‚ la fenƒtre d'aide.
+C'est parcequ'il utilise des fonctions de helpmgr que NewView ne prend pas en charge.
+Cependant, il ne semble pas fournir quelques fonctionnalit‚s utiles que ce soit lui-mˆme, donc, pour contourner du problŠme : copiez view.exe par dessus viewhelp.exe.
+
+- Le programme d'application de correctifs d'IBM (service.exe) ne fonctionne pas
+
+Ceci a ‚t‚ corrig‚ dans la version 2.13.4.
+
+- Modification de la police de l'application
+
+Si vous modifiez la fonte de l'application, que ce soit depuis "Outils" / "Options..." / "Polices" ou par Glisser/D‚poser d'une police sur la fenˆtre principale, vous devrez alors relancer l'application pour que toutes ses parties utilisent la nouvelle police.
+Remarque : si vous d‚posez une police sur le panneau de droite dans lequel les sections d'aide sont affich‚es, cela modifie seulement la police de la section, diff‚rente de celle de l'application.
+Appuyez sur la touche Maj pendant que vous d‚posez la police afin de modifier la police … chasse fixe.
+
+- Polices et couleurs pas toujours conformes
+
+Certains fichiers d'aide sp‚cifient leurs propres polices et/ou couleurs, auquel cas les valeurs par d‚faut que vous avez s‚lectionn‚es sont ignor‚es, soit partiellement, soit totalement.
+
+- IBM BookManager Reader ne fonctionne pas
+
+Encore une r‚invention de la roue par IBM. Je ne comprends pas comment il utilise helpmgr et ne peux donc pas le prendre en charge.
+
+- La boŒte de dialogue des paramŠtres d'impression a l'air bizarre
+
+Certaines boŒtes de dialogue des paramŠtres d'impression ne fonctionnent pas, je n'ai aucune id‚e … quoi c'est d–.
+L'API pour l'impression d'OS/2 n'est pas si bien d‚ssin‚e que ‡a, il est donc assez difficile de travailler avec.
+
+- La boŒte de dialogue des paramŠtres d'impression ne fonctionne pas
+
+Certaines boŒtes de dialogue de paramŠtres d'impression ne fonctionnent pas, mais je n'ai aucune id‚e de ce … quoi c'est d–.
+L'API pour l'impression d'OS/2 n'est pas si bien d‚ssin‚e que ‡a, il est donc assez difficile de travailler avec.
+
+- AprŠs avoir complŠtement remplac‚ le systŠme d'aide, le tutoriel d'OS/2 ne fonctionne plus
+
+Il y a peu de chance pour que ce soit corrig‚ dans un futur proche puisqu'il ne fait pas partie de eCS version 1.1 et il utilise pas mal de fonctionnalit‚s obscures.
+
+- Les ic“nes Glossaire et Index du dossier Centre d'assistance ne fonctionnent pas
+
+Il y a peu de chance pour que ce soit complŠtement corrig‚. Cependant, cela ne plante plus le bureau. Personnellemnt, je trouve que la recherche globale est plus utile ("Outils" / "Rechercher tous les fichiers d'aide").
+
+- L'aide d'EPM a des problŠmes
+
+Cela a ‚t‚ corrig‚ dans la version 2.7 de NewView et ult‚rieures, puisque View.exe est … pr‚sent un "stub" imm‚diatement disponible, comme l'original.
+Remarque : si vous effectuez une installation en mode autonome de NewView, mais que vous voulez tout de mˆme l'utiliser comme aide d'epm, vous devrez mettre … jour les fichiers .NDX d'EPM contenant le programme d'aide … lancer.
+
+- Les notes ne sont pas toujours pr‚visibles
+
+Elles ne se retrouveront pas exactement … la mˆme position … la mise en ‚vidence des mots recherch‚s ou lorsque le fichier d'aide est mis … jour.
+Ces notes semblent cependant toujours ˆtre utiles et c'est plut“t difficile … corriger, je laisserai donc probablement tout cela en l'‚tat.
+
+- Conflit avec Styler/2 (SmartWindows)
+
+Cela a ‚t‚ corrig‚ depuis la version 1.6.5.1 de Styler/2.
+Avant ‡a : si vous utilisiez l'‚l‚ment "fenˆtres agrandies" ("maximised windows"), les fenˆtres de section de NewView ‚taient alors aussi agrandies et peuvaient ˆtre ainsi trop larges pour la lecture.
+Solution de contournement : il suffisait d'ajouter view.exe et/ou newview.exe dans la liste des "exceptions" dans les pr‚f‚rences de Styler/2.
+
+- Ouverture impossible de fichiers avec des noms comportant des espaces depuis le bureau
+
+Assurez-vous que l'objet programme de NewView a SOIT aucun paramŠtre, SOIT le champ des paramŠtres contenant "%*" (avec les guillemets) et non pas juste %* (sans les guillemets).
+
+- Impossible de lancer l'ancien afficheur
+
+Je vous recommande d'utiliser l'installation en remplacement complet, mais si vous ne le faites pas et que cela fiche le bazar, pour faire en sorte que l'ancien view fonctionne :
+1) obtenez une copie du view original d'IBM (avec un peu de chance dans une sauvegarde pr‚c‚dente) et copiez-le dans x:\os2\ibmview.exe (o— x: est l'unit‚ d'amor‡age).
+2) T‚l‚chargez renmodul depuis Hobbes et placez-le quelquepart dans un des chemins figurant dans la variable PATH.
+3) Dans une fenˆtre de ligne de commandes, placez-vous dans le r‚pertoire x:\os2
+4) Tapez "renmodul /i ibmview.exe helpmgr ibmhmgr" (sans les guillemets).
+(par Bertie Kemp)
+
+
+Licence
+-------
+
+Depuis la version 1.27.9, NewView est un logiciel Open Source distribu‚ sous licence publique GNU (GNU Public License ou GPL), ce qui signifie (veuillez vous r‚f‚rer au fichier GPL.txt pour plus de d‚tails) :
+
+Ce programme est gratuit; vous pouvez le redistribuer et/ou le modifier selon les termes de la licence publique GNU telle qu'elle a ‚t‚ publi‚e par la Free Software Foundation, dans sa version 2, ou ult‚rieure (… votre guise).
+
+Ce programme est distribu‚ dans l'espoir d'ˆtre utile, mais SANS AUCUNE GARANTIE, sans mˆme la garantie implicite de COMMERCIALISATION ou d'ad‚quation … un BUT PARTICULIER. Veuillez vous r‚f‚rer … la licence publique GNU pour plus de d‚tails.
+
+Vous devriez avoir re‡u une copie de la licence publique GNU avec ce programme. Dans le cas contraire, ‚crivez … Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+Si vous voulez encourager … continuer les d‚veloppements futurs de NewView, vous pouvez alors utiliser PayPal (http://www.paypal.com) ou similaire pour envoyer un don !
+
+
+Support multilingue
+-------------------
+
+NewView peut charger diff‚rentes langues ainsi que des fichiers d'aide de langues diff‚rentes (depuis la version 2.1.4) pour son interface utilisateur.
+
+Il recherche un fichier dans son propre dossier.
+Le nom de fichier d‚bute par 'newview_' et porte l'extension '.lng'.
+Le fichier particulier lanc‚ est fonction de la variable d'environnement LANG d‚finie dans le systŠme.
+Par exemple sur les systŠmes US, c'est LANG=EN_US et c'est donc newview__en_us.lng qui sera recherch‚.
+S'il est introuvable, c'est la partie principale de la variable LANG qui sera utilis‚e pour la recherche, dans notre exemple : newview_en.lng.
+Sinon, c'est l'anglais US qui est utilis‚ par d‚faut. Cette langue est int‚gr‚e dans l'ex‚cutable et vous devrez relancer le programme pour l'obtenir.
+
+Normalement, les traductions ne sont pas destin‚es … une r‚gion particuliŠre, ainsi, les fichiers fournis avec NewView sont de la forme (par exemple) newview_es.lng, et non pas newview_es_es.lng.
+
+Vous pouvez forcer la langue utilis‚e en utilisant le paramŠtre /lang:<XX>, ou XX et la langue alternative … utiliser.
+
+- O— les fichiers de langue se trouvent-ils ?
+
+Les fichiers de langues sont recherch‚s (dans l'ordre) dans :
+  - %OSDIR%\lang  (eCS 1.1+),
+  - %ULSPATH%,
+  - le r‚pertoire de l'application.
+
+- Cr‚ation d'un nouveau fichier de langue
+
+Vous pouvez facilement cr‚er un fichier de traduction pour NewView.
+Utilisez "Outils" / "Sauver vers fichier de langue..." pour cr‚er un nouveau fichier .lng.
+Ce fichier .lng contiendra tous les ‚l‚ments de texte employ‚s par le programme.
+Traduisez les chaŒnes de texte (entre guillemets) et sauvegardez-le.
+
+Vous pouvez nommer le fichier .lng comme vous voulez, mais suivez les rŠgles ci-dessus si vous voulez qu'il soit automatiquement charg‚.
+
+Si vous m'envoyez vos traductions, je les incluerai dans les prochaines versions.
+Pour vous ‚conomiser du temps, demandez-moi avant de commencer une traduction au cas o— quelqu'un en aurait d‚j… fait une.
+
+Remarques :
+
+Un "~" (tilde) dans le texte indique que la lettre qui suit sera soulign‚e et utilis‚e comme touche de raccourcis
+(Vous pourrez aussi voir "&" (et commercial) qui fait la mˆme chose, mais qui ne fonctionne pas aussi bien - veuillez m'informer si une telle chose apparaissait).
+
+Un "\t" dans le texte indique un caractŠre de tabulation et est utilis‚ pour s‚parer un ‚l‚ment de menu de sa touche "d'acc‚l‚ration" ou de sa combinaison de touche.
+De toutes maniŠres, vous NE pouvez PAS modifier l'acc‚l‚rateur vous mˆme, par exemple F3 pour quitter par telle ou telle touche.
+Veuillez donc laisser la partie aprŠs le "\t" telle quelle.
+
+- Mise … jour d'un fichier de langue existant
+
+Si vous avez d‚j… un fichier mais qui n‚cessite une mise … jour - peut-ˆtre pour une nouvelle version du programme - vous n'avez alors qu'… sauvegarder sur le MÒME fichier.
+Les nouveaux ‚l‚ments devant ˆtre traduits seront ajout‚s et les ‚l‚ments qui ne sont plus n‚cessaires seront retir‚s.
+
+Les ‚l‚ments inutiles sont tout de mˆme laiss‚s … la fin du fichier pour que vous puissiez v‚rifier; supprimez-les aprŠs l'avoir fait pour gagner de l'espace.
+Notez que certains ‚l‚ments peuvent ˆtre juste renomm‚s, auquel cas vous aurez … copier la valeur de l'ancien ‚l‚ment vers le nouveau (d‚sol‚ ! ).
+
+Les nouveaux ‚l‚ments n‚cessitant une traduction seront suivis par "***".
+
+Remarque : malheureusement tous les commentaires que vous avez pu ajouter au fichier seront perdus … la sauvegarde ou mise … jour.
+
+
+Fichiers d'aide multilingues
+----------------------------
+
+Suivant la mˆme logique, NewView peut charger une version sp‚cifique … la langue de son fichier d'aide. Il recherche NewView_XX.hlp, o— XX est fonction de la variable LANG comme les fichiers .LNG ci-dessus.
+
+Pour commencer, vous pouvez prendre le fichier NewView.ipf. Veuillez noter que je NE l'utilise PAS comme source; ce fichier est g‚n‚r‚ par VyperHelp. Ce fichier n'est pas install‚, il est juste inclus dans un fichier .ZIP.
+
+
+Remerciements aux traducteurs
+-----------------------------
+
+Mes remerciements aux personnes suivantes qui ont transmis et mis … jour les traductions :
+
+Allemand - Christian Hennecke, Chris Hellwig
+Cor‚en - Tomoarai (Kazuhiko Tani), KO Myung-Hun
+Espagnol - David Mediavilla Ezquibela, Alfredo Fern ndez D¡az
+Esp‚ranto - Jonathan Moylan
+Finlandais - Tapani Raikkonen
+Fran‡ais - Guillaume Gay
+Italien - Alberto Gabrielli, Gabriele Gamba
+Japonais - Tomoarai
+N‚erlandais - Dutch eComStation Test and Translation Group
+Russe - Yuri Prokushev
+Su‚dois - Simon Gronlund
+TchŠque - Michal Pohorelsky
+
+J'espŠre n'avoir oubli‚ personne, j'ai ‚t‚ quelque peu d‚pass‚ par les diverses traductions parfois.
+
+
+Support de NewView
+------------------
+
+Si vous trouvez NewView utile, veuillez m'envoyer un Ml et/ou me faire un don pour supporter les d‚veloppements futurs.
+
+D'autres fa‡ons de contribuer :
+o traduire NewView et/ou son fichier d'aide dans votre langue,
+o un bon cadeau Blackstar (http://www.blackstar.co.uk/circle/gift_voucher),
+o un bon cadeau Amazon.com,
+o un don via PayPal (http://www.paypal.com),
+
+... ou tout ce que vous voudrez !
+
+
+Remerciements
+-------------
+
+Il s'agit d'un effort continu sur plusieurs ann‚es.
+Beaucoup de personnes ont prˆt‚ main forte.
+Certaines ont donn‚ de l'argent (… peu prŠs US$600 jusqu'ici) pour m'aider … me payer cette Porsche :
+
+Henk Pol, Moby Disk, Frederick Giroux, Jerauld Prather, Keith Oswald,
+Daniel Caroll, Sten Solberg, Jason Stefanovich, Alexander Newman, Andy Willis,
+Richard Tennis, Gregg Young, John F Moore, Bill Richardson, Jan Magne Landsvik,
+Daniela Engert, Kris Steenhaut, Pieter Kruger Jr, Timur Tabi,
+Peter Gegenheimer, Gordon Snider, Doug Fitzpatrick, Simon Wright, Aidan Grey,
+Julian Thomas, Philip Mann, Robert S Stan, Lionel Abrahams, Howard Harris,
+Teijo Kaakinen, Lon Hoker, Mark Henigan.
+
+et aussi :
+
+Toutes les personnes qui m'ont encourag‚, qui ont test‚ et qui ont fait des suggestions.
+
+Harald Pollack pour le code de renommage des DLL.
+
+Alessandro Cantatore qui a donn‚ ‚norm‚ment de conseils sp‚cifiques pour faire fonctionner ViewStub, et a mˆme ‚crit le code pour ce faire pour moi :).
+
+Les ing‚nieurs de chez IBM :
+- Aaron Reed qui m'a aid‚ … faire fonctionner le gestionnaire d'aide, en particulier avec le codage en 16/32 bits.
+- Scott Garfinkle, aussi pour l'aide technique … propos de helpmgr.
+- Michael Kaply, le propri‚taire de la plate-forme Mozilla pour OS/2. Mille mercis !
+- Et tous les autres ing‚nieurs pour avoir r‚alis‚ un noyau et un bureau plut“t pas mal.
+
+Christian Hennecke pour avoir pr‚cis‚ les problŠmes avec le multilinguisme, qui est maintenant total.
+
+Andreas Schnellbacher et Henk Kelder pour les informations sur les associations de fichiers.
+
+Michal Necasek, Kendall Bennett et le reste de l'‚quipe Watcom C/C++.
+Michal a ‚t‚ d'une trŠs grande aide en r‚pondant … toutes mes questions idiotes, et mes problŠmes avec le 16 bits lui ont donn‚ pas mal de boulot.
+Sans oublier les fameux pilotes video (http://www.scitechsoft.com).
+Allez donc aider Michal avec OpenWatcom pour OS/2 (http://www.openwatcom.org).
+
+Mark Vollmer pour m'avoir ‚clair‚ sur WM_QUERYHELPINFO/WM_SETHELPINFO et ainsi fait en sorte que SmartSuite fonctionne...
+
+Hakan Gadler pour continuer … faire des tests.
+
+Nicky Morrow pour toutes les remarques constructives … propos de l'interface utilisateur.
+
+Keith Oswald, pour les suggestions sur l'installation et ses contributions (finalement, il semblerait que j'ai r‚ussi … faire un installateur, mais ‡a n'utilise pas WarpIn :).
+
+Tout le monde sur le forum comp.os.os2.programmer.misc pour avoir prˆt‚ une oreille … mes grandes questions !
+
+Le groupe de d‚veloppeurs eCS pour toutes ces discussions passionnantes.
+
+Serenity Systems International (SSI) : Kim Cheung et Bob St John pour lui avoir donn‚ sa chance l… o— IBM laissa tomber quelques ann‚es plus t“t, et pour leur tol‚rance envers certaines personnes (http://www.ecomstation.com).
+
+John Bijnens, pour son article favorable dans OS/2 E-Zine qui m'a encourag‚ … continuer ! (http://www.os2ezine.com)
+
+Cristiano Guadagnino, auteur de WarpHelp - en esp‚rant ne pas avoir empi‚t‚ sur tes plates-bandes en faisant pour propre truc. Je voulais juste que ‡a bouge un peu. Merci pour l'inspiration donn‚e pour l'impulsion de d‚part.
+
+Peter Fitzsimmons, pour le code de d‚compression (LZW) d'images INF original utilis‚ dans Inf2HTML.
+Merci Peter ! J'ai r‚ussi … le porter sans avoir tout complŠtement compris... :-)
+
+Ulrich Moeller, auteur de Inf2HTML (http://www.xworkplace.org/projects.html) et - BIEN SêR ! - de  XWorkplace/eWorkPlace, etc.. La L‚gende !
+
+Carl Hauser, auteur original de INF01.DOC, d‚crivant le format binaire INF. Je me demande ce que tu deviens en ce moment Carl ;). Nous en sommes finalement arriv‚s l….
+
+Marcus Groeber, qui a ajout‚ des informations suppl‚mentaires … INF2A.TXT.
+
+Peter Childs, qui a fait quelques mises … jour dans INF03.TXT.
+
+Speedsoft (http://www.speedsoft-online.de), les auteurs de Sibyl, l'impressionnant clone de Delphi pour OS/2, Linux et Win32 - Bonne chance les gars.
+Il semblerait qu'ils travaillent sur un logiciel de musique … pr‚sent.
+
+Mat Kramer (http://www.vyperhelp.com/), auteur de VyperHelp - merci pour ces quelques suggestions sur les contr“les de texte enrichi, ainsi que pour ce trŠs pratique outil de cr‚ation d'aide.
+
+Erik Hueslmann, auteur des composants HelperThread de Sibyl et mainteneur de l'archive de la liste de publipostage sur Sibyl (http://www.sibyl-archive.org/).
+
+IBM... Ils ont ‚t‚ bons parfois.
+
+Joachim Benjamins (Mensys Pays-Bas) - pour le Bugtracker. Joli travail, mec !
+
+"Elwood", compositeur de "Unknown Phuture" (unk.xm) - Cette musique bouge plut“t bien...
+
+"Mr Stewe", compositeur de "Static Universe" (pb_static.xm)  - Tu devrais revenir sur la scŠne, mec !
+
+30 Seconds To Mars - Un incroyable premier album. Je l'adore. Je me l'‚coute en boucle sans cesse.
+"You know enough to know the way...". Un an plus tard : Mouais??? Maintenant je ne peux plus le supporter ! Pouf-pouf.
+
+
+--------------------------------------------------
+INFORMATIONS TECHNIQUES
+--------------------------------------------------
+
+
+Installation manuelle
+---------------------
+
+Pour un usage comme application ind‚pendante, vous pouvez tout simplement d‚compresser les fichiers (principalement NewView.exe) dans le r‚pertoire final de votre choix.
+Ce r‚pertoire peut figurer dans la variable d'environnement PATH si vous le d‚sirez.
+
+Une installation complŠte manuelle se fait en plusieurs ‚tapes et n‚cessite d'autres utilitaires pour manipuler les fichiers EXE et DLL.
+Toutes les proc‚dures suivantes sont effectu‚es par l'installateur.
+Je pr‚f‚rerais que vous l'utilisiez et que vous reportiez les problŠmes ‚ventuellement rencontr‚s, plut“t que d'essayer de faire les choses manuellement.
+
+A. Remplacement de View.exe
+
+1. Placez-vous dans X:\os2 (o— X est l'unit‚ de disque d'amor‡age d'OS/2)
+2. Copiez View.exe en ibmView.exe
+   Ceci constitue une sauvegarde. Ne *renommez* PAS View.exe, sinon OS/2
+   d‚tectera les modifications et fera en sorte que les fichiers d'aide
+   utilisent ibmView.exe !
+3. Copiez ViewStub.exe et View.exe
+4. Copiez NewView.exe quelque part dans l'un des chemins de la variable
+   d'environnement PATH.
+
+· pr‚sent, les ic“nes d'aide existantes devraient charger NewView.
+
+Modifier les associations de fichiers pour les fichiers .inf et .hlp peut ne pas suffire, parceque beaucoup d'ic“nes d'aide sont en r‚alit‚ des objets programme de "View.exe".
+
+B. Remplacement de HelpMgr.dll
+
+1. Remplacement du fichier
+   Le remplacement de HelpMgr.dll est plus tordu, parcequ'il est toujours utilis‚ par le shell du bureau ‚lectronique (WorkPlace Shell ou WPS).
+   Vous devez alors soit :
+   - relancer le systŠme en ligne de commandes
+     ou
+   - utiliser un outil de d‚verrouillage de DLL comme unlock ou replmod.
+   Sauvegardez l'ancienne DLL en la copiant sous un nom de fichier diff‚rent comme helpmgr.bak.
+
+2. D‚pendances envers l'ancien helpmgr.
+   Vous devez AUSSI faire une copie de l'ancien helpmgr.dll, appel‚ ibmhmgr.dll.
+   Il doit aussi ˆtre renomm‚ en interne en utilisant par exemple DLLRNAME ou RENMODUL (maintenant sur Hobbes - grƒce … votre serviteur).
+
+C. Faire fonctionner le programme View original
+
+Une fois le fichier helpmgr.dll remplac‚ par le nouveau, l'ancien programme View ne fonctionnera plus parcequ'il repose sur l'ancien helpmgr.
+
+1. Utilisez un outil tel que DLLRNAME ou RENMODUL pour faire pointer les r‚f‚rences … HELPMGR dans la copie de l'ancien programme View vers IBMHMGR.
+2. Utilisez le mˆme outil pour faire pointer les r‚f‚rences … HELPMGR dans viewdoc.exe vers IBMHMGR.
+   Vous voudrez probablement faire une sauvegarde de viewdoc.exe avant de faire quoi que ce soit.
+
+   dllrname ibmview.exe helpmgr=ibmhmgr
+   dllrname ibmhmgr.dll helpmgr=ibmhmgr
+     dllrname n'aime pas beaucoup faire ‡a; j'ai utilis‚ un ‚diteur binaire.
+     C'est peut-ˆtre parceque le fichier a d‚j… ‚t‚ renomm‚.
+     Peut-ˆtre que renmodul fonctionnera mieux.
+     Je n'ai pas essay‚.
+   dllrname viewdoc.exe helpmgr=ibmhmgr
+
+Remarquez qu'il n'y a pas de fa‡on simple d'avoir accŠs … l'ancien helpmgr pour l'aide en ligne.
+Ce qui n‚cessite un travail assez p‚nible de ma part sur le nouveau helpmgr pour le d‚cider dynamiquement … faire passer les fonctions, et c'est en fait impossible dans beaucoup de cas parceque je peux difficilement intercepter ce que je ne connais pas.
+
+
+· l'attention des d‚veloppeurs
+------------------------------
+
+J'ai d‚pos‚ les sources sur Hobbes.
+
+€a a ‚t‚ ‚crit en utilisant deux outils :
+
+- L'Interface Graphique Utilisateur a ‚t‚ r‚alis‚e en utilisant Speedsoft Sibyl (un systŠme Pascal-Objet comme Delphi)
+  Le site ‚tait "http://www.speedsoft-online.de" mais il n'existe plus.
+  Si vous demandez gentiment, il se pourrait que je vous envoie ma cl‚ d'enregistrement.
+
+- La nouvelle bibliothŠque HelpMgr.dll a ‚t‚ ‚crite en utilisant Open Watcom C++
+  http://openwatcom.org
+
+T‚l‚chargez les sources pour plus d'information sur l'architecture du projet.
+
+
+Bref r‚sum‚ des op‚rations
+--------------------------
+
+Cela peut se r‚v‚ler ˆtre utile si vous voulez faire une installation ou une d‚installation manuelle.
+
+Fichiers de l'archive ZIP :
+
+NewView.exe est l'application principale qui permet de visionner les fichiers d'aide.
+ViewStub.exe soit active une fenˆtre existante de NewView, soit lance une nouvelle session de NewView s'il n'y a aucune fenˆtre ouverte avec tous les fichiers sp‚cifi‚s (Ceci est r‚alis‚ au moyen d'une liste dans la m‚moire partag‚e).
+HelpMgr.dll est la DLL que les applications chargent pour acc‚der … l'aide.
+Elle lance NewView lorsque c'est n‚cessaire.
+
+En installation comme application ind‚pendante, ces fichiers sont copi‚s tels quels dans le r‚pertoire d'installation (helpmgr n'est bien ‚videmment pas inclus puisqu'il n'y en a pas besoin).
+
+Lors d'un remplacement :
+- ViewStub remplace View.exe.
+- HelpMgr.dll remplace HelpMgr.dll.
+- NewView est install‚ en tant que NewView.exe
+  et procure les fonctions ‚quivalentes … celles de ViewDoc.exe.
+  Il est plac‚ soit dans x:\os2 (pour OS/2)
+  soit dans x:\ecs\bin (pour eCS version 1.1 et ult‚rieures.
+  Remarque : dans les versions ant‚rieures … 2.7, NewView.exe rempla‡ait View.exe.
+
+
+- L'ancien fichier helpmgr.dll s'appelle … pr‚sent ibmhmgr.dll.
+- Le nouveau fichier helpmgr.dll utilise … pr‚sent ibmhmgr.dll pour impl‚menter quelques fonctions inconnues.
+- L'ancien view.exe est copi‚ en ibmview.exe
+  et est modifi‚ pour faire r‚f‚rence … ibmhmgr.dll.
+- ViewDoc.exe est sauvegard‚ puis modifi‚ pour faire r‚f‚rence … ibmhmgr.dll.
+
+-- fin --

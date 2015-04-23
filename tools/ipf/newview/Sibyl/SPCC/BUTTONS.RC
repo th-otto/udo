@@ -1,0 +1,17 @@
+BITMAP StdBmpOk     bmp\ok.bmp
+BITMAP StdBmpCancel bmp\cancel.bmp
+BITMAP StdBmpHelp   bmp\help.bmp
+BITMAP StdBmpYes    bmp\ok.bmp
+BITMAP StdBmpNo     bmp\no.bmp
+BITMAP StdBmpClose  bmp\close.bmp
+BITMAP StdBmpAbort  bmp\cancel.bmp
+BITMAP StdBmpRetry  bmp\retry.bmp
+BITMAP StdBmpIgnore bmp\ignore.bmp
+BITMAP StdBmpAll    bmp\all.bmp
+BITMAP StdBmpOpen   bmp\folder.bmp
+
+BITMAP StdBmpAsk    bmp\ask.bmp
+BITMAP StdBmpHand   bmp\hand.bmp
+BITMAP StdBmpInfo   bmp\info1.bmp
+
+BITMAP StdBmpProp   bmp\property.bmp

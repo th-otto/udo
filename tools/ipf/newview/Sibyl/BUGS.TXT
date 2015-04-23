@@ -1,0 +1,27 @@
+
+----------------------------------------------------------------------
+GENERAL
+
+----------------------------------------------------------------------
+1. Problems on Win32 NT SP4 +
+?
+
+----------------------------------------------------------------------
+2. Help is getting more and more out of date.
+
+----------------------------------------------------------------------
+Enhancements/Other issues
+-------------------------
+
+DBase support is readonly
+- Improved
+
+No support for strings > 255 in database (or most other places)
+
+----------------------------------------------------------------------
+
+See also
+ IDE.TXT
+ COMPILER.TXT
+ LIBRARIES.TXT
+

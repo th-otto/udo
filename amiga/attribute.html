@@ -1,0 +1,132 @@
+<head><title>amigaguide.guide - Amigaguide.guide/Attribute Commands</title></head>
+<body bgcolor=#000000 text=#ffffff link=#00aaff vlink=#00ff99alink=#ff00ff background=/lothlorien/gfx/backsun.jpg><table><tr><td><pre>                                                                          
+
+
+
+Attribute Commands
+******************
+
+Attribute Commands
+<hr noshade size=3>
+<b>{&lt;label&gt; &lt;command&gt;}</b>
+     Specify a hypertext link.  Not really an attribute per se, but shares a
+     similar syntax and scope.  It may be specified anywhere on a line.
+
+     The command is usualy "LINK", to specify a normal hypertext link.
+     There are other commands as follows:
+
+    <a href="/amiga/code/guide/amigaguide.guide?&lt;path/name&gt;&lt;line&gt;@{ub">b}A</a>
+          Display the hypertext node in a new window, starting at &lt;line&gt;.
+          This no longer works in V39 and up (why not??).
+
+    <b>CLOSE</b>
+          Close the window, to be used with ALINK windows.  Doesn't work in
+          V39 and up.
+
+    <a href="/amiga/code/guide/amigaguide.guide?&lt;path/name&gt;&lt;line&gt;@{ub">b}</a>
+          Display the hypertext node, starting at &lt;line&gt;.
+
+    <b>RX &lt;command&gt;</b>
+          Execute an ARexx script.
+
+    <b>RXS &lt;command&gt;</b>
+          Execute an ARexx string file.
+
+    <b>SYSTEM &lt;command&gt;</b>
+          Execute an AmigaDOS command.
+
+    <b>QUIT</b>
+          Shutdown the current database.  Doesn't work in V39 and up.
+
+     The node is the name of a node in this document, or a path to a node in
+     another document.  In AmigaOS 3.0 and above, the node may be a path to
+     any type of file which is recognized by the Datatypes system.
+
+<b>{AMIGAGUIDE}</b>
+     Displays the word "Amigaguide(R)" in bold.  V40.
+
+<b>{APEN &lt;n&gt;}</b>
+     Change the foreground (text) colour to specified pen number.  V40.
+
+<b>{B}</b>
+     Turn on bolding.  V39.
+
+<b>{BG &lt;colour&gt;}</b>
+     Change the background to a preferences defined colour.  Colour can be:
+
+    <b>Text</b>
+    <b>Shine</b>
+    <b>Shadow</b>
+    <b>Fill</b>
+    <b>FillText</b>
+    <b>Background</b>
+    <b>Highlight</b>
+<b>{BODY}</b>
+     Restore default formatting for normal body text.  V40.
+
+<b>{BPEN &lt;n&gt;}</b>
+     Change the background colour to specified pen number.  V40.
+
+<b>{CLEARTABS}</b>
+     Restore default tabs.  V40.
+
+<b>{CODE}</b>
+     Turn off wordwrapping.  V40.
+
+<b>{FG &lt;colour&gt;}</b>
+     Change the foreground colour.  See command BG for colours.  V40.
+
+<b>{I}</b>
+     Turn on italics.  V39.
+
+<b>{JCENTER}</b>
+     Turn on centered justification.  V40.
+
+<b>{JLEFT}</b>
+     Turn on left justification.  V40.
+
+<b>{JRIGHT}</b>
+     Turn on right justification.  V40.
+
+<b>{LINDENT &lt;n&gt;}</b>
+     Specify an indent in spaces for the body of paragraphs.  V40.
+
+<b>{LINE}</b>
+     Force a line feed without starting a new paragraph.  V40.
+
+<b>{PAR}</b>
+     Specifies the end of the paragraph, equivalent to two line feeds and
+     usable with SMARTWRAP.  V40.
+
+<b>{PARD}</b>
+     Reset to default paragraph settings:  APEN to 1, BPEN to 0, original
+     font, and LINDENT to 0.  V40.
+
+<b>{PARI &lt;n&gt;}</b>
+     Specify an indent in spaces for the first line of a paragraph.  Value
+     is relative to LINDENT and may be negative.  V40.
+
+<b>{PLAIN}</b>
+     Turns off all style attributes (bold, italics, underlineing).  V40.
+
+<b>{SETTABS &lt;n&gt; ... &lt;n&gt;}</b>
+     Specify a series of tab stops in spaces.  V40.
+
+<b>{TAB}</b>
+     Outputs a real tab character.  V40.
+
+<b>{U}</b>
+     Turn on underlining.  V39.
+
+<b>{UB}</b>
+     Turn off bolding.  V39.
+
+<b>{UI}</b>
+     Turn off italics.  V39.
+
+<b>{UU}</b>
+     Turn off underlining.  V39.
+
+
+</pre><hr noshade> <a href="/<nodocback>/amiga/code/guide/amigaguide.guide?Attribute%20Commands"><img src=/amiga/gfx/pixel/ar/buttons/nodocbackoff.gif border=0 alt="[Background OFF]"></a><a href=/amiga/code/guide/amigaguide.guide?Node%20Commands><img src=/amiga/gfx/pixel/ar/buttons/browsel.gif border=0 alt="[&lt;BROWSE]"></a><a href=/amiga/code/guide/amigaguide.guide?Node%20Commands><img src=/amiga/gfx/pixel/ar/buttons/prev.gif border=0 alt="[PREV]"></a><a href=/amiga/code/guide/amigaguide.guide?Main><img src=/amiga/gfx/pixel/ar/buttons/toc.gif border=0 alt="[TOC]"></a> May Ivanova be with you.
+<hr noshade></td></tr></table></body>

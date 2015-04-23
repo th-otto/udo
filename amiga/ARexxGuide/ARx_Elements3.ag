@@ -1,0 +1,962 @@
+@database "ARx_Elements3.ag"
+@index ARx_Index/ARx_NdxCont
+@node MAIN ""
+@toc ARx_Elements.ag/MAIN
+@prev ARx_Elements.ag/MAIN
+@next ARx_Elements.ag/MAIN
+   AN AMIGAGUIDE® TO ARexx                 Second edition (v2.0)
+   by Robin Evans
+
+      Note: This is a subsidiary file to ARexxGuide.guide. We recommend
+      using that file as the entry point to this and other parts of the
+      full guide.
+
+         Copyright © 1993,1994 Robin Evans.  All rights reserved.
+
+
+@endnode
+@node FUNCTION "ARexxGuide | Basic Elements | Expressions (4 of 5) | FUNCTIONS"
+@toc ARx_Elements2.ag/EXPRESSION
+@prev ARx_Elements2.ag/VARIABLE
+@{fg highlight}Functions@{fg text}
+~~~~~~~~~
+Functions are sub-programs that perform a task and then return a value to
+the calling environment. Functions can be used in either of two forms: The
+symbol or word that identifies the function is either followed immediately
+by an opening parenthesis or it is preceded by the keyword @{" CALL " link ARx_Instr.ag/CALL}.
+(Parentheses may be used even with the CALL keyword but are not necessary.)
+
+The definition of a function may come from any of several sources. Two of
+those sources -- internal and external functions -- are easily created by
+the ARexx user. The characteristics of each function source is explained
+in the following sections:
+
+   @{" Internal functions        " link PROGFUNC}
+   @{" Built-in functions        " link BLTFUNC}
+   @{" Library/Host functions    " link LIBFUNC}
+   @{" External functions        " link EXTFUNC}
+
+Whatever the source of a function, its calling sequence is the same.
+Depending on the function's definition, it might accept a series of
+values, called arguments, that are passed to the function. The arguments
+are included after the function name and between the parentheses, if used.
+
+   @{" Function arguments        " link FUNCARG}
+
+When a function call is encountered within a program, ARexx searches the
+possible sources in the order in which they are listed above unless the
+function name is enclosed in quotation marks. If the name quoted, ARexx
+will ignore any internal functions with that name and begin its search for
+the name at the built-in function list.
+
+This allows a script to change the action of a function from one of the
+three external sources. In the following example, an internal function
+uses the same name as a function that might be available as a library
+function. If the library is available, that function is called (by using
+the name without the quotation marks). Otherwise, the internal function
+uses a different method of retrieving the information.
+
+                  Technique note: @{" Get or set environment varialbes " link ARx_Tknq.ag/GETSETENV}
+
+Next: OPERATIONS | Prev: Variables | Contents: Expressions
+
+@endnode
+@node PROGFUNC "... Expressions | Functions (1 of 5) | INTERNAL FUNCTIONS"
+@toc FUNCTION
+@prev FUNCTION
+@{fg highlight}Functions defined within a script@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As varied and useful as ARexx @{" built-in functions " link BLTFUNC} are, it is still often
+necessary to build functions for specific tasks. ARexx allows programmers
+to define code within a script as an 'internal function'. Such functions
+work the same way as the functions described in the @{" Function Reference " link ARX_FUNC.AG/MAIN}.
+They can be passed values through an @{" argument list " link FUNCARG} and can return a
+value to the calling environment (must return a value, in fact, unless the
+@{" CALL " link ARx_Instr.ag/CALL} instruction is used).
+
+Internal functions are sections of code (called 'subroutines') that begin
+with a @{" label " link LABEL} clause. They are not otherwise restricted, but do exhibit
+some unique characteristics.
+
+One of those characteristics concerns the @{b}scope of variables@{ub} -- the way
+they are treated within the subroutine. By default, internal functions
+share all variables with the main section of code: any variable defined
+or changed in one part of the script is defined or altered in the other.
+That, however, is often not desirable. Functions are used partly because
+they are isolated code that can be used again in different scripts. Bugs
+that are difficult to find can occur when a subroutine unexpectedly
+changes the value of a variable in the calling environment.
+
+The @{" PROCEDURE " link ARx_Instr3.ag/PROCEDURE} instruction alters the default handling of variables:
+When used at the beginning of a function definition, it causes the
+subroutine to get a new set of variables that are not shared with the
+calling environment. The new variable table prevents accidental changes to
+a variable in the main program, even if a variable with the same name is
+used in the subroutine.
+
+Although variables have global scope within a script, several other values
+inherited by subroutines have local scope by default. These settings can
+be manipulated within the subroutine without affecting the settings of the
+calling environment.
+
+The settings established in the calling environment by @{" ADDRESS " link ARx_Instr.ag/ADDRESS},
+@{" SIGNAL " link ARx_Instr3.ag/SIGNAL}, @{" OPTION " link ARx_Instr2.ag/OPTIONS}, @{" TRACE " link ARx_Instr3.ag/TRACE}, @{" NUMERIC " link ARx_Instr2.ag/NUMERIC}, and the @{" elapsed-timer " link ARx_Func2.ag/TIMENOTE} are saved
+when a function is called and restored when control returns to the calling
+environment.
+
+   /**/
+   say address()          >>> REXX
+   say digits()           >>> 9
+   say trace()            >>> N
+   call ChangeSettings
+   say address()          >>> REXX
+   say digits()           >>> 9
+   say trace()            >>> N
+   exit
+
+   ChangeSettings:
+      address FOO
+      numeric digits 12
+      trace r
+      say address()      >>> FOO
+      say digits()       >>> 12
+      say trace()        >>> R
+   return
+
+Even though several settings are changed in the subroutine ChangeSettings,
+the original values of the main section remain unchanged after the control
+returns from the subroutine. Tracing output will be generated only for
+four lines of the subroutine. After the RETURN, tracing will be halted.
+
+         More information: @{" ARexx techniques     " link ARx_Tknq.ag/MAIN}
+
+Next: BUILT-IN FUNCTIONS | Prev: Functions | Contents: Functions
+
+@endnode
+@node BLTFUNC "... Expressions | Functions (2 of 5) | BUILT-IN FUNCTIONS"
+@toc FUNCTION
+@{fg highlight}Built-in functions@{fg text}
+~~~~~~~~~~~~~~~~~~
+Dozens of functions are available to an ARexx program as soon as it runs.
+These are called 'built-in functions'. The @{" Function Reference " link ARX_FUNC.AG/MAIN} section of
+this guide lists and explains each of the built-in functions.
+
+With some significant exceptions (see @{" Compatibility issues " link ARx_Intro.ag/COMPATIBILITY}) the built-in
+functions of ARexx are also available in other implementations of the
+language such the REXX available with the OS/2 operating system. As long
+as only instructions and built-in functions are used, it is possible, with
+some tweaking, to use a REXX program written for another system on the
+Amiga.
+
+Next: LIBRARY FUNCTIONS | Prev: Internal functions | Contents: Functions
+
+@endnode
+@node LIBFUNC "... Expressions | Functions (3 of 5) | LIBRARY FUNCTIONS"
+@toc FUNCTION
+@{fg highlight}Function libraries@{fg text}
+~~~~~~~~~~~~~~~~~~
+Another source of ready-made functions is not as easily portable as
+built-in functions. These are library or host functions that are supplied
+either in libraries stored in the libs: directory or by host programs. To
+access the functions they provide, host programs must be running or
+libraries must be added to the system using the @{" ADDLIB() " link ARx_Func3.ag/ADDLIB()} function or the
+@{" RXLIB " link ARx_Cmd.ag/RXLIB} command utility.
+
+One such set of library functions is contained in @{" rexxsupport.library " link ARx_Func.ag/RXSPTLIB}
+which is included as part of ARexx distributions. Functions from that
+library are also listed and explained in this guide's @{" Function Reference " link ARX_FUNC.AG/MAIN}.
+
+Dozens of function libraries have been written for ARexx -- many of them
+available as public-domain or shareware files. Among the available
+libraries are some that allow an ARexx program to harness the power of the
+Amiga's graphic user interface by using windows with buttons, gadgets, and
+menus. @{b}`rexxarplib.library'@{ub} by Willy Langeveld is the classic of the @{" GUI " link ARexxGuide.guide/GLOSSARY 100}
+function add-ons. Another is @{b}`rx_intui.library'@{ub} by Jeff Glatt. Both allow
+an ARexx programmer to define screens and windows with buttons, text
+gadgets, and other input facilities. Functions from rexxarplib library are
+used in the file @{i}ARx_RarpInfoWin.rexx@{ui} (part of the ARexxGuide distribution
+archive) to define the optional clause information window in the
+@{" ARexxGuide help system " link ARx_Tutor.ag/HELPKEYMACRO}
+
+A full suite of requesters is available in any ARexx program using
+@{b}`rexxreqtools.library'@{ub} by  Rafael D'Halleweyn, a file that is distributed
+as part of, and uses,  Nico François's @{b}ReqTools.library@{ub}. Functions from
+that library are used for the requesters that show glossary entries in the
+@{" RQ " link ARx_Intro.ag/RQ} version of ARexxGuide. The requesters are defined in the file
+@{i}ARx_GlossaryPort.rexx@{ui}, which is included in the rexx directory of the RQ
+archive and in the Extras directory of the standard archive.
+
+A new library first released in January, 1994 can simplify parsing of
+command options. @{b}`RexxDosSupport.library'@{ub} by Hartmut Goebel is a small
+library with powerful functions -- functions that access the operating
+system's parsing routines. Command line arguments can be read using the
+same kind of slash-coded templates used to describe OS commands. (Type
+`LIST ?' on the shell to see the template format.) Functions to set and
+get environmental variables are included in this package, as they are in
+rexxarplib.library. Unlike their REXX counterparts, the pattern-matching
+functions in RexxDosSupport can ignore upper/lowercase distinctions, and
+can use AmigaDOS wildcard characters to match a pattern in a string.
+
+Those add-on functions are not explained in this edition of ARexxGuide,
+but are highly recommended for the programmer who hopes to take full
+advantage of ARexx. They should be available on most networks or BBSes
+that support the Amiga.
+
+   Also see: @{" ARexx Applications List " link ARx_Intro.ag/WHYREXX 51}
+
+Some applications -- notably products from Gold Disk -- use a function
+library rather than the more common command-host to add ARexx support to
+the programs. There are some disadvantages and some significant advantages
+to this method. Unlike @{" commands " link COMMAND}, functions return values directly to the
+ARexx script's environment. That alone makes use of functions more elegant
+than using commands. Unfortunately, the standard methods of addressing
+multiple @{" hosts " link HOST} are not available with this type of interface.
+
+   Also see @{" ADDLIB()       " link ARx_Func3.ag/ADDLIB()}
+
+Next: EXTERNAL FUNCTIONS | Prev: Built-in functions | Contents: Functions
+
+@endnode
+@node EXTFUNC "... Expressions | Functions (4 of 5) | EXTERNAL FUNCTIONS"
+@toc FUNCTION
+@{fg highlight}Functions stored as ARexx files@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+An `external function' is an ARexx script or a program in another language
+that returns a value of some sort and can therefore be called from any
+script as a function. These programs are completely isolated from the
+calling script and can communicate only through the argument string and
+the return value.
+
+To locate an external function, ARexx follows the same @{" search path " link ARx_Cmd.ag/RX 9} used
+to find scripts launched with the @{" RX " link ARx_Cmd.ag/RX} command. The file extension is
+therefore significant. A file named `rexx:Afunc.rexx' or a file named
+`Afunc.rexx' in the current directory can be invoked from a shell-launched
+script with an expression similar to:
+
+      NewValue = Afunc('An argument')
+
+If the function were used in a script launched as a macro, however, it
+would often not be found with this name. The default extension for ARexx
+files is changed in most non-shell environments. Because `.rexx' is no
+longer the default extension, it will not be added to the function name.
+Instead, the application-specific extension would be used. In TurboText,
+for instance, the default extension is `.ttx' so a file named
+`rexx:Afunc.ttx' would be invoked if the assignment above were used in a
+macro started from that text editor. To assure that it will be accessible
+from any environment, a full file name -- including the extension -- can
+be used as a function name. If a file path is used in the function name,
+it must be quoted to avoid misinterpretation of the characters `:' and `/'.
+
+The default extension in the current environment can be retrieved with the
+instruction @{" PARSE SOURCE " link ARx_Instr2.ag/PARSESRC5} which also indicates whether the executing
+script was called as a function or as a command. That can be useful
+information because the arguments passed to a command are treated
+differently than those passed to a function: @{b}Commands receive a single@{ub}
+@{b}argument string in which@{ub} @{" commas " link ARx_Elements.ag/COMMA} @{b}have no special meaning@{ub}. Functions, on
+the other hand, recognize commas within an argument string and will split
+the string at the position of commas into multiple strings assigned to
+sequential @{" argument slots " link FUNCARG}.
+
+Next: ARGUMENTS | Prev: Library functions | Contents: Functions
+
+@endnode
+@node FUNCARG "... Expressions | Functions (5 of 5) | FUNCTION ARGUMENTS"
+@toc FUNCTION
+@next FUNCTION
+@{fg highlight}Function arguments@{fg text}
+~~~~~~~~~~~~~~~~~~
+Although they can be used in a number of different ways, functions often
+act on data supplied by the calling environment and then return a modified
+version of that data. Information is passed to the function through
+"arguments" that must follow a syntax determined by the function being
+called.
+
+Multiple arguments can be sent to a function. A @{" comma " link ARx_Elements.ag/COMMA} is used to
+separate each argument. It is sometimes necessary to include an argument
+while leaving a prior argument slot blank. That can be done by using two
+commas:
+
+   Ports = show('L',,'0a'x)
+
+The second argument is omitted in the example above, but its place is
+indicated by use of a comma.
+
+The syntax of each built-in function is explained in this guide's
+@{" Function reference " link ARX_FUNC.AG/MAIN}. Although functions often include optional arguments
+that may be omitted, an error will result if an argument required by a
+@{" built-in " link BLTFUNC} or @{" library " link LIBFUNC} function is missing:
+
+   +++ @{" Error 17 " link ARx_Error.ag/ERROR_17} in line 1: Wrong number of arguments
+
+Error 17 would, for instance, be generated by `Foo = left(5)' since the
+function requires two arguments.
+
+Although @{" variables " link ARx_Elements2.ag/VARIABLE} in ARexx use a @{" natural typing " link ARx_Elements2.ag/VARTYPE} that does not
+distinguish between types of data, functions often require a certain
+datatype. An error results if a built-in or library function is sent the
+wrong datatype as an argument:
+
+   +++ @{" Error 18 " link ARx_Error.ag/ERROR_18} in line 1: Invalid argument to function
+
+The second argument to @{" LEFT() " link ARx_Func.ag/LEFT()}, for instance, must be an @{" expression " link ARx_Elements2.ag/EXPRESSION} that
+results in a number. If it isn't, error 18 will be generated.
+
+@{" Internal functions " link PROGFUNC} might also require arguments of a certain type,
+determined by the @{" subroutine " link ARexxGuide.guide/GLOSSARY 248} that defines the function. ARexx will not
+generate either of the above errors for an internal function because it
+has no way to know what is required. The program should include code to
+check arguments to assure that they are the proper type of data.
+
+@{" Multiple templates " link ARx_Instr2.ag/PARSETMP7} can be used with the @{" PARSE ARG " link ARx_Instr2.ag/PARSESRC1} instruction to
+retrieve each of the arguments sent to an internal function or the @{" ARG() " link ARx_Func3.ag/ARG()}
+function can be used.
+
+Next: Functions | Prev: External functions | Contents: Functions
+
+@endnode
+
+@node OPERATION "ARexxGuide | Basic Elements | Expressions (5 of 5) | OPERATIONS"
+@toc ARx_Elements2.ag/EXPRESSION
+@next ARx_Elements2.ag/EXPRESSION
+@{fg highlight}Operations@{fg text}
+~~~~~~~~~~
+An expression is often built up from at least two other elements of the
+language or from the results of other subexpressions, with the terms tied
+together by an operator. `3 + 5', for example, is a simple expression
+comprising two constant symbols tied together by the addition operator. It
+gives a result of '8'.
+
+An operator is the glue that binds the terms of an expression together and
+operates on them in some way to produce a (usually different) result.
+
+The operators can be divided into four basic groups:
+      @{" Concatenation              " link ARx_Operator.ag/CONCATENATION}
+      @{" Arithmetic                 " link ARx_Operator.ag/ARITHMETIC}
+      @{" Comparative                " link ARx_Operator.ag/COMPARISON}
+      @{" Logical                    " link ARx_Operator.ag/LOGICAL}
+
+Most of them are @{" dyadic " link ARexxGuide.guide/GLOSSARY 68} operators, which means they are placed between a
+pair of terms. A few prefix operators are also supported. They are placed
+immediately to the left of a term that is thereby modified.
+
+Next: Expressions | Prev: Functions | Contents: Expressions
+
+@endnode
+@node CONDITIONAL  "ARexxGuide | Expressions | NOTE (1 of 1) | CONDITIONALS"
+@toc ARx_Elements2.ag/EXPRESSION
+@next ARx_Elements2.ag/EXPRESSION
+@prev ARx_Elements2.ag/EXPRESSION
+@{fg highlight}Conditional (True/False) expressions@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A conditional is an expression that results in a value of either 1 (true)
+or 0 (false). Conditional expressions (which might also be called `logical
+expressions') and the instructions that use them account for much of the
+apparent intelligence (or lack of it) in a computer program. When used
+with the instructions @{" IF " link ARx_Instr.ag/IF} or @{" SELECT " link ARx_Instr3.ag/SELECT}, conditionals allow different tasks
+to be performed under different conditions. Conditional expressions are
+often used in variations of the @{" DO " link ARx_Instr.ag/DO} instruction to control the number of
+times a section of code is repeated.
+
+The two simplest conditional expressions in ARexx are:
+
+      1
+      0
+
+An instruction like `if 1 then <action>' is valid in ARexx since '1' is
+a valid conditional. Such a statement would be meaningless, though,
+because it would always do the same thing.
+
+When variables are used as simple conditionals, however, even a simple
+conditional like `DoSomething = 1; if DoSomething the <action>' is useful.
+[DoSomething] can be set once and can then control actions in several
+places in the script.
+
+@{" Comparative operations " link ARx_Operator.ag/COMPARISON} are a common form of conditional since they allow
+two values (or two conditions) to be compared and return a value of either
+TRUE or FALSE. The @{" logical operators " link ARx_Operator.ag/LOGICAL} allow for a type of arithmetic with
+TRUE/FALSE values.
+
+ARexx also includes a rich set of functions that can be used directly as
+conditionals:
+
+   /**/
+   pull Input
+   if abbrev(Input, 'Y') then
+      say 'You said "Yes"'
+
+Because it returns a @{" Boolean value " link ARexxGuide.guide/GLOSSARY 19},  @{" ABBREV() " link ARx_Func.ag/ABBREV()} can be used directly in
+any instruction calling for a conditional. The @{" OPEN() " link ARx_Func3.ag/OPEN()} function, which is
+the basis of all @{" file I/O " link ARx_Func3.ag/FILEIOLIST} in ARexx, also returns a TRUE/FALSE value
+indicating the success of the requested operation, making it useful as a
+conditional.
+
+Several other functions, like @{" SHOW() " link ARx_Func2.ag/SHOW()} and @{" DATATYPE() " link ARx_Func3.ag/DATATYPE()} include options
+that make it possible to use them as conditional expressions.
+
+Next, Prev, & Contents: EXPRESSIONS
+
+@endnode
+
+@node ACICMD "ARexxGuide | Expressions | NOTE (1 of 1) | ACCIDENTAL COMMANDS"
+@toc ARx_Elements2.ag/EXPRESSION
+@next ARx_Elements2.ag/EXPRESSION
+@prev ARx_Elements2.ag/EXPRESSION
+@{fg highlight}Avoiding accidental commands@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Expressions are usually linked with other elements of the language to form
+an @{" instruction " link INSTRUCTION} or @{" assignment clause " link ASSIGNMENT} -- a statement that can be
+executed by the ARexx @{" interpreter " link ARexxGuide.guide/GLOSSARY 117}. If an expression is used without
+other language elements, it is treated as a @{" command " link COMMAND} clause. The result
+will be sent to the @{" current host " link DEFHOST} to be run in that environment.
+
+A common error in ARexx is to use an expression (especially a function
+call) without the other elements that would make it a valid instruction or
+assignment, thus turning its result into an unintentional command for the
+host.
+
+The following program fragment would generate an error in AmigaDOS:
+
+         /* Error-generating expression */
+      ADDRESS COMMAND
+      OPEN(TFILE, 't:tempfile', 'W')
+
+AmigaDOS would generate this error:
+
+      Unknown command 1
+
+ARexx itself would probably chime in with this:
+
+        1 *-* OPEN(TFile,'t:tempfile','W');
+      +++ Command returned 20
+
+ARexx opened the file, just as it was expected to do, and the function
+@{" OPEN() " link ARx_Func3.ag/OPEN()} sent back a return value of `1' to indicate the success of the
+operation, but since the expression -- the function call -- was entered by
+itself on a line, ARexx considered it to be a command clause and therefore
+submitted the return value, `1', to AmigaDOS. It is fortunate that
+AmigaDOS does not have a command named `1' because if it did, it would
+have run that command. Instead, AmigaDOS reported the error and sent a
+return code of '20' back to ARexx.
+
+To avoid such errors, expressions must be a part of an instruction or an
+assignment clause. Either of the following alternatives would be
+acceptable:
+
+         /* the expression is used in an assignment clause */
+      foo = OPEN(TFile,'t:tempfile','W');
+         /* the expression is used in an instruction       */
+      if OPEN(TFile,'t:tempfile','W') then;
+         /* ... */
+
+The @{" CALL " link ARx_Instr.ag/CALL} instruction can used when the value returned by a function is
+unimportant (although the return value can still be retrieved in the
+@{" RESULT " link ARx_Elements2.ag/RESULT} variable):
+
+      CALL CLOSE TFile
+
+   Also see @{" Error codes  " link ARx_Error.ag/MAIN}
+
+Next, Prev, and Contents: EXPRESSIONS.
+
+@endnode
+
+@node CLAUSE "ARexxGuide | Basic Elements (3 of 4) | CLAUSES"
+@toc ARx_Elements.ag/MAIN
+@next ARx_Elements.ag/MAIN
+@prev ARx_Elements2.ag/EXPRESSION
+@{fg highlight}Clauses -- the working statements of the language@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+If @{" tokens " link ARx_Elements.ag/TOKEN} are the atoms of ARexx, then clauses form its ever-changing
+table of elements. A clause is the smallest language unit that can be
+executed as a statement.
+
+ARexx recognizes five types of clauses:
+
+      @{" Assignment                 " link ASSIGNMENT}
+      @{" Instruction                " link INSTRUCTION}
+      @{" Command                    " link COMMAND}
+      @{" Label                      " link LABEL}
+      @{" Null                       " link NULL}
+
+Each clause in ARexx ends with the @{" semicolon token " link ARx_Elements.ag/SEMICOLON}, but since ARexx adds
+one automatically at the end of each line and in several other situations,
+it is rarely necessary for the programmer to type the semicolon.
+
+Next: Basic elements | Prev: Expressions | Contents: Basic elements
+
+@endnode
+
+@node ASSIGNMENT "ARexxGuide | Basic Elements | Clauses (1 of 5) | ASSIGNMENT"
+@toc CLAUSE
+@prev CLAUSE
+@{fg highlight}Assignment clause@{fg text}
+~~~~~~~~~~~~~~~~~
+The `=' token does double-duty in ARexx, serving both as a @{" comparative " link ARx_Operator.ag/COMPARISON}
+operator and as the indicator of an assignment clause in which a value is
+assigned to a @{" variable " link ARx_Elements2.ag/VARIABLE}.
+
+An assignment clause takes this form:
+
+               <symbol> = <expression>;
+
+<symbol> can be any of the three types of @{" variable symbols " link ARx_Elements.ag/VARSYMBOL}. It becomes a
+placeholder for the value of <expression>, which may be any type of value
+-- numeric or text, or any combination of the two.
+
+<symbol> can be written in uppercase or lowercase letters or a mixture of
+the two. The mixture can even change within the same program. ARexx always
+translates the symbol into uppercase for its internal symbol table.
+
+      Example:
+            /* When a symbol is uninitialized, its value is its name */
+            /* translated to uppercase                               */
+         say foo                          >>> FOO
+
+            /* Assign a literal string to the variable [foo]         */
+         foo = 'Molloy, your region is vast'
+         say foo                          >>> Molloy, your region is vast
+
+            /* There's no distinction in ARexx between a variable    */
+            /* that represents a numeric value and one that        */
+            /* represents a string                                   */
+         foo = 'Flooey'    /* holds a string value          */
+         say Foo                          >>> Flooey
+         foo = 5           /* now it holds a numeric value  */
+         say FOO + 8                      >>> 13
+
+   Also see: @{" Basic elements: Variables " link ARx_Elements2.ag/VARIABLE}
+
+Next: INSTRUCTIONS | Prev: Clauses | Contents: Clauses
+
+@endnode
+@node INSTRUCTION "ARexxGuide | Basic Elements | Clauses (2 of 5) | INSTRUCTIONS"
+@toc CLAUSE
+@{fg highlight}Instruction clause@{fg text}
+~~~~~~~~~~~~~~~~~~
+Instructions are the basic control mechanism for ARexx scripts. An
+instruction may include several clauses, but always begins with a REXX
+@{" keyword " link ARexxGuide.guide/GLOSSARY 135} which must be the first token in the initial clause. Each
+instruction has a unique form, its syntax, which is explained in a major
+section of this guide: @{" Instruction reference " link ARx_Instr.ag/MAIN}.
+
+Some instructions -- notably @{" DO " link ARx_Instr.ag/DO}, @{" IF " link ARx_Instr.ag/IF}, and @{" SELECT " link ARx_Instr3.ag/SELECT} -- are composed of
+several distinct clauses and work in concert with other matched keywords
+(like @{" END " link ARx_Instr.ag/END}, @{" THEN " link ARx_Instr.ag/THEN}, and @{" WHEN " link ARx_Instr3.ag/WHEN}).
+
+The instruction keyword must be the first symbol in a clause and must be
+entered as a literal symbol since ARexx will not make a substitution for a
+variable that might have the value of a keyword.
+
+The symbols used as keywords in ARexx are not @{" reserved " link ARexxGuide.guide/GLOSSARY 206} except within the
+narrow range of the instruction within which the keyword is used. Although
+the practice will usually lead to unnecessary confusion, it is valid in
+most situations to use keyword names as variables. The following fragment
+will not produce an error:
+
+         /* no error */
+         Now = date()
+         Then = '01 Apr 69'
+         SAY Now '&' Then              >>> 09 May 1993 & 01 Apr 69
+
+The following fragment, however, will produce an error since the keyword
+`then' is reserved within the range of the entire IF instruction:
+
+         /* invalid use of sub-keyword */
+         Now = date()
+         Then = '01 Apr 69'
+         IF Now > Then        +++ @{" Error 41 " link ARx_Error.ag/ERROR_41} in line 4: Invalid expression
+         THEN
+            SAY Now '&' Then
+
+In some of the examples included in this guide, and in the syntax diagrams
+in the reference section, the keyword of an instruction is entered in
+uppercase letters. That is done only for the sake of clarity: A keyword
+may be entered in any case, or in a mixture of upper- and lowercase.
+
+   More information:  @{" Avoiding accidental commands from expressions " link ACICMD}
+
+Next: COMMANDS | Prev: Assignments | Contents: Clauses
+
+@endnode
+
+@node COMMAND "ARexxGuide | Basic Elements | Clauses (3 of 5) | COMMANDS"
+@toc CLAUSE
+@next LABEL
+@{fg highlight}Command clause@{fg text}
+~~~~~~~~~~~~~~
+Because the language can be extended with command clauses, ARexx is able
+to serve as the macro language for different programs or issue AmigaDOS
+commands. Because commands within a single ARexx script can be directed to
+different hosts, several programs can interact with one another through
+ARexx.
+
+A command is defined in ARexx not by what it is, but by what it is not: A
+command is an @{" expression " link ARx_Elements2.ag/EXPRESSION} that does not meet any of the other rules for
+clauses. It is, in other words, a statement that isn't an @{" assignment " link ASSIGNMENT},
+isn't an @{" instruction " link INSTRUCTION}, isn't a @{" label " link LABEL}, and isn't a @{" null " link NULL} clause.
+
+The negative definition is necessary because ARexx makes no attempt to
+determine whether the expression is a valid command for the environment
+that will receive it. ARexx has no way to know which commands will be
+understood and which ones will generate an error, so it will submit to the
+current host anything it can't otherwise make sense of.
+
+               More information: @{" Avoiding accidental commands      " link ACICMD}
+
+The outside environment to which commands are submitted is called the
+`host'. It can be changed with the @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction. The following
+nodes explain hosts and commands in more detail:
+
+   @{" Command host: what is it?       " link HOST}
+   @{" The default host                " link DEFHOST}
+   @{" Determining the initial host    " link INITHOST}
+   @{" Entering commands in a script   " link CMDSTRING}
+   @{" Example script                  " link TTXCOMMAND}
+
+When a command is issued in a script, ARexx will wait until the command
+sets its @{" return code " link ARx_Elements2.ag/RC} before execution continues.
+
+   Also see: @{" Keyboard macros       " link ARx_Tutor.ag/MCRINTRO} a tutorial
+
+Next: LABELS | Prev: Instructions | Contents: Clauses
+
+@endnode
+@node HOST "ARexxGuide | Basic Elements | Clauses | Commands (1 of 5) | HOST"
+@toc COMMAND
+@prev COMMAND
+@{fg highlight}Command host@{fg text}
+~~~~~~~~~~~~
+When the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} encounters a command, it is sent as a text string
+to an external environment, which may then do something with the string.
+The environment that receives the command is called the host.
+
+The host might be AmigaDOS, a text editor, a drawing program, an image
+processing program, a page-layout program, a database manager, a terminal
+program. It can be nearly any application that runs on the Amiga.
+
+ARexx itself cannot force a program to accept commands and cannot
+determine the nature of the commands that will be acceptable to the host.
+The developer of an application must open the public message port to which
+ARexx will send commands and must make some provisions in the application
+to deal with the commands sent by ARexx.
+
+The host is referred to within ARexx by the name of the public message
+port to which commands will be sent. A command `rx "say show('P',,'0a'x)'
+can be used from a CLI to display a list of available message ports.
+
+Message ports are components of the operating system that are widely used
+for other purposes, so many of the listed ports will not be valid hosts
+for ARexx commands. (Sending a command to a port that isn't meant to
+receive it will sometimes cause a system crash.)
+
+The documentation for each program that serves as an ARexx command host
+should include information about naming conventions for the port or ports
+opened by the program as well as information about the commands that can
+be sent to the port.
+
+The @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction changes the host to which commands will be sent.
+The @{" ADDRESS() " link ARx_Func3.ag/ADDRESS()} function returns the name of the host that is the current
+target of commands. Commands sent to hosts should return a value of some
+sort to ARexx. The interpreter will assign values to either or both of two
+special_variables:
+
+   @{" RC " link ARx_Elements2.ag/RC} is assigned a numeric code indicating success or failure of a
+   command.
+
+   @{" RESULT " link ARx_Elements2.ag/RESULT} is assigned a string or numeric value returned by the
+   external environment. This value is available, however, only when
+   the instruction @{" OPTIONS RESULTS " link ARx_Instr2.ag/OPTIONS 8} is issued prior to the command.
+
+               Technique note: @{" Read result of AmigaDOS command     " link ARx_Tknq.ag/READCMD}
+
+   Compatibility_issues:
+      The ANSI committee that is working on a formal definition of the
+      REXX language, avoids making extensions to the language, but has
+      made an exception in the case of ADDRESS.
+
+      The committee will probably introduce new features to the ADDRESS
+      instruction that will make it easier to retrieve the output of
+      commands.
+
+      The extensions will allow the output of a command to be redirected
+      either to a file stream or to a stem variable. The format would be
+      something like this:
+
+   ADDRESS <environment> ['<command>'] WITH OUTPUT STREAM PF.OUTPUT
+
+
+   ADDRESS <environment> ['<command>'] WITH OUTPUT STEM PF
+
+      If <command> is not included, the redirection would be persistent
+      for all commands issued to the new environment.
+
+Next: DEFAULT HOST | Prev: COMMAND | Contents: COMMAND
+
+@endnode
+@node DEFHOST "ARexxGuide | Basic Elements | Clauses | Commands (2 of 5) | DEFAULT HOST"
+@toc COMMAND
+@{fg highlight}A script's default host@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~
+Each ARexx script inherits a default host to which commands will be sent
+until the host is changed with the @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction. When a script is
+launched with the @{" RX " link ARx_Cmd.ag/RX} command utility, the initial address for commands
+is a port called REXX. Most application programs that accept ARexx macros
+will instruct ARexx to set the initial host to the  address of the program
+that launched the macro. A macro started from TurboText, for instance,
+might have an initial host address of 'TURBOTEXT1'.
+
+Toggling between hosts
+~~~~~~~~~~~~~~~~~~~~~~
+ARexx maintains two addresses: the current host and the previous host.
+When a script begins, the current host is the same as the default host.
+The previous host when a program begins is usually COMMAND -- the
+operating system host that will execute any AmigaDOS command. When the
+host is changed with the @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction, the environment that
+received commands before the instruction was issued becomes the previous
+host. The @{" toggle form " link ARx_Instr.ag/ADDRESS 23} of the ADDRESS instruction will shift between the
+current and previous hosts.
+
+The REXX host understands one type of command: it will launch other ARexx
+programs. When a command is sent to the REXX port, the ARexx resident
+process handles it by looking for a program that matches the name of the
+first word in the command. ARexx looks for the program in the current
+directory and then in the REXX: directory. In each directory, it looks
+first for the exact name as entered and then for a the specified name with
+the extension '.rexx' added to the name. The script that sent the command
+will pause until the second script is finished. Other text included with
+the command is treated as a command-line argument and can be retrieved
+with the @{" ARG " link ARx_Instr.ag/ARG} instruction or @{" ARG() " link ARx_Func3.ag/ARG()} function in the called script.
+
+AREXX port
+~~~~~~~~~~
+A second port, called `AREXX', is available to ARexx scripts. It acts like
+the REXX port except that it will launch ARexx scripts without causing the
+calling script to pause. This is called `asynchronous' operation and is
+particularly useful when a script will interact with the calling script
+through message ports established with the @{" OPENPORT() " link ARx_Func4.ag/OPENPORT()} function.
+
+Next: INITIAL HOST | Prev: HOST | Contents: COMMAND
+
+@endnode
+
+@node INITHOST "ARexxGuide | Basic Elements | Clauses | Commands (3 of 5) | INITIAL HOST"
+@toc COMMAND
+@{fg highlight}Determining the initial host@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The initial host for a program can be determined in either of two ways.
+Since the @{" ADDRESS() " link ARx_Func3.ag/ADDRESS()} function returns the name of the current host, it
+can be used at the beginning of a script to record the initial environment:
+
+      PortOfCall = address()
+
+The instruction @{" PARSE SOURCE SrcStr " link ARx_Instr2.ag/PARSESRC5} will record in the variable [SrcStr]
+information about the way the current script was called. The last word in
+the string is the name of the initial host for the program. It can be
+retrieved with these instructions:
+
+      PARSE SOURCE SrcStr
+      PortOfCall = word(SrcStr, words(SrcStr))
+
+The filename used to invoke the current script is included in the string
+provided by PARSE SOURCE. Since the name might include embedded spaces,
+the @{" WORD() " link ARx_Func2.ag/WORD()} function, which won't be fooled by extra words in the string,
+will reliably grab the host name from the end of the source string.
+
+Some applications programs include a command that will return the names of
+ports opened by that program. In TurboText, for instance, the command
+'GetPort <Document Name>' will send back as a @{" RESULT " link ARx_Elements2.ag/RESULT} the name of the
+port for the window that contains <Document Name>.
+
+Next: COMMAND STRINGS | Prev: Default host | Contents: Command
+
+@endnode
+
+@node CMDSTRING "ARexxGuide | Basic Elements | Clauses | Commands (4 of 5) | COMMAND STRINGS"
+@toc COMMAND
+@{fg highlight}Entering a command in a script@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Commands are entered as @{" strings " link ARx_Elements2.ag/STRINGEXPR} that are sent to the host. The string
+may be made up of any @{" expressions " link ARx_Elements2.ag/EXPRESSION}, which are evaluated by the
+@{" interpreter " link ARexxGuide.guide/GLOSSARY 117} before the command is sent to the host. Any part of the
+command that is not meant to be evaluated should be enclosed in quotation
+marks. The punctuation is not strictly necessary (most commands will be
+sent to the host even if they aren't quoted), but is highly recommended
+for these reasons:
+
+   -- To avoid conflict between an ARexx keyword and the same word used
+      as a command to the external environment.
+
+   -- To prevent ARexx from misinterpreting characters like the ':' and
+      '/' used in Amiga file names.
+
+   -- To speed up execution of the script since ARexx will not attempt to
+      evaluate the quoted expression.
+
+An example of a keyword conflict is provided by versions of the Amiga OS
+prior to 2.1 which included a command 'SAY' that caused the computer to
+speak a phrase. In ARexx, 'SAY' is also a keyword that causes a string to
+be output on the shell. How can a program distinguish between the two
+distinct meanings? Quoting the command makes it apparent that it is a
+command:
+
+      /**/
+         ADDRESS COMMAND
+
+            /* ARexx recognizes SAY as a keyword so treats this as      **
+            ** an instruction                                           */
+         SAY 'Molloy, your region is vast.'
+
+            /* Because SAY is quoted, it the whole line becomes an      **
+            ** expression (since a string token is considered an        **
+            ** expression). ARexx won't interpret such an expression as **
+            ** a possible instruction and will therefore send the       **
+            ** entire string to the @{" current host " link DEFHOST}, AmigaDOS, which     **
+            ** will speak the phrase.                                   */
+         'say "Molloy, your region is vast"'
+
+Next: EXAMPLE | Prev: Initial host | Contents: Command
+
+@endnode
+
+@node TTXCOMMAND "ARexxGuide | Basic Elements | Clauses | Commands (5 of 5) | EXAMPLE"
+@toc COMMAND
+@next COMMAND
+@{fg highlight}A macro: Using commands@{fg text}
+~~~~~~~~~~~~~~~~~~~~~~~
+The following macro program for the TurboText text editor provides an
+example of how commands work. Notice that the assignment clauses and
+@{" IF/THEN " link ARx_Instr.ag/IF} control structures are pure ARexx. A few ARexx functions --
+@{" ADDRESS() " link ARx_Func3.ag/ADDRESS()}, @{" GETCLIP() " link ARx_Func3.ag/GETCLIP()}, and @{" SETCLIP() " link ARx_Func3.ag/SETCLIP()} -- are used as well. Statements
+like 'RequestBool' and 'SetBookmark' are unfamiliar, though, because they
+are TurboText commands rather than ARexx instructions.
+
+      /* $VER: 1.1 SetBkMrk.TTX  (12.12.91; 05.18.93)  */
+      /** by Robin Evans
+       ** Sets the next available Bookmark to the current location.
+       ** Indicates bookmark number in title bar
+       **/
+      options results  /* necessary to get info back from TTX */
+      PoC = address()
+      LastMark = getclip(Poc'CurMark')
+      if LastMark == '' then
+         LastMark = 0
+      else
+      do
+         if LastMark = 10 then
+         do
+            'RequestBool "All bookmarks used." "      Replace Bookmark 1?"'
+            if result == 'NO' then exit
+            else LastMark = 0
+         end
+      end
+      CurMark = LastMark + 1
+      call setclip(PoC'CurMark', CurMark)
+      'SetBookmark' CurMark
+      'SetStatusBar Bookmark' CurMark 'set.'
+
+This little program was made to be run from within TurboText as a macro.
+An @{" ADDRESS " link ARx_Instr.ag/ADDRESS} instruction is not used because the default host will be the
+TurboText task that called the macro. All of the commands will be sent to
+that task.
+
+Next: Command | Prev: Command strings | Contents: Command
+
+@endnode
+
+@node LABEL "ARexxGuide | Basic Elements | Clauses (4 of 5) | LABELS"
+@toc CLAUSE
+@prev COMMAND
+@{fg highlight}Label clause@{fg text}
+~~~~~~~~~~~~
+A @{" simple symbol " link ARx_Elements.ag/VARSYMBOL} followed by a colon `:' creates a label that begins the
+definition of a @{" subroutine " link ARexxGuide.guide/GLOSSARY 248}. The code following the label can then become
+the target of @{" CALL " link ARx_Instr.ag/CALL} or @{" SIGNAL " link ARx_Instr3.ag/SIGNAL} instructions. If they return a value they
+can be used as @{" internal functions " link PROGFUNC}.
+
+Label clauses can be stacked to give the same section of code multiple
+names. The following construction is valid:
+
+      Syntax:
+      Error:
+      Novalue:
+      Emergency:
+         <program code>
+
+Because of the stacked labels, the same section of code would be invoked
+by each of the following instructions:
+
+      SIGNAL on syntax
+      SIGNAL on error
+      SIGNAL on novalue
+      CALL Emergency
+
+ARexx will supply an @{" implied semicolon " link ARx_Elements.ag/SEMICOLON} after a label, so the symbol and
+its colon will be considered a clause even if something else follows on
+the same line, as often happens when @{" PROCEDURE " link ARx_Instr3.ag/PROCEDURE} and @{" EXPOSE " link ARx_Instr3.ag/EXPOSE} are used
+with a subroutine. Although those keywords could be used on a separate
+line, they are often included on the same line as the label in this manner:
+
+      MakeWidget: PROCEDURE EXPOSE Foo
+
+The implied semicolon makes that a valid construction.
+
+If a label clause is encountered in the normal flow of a program (that is,
+outside of the shift caused by a SIGNAL or CALL instruction or by a
+function call), then the label clause will be ignored and the program will
+continue with the first clause following the label. @{" (PROCEDURE " link ARx_Instr3.ag/PROCEDURE} cannot be
+used after such a label, however.) If an @{" EXIT " link ARx_Instr.ag/EXIT} or @{" RETURN " link ARx_Instr3.ag/RETURN} instruction is
+not placed in the flow prior to the area where subroutines are defined,
+then the program will continue through and try to execute the subroutine
+statements.
+
+Although it would be considered bad form in many circumstances, it is
+possible to use @{" CALL " link ARx_Instr.ag/CALL} or -- more often -- @{" SIGNAL " link ARx_Instr3.ag/SIGNAL} to direct program flow
+back to an earlier point in a program by placing a label just prior to
+that point. This technique provides one of the only ways to recover from
+an error condition that has been trapped by a SIGNAL instruction, but
+should be unnecessary under normal conditions since the various
+@{" control structures " link ARexxGuide.guide/GLOSSARY 59} available in ARexx usually offer a better way to
+control the flow of a program.
+
+Next: NULL clauses | Prev: Commands | Contents: Clauses
+
+@endnode
+
+@node NULL "ARexxGuide | Basic Elements | Clauses (5 of 5) | NULL clauses"
+@toc CLAUSE
+@next CLAUSE
+@{fg highlight}Null clause@{fg text}
+~~~~~~~~~~~
+Null clauses are program elements that don't do anything. The ARexx
+programmer usually doesn't need to know that they are specifically defined
+in the language, but the @{" interpreter " link ARexxGuide.guide/GLOSSARY 117} must pay attention to them so that
+they can be removed from the program before it is executed.
+
+Null clauses are blank lines, comment tokens, or lines on which the only
+character used is the semicolon. ARexx ignores these clauses except to
+trace the beginning of a comment to its closing `*/' characters.
+
+Because it recognizes them as an element of the language, ARexx allows and
+encourages the use of blank lines to enhance the readability of program
+code. Similarly, the language ignores the blank characters (tabs or
+spaces) that precede a clause so that code may be indented to make it
+easier to follow the flow of a program.
+
+A null clause cannot, however, be used in place of an expression. That
+means that it is not enough to use the following construction that is
+common in C:
+
+         If <condition>;
+            then <instruction>;
+         else;
+            ;
+
+The final semicolon is ignored and will not be interpreted (as it would be
+in C) to mean that no operation should be performed when the ELSE
+condition is met. Instead, ARexx would bind the following clause to the
+@{" ELSE " link ARx_Instr.ag/ELSE} keyword. The @{" NOP " link ARx_Instr.ag/NOP} keyword is provided for instances when it is
+necessary to state explicitly that no operation is to be performed.
+
+Next: Clauses | Prev: Labels | Contents: Clauses
+
+@endnode

@@ -1,0 +1,25 @@
+Dies ist die UDO-Shell fÅr GEM, Version 0.46
+
+Die Dateien werden durch GEM-Setup automatisch installiert.
+
+Zur Registrierung senden Sie mir bitte folgende Angaben:
+
+Vorname Name
+Strasse Nummer
+PLZ Ort
+
+Meine E-Mail Adresse: norbert.hanz@cityweb.de
+
+--------------------------------------------------------------------
+This is the UDO-Shell for GEM, version 0.46
+
+The files will be installed automatically by GEM-Setup. Please
+choos your language (English or French).
+
+For registration please send me:
+
+Given Names, Surname
+Street, Number
+Postal Number, Place
+
+My email adress: norbert.hanz@cityweb.de

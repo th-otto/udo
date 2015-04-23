@@ -1,0 +1,26 @@
+# [Format-Datei]
+Amiga Guide;--amg;amiga;amg;a;amg
+Apple QuickView;--quickview;quickvw;rtf;q;aqv
+ASCII;--asc;ascii;txt;a;asc
+C-Source;--c;c;c;c;src
+David's Readme Compiler;--drc;drc;drc;d;drc
+GNU-Texinfo;--info;texinfo;texi;i;info
+Hypertext Markup Language;--html;html;html;h;html
+HTML-Help;--htmlhelp;htmlhelp;html;h;hh
+OS/2 IPF;--ipf;ipf;ipf;i;ipf
+LaTeX;--tex;latex;tex;;t;tex
+Linuxdoc-SGML;--linuxdoc;sgml;sgml;x;ldoc
+LyX;--lyx;lyx;lyx;l;lyx
+Manualpage;--man;manual;man;m;man
+NROFF;--nroff;nroff;1;1;?
+Pascal-Source;--pascal;pascal;pas;p;pas
+PDF-LaTeX;--pdflatex;pdflatex;tex;f;pdf
+Postscript;--ps;ps;ps;p;ps
+Pure C Help;--pchelp;purec;scr;p;pch
+Rich Text Format;--rtf;rtf;rtf;r;rtf
+ST-Guide;--stg;stguide;stg;s;stg
+Turbo-Vision Help;--vision;tvhelp;txt;v;tvh
+UDO-Code;--udo;udocode;u;u;?
+WinHelp;--win;winhelp;rtf;w;win
+WinHelp 4;--win4;winhelp4;rtf;4;wh4
+Extensible Markup Language;--xml;xml;xml;x;xml
