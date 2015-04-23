@@ -12255,6 +12255,7 @@ LOCAL void set_format_flags(void)
 *
 ******************************************|************************************/
 
+#if 0
 LOCAL NOINLINE void show_udo_intro(void)
 {
    char sInfMsg[256];
@@ -12267,6 +12268,7 @@ LOCAL NOINLINE void show_udo_intro(void)
    show_status_loginfo(sInfMsg);
    show_status_loginfo("");
 }
+#endif
 
 
 static _BOOL udo_cleanup(void)
@@ -12542,8 +12544,6 @@ GLOBAL _BOOL udo(char *datei)
    b1stQuote = FALSE;
    b1stApost = FALSE;
    bDocUniversalCharsetOn = FALSE;
-
-   show_udo_intro();
 
    logln_warnings_errors();
 
