@@ -11201,7 +11201,6 @@ LOCAL void pass2_check_environments(char *zeile)
             pflag[iUdopass].env = ENV_TABLE;
             if (token_counter > 0)
                token_output(TRUE, TRUE);
-            table_reset();
             table_get_header(zeile);
             zeile[0] = EOS;
          }
