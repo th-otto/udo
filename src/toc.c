@@ -1495,7 +1495,7 @@ GLOBAL _BOOL check_output_raw_header(void)
 {
    if (!toc_table[p2_toc_counter]->ignore_raw_header)
    {
-      if (toc_table[p2_toc_counter]->raw_header_filename != 9)
+      if (toc_table[p2_toc_counter]->raw_header_filename != 0)
       {
          return output_raw_file(file_lookup(toc_table[p2_toc_counter]->raw_header_filename));
       }
@@ -3184,6 +3184,7 @@ LOCAL _BOOL html_new_file(void)
    output_html_meta(TRUE);
    outln("</head>");
    
+   outln("html_new_file"); /* YYY */
    if (toc_table[p2_toc_counter] != NULL)
    {
       out("<body");
@@ -3716,6 +3717,7 @@ LOCAL void html_hb_line(_BOOL head)
    
    ti = p2_toc_counter;
    
+   outln("html_hb_line"); /* YYY */
    if (ti != 0)
    {
       for (level = TOC_MAXDEPTH - 1; level >= TOC_NODE2; level--)
@@ -4670,6 +4672,7 @@ GLOBAL void html_headline(void)
 {
    char bgCmd[512];
    
+   outln("html_headline"); /* YYY */
    if (html_modern_layout)
    {
       bgCmd[0] = EOS;
