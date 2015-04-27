@@ -20,6 +20,7 @@ depcomp
 install-sh
 missing
 test-driver
+compile
 intltool-extract
 intltool-merge
 intltool-update
@@ -46,6 +47,7 @@ m4/silent.m4
 m4/strip.m4
 m4/substnot.m4
 m4/tar.m4
+m4/prog-cc-c-o.m4
 *.o
 *.a
 src/udo
