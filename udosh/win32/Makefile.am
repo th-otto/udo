@@ -1,4 +1,4 @@
-if OS_WIN32
+if WITH_GUI_WIN32
 bin_PROGRAMS = udosh
 endif
 
