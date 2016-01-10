@@ -3,6 +3,9 @@ Makefile
 Makefile.in
 po/POTFILES
 tools/hypview/po/POTFILES
+udosh/po/POTFILES
+udosh/gtk/Manual/en
+udosh/gtk/Manual/de
 stamp*
 aclocal.m4
 config.h
@@ -64,6 +67,7 @@ tools/hypview/hyp/refcheck
 tools/hypview/hyp/reflink
 tools/hypview/hyp/stool
 tools/hypview/hyp/tmp
+tools/hypview/gtk/hypview
 tools/helpdeco/helpdeco
 tools/helpdeco/splitmrb
 tools/helpdeco/zapres

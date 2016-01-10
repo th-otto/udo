@@ -1,5 +1,10 @@
 /* src/config_h.in.  Generated from configure.in by autoheader.  */
 
+
+#ifndef __AUTOCONFIG_H__
+#define __AUTOCONFIG_H__
+
+
 /* The version of ATK */
 #undef ATK_VERSION_FROM_CONFIGURE
 
@@ -39,8 +44,7 @@
 /* Define to 1 if you have the 'fdopen' function. */
 #undef HAVE_FDOPEN
 
-/* Define this if you have the GDK_Pixbuf library installed. Some of the demos
-   can make use of this if it is available. */
+/* Define this if you have the GDK_Pixbuf library installed. */
 #undef HAVE_GDK_PIXBUF
 
 /* Define to 1 if you have the 'getcwd' function. */
@@ -264,3 +268,7 @@
 
 /* Define to empty if `const' does not conform to ANSI C. */
 #undef const
+
+
+#endif /* __AUTOCONFIG_H__ */
+

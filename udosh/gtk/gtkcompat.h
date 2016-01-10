@@ -44,8 +44,6 @@
 #endif
 
 #if GTK_CHECK_VERSION(2, 90, 6)
-#include "gtktooltips.h"
-#include "gtkoptionmenu.h"
 
 #define gtk_menu_shell_get_children(shell) ((shell)->GSEAL(children))
 #define gtk_menu_shell_get_active(shell) ((shell)->GSEAL(active))
