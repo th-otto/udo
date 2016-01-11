@@ -61,6 +61,7 @@ tools/hypview/hyp/hcp
 tools/hypview/hyp/*-hcp
 tools/hypview/hyp/hypfind
 tools/hypview/hyp/icn2img
+tools/hypview/hyp/icn2ico
 tools/hypview/hyp/img2bmp
 tools/hypview/hyp/picinfo
 tools/hypview/hyp/refcheck
