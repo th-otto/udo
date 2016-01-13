@@ -977,6 +977,7 @@ AC_OUTPUT([
 	tools/helpdeco/Makefile
 	tools/hypview/Makefile
 	tools/hypview/pic/Makefile
+	tools/hypview/icons/Makefile
 	tools/hypview/hyp/Makefile
 	tools/hypview/gtk/Makefile
 	tools/hypview/tos/Makefile

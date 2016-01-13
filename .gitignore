@@ -59,6 +59,8 @@ tools/hypview/hyp/bmp2img
 tools/hypview/hyp/gif2bmp
 tools/hypview/hyp/hcp
 tools/hypview/hyp/*-hcp
+tools/hypview/hyp/*-stool
+tools/hypview/hyp/*-hypfind
 tools/hypview/hyp/hypfind
 tools/hypview/hyp/icn2img
 tools/hypview/hyp/icn2ico
