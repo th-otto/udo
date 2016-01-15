@@ -13,7 +13,11 @@ EXTRA_DIST = \
 	menu.h     menu.ico \
 	history.h  history.ico \
 	next.h     next.ico \
+	nextphys.h nextphys.ico \
 	previous.h previous.ico \
+	prevphys.h prevphys.ico \
+	first.h    first.ico \
+	last.h     last.ico \
 	referenc.h referenc.ico \
 	save.h     save.ico \
 	$(empty)
@@ -31,7 +35,11 @@ icons: \
 	$(srcdir)/menu.h \
 	$(srcdir)/history.h \
 	$(srcdir)/next.h \
+	$(srcdir)/nextphys.h \
 	$(srcdir)/previous.h \
+	$(srcdir)/prevphys.h \
+	$(srcdir)/first.h \
+	$(srcdir)/last.h \
 	$(srcdir)/referenc.h \
 	$(srcdir)/save.h \
 	$(empty)
@@ -74,8 +82,20 @@ $(srcdir)/history.h: $(srcdir)/history.ico
 $(srcdir)/next.h: $(srcdir)/next.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=next_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
+$(srcdir)/nextphys.h: $(srcdir)/nextphys.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=nextphys_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+
 $(srcdir)/previous.h: $(srcdir)/previous.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=previous_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+
+$(srcdir)/prevphys.h: $(srcdir)/prevphys.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=prevphys_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+
+$(srcdir)/first.h: $(srcdir)/first.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=first_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+
+$(srcdir)/last.h: $(srcdir)/last.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=last_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
 $(srcdir)/referenc.h: $(srcdir)/referenc.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=reference_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }

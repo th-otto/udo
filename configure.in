@@ -644,7 +644,7 @@ ac_atk_version="unknown"
 
 if test "$with_gui" = gtk2 -o "$with_gui" = gtk3 -o "$with_gui" = auto; then
   ok="yes"
-  gtk2_min_version="2.6.0"
+  gtk2_min_version="2.16.0"
   pkgs=''
   pkg_check_version         gmodule-2.0  2.0.0
   pkg_check_version         gthread-2.0  2.0.0
