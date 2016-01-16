@@ -260,6 +260,15 @@
 /* Version number of package */
 #undef VERSION
 
+/* define if GEM GUI should be used */
+#undef WITH_GUI_GEM
+
+/* define if GTK GUI should be used */
+#undef WITH_GUI_GTK
+
+/* define if Win32 GUI should be used */
+#undef WITH_GUI_WIN32
+
 /* use iso-latin1 character set on HPUX */
 #undef __HPUX_ISO__
 
