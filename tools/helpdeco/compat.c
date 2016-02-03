@@ -79,8 +79,8 @@ void my_makepath(char *path, const char *drive, const char *dir, const char *fil
 
 int my_memcmpi(const void *s1, const void *s2, size_t len)
 {
-	char *p1 = strdup(s1);
-	char *p2 = strdup(s2);
+	char *p1 = strdup((const char *)s1);
+	char *p2 = strdup((const char *)s2);
 	size_t i;
 
 	for (i = 0; i < len; i++)
