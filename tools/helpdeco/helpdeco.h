@@ -50,7 +50,11 @@ typedef struct { char a,b,c; } align;
 #define SIZEOF_LONG  4
 
 
-typedef enum { FALSE, TRUE } BOOL;
+typedef int BOOL;
+#undef FALSE
+#undef TRUE
+#define FALSE 0
+#define TRUE 1
 
 typedef struct               /* structure at beginning of help file */
 {
@@ -588,10 +592,11 @@ typedef struct placerec       /* internal use to store external references */
    char topicname[1];
 } PLACEREC;
 
+enum rectype { TOPIC, CONTEXT };
 typedef struct checkrec       /* internal use to store external references */
 {
     struct checkrec *next;
-    enum { TOPIC, CONTEXT } type;
+    enum rectype type;
     uint32_t hash;
     char *id;
     PLACEREC *here;

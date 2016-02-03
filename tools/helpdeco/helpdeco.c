@@ -368,7 +368,7 @@ static void AddTopic(const char *TopicName, BOOL derived)	/* adds a known topic 
 	}
 	/* %100 to decrease memory fragmentation */
 	if (hashrecs % 100 == 0)
-		hashrec = my_realloc(hashrec, (hashrecs + 100) * sizeof(HASHREC));
+		hashrec = (HASHREC *)my_realloc(hashrec, (hashrecs + 100) * sizeof(HASHREC));
 	if (i < hashrecs)
 		memmove(hashrec + i + 1, hashrec + i, sizeof(HASHREC) * (hashrecs - i));
 	hashrec[i].name = my_strdup(TopicName);
@@ -656,7 +656,7 @@ static void fetchtopiclink(TOPICLINK *link, const unsigned char *data)
 
 static void fetch_topicheader(TOPICHEADER *hdr, const void *ptr)
 {
-	const unsigned char *data = ptr;
+	const unsigned char *data = (const unsigned char *)ptr;
 	
 	hdr->BlockSize = fetchlong(data);
 	hdr->BrowseBck = fetchlong(data + 4);
@@ -670,7 +670,7 @@ static void fetch_topicheader(TOPICHEADER *hdr, const void *ptr)
 
 static void fetch_topicheader30(TOPICHEADER30 *hdr, const void *ptr)
 {
-	const unsigned char *data = ptr;
+	const unsigned char *data = (const unsigned char *)ptr;
 	
 	hdr->BlockSize = fetchlong(data);
 	hdr->PrevTopicNum = fetchword(data + 4);
@@ -733,7 +733,7 @@ static void SysLoad(FILE *HelpFile)
 					SECWINDOW win;
 					
 					fetchwindow(&win, SysRec->Data);
-					windowname = my_realloc(windowname, (windownames + 1) * sizeof(char *));
+					windowname = (char **)my_realloc(windowname, (windownames + 1) * sizeof(char *));
 					windowname[windownames] = NULL;
 					if (win.Flags & WSYSFLAG_NAME)
 					{
@@ -855,7 +855,7 @@ static int filenamecmp(const char *a, const char *b)
 
 
 /* store external reference in list, checked later */
-static void StoreReference(const char *filename, int type, char *id, uint32_t hash)
+static void StoreReference(const char *filename, enum rectype type, char *id, uint32_t hash)
 {
 	CHECKREC *ptr;
 	FILEREF *ref;
@@ -868,7 +868,7 @@ static void StoreReference(const char *filename, int type, char *id, uint32_t ha
 	}
 	if (!ref)
 	{
-		ref = my_malloc(sizeof(FILEREF) + strlen(filename));
+		ref = (FILEREF *)my_malloc(sizeof(FILEREF) + strlen(filename));
 		strcpy(ref->filename, filename);
 		ref->check = NULL;
 		ref->next = external;
@@ -876,12 +876,12 @@ static void StoreReference(const char *filename, int type, char *id, uint32_t ha
 	}
 	for (ptr = ref->check; ptr; ptr = ptr->next)
 	{
-		if ((int) ptr->type == type && ptr->hash == hash)
+		if (ptr->type == type && ptr->hash == hash)
 			break;
 	}
 	if (!ptr)
 	{
-		ptr = my_malloc(sizeof(CHECKREC));
+		ptr = (CHECKREC *)my_malloc(sizeof(CHECKREC));
 		ptr->type = type;
 		ptr->hash = hash;
 		ptr->id = my_strdup(id);
@@ -891,7 +891,7 @@ static void StoreReference(const char *filename, int type, char *id, uint32_t ha
 	}
 	if (listtopic && TopicTitle[0])
 	{
-		place = my_malloc(sizeof(PLACEREC) + strlen(TopicTitle));
+		place = (PLACEREC *)my_malloc(sizeof(PLACEREC) + strlen(TopicTitle));
 		strcpy(place->topicname, TopicTitle);
 		place->next = ptr->here;
 		ptr->here = place;
@@ -1569,7 +1569,7 @@ static int ExtractBitmap(char *szFilename, MFILE *f)
 
 				hotspots = GetWord(f);
 				MacroDataSize = GetDWord(f);
-				hotspot = my_malloc(hotspots * sizeof(HOTSPOT));
+				hotspot = (HOTSPOT *)my_malloc(hotspots * sizeof(HOTSPOT));
 				for (n = 0; n < hotspots; n++)
 					read_hotspot(f, hotspot + n);
 				if (checkexternal)
@@ -1740,7 +1740,7 @@ static void ExportBitmaps(FILE *HelpFile)		/* export all bitmaps */
 						num = atoi(FileName + (FileName[0] == '|') + 2);
 						if (num >= extensions)
 						{
-							extension = my_realloc(extension, (num + 1) * sizeof(char));
+							extension = (char *)my_realloc(extension, (num + 1) * sizeof(char));
 							while (extensions <= num)
 								extension[extensions++] = 0;
 						}
@@ -1872,7 +1872,7 @@ static void SysList(FILE *HelpFile, FILE *hpj, char *IconFileName)
 						fprintf(hpj, "TITLE=%s\n", SysRec->Data);
 					break;
 				case 0x0002:
-					ptr = memchr(SysRec->Data, '\r', SysRec->DataSize);
+					ptr = (char *)memchr(SysRec->Data, '\r', SysRec->DataSize);
 					if (ptr)
 						strcpy(ptr, "%date");
 					if (SysRec->Data[0])
@@ -2050,8 +2050,7 @@ static void SysList(FILE *HelpFile, FILE *hpj, char *IconFileName)
 											}
 											if (n == stopwordfiles)
 											{
-												stopwordfilename =
-													my_realloc(stopwordfilename, (stopwordfiles + 1) * sizeof(char *));
+												stopwordfilename = (char **)my_realloc(stopwordfilename, (stopwordfiles + 1) * sizeof(char *));
 												stopwordfilename[stopwordfiles++] = my_strdup(ptr);
 												f = my_fopen(ptr + 1, "wt");
 												if (f)
@@ -2082,14 +2081,14 @@ static void SysList(FILE *HelpFile, FILE *hpj, char *IconFileName)
 			}
 			if ((groups || multi) && (browsenums > 1))
 			{
-				group = my_malloc(groups * sizeof(GROUP));
+				group = (GROUP *)my_malloc(groups * sizeof(GROUP));
 				fputs("[GROUPS]\n", hpj);
 				i = 0;
 				for (SysRec = GetFirstSystemRecord(HelpFile); SysRec; SysRec = GetNextSystemRecord(SysRec))
 				{
 					if (SysRec->RecordType == 0x000D)
 					{
-						ptr = memchr(SysRec->Data, ' ', SysRec->DataSize);
+						ptr = (char *)memchr(SysRec->Data, ' ', SysRec->DataSize);
 						if (ptr)
 							*ptr++ = '\0';
 						groups = SearchFile(HelpFile, (const char *)SysRec->Data, NULL);
@@ -2108,7 +2107,7 @@ static void SysList(FILE *HelpFile, FILE *hpj, char *IconFileName)
 							read_groupheader(HelpFile, &group[i].GroupHeader);
 							if (group[i].GroupHeader.GroupType == 2)
 							{
-								group[i].Bitmap = my_malloc(group[i].GroupHeader.BitmapSize);
+								group[i].Bitmap = (unsigned char *)my_malloc(group[i].GroupHeader.BitmapSize);
 								my_fread(group[i].Bitmap, group[i].GroupHeader.BitmapSize, HelpFile);
 							}
 						} else
@@ -2235,8 +2234,8 @@ static BOOL PhraseLoad(FILE *HelpFile)
 						(long)FileLength);
 			}
 			PhraseCount = (unsigned int) PhrIndexHdr.entries;
-			PhraseOffsets = my_malloc(sizeof(*PhraseOffsets) * (PhraseCount + 1));
-			Phrases = my_malloc(PhrIndexHdr.phrimagesize);
+			PhraseOffsets = (unsigned int *)my_malloc(sizeof(*PhraseOffsets) * (PhraseCount + 1));
+			Phrases = (char *)my_malloc(PhrIndexHdr.phrimagesize);
 			if (PhrIndexHdr.phrimagesize == PhrIndexHdr.phrimagecompressedsize)
 			{
 				my_fread(Phrases, PhrIndexHdr.phrimagesize, HelpFile);
@@ -2304,10 +2303,10 @@ static BOOL PhraseLoad(FILE *HelpFile)
 					FileLength -= (PhraseCount + 1) * SIZEOF_SHORT + 8;
 				}
 			}
-			PhraseOffsets = my_malloc(sizeof(*PhraseOffsets) * (PhraseCount + 1));
+			PhraseOffsets = (unsigned int *)my_malloc(sizeof(*PhraseOffsets) * (PhraseCount + 1));
 			for (n = 0; n <= PhraseCount; n++)
 				PhraseOffsets[n] = my_getw(HelpFile) - offset;
-			Phrases = my_malloc(l);
+			Phrases = (char *)my_malloc(l);
 			DecompressIntoBuffer((before31 ? 0 : 2), HelpFile, FileLength, Phrases, l);
 			fprintf(stderr, "%u phrases loaded\n", PhraseCount);
 		}
@@ -2431,8 +2430,8 @@ static void FontLoad(FILE *HelpFile, FILE *rtf, FILE *hpj)
 		read_fontheader(HelpFile, &FontHdr);
 		fontnames = FontHdr.NumFacenames;
 		len = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / fontnames;
-		fontname = my_malloc(fontnames * sizeof(char *));
-		family = my_malloc(fontnames * sizeof(unsigned char));
+		fontname = (char **)my_malloc(fontnames * sizeof(char *));
+		family = (unsigned char *)my_malloc(fontnames * sizeof(unsigned char));
 		memset(family, 0, fontnames * sizeof(unsigned char));
 		charmap = FALSE;
 		mvbstyle = NULL;
@@ -2528,7 +2527,7 @@ static void FontLoad(FILE *HelpFile, FILE *rtf, FILE *hpj)
 		fonts = FontHdr.NumDescriptors;
 		if (font)
 			free(font);
-		font = my_malloc(fonts * sizeof(FONTDESCRIPTOR));
+		font = (FONTDESCRIPTOR *)my_malloc(fonts * sizeof(FONTDESCRIPTOR));
 		memset(font, 0, fonts * sizeof(FONTDESCRIPTOR));
 		if (FontHdr.FacenamesOffset >= 16)
 		{
@@ -2554,7 +2553,7 @@ static void FontLoad(FILE *HelpFile, FILE *rtf, FILE *hpj)
 				fd->expndtw = mvbfont.expndtw;
 			}
 			fseek(HelpFile, FontStart + FontHdr.FormatsOffset, SEEK_SET);
-			mvbstyle = my_malloc(FontHdr.NumFormats * sizeof(MVBSTYLE));
+			mvbstyle = (MVBSTYLE *)my_malloc(FontHdr.NumFormats * sizeof(MVBSTYLE));
 			for (i = 0; i < FontHdr.NumFormats; i++)
 				read_mvbstyle(HelpFile, mvbstyle + i);
 			for (i = 0; i < FontHdr.NumFormats; i++)
@@ -2586,7 +2585,7 @@ static void FontLoad(FILE *HelpFile, FILE *rtf, FILE *hpj)
 				fd->FontFamily = newfont.PitchAndFamily >> 4;
 			}
 			fseek(HelpFile, FontStart + FontHdr.FormatsOffset, SEEK_SET);
-			newstyle = my_malloc(FontHdr.NumFormats * sizeof(NEWSTYLE));
+			newstyle = (NEWSTYLE *)my_malloc(FontHdr.NumFormats * sizeof(NEWSTYLE));
 			for (i = 0; i < FontHdr.NumFormats; i++)
 				read_newstyle(HelpFile, newstyle + i);
 			for (i = 0; i < FontHdr.NumFormats; i++)
@@ -2949,13 +2948,13 @@ static int32_t TopicPhraseRead(FILE *HelpFile, int32_t TopicPos, char *dest, int
 			dest[i] = '\0';
 		if (BytesRead == Length && Length < NumBytes)	/* some trailing bytes are not used (bug in HCRTF ?) */
 		{
-			buffer = my_malloc(NumBytes - Length);
+			buffer = (char *)my_malloc(NumBytes - Length);
 			BytesRead += TopicRead(HelpFile, 0L, buffer, NumBytes - Length);
 			free(buffer);
 		}
 	} else
 	{
-		buffer = my_malloc(NumBytes);
+		buffer = (char *)my_malloc(NumBytes);
 		BytesRead = TopicRead(HelpFile, TopicPos, buffer, NumBytes);
 		NumBytes = PhraseReplace((unsigned char *)buffer, NumBytes, dest) - dest;
 		free(buffer);
@@ -3030,7 +3029,7 @@ static void CollectKeywords(FILE *HelpFile)
 		}
 	} else
 	{
-		KeywordRec = my_malloc(MAXKEYWORDS * sizeof(KEYWORDREC));
+		KeywordRec = (KEYWORDREC *)my_malloc(MAXKEYWORDS * sizeof(KEYWORDREC));
 	}
 	NextKeywordRec = KeywordRecs = 0;
 	from = NextKeywordOffset;
@@ -3055,7 +3054,7 @@ static void CollectKeywords(FILE *HelpFile)
 			{
 				int32_t keytopics = (FileLength / SIZEOF_LONG);
 				
-				keytopic = my_malloc(keytopics * sizeof(*keytopic));
+				keytopic = (int32_t *)my_malloc(keytopics * sizeof(*keytopic));
 				for (i = 0; i < keytopics; i++)
 					keytopic[i] = getdw(HelpFile);
 				if (SearchFile(HelpFile, kwbtree, NULL))
@@ -3180,7 +3179,7 @@ static int ListWindows(FILE *HelpFile, int32_t TopicOffset)
 			n = GetFirstPage(HelpFile, &buf, NULL);
 			if (n)
 			{
-				Viola = my_malloc(n * sizeof(VIOLAREC));
+				Viola = (VIOLAREC *)my_malloc(n * sizeof(VIOLAREC));
 				for (i = 0; i < n; i++)
 					read_violarec(HelpFile, &Viola[i]);
 				i = 0;
@@ -3202,7 +3201,7 @@ static int ListWindows(FILE *HelpFile, int32_t TopicOffset)
 					VIOLAfound = 0;
 					break;
 				}
-				Viola = my_malloc(n * sizeof(VIOLAREC));
+				Viola = (VIOLAREC *)my_malloc(n * sizeof(VIOLAREC));
 				for (i = 0; i < n; i++)
 					read_violarec(HelpFile, &Viola[i]);
 				i = 0;
@@ -3238,7 +3237,7 @@ static int ListWindows(FILE *HelpFile, int32_t TopicOffset)
  * and subnumber assigned. */
 static void AddStart(int32_t StartTopic, int BrowseNum, int Count)
 {
-	start = my_realloc(start, (starts + 1) * sizeof(START));
+	start = (START *)my_realloc(start, (starts + 1) * sizeof(START));
 	start[starts].StartTopic = StartTopic;
 	start[starts].BrowseNum = BrowseNum;
 	start[starts].Start = Count;
@@ -3268,7 +3267,7 @@ static void AddBrowse(int32_t StartTopic, int32_t NextTopic, int32_t PrevTopic)
 			break;						/* empty space in array ? */
 	if (i == browses)					/* no empty space, add to array */
 	{
-		browse = my_realloc(browse, ++browses * sizeof(BROWSE));
+		browse = (BROWSE *)my_realloc(browse, ++browses * sizeof(BROWSE));
 	}
 	browse[i].StartTopic = StartTopic;
 	browse[i].NextTopic = NextTopic;
@@ -3381,7 +3380,6 @@ static void BackLinkBrowse(int32_t TopicOffset, int32_t OtherTopicOffset, int32_
 static uint32_t AddLink(int32_t StartTopic, int32_t NextTopic, int32_t PrevTopic)
 {
 	int i, j;
-
 	uint32_t result;
 
 	result = 0L;
@@ -3389,7 +3387,7 @@ static uint32_t AddLink(int32_t StartTopic, int32_t NextTopic, int32_t PrevTopic
 		if (browse[i].StartTopic == -1L)
 			break;
 	if (i == browses)
-		browse = my_realloc(browse, ++browses * sizeof(BROWSE));
+		browse = (BROWSE *)my_realloc(browse, ++browses * sizeof(BROWSE));
 	for (j = 0; j < starts; j++)
 		if (start[j].StartTopic == StartTopic)
 			break;
@@ -3730,7 +3728,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 			}
 			if (TopicLink.DataLen1 > SIZEOF_TOPICLINK)
 			{
-				LinkData1 = my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
+				LinkData1 = (char *)my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
 				if (TopicRead(HelpFile, 0L, LinkData1, TopicLink.DataLen1 - SIZEOF_TOPICLINK) !=
 					TopicLink.DataLen1 - SIZEOF_TOPICLINK)
 					break;
@@ -3738,7 +3736,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 				LinkData1 = NULL;
 			if (TopicLink.DataLen1 < TopicLink.BlockSize)	/* read LinkData2 using phrase replacement */
 			{
-				LinkData2 = my_malloc(TopicLink.DataLen2 + 1);
+				LinkData2 = (char *)my_malloc(TopicLink.DataLen2 + 1);
 				if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2) != TopicLink.BlockSize - TopicLink.DataLen1)
 					break;
 			} else
@@ -4272,7 +4270,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 								ChangeFont(rtf, fontset, FALSE, uldb = TRUE);
 								if (!makertf)
 								{
-									hotspot = my_realloc(hotspot, strlen(ptr + 3) + 2);
+									hotspot = (char *)my_realloc(hotspot, strlen(ptr + 3) + 2);
 									sprintf(hotspot, "!%s", ptr + 3);
 								}
 								ptr += fetchword(ptr + 1) + 3;
@@ -4281,7 +4279,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 								ChangeFont(rtf, fontset, FALSE, uldb = TRUE);
 								if (!makertf)
 								{
-									hotspot = my_realloc(hotspot, strlen(ptr + 3) + 3);
+									hotspot = (char *)my_realloc(hotspot, strlen(ptr + 3) + 3);
 									sprintf(hotspot, "%%!%s", ptr + 3);
 								}
 								ptr += fetchword(ptr + 1) + 3;
@@ -4294,7 +4292,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 							  label0:
 								if (!makertf)
 								{
-									hotspot = my_realloc(hotspot, 128);
+									hotspot = (char *)my_realloc(hotspot, 128);
 									sprintf(hotspot, "TOPIC%ld", (long)fetchlong(ptr + 1));
 								}
 								ptr += 5;
@@ -4308,7 +4306,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 								if (!makertf)
 								{
 									arg = ContextId(fetchlong(ptr + 1));
-									hotspot = my_realloc(hotspot, strlen(arg) + 1);
+									hotspot = (char *)my_realloc(hotspot, strlen(arg) + 1);
 									sprintf(hotspot, "%s", arg);
 								}
 								ptr += 5;
@@ -4322,7 +4320,7 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 								if (!makertf)
 								{
 									arg = ContextId(fetchlong(ptr + 1));
-									hotspot = my_realloc(hotspot, strlen(arg) + 2);
+									hotspot = (char *)my_realloc(hotspot, strlen(arg) + 2);
 									sprintf(hotspot, "%%%s", arg);
 								}
 								ptr += 5;
@@ -4348,19 +4346,19 @@ static FILE *TopicDump(FILE *HelpFile, FILE *rtf, FILE *hpj, BOOL makertf)
 									switch ((unsigned char) ptr[3])
 									{
 									case 0:
-										hotspot = my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1);
+										hotspot = (char *)my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1);
 										sprintf(hotspot, "%s%s", cmd, arg);
 										break;
 									case 1:
-										hotspot = my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(GetWindowName(ptr[8])) + 1);
+										hotspot = (char *)my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(GetWindowName(ptr[8])) + 1);
 										sprintf(hotspot, "%s%s>%s", cmd, arg, GetWindowName(ptr[8]));
 										break;
 									case 4:
-										hotspot = my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(ptr + 8) + 1);
+										hotspot = (char *)my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(ptr + 8) + 1);
 										sprintf(hotspot, "%s%s@%s", cmd, arg, ptr + 8);
 										break;
 									case 6:
-										hotspot = my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(ptr + 8) + 1 + strlen(strchr(ptr + 8, '\0') + 1) + 1);
+										hotspot = (char *)my_realloc(hotspot, strlen(cmd) + strlen(arg) + 1 + strlen(ptr + 8) + 1 + strlen(strchr(ptr + 8, '\0') + 1) + 1);
 										sprintf(hotspot, "%s%s>%s@%s", cmd, arg, ptr + 8, strchr(ptr + 8, '\0') + 1);
 										break;
 									}
@@ -4420,7 +4418,7 @@ static void ContextLoad(FILE *HelpFile)
 		n = GetFirstPage(HelpFile, &buf, &entries);
 		if (entries)
 		{
-			ContextRec = my_malloc(entries * sizeof(CONTEXTREC));
+			ContextRec = (CONTEXTREC *)my_malloc(entries * sizeof(CONTEXTREC));
 			ContextRecs = 0;
 			while (n)
 			{
@@ -4437,7 +4435,7 @@ static void ContextLoad(FILE *HelpFile)
 	} else if (SearchFile(HelpFile, "|TOMAP", &entries))
 	{
 		Topics = (int) (entries / SIZEOF_LONG);
-		Topic = my_malloc(Topics * sizeof(*Topic));
+		Topic = (int32_t *)my_malloc(Topics * sizeof(*Topic));
 		for (i = 0; i < Topics; i++)
 			Topic[i] = getdw(HelpFile);
 	}
@@ -4463,7 +4461,7 @@ static void GenerateContent(FILE *HelpFile, FILE *ContentFile)
 		n = GetFirstPage(HelpFile, &buf, &FileLength);
 		if (FileLength)
 		{
-			WindowRec = my_malloc(FileLength * sizeof(VIOLAREC));
+			WindowRec = (VIOLAREC *)my_malloc(FileLength * sizeof(VIOLAREC));
 			while (n)
 			{
 				for (i = 0; i < n; i++)
@@ -4519,7 +4517,7 @@ static void ListRose(FILE *HelpFile, FILE *hpj)
 		{
 			int32_t keytopics = (FileLength / SIZEOF_LONG);
 
-			keytopic = my_malloc(keytopics * sizeof(*keytopic));
+			keytopic = (int32_t *)my_malloc(keytopics * sizeof(*keytopic));
 			for (i = 0; i < keytopics; i++)
 				keytopic[i] = getdw(HelpFile);
 			if (SearchFile(HelpFile, "|KWBTREE", NULL))
@@ -4632,7 +4630,7 @@ static void FontDump(FILE *HelpFile)
 	FileStart = ftell(HelpFile);
 	read_fontheader(HelpFile, &FontHdr);
 	n = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / FontHdr.NumFacenames;
-	fontname = my_malloc(FontHdr.NumFacenames * sizeof(char *));
+	fontname = (char **)my_malloc(FontHdr.NumFacenames * sizeof(char *));
 	fseek(HelpFile, FileStart + FontHdr.FacenamesOffset, SEEK_SET);
 	for (i = 0; i < FontHdr.NumFacenames; i++)
 	{
@@ -4727,7 +4725,7 @@ static void PhrImageDump(FILE *HelpFile)
 					fprintf(stderr, "PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n",
 							(long)PhrIndexHdr.phrimagecompressedsize, (long)FileLength);
 				}
-				ptr = my_malloc(PhrIndexHdr.phrimagesize);
+				ptr = (unsigned char *)my_malloc(PhrIndexHdr.phrimagesize);
 				bytes = DecompressIntoBuffer(2, HelpFile, FileLength, (char *)ptr, PhrIndexHdr.phrimagesize);
 				HexDumpMemory(ptr, bytes);
 				free(ptr);
@@ -4986,14 +4984,14 @@ static void DumpTopic(FILE *HelpFile, int32_t TopicPos)
 			   (long)TopicLink.PrevBlock, (long)TopicLink.NextBlock);
 		if (TopicLink.DataLen1 > SIZEOF_TOPICLINK)
 		{
-			LinkData1 = my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK);
+			LinkData1 = (char *)my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK);
 			if (TopicRead(HelpFile, 0L, LinkData1, TopicLink.DataLen1 - SIZEOF_TOPICLINK) != TopicLink.DataLen1 - SIZEOF_TOPICLINK)
 				break;
 		} else
 			LinkData1 = NULL;
 		if (TopicLink.DataLen1 < TopicLink.BlockSize)	/* read LinkData2 using phrase replacement */
 		{
-			LinkData2 = my_malloc(TopicLink.DataLen2 + 1);
+			LinkData2 = (char *)my_malloc(TopicLink.DataLen2 + 1);
 			if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2) != TopicLink.BlockSize - TopicLink.DataLen1)
 				break;
 		} else
@@ -5451,7 +5449,7 @@ static void GuessFromKeywords(FILE *HelpFile)
 			{
 				int32_t keytopics = (FileLength / SIZEOF_LONG);
 				
-				keytopic = my_malloc(keytopics * sizeof(*keytopic));
+				keytopic = (int32_t *)my_malloc(keytopics * sizeof(*keytopic));
 				for (i = 0; i < keytopics; i++)
 					keytopic[i] = getdw(HelpFile);
 				if (SearchFile(HelpFile, kwbtree, NULL))
@@ -5558,14 +5556,14 @@ static void FirstPass(FILE *HelpFile)
 		}
 		if (TopicLink.DataLen1 > SIZEOF_TOPICLINK)
 		{
-			LinkData1 = my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
+			LinkData1 = (char *)my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
 			if (TopicRead(HelpFile, 0L, LinkData1, TopicLink.DataLen1 - SIZEOF_TOPICLINK) != TopicLink.DataLen1 - SIZEOF_TOPICLINK)
 				break;
 		} else
 			LinkData1 = NULL;
 		if (TopicLink.DataLen1 < TopicLink.BlockSize)	/* read LinkData2 using phrase replacement */
 		{
-			LinkData2 = my_malloc(TopicLink.DataLen2 + 1);
+			LinkData2 = (char *)my_malloc(TopicLink.DataLen2 + 1);
 			if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2)
 				!= TopicLink.BlockSize - TopicLink.DataLen1)
 				break;
@@ -5603,7 +5601,7 @@ static void FirstPass(FILE *HelpFile)
 				BogusTopicOffset = NextTopicOffset(TopicOffset, TopicLink.NextBlock, TopicPos);
 				if (BogusTopicOffset != TopicOffset)
 				{
-					alternative = my_realloc(alternative, (alternatives + 1) * sizeof(ALTERNATIVE));
+					alternative = (ALTERNATIVE *)my_realloc(alternative, (alternatives + 1) * sizeof(ALTERNATIVE));
 					alternative[alternatives].TopicOffset = TopicOffset;
 					alternative[alternatives].OtherTopicOffset = BogusTopicOffset;
 					alternatives++;
@@ -5760,7 +5758,7 @@ static void FirstPass(FILE *HelpFile)
 											break;
 									if (x2 >= extensions)
 									{
-										extension = my_realloc(extension, (x2 + 1) * sizeof(char));
+										extension = (char *)my_realloc(extension, (x2 + 1) * sizeof(char));
 										while (extensions <= x2)
 											extension[extensions++] = 0;
 									}
@@ -5873,7 +5871,7 @@ static void ContextList(FILE *HelpFile)
 		{
 			unsigned short i;
 			
-			map = my_malloc(maprecs * sizeof(CTXOMAPREC));
+			map = (CTXOMAPREC *)my_malloc(maprecs * sizeof(CTXOMAPREC));
 			for (i = 0; i < maprecs; i++)
 				read_ctxomaprec(HelpFile, map + i);
 			qsort(map, maprecs, sizeof(CTXOMAPREC), CTXOMAPRecCmp);
@@ -5900,14 +5898,14 @@ static void ContextList(FILE *HelpFile)
 		fetchtopiclink(&TopicLink, topiclinkbuf);
 		if (TopicLink.DataLen1 > SIZEOF_TOPICLINK)
 		{
-			LinkData1 = my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
+			LinkData1 = (char *)my_malloc(TopicLink.DataLen1 - SIZEOF_TOPICLINK + 1);
 			if (TopicRead(HelpFile, 0L, LinkData1, TopicLink.DataLen1 - SIZEOF_TOPICLINK) != TopicLink.DataLen1 - SIZEOF_TOPICLINK)
 				break;
 		} else
 			LinkData1 = NULL;
 		if (TopicLink.DataLen1 < TopicLink.BlockSize)	/* read LinkData2 using phrase replacement */
 		{
-			LinkData2 = my_malloc(TopicLink.DataLen2 + 1);
+			LinkData2 = (char *)my_malloc(TopicLink.DataLen2 + 1);
 			if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2)
 				!= TopicLink.BlockSize - TopicLink.DataLen1)
 				break;

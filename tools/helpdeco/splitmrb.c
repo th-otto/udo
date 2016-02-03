@@ -339,7 +339,7 @@ static void PrintHotspotInfo(FILE *f)
 		n = GetWord(f);
 		if (n > 0)
 		{
-			hotspot = malloc(n * sizeof(HOTSPOT));
+			hotspot = (HOTSPOT *)malloc(n * sizeof(HOTSPOT));
 			if (hotspot)
 			{
 				l = GetDWord(f);			/* macro data size */

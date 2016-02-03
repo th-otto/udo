@@ -2517,7 +2517,7 @@ static void NOINLINE EditAny(SHELL_DIALOG *sd, const char *type, const char *whi
 
 	argc = 0;
 	argv[argc++] = *editor;
-	argv[argc++] = NO_CONST(*filename);
+	argv[argc++] = (char *)NO_CONST(*filename);
 	argv[argc] = NULL;
 	
 	if (!file_available(*filename))
@@ -2684,40 +2684,40 @@ static void exec_source_run_cb(GtkWidget *widget, gpointer user_data)
 		{
 			argc = 0;
 			argv[argc++] = sd->m_app_udo;
-			argv[argc++] = NO_CONST(formatconst[sd->m_format].udo_switch);
+			argv[argc++] = (char *)NO_CONST(formatconst[sd->m_format].udo_switch);
 			
-			if (!sd->m_use_log) 	argv[argc++] = NO_CONST("-l");
-			if (sd->m_use_check)	argv[argc++] = NO_CONST("--check");
-			if (!sd->m_use_hyphen) 	argv[argc++] = NO_CONST("-y");
-			if (sd->m_use_tree) 	argv[argc++] = NO_CONST("--tree");
-			if (sd->m_use_upr)		argv[argc++] = NO_CONST("--save-upr");
-			if (!sd->m_use_idx)		argv[argc++] = NO_CONST("--no-idxfile");
-			if (sd->m_use_verb) 	argv[argc++] = NO_CONST("--verbose");
-			if (sd->m_hold_key) 	argv[argc++] = NO_CONST("--hold");
-			if (!sd->m_warnings)	argv[argc++] = NO_CONST("--no-warnings");
-			if (!sd->m_warnings_lines)	argv[argc++] = NO_CONST("-Wl");
-			if (sd->m_use_quiet)	argv[argc++] = NO_CONST("-q");
-			if (sd->m_force_long)	argv[argc++] = NO_CONST("--force-long");
-			if (sd->m_force_short)	argv[argc++] = NO_CONST("--force-short");
-			if (!sd->m_fast_autoref)	argv[argc++] = NO_CONST("--no-fast-auto");
-			if (sd->m_use_test)		argv[argc++] = NO_CONST("--test");
+			if (!sd->m_use_log) 	argv[argc++] = (char *)NO_CONST("-l");
+			if (sd->m_use_check)	argv[argc++] = (char *)NO_CONST("--check");
+			if (!sd->m_use_hyphen) 	argv[argc++] = (char *)NO_CONST("-y");
+			if (sd->m_use_tree) 	argv[argc++] = (char *)NO_CONST("--tree");
+			if (sd->m_use_upr)		argv[argc++] = (char *)NO_CONST("--save-upr");
+			if (!sd->m_use_idx)		argv[argc++] = (char *)NO_CONST("--no-idxfile");
+			if (sd->m_use_verb) 	argv[argc++] = (char *)NO_CONST("--verbose");
+			if (sd->m_hold_key) 	argv[argc++] = (char *)NO_CONST("--hold");
+			if (!sd->m_warnings)	argv[argc++] = (char *)NO_CONST("--no-warnings");
+			if (!sd->m_warnings_lines)	argv[argc++] = (char *)NO_CONST("-Wl");
+			if (sd->m_use_quiet)	argv[argc++] = (char *)NO_CONST("-q");
+			if (sd->m_force_long)	argv[argc++] = (char *)NO_CONST("--force-long");
+			if (sd->m_force_short)	argv[argc++] = (char *)NO_CONST("--force-short");
+			if (!sd->m_fast_autoref)	argv[argc++] = (char *)NO_CONST("--no-fast-auto");
+			if (sd->m_use_test)		argv[argc++] = (char *)NO_CONST("--test");
 			
 			for (i = 0; i < MAX_SYM; i++)
 			{
 				if (sd->m_use_sym[i] && !empty(sd->m_symbol[i]))
 				{
-					argv[argc++] = NO_CONST("-D");
+					argv[argc++] = (char *)NO_CONST("-D");
 					argv[argc++] = sd->m_symbol[i];
 				}
 			}
 		
-			if (sd->m_use_map_c)	argv[argc++] = NO_CONST("--map");
-			if (sd->m_use_map_pas)	argv[argc++] = NO_CONST("--map-pas");
-			if (sd->m_use_map_gfa)	argv[argc++] = NO_CONST("--map-gfa");
-			if (sd->m_use_map_vb)	argv[argc++] = NO_CONST("--map-vb");
+			if (sd->m_use_map_c)	argv[argc++] = (char *)NO_CONST("--map");
+			if (sd->m_use_map_pas)	argv[argc++] = (char *)NO_CONST("--map-pas");
+			if (sd->m_use_map_gfa)	argv[argc++] = (char *)NO_CONST("--map-gfa");
+			if (sd->m_use_map_vb)	argv[argc++] = (char *)NO_CONST("--map-vb");
 		
 			/* Kommandozeile noch mit Ziel-/Quelldatei vervollstaendigen */
-			argv[argc++] = NO_CONST("-o");
+			argv[argc++] = (char *)NO_CONST("-o");
 			argv[argc++] = sd->m_file_dest;
 			
 			argv[argc++] = sd->m_file_source;
@@ -2948,7 +2948,7 @@ static void NOINLINE ViewFile(SHELL_DIALOG *sd, char *const *filename, const cha
 	change_dir(*filename);
 	argc = 0;
 	argv[argc++] = sd->m_edi_udo;
-	argv[argc++] = NO_CONST(*filename);
+	argv[argc++] = (char *)NO_CONST(*filename);
 	argv[argc] = NULL;
 	StartProgram(sd, argv, FALSE);
 	g_chdir(curdir);
@@ -4231,7 +4231,7 @@ static gboolean init_gtk(SHELL_DIALOG *sd)
 		gtk_set_locale();
 		gdk_threads_init();
 		argc = 0;
-		argv[argc++] = NO_CONST(gl_program_name);
+		argv[argc++] = (char *)NO_CONST(gl_program_name);
 		argv[argc] = NULL;
 		argvp = argv;
 		if (!gtk_init_check(&argc, &argvp))

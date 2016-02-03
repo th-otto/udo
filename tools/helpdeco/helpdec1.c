@@ -50,7 +50,7 @@ void fatal(const char *format, ...)
 size_t my_strlcpy(char *dest, const void *psrc, size_t len)
 {
 	size_t i;
-	const char *src = psrc;
+	const char *src = (const char *)psrc;
 	
 	if (!dest)
 		return 0;
@@ -93,7 +93,7 @@ char *my_strdup(const char *ptr)
 	if (!ptr)
 		return NULL;
 	len = strlen(ptr);
-	dup = my_malloc(len + 1);
+	dup = (char *)my_malloc(len + 1);
 	strcpy(dup, ptr);
 	return dup;
 }
@@ -334,7 +334,7 @@ MFILE *CreateMap(const char *ptr, size_t size)
 		char *sp;
 	} u;
 	
-	f = my_malloc(sizeof(MFILE));
+	f = (MFILE *)my_malloc(sizeof(MFILE));
 	f->f = NULL;
 	u.cp = ptr;
 	f->ptr = u.sp;
@@ -354,7 +354,7 @@ MFILE *CreateVirtual(FILE *f)
 {
 	MFILE *mf;
 
-	mf = my_malloc(sizeof(MFILE));
+	mf = (MFILE *)my_malloc(sizeof(MFILE));
 	mf->f = f;
 	mf->ptr = mf->end = mf->base = NULL;
 	mf->get = FileGet;
@@ -1050,7 +1050,7 @@ SYSTEMRECORD *GetNextSystemRecord(SYSTEMRECORD *SysRec)
 		free(SysRec);
 		return NULL;
 	}
-	SysRec = my_realloc(SysRec, sizeof(SYSTEMRECORD) + SysRec->DataSize);
+	SysRec = (SYSTEMRECORD *)my_realloc(SysRec, sizeof(SYSTEMRECORD) + SysRec->DataSize);
 	my_fread(SysRec->Data, SysRec->DataSize, SysRec->File);
 	SysRec->Data[SysRec->DataSize] = '\0';
 	SysRec->Remaining -= SysRec->DataSize;
@@ -1071,7 +1071,7 @@ SYSTEMRECORD *GetFirstSystemRecord(FILE *HelpFile)
 	read_systemheader(HelpFile, &SysHdr);
 	if (SysHdr.Major != 1 || SysHdr.Minor < 16)
 		return NULL;
-	SysRec = my_malloc(sizeof(SYSTEMRECORD));
+	SysRec = (SYSTEMRECORD *)my_malloc(sizeof(SYSTEMRECORD));
 	SysRec->File = HelpFile;
 	SysRec->SavePos = ftell(HelpFile);
 	SysRec->Remaining = FileLength - SIZEOF_SYSTEMHEADER;
@@ -1285,7 +1285,7 @@ void GroupDump(FILE *HelpFile)
 	switch (GroupHeader.GroupType)
 	{
 	case 2:
-		ptr = my_malloc(GroupHeader.BitmapSize);
+		ptr = (char *)my_malloc(GroupHeader.BitmapSize);
 		my_fread(ptr, GroupHeader.BitmapSize, HelpFile);
 		for (i = GroupHeader.FirstTopic; i <= GroupHeader.LastTopic; i++)
 		{
