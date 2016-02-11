@@ -1,5 +1,9 @@
 include ../Makefile.common
 
+pixmapdir = $(datadir)/pixmaps
+
+pixmap_DATA = hypview.png
+
 EXTRA_DIST = \
 	hypview.h  hypview.ico \
 	back.h     back.ico \
@@ -20,6 +24,7 @@ EXTRA_DIST = \
 	last.h     last.ico \
 	referenc.h referenc.ico \
 	save.h     save.ico \
+	$(pixmap_DATA) \
 	$(empty)
 
 icons: \
