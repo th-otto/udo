@@ -24,6 +24,7 @@ EXTRA_DIST = \
 	last.h     last.ico \
 	referenc.h referenc.ico \
 	save.h     save.ico \
+	remarker.h remarker.ico \
 	$(pixmap_DATA) \
 	$(empty)
 
@@ -47,6 +48,7 @@ icons: \
 	$(srcdir)/last.h \
 	$(srcdir)/referenc.h \
 	$(srcdir)/save.h \
+	$(srcdir)/remarker.h \
 	$(empty)
 
 GEN_PIXBUF_CSOURCE = gen-pixbuf-csource
@@ -107,4 +109,7 @@ $(srcdir)/referenc.h: $(srcdir)/referenc.ico
 
 $(srcdir)/save.h: $(srcdir)/save.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=save_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+
+$(srcdir)/remarker.h: $(srcdir)/remarker.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=remarker_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
