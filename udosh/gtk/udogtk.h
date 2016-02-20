@@ -23,6 +23,8 @@
 #endif
 #include <sys/stat.h>
 
+/* avoid warnings from G_TYPE_* macros */
+#pragma GCC diagnostic ignored "-Wcast-qual"
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -30,6 +32,7 @@
 #ifdef G_OS_UNIX
 #include <gio/gdesktopappinfo.h>
 #endif
+#pragma GCC diagnostic warning "-Wcast-qual"
 
 #include "udoport.h"
 #undef GETTEXT_PACKAGE
