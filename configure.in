@@ -993,6 +993,7 @@ AC_OUTPUT([
 	tools/hypview/icons/Makefile
 	tools/hypview/hyp/Makefile
 	tools/hypview/gtk/Makefile
+	tools/hypview/win32/Makefile
 	tools/hypview/tos/Makefile
 	tools/hypview/tools/Makefile
 	tools/hypview/po/Makefile.in
