@@ -5,7 +5,7 @@ EXTRA_DIST = \
 	intltool-merge.in intltool-extract.in intltool-update.in \
 	COPYRIGHT
 
-SUBDIRS = src tools doc udosh po
+SUBDIRS = rcintl potools src tools doc udosh po
 
 DISTCLEANFILES = intltool-merge intltool-extract intltool-update
 

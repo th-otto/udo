@@ -1,3 +1,5 @@
+include ../../silent.am
+
 if WITH_GUI_WIN32
 bin_PROGRAMS = udosh
 endif

@@ -11,7 +11,7 @@
 /* The version of BZ2 */
 #undef BZ2_VERSION_FROM_CONFIGURE
 
-/* always defined to indicate that i18n is enabled */
+/* indicate that i18n is enabled */
 #undef ENABLE_NLS
 
 /* define to the name of the gettext package */

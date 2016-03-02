@@ -1,3 +1,3 @@
-SUBDIRS = pic icons hyp gtk win32 tos tools po doc
+SUBDIRS = pic icons po hyp gtk win32 tos tools doc
 
 EXTRA_DIST = include defaults skins
