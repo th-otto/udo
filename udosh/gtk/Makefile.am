@@ -1,3 +1,5 @@
+include ../../silent.am
+
 if WITH_GUI_GTK
 bin_PROGRAMS = udogtk
 endif
