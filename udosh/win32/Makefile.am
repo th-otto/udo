@@ -61,7 +61,7 @@ udosh_DEPENDENCIES = resource.res
 udosh_LDADD = resource.res $(INTLLIBS)
 
 resource.res: $(srcdir)/resource.rc $(srcdir)/resource.rh
-	$(WINDRES) --target=$(RC_TARGET) --input-format rc --output-format coff -o $@ $(srcdir)/resource.rc
+	$(AM_V_RC)$(WINDRES) --target=$(RC_TARGET) --input-format rc --output-format coff -o $@ $(srcdir)/resource.rc
 
 Manual/winhelp/udosh.hpc::
 	cd Manual && make winhelp
