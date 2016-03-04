@@ -41,6 +41,13 @@
 #undef IS_INTRESOURCE
 #define IS_INTRESOURCE(_r) ((((ULONG_PTR)(_r)) >> 16) == 0)
 
+#ifndef CDSIZEOF_STRUCT
+#define CDSIZEOF_STRUCT(structname,member) (((int)((LPBYTE)(&((structname*)0)->member) - ((LPBYTE)((structname*)0)))) + sizeof(((structname*)0)->member))
+#endif
+
+#undef OPENFILENAME_SIZE_VERSION_400 /* Mingw32 gets this wrong */
+#define OPENFILENAME_SIZE_VERSION_400 CDSIZEOF_STRUCT(OPENFILENAME,lpTemplateName)
+
 #else
 typedef unsigned short LANGID;
 #endif /* __WIN32__ */
