@@ -102,7 +102,7 @@ EXTERN_C_BEG
 #endif
 
 const char *xs_dgettext(const char *domain, const char *msgid) __THROW __attribute_format_arg__ (2);
-const char *xs_dngettext(const char *domain, const char *msgid, const char *msgid_plural, unsigned long n __THROW __attribute_format_arg__ (1) __attribute_format_arg__ (2));
+const char *xs_dngettext(const char *domain, const char *msgid, const char *msgid_plural, unsigned long n) __THROW __attribute_format_arg__ (1) __attribute_format_arg__ (2);
 
 const char *xs_get_locale_dir(void);
 char *g_get_package_installation_directory(void);

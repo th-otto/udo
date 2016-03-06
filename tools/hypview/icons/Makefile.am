@@ -13,7 +13,7 @@ EXTRA_DIST = \
 	info.h     info.ico \
 	katalog.h  katalog.ico \
 	load.h     load.ico \
-	memory.h   memory.ico \
+	bookmark.h bookmark.ico \
 	menu.h     menu.ico \
 	history.h  history.ico \
 	next.h     next.ico \
@@ -37,7 +37,7 @@ icons: \
 	$(srcdir)/info.h \
 	$(srcdir)/katalog.h \
 	$(srcdir)/load.h \
-	$(srcdir)/memory.h \
+	$(srcdir)/bookmark.h \
 	$(srcdir)/menu.h \
 	$(srcdir)/history.h \
 	$(srcdir)/next.h \
@@ -77,8 +77,8 @@ $(srcdir)/katalog.h: $(srcdir)/katalog.ico
 $(srcdir)/load.h: $(srcdir)/load.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=load_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
-$(srcdir)/memory.h: $(srcdir)/memory.ico
-	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=memory_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+$(srcdir)/bookmark.h: $(srcdir)/bookmark.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=bookmark_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
 $(srcdir)/menu.h: $(srcdir)/menu.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=menu_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }

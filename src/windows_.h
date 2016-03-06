@@ -48,6 +48,110 @@
 #undef OPENFILENAME_SIZE_VERSION_400 /* Mingw32 gets this wrong */
 #define OPENFILENAME_SIZE_VERSION_400 CDSIZEOF_STRUCT(OPENFILENAME,lpTemplateName)
 
+#ifndef VK_XBUTTON1
+#  define VK_XBUTTON1 0x05
+#endif
+#ifndef VK_XBUTTON2
+#  define VK_XBUTTON2 0x06
+#endif
+#ifndef VK_PACKET
+#  define VK_PACKET 0xe7
+#endif
+
+#ifndef VK_NAVIGATION_VIEW
+#define VK_NAVIGATION_VIEW     0x88
+#endif
+#ifndef VK_NAVIGATION_MENU
+#define VK_NAVIGATION_MENU     0x89
+#endif
+#ifndef VK_NAVIGATION_UP
+#define VK_NAVIGATION_UP       0x8A
+#endif
+#ifndef VK_NAVIGATION_DOWN
+#define VK_NAVIGATION_DOWN     0x8B
+#endif
+#ifndef VK_NAVIGATION_LEFT
+#define VK_NAVIGATION_LEFT     0x8C
+#endif
+#ifndef VK_NAVIGATION_RIGHT
+#define VK_NAVIGATION_RIGHT    0x8D
+#endif
+#ifndef VK_NAVIGATION_ACCEPT
+#define VK_NAVIGATION_ACCEPT   0x8E
+#endif
+#ifndef VK_NAVIGATION_CANCEL
+#define VK_NAVIGATION_CANCEL   0x8F
+#endif
+#ifndef VK_OEM_FJ_JISHO
+#  define VK_OEM_FJ_JISHO 0x92
+#endif
+#ifndef VK_OEM_FJ_MASSHOU
+#  define VK_OEM_FJ_MASSHOU 0x93
+#endif
+#ifndef VK_OEM_FJ_TOUROKU
+#  define VK_OEM_FJ_TOUROKU 0x94
+#endif
+#ifndef VK_OEM_FJ_LOYA
+#  define VK_OEM_FJ_LOYA 0x95
+#endif
+#ifndef VK_OEM_FJ_ROYA
+#  define VK_OEM_FJ_ROYA 0x96
+#endif
+#ifndef VK_BROWSER_BACK
+#  define VK_BROWSER_BACK 0xa6
+#endif
+#ifndef VK_BROWSER_FORWARD
+#  define VK_BROWSER_FORWARD 0xa7
+#endif
+#ifndef VK_BROWSER_REFRESH
+#  define VK_BROWSER_REFRESH 0xa8
+#endif
+#ifndef VK_BROWSER_STOP
+#  define VK_BROWSER_STOP 0xa9
+#endif
+#ifndef VK_BROWSER_SEARCH
+#  define VK_BROWSER_SEARCH 0xaa
+#endif
+#ifndef VK_BROWSER_FAVORITES
+#  define VK_BROWSER_FAVORITES 0xab
+#endif
+#ifndef VK_BROWSER_HOME
+#  define VK_BROWSER_HOME 0xac
+#endif
+#ifndef VK_VOLUME_MUTE
+#  define VK_VOLUME_MUTE 0xad
+#endif
+#ifndef VK_VOLUME_DOWN
+#  define VK_VOLUME_DOWN 0xae
+#endif
+#ifndef VK_VOLUME_UP
+#  define VK_VOLUME_UP 0xaf
+#endif
+#ifndef VK_MEDIA_NEXT_TRACK
+#  define VK_MEDIA_NEXT_TRACK 0xb0
+#endif
+#ifndef VK_MEDIA_PREV_TRACK
+#  define VK_MEDIA_PREV_TRACK 0xb1
+#endif
+#ifndef VK_MEDIA_STOP
+#  define VK_MEDIA_STOP 0xb2
+#endif
+#ifndef VK_MEDIA_PLAY_PAUSE
+#  define VK_MEDIA_PLAY_PAUSE 0xb3
+#endif
+#ifndef VK_LAUNCH_MAIL
+#  define VK_LAUNCH_MAIL 0xb4
+#endif
+#ifndef VK_LAUNCH_MEDIA_SELECT
+#  define VK_LAUNCH_MEDIA_SELECT 0xb5
+#endif
+#ifndef VK_LAUNCH_APP1
+#  define VK_LAUNCH_APP1 0xb6
+#endif
+#ifndef VK_LAUNCH_APP2
+#  define VK_LAUNCH_APP2 0xb7
+#endif
+
 #else
 typedef unsigned short LANGID;
 #endif /* __WIN32__ */
