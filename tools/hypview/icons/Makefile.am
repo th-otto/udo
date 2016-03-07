@@ -11,7 +11,7 @@ EXTRA_DIST = \
 	home.h     home.ico \
 	index.h    index.ico \
 	info.h     info.ico \
-	katalog.h  katalog.ico \
+	catalog.h  catalog.ico \
 	load.h     load.ico \
 	bookmark.h bookmark.ico \
 	menu.h     menu.ico \
@@ -35,7 +35,7 @@ icons: \
 	$(srcdir)/home.h \
 	$(srcdir)/index.h \
 	$(srcdir)/info.h \
-	$(srcdir)/katalog.h \
+	$(srcdir)/catalog.h \
 	$(srcdir)/load.h \
 	$(srcdir)/bookmark.h \
 	$(srcdir)/menu.h \
@@ -71,8 +71,8 @@ $(srcdir)/index.h: $(srcdir)/index.ico
 $(srcdir)/info.h: $(srcdir)/info.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=info_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
-$(srcdir)/katalog.h: $(srcdir)/katalog.ico
-	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=katalog_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
+$(srcdir)/catalog.h: $(srcdir)/catalog.ico
+	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=catalog_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }
 
 $(srcdir)/load.h: $(srcdir)/load.ico
 	$(AM_V_GEN)$(GEN_PIXBUF_CSOURCE) --raw --static --name=load_icon_data $< > $@.tmp && mv $@.tmp $@ || { $(RM) $@.tmp; false; }

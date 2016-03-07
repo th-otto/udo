@@ -1,0 +1,24 @@
+gui="$1"
+if test "$gui" = ""; then
+	gui=unix
+fi
+
+configure_args="--enable-warnings --enable-fatal-warnings"
+
+case $gui in
+gem|tos)
+	. $HOME/gtk/profile /
+	./configure $configure_args --with-gui=gem --host=m68k-atari-mint
+	;;
+win32)
+	. $HOME/gtk/profile /
+	./configure $configure_args --with-gui=win32 --host=i686-pc-mingw32
+	;;
+unix|gtk2)
+	. $HOME/gtk/profile
+	./configure $configure_args --with-gui=gtk2
+	;;
+*)
+	echo "unsupported gui $gui" >&2
+	;;
+esac
