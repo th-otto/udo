@@ -71,6 +71,7 @@ tools/hypview/hyp/picinfo
 tools/hypview/hyp/refcheck
 tools/hypview/hyp/reflink
 tools/hypview/hyp/stool
+tools/hypview/hyp/dumpicon
 tools/hypview/hyp/tmp
 tools/hypview/gtk/hypview
 tools/hypview/gtk/gfilesel

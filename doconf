@@ -18,6 +18,10 @@ unix|gtk2)
 	. $HOME/gtk/profile
 	./configure $configure_args --with-gui=gtk2
 	;;
+none)
+	. $HOME/gtk/profile /
+	./configure $configure_args --with-gui=none
+	;;
 *)
 	echo "unsupported gui $gui" >&2
 	;;

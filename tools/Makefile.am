@@ -1,2 +1,2 @@
-SUBDIRS = helpdeco hypview
+SUBDIRS = helpdeco hypview chm
 
