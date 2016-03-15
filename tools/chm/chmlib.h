@@ -188,6 +188,7 @@ struct _gslist {
 };
 
 typedef void (*GDestroyNotify)(gpointer data);
+typedef int (*GCompareFunc)(gconstpointer a, gconstpointer b);
 
 GSList *g_slist_remove(GSList *list, gconstpointer data) G_GNUC_WARN_UNUSED_RESULT;
 GSList *g_slist_prepend(GSList  *list, gpointer  data) G_GNUC_WARN_UNUSED_RESULT;
@@ -195,10 +196,11 @@ GSList *g_slist_append(GSList *list, gpointer data);
 #define g_slist_free_1(l) g_free(l)
 void g_slist_free_full(GSList *list, GDestroyNotify freefunc);
 void g_slist_free(GSList *list);
+GSList *g_slist_sort(GSList *list, GCompareFunc compare_func) G_GNUC_WARN_UNUSED_RESULT;
 
 char *g_strup(char *s);
 char *g_strdown(char *s);
-void *g_slist_nth(GSList *list, unsigned int i);
+GSList *g_slist_nth(GSList *list, unsigned int i);
 void *g_slist_nth_data(GSList *list, unsigned int i);
 unsigned int g_slist_length(GSList *list);
 
@@ -220,6 +222,7 @@ int g_ascii_strncasecmp(const char *s1, const char *s2, size_t n);
 void chomp(char **str);
 void g_freep(char **str);
 gboolean convexternalslash(char *str);
+void convslash(char *str);
 
 #define empty(str) ((str) == NULL || *(str) == '\0')
 #define fixnull(str) ((str) != NULL ? (str) : "")

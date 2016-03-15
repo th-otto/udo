@@ -4,14 +4,14 @@
 /*
  * most commonly used
  */
-char *GetVal(const char *tag, const char *attribname_ci);
-char *GetTagName(const char *tag);
+char *GetVal(const char *tag, size_t taglen, const char *attribname_ci);
+char *GetTagName(const char *tag, size_t len);
 
 /*
  * less commonly used, but useful
  */
-char *GetUpTagName(const char *tag);
-char *GetNameValPair(const char *tag, const char *attribname_ci);
+char *GetUpTagName(const char *tag, size_t len);
+char *GetNameValPair(const char *tag, size_t taglen, const char *attribname_ci);
 char *GetValFromNameVal(const char *namevalpair);
 
 #endif /* __HTMLUTIL_H__ */

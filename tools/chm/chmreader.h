@@ -19,7 +19,37 @@ void ContextList_AddContext(ContextList **list, HelpContext Context, char *Url);
 const char *ContextList_GetURL(ContextList *list, HelpContext Context);
 void ContextList_Destroy(ContextList *list);
 
-typedef void (*FileEntryForEach)(void *obj, const char *Name, chm_off_t Offset, chm_off_t UncompressedSize, uint32_t Section);
+typedef enum {
+	/*
+	 * object name is not internal.
+	 */
+	chm_name_external,
+	/*
+	 * object name is empty (never allowed)
+	 */
+	chm_name_empty,
+	/*
+	 * object name is related to ITSF storage, i.e.
+	 * ::DataSpace/NameList
+	 */
+	chm_name_storage,
+	/*
+	 * object name is internal name,
+	 * ie /#SYSTEM
+	 */
+	chm_name_internal
+} chm_nametype;
+
+typedef struct _ChmFileInfo {
+	const char *name;
+	size_t namelen;
+	chm_nametype type;
+	chm_off_t offset;
+	chm_off_t uncompressedsize;
+	uint32_t section;
+} ChmFileInfo;
+
+typedef void (*FileEntryForEach)(void *obj, const ChmFileInfo *info);
 
 /* ErrorCodes */
 typedef enum _chm_error {
@@ -54,7 +84,7 @@ void ITSFReader_Destroy(ITSFReader *reader);
 gboolean ITSFReader_ReadHeader(ITSFReader *reader) G_GNUC_WARN_UNUSED_RESULT;
 WStringList *ITSFReader_GetSections(ITSFReader *reader);
 gboolean ITSFReader_IsValidFile(ITSFReader *reader);
-gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntryForEach ForEach, gboolean AIncludeInternalFiles /* = TRUE */);
+gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntryForEach ForEach);
 gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name);
 CHMMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name); /* YOU must Free the stream */
 chm_error ITSFReader_GetError(ITSFReader *reader);
@@ -76,9 +106,12 @@ typedef struct _ChmReader {
 ChmReader *ChmReader_Create(CHMStream *AStream, gboolean FreeStreamOnDestroy);
 void ChmReader_Destroy(ChmReader *reader);
 
+chm_nametype chm_get_nametype(const char *name, size_t len);
+
 const char *ChmReader_ReadURLSTR(ChmReader *reader, uint32_t APosition);
-gboolean ChmReader_CheckCommonStreams(ChmReader *reader);
-const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, const char *const *ATitle); /* returns a url */
+char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position);
+/* returns a url */
+const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char **ATitle);
 ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML /* = FALSE */);
 ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML /* = FALSE */);
 ContextList *ChmReader_GetContextList(ChmReader *reader);

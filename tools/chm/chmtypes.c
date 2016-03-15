@@ -504,7 +504,7 @@ void CHMWindow_loadfromini(CHMWindow *win, const char *txt)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static char *xml_quote(const char *str)
+char *xml_quote(const char *str)
 {
 	return g_strdup_printf("\"%s\"", str ? str : "");
 }
@@ -606,9 +606,9 @@ void CHMWindow_savetoxml(CHMWindow *win, CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int xml_getintval(const char *tag, const char *attrib, ValidWindowFields *flags, ValidWindowFields x)
+static int xml_getintval(const char *tag, size_t taglen, const char *attrib, ValidWindowFields *flags, ValidWindowFields x)
 {
-	char *s = GetVal(tag, attrib);
+	char *s = GetVal(tag, taglen, attrib);
 	int result = 0;
 	if (s)
 	{
@@ -623,33 +623,35 @@ static int xml_getintval(const char *tag, const char *attrib, ValidWindowFields 
 
 void CHMWindow_loadfromxml(CHMWindow *win, const char *tag)
 {
+	size_t taglen = strlen(tag);
+	
 	CHMWindow_freestrings(win);
 	win->flags = 0;
 	win->strings_alloced = TRUE;
-	win->window_name.s = GetVal(tag, "name");
-	win->caption.s = GetVal(tag, "caption");
-	win->toc_file.s = GetVal(tag, "'toc_file");
-	win->index_file.s = GetVal(tag, "index_file");
-	win->default_file.s = GetVal(tag, "default_file");
-	win->home_button_file.s = GetVal(tag, "home_button_file");
-	win->jump1_url.s = GetVal(tag, "jump1_url");
-	win->jump1_text.s = GetVal(tag, "jump1_text");
-	win->jump2_url.s = GetVal(tag, "jump2_url");
-	win->jump2_text.s = GetVal(tag, "jump2_text");
-	win->win_properties = xml_getintval(tag, "win_properties", &win->flags, HHWIN_PARAM_PROPERTIES);
-	win->navpanewidth = xml_getintval(tag, "navpanewidth", &win->flags, HHWIN_PARAM_NAV_WIDTH);
-	win->buttons = xml_getintval(tag, "buttons", &win->flags, HHWIN_PARAM_TB_FLAGS);
-	win->pos.left = xml_getintval(tag, "left", &win->flags, HHWIN_PARAM_RECT);
-	win->pos.top = xml_getintval(tag, "top", &win->flags, HHWIN_PARAM_RECT);
-	win->pos.right = xml_getintval(tag, "right", &win->flags, HHWIN_PARAM_RECT);
-	win->pos.bottom = xml_getintval(tag, "bottom", &win->flags, HHWIN_PARAM_RECT);
-	win->styleflags = xml_getintval(tag, "styleflags", &win->flags, HHWIN_PARAM_STYLES);
-	win->xtdstyleflags = xml_getintval(tag, "xtdstyleflags", &win->flags, HHWIN_PARAM_EXSTYLES);
-	win->show_state = xml_getintval(tag, "show_state", &win->flags, HHWIN_PARAM_SHOWSTATE);
-	win->not_expanded = xml_getintval(tag, "not_expanded", &win->flags, HHWIN_PARAM_EXPANSION);
-	win->navtype = xml_getintval(tag, "navtype", &win->flags, HHWIN_PARAM_CUR_TAB);
-	win->tabpos = xml_getintval(tag, "tabpos", &win->flags, HHWIN_PARAM_TABPOS);
-	win->wm_notify_id = xml_getintval(tag, "wm_notify_id", &win->flags, HHWIN_PARAM_NOTIFY_ID);
+	win->window_name.s = GetVal(tag, taglen, "name");
+	win->caption.s = GetVal(tag, taglen, "caption");
+	win->toc_file.s = GetVal(tag, taglen, "toc_file");
+	win->index_file.s = GetVal(tag, taglen, "index_file");
+	win->default_file.s = GetVal(tag, taglen, "default_file");
+	win->home_button_file.s = GetVal(tag, taglen, "home_button_file");
+	win->jump1_url.s = GetVal(tag, taglen, "jump1_url");
+	win->jump1_text.s = GetVal(tag, taglen, "jump1_text");
+	win->jump2_url.s = GetVal(tag, taglen, "jump2_url");
+	win->jump2_text.s = GetVal(tag, taglen, "jump2_text");
+	win->win_properties = xml_getintval(tag, taglen, "win_properties", &win->flags, HHWIN_PARAM_PROPERTIES);
+	win->navpanewidth = xml_getintval(tag, taglen, "navpanewidth", &win->flags, HHWIN_PARAM_NAV_WIDTH);
+	win->buttons = xml_getintval(tag, taglen, "buttons", &win->flags, HHWIN_PARAM_TB_FLAGS);
+	win->pos.left = xml_getintval(tag, taglen, "left", &win->flags, HHWIN_PARAM_RECT);
+	win->pos.top = xml_getintval(tag, taglen, "top", &win->flags, HHWIN_PARAM_RECT);
+	win->pos.right = xml_getintval(tag, taglen, "right", &win->flags, HHWIN_PARAM_RECT);
+	win->pos.bottom = xml_getintval(tag, taglen, "bottom", &win->flags, HHWIN_PARAM_RECT);
+	win->styleflags = xml_getintval(tag, taglen, "styleflags", &win->flags, HHWIN_PARAM_STYLES);
+	win->xtdstyleflags = xml_getintval(tag, taglen, "xtdstyleflags", &win->flags, HHWIN_PARAM_EXSTYLES);
+	win->show_state = xml_getintval(tag, taglen, "show_state", &win->flags, HHWIN_PARAM_SHOWSTATE);
+	win->not_expanded = xml_getintval(tag, taglen, "not_expanded", &win->flags, HHWIN_PARAM_EXPANSION);
+	win->navtype = xml_getintval(tag, taglen, "navtype", &win->flags, HHWIN_PARAM_CUR_TAB);
+	win->tabpos = xml_getintval(tag, taglen, "tabpos", &win->flags, HHWIN_PARAM_TABPOS);
+	win->wm_notify_id = xml_getintval(tag, taglen, "wm_notify_id", &win->flags, HHWIN_PARAM_NOTIFY_ID);
 }
 
 /*** ---------------------------------------------------------------------- ***/

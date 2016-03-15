@@ -497,7 +497,7 @@ char *g_strup(char *s)
 
 /*** ---------------------------------------------------------------------- ***/
 
-void *g_slist_nth(GSList *list, unsigned int i)
+GSList *g_slist_nth(GSList *list, unsigned int i)
 {
 	GSList *l;
 	unsigned int index;
@@ -531,6 +531,58 @@ unsigned int g_slist_length(GSList *list)
 	for (l = list, index = 0; l != NULL; l = l->next, index++)
 		;
 	return index;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static GSList *g_slist_sort_merge(GSList * l1, GSList * l2, GCompareFunc compare_func)
+{
+	GSList list, *l;
+	int cmp;
+
+	l = &list;
+
+	while (l1 && l2)
+	{
+		cmp = compare_func(l1->data, l2->data);
+
+		if (cmp <= 0)
+		{
+			l = l->next = l1;
+			l1 = l1->next;
+		} else
+		{
+			l = l->next = l2;
+			l2 = l2->next;
+		}
+	}
+	l->next = l1 ? l1 : l2;
+
+	return list.next;
+}
+
+GSList *g_slist_sort(GSList *list, GCompareFunc compare_func)
+{
+	GSList *l1, *l2;
+
+	if (!list)
+		return NULL;
+	if (!list->next)
+		return list;
+
+	l1 = list;
+	l2 = list->next;
+
+	while ((l2 = l2->next) != NULL)
+	{
+		if ((l2 = l2->next) == NULL)
+			break;
+		l1 = l1->next;
+	}
+	l2 = l1->next;
+	l1->next = NULL;
+
+	return g_slist_sort_merge(g_slist_sort(list, compare_func), g_slist_sort(l2, compare_func), compare_func);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -705,6 +757,70 @@ gboolean g_utf8_validate(const char *str, ssize_t max_len, const char **end)
 	return TRUE;
 }
 
+/*** ---------------------------------------------------------------------- ***/
+
+int g_mkdir_with_parents(const char *pathname, int mode)
+{
+	char *fn, *p;
+	struct stat st;
+	int res;
+	
+	if (pathname == NULL || *pathname == '\0')
+	{
+		errno = EINVAL;
+		return -1;
+	}
+
+	fn = g_strdup(pathname);
+
+	p = fn;
+	if (G_IS_DIR_SEPARATOR(*p))
+	{
+		/* Skip initial slashes */
+		while (G_IS_DIR_SEPARATOR(*p))
+			p++;
+	}
+	
+	do
+	{
+		while (*p && !G_IS_DIR_SEPARATOR(*p))
+			p++;
+
+		if (!*p)
+			p = NULL;
+		else
+			*p = '\0';
+
+		res = stat(fn, &st);
+		if (res != 0)
+		{
+			if (mkdir(fn, mode) == -1 && errno != EEXIST)
+			{
+				int errno_save = errno;
+
+				g_free(fn);
+				errno = errno_save;
+				return -1;
+			}
+		} else if (!S_ISDIR(st.st_mode))
+		{
+			g_free(fn);
+			errno = ENOTDIR;
+			return -1;
+		}
+		if (p)
+		{
+			*p++ = G_DIR_SEPARATOR;
+			while (*p && G_IS_DIR_SEPARATOR(*p))
+				p++;
+		}
+	} while (p);
+
+	g_free(fn);
+
+	return 0;
+}
+
 #endif /* HAVE_GLIB */
 
 /*** ---------------------------------------------------------------------- ***/
@@ -730,6 +846,22 @@ void chomp(char **str)
 	if (empty(*str))
 	{
 		g_freep(str);
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+void convslash(char *str)
+{
+	char *p = str;
+	if (p != NULL)
+	{
+		while (*p)
+		{
+			if (G_IS_DIR_SEPARATOR(*p))
+				*p = G_DIR_SEPARATOR;
+			p++;
+		}
 	}
 }
 

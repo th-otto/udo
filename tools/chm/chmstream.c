@@ -11,6 +11,7 @@
 struct _CHMStream {
 	chmstream_type type;
 	chm_off_t len;
+	gboolean owned;
 	gboolean (*close)(CHMStream *stream);
 	gboolean (*seek)(CHMStream *stream, chm_off_t pos, int whence);
 	chm_off_t (*tell)(CHMStream *stream);
@@ -132,8 +133,9 @@ CHMStream *CHMStream_CreateForFile(FILE *fp)
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_file;
-	stream->file = fp;
+	stream->owned = FALSE;
 	stream->len = 0;
+	stream->file = fp;
 	stream->close = file_close;
 	stream->tell = file_tell;
 	stream->seek = file_seek;
@@ -249,6 +251,7 @@ CHMMemoryStream *CHMStream_CreateMem(size_t size)
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_mem;
+	stream->owned = FALSE;
 	stream->mem.base = g_new(unsigned char, size);
 	if (stream->mem.base == NULL)
 	{
@@ -297,6 +300,14 @@ chm_off_t CHMStream_Size(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
+void CHMStream_TakeOwner(CHMStream *stream, gboolean owned)
+{
+	if (stream)
+		stream->owned = owned;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 unsigned char *CHMStream_Memptr(CHMStream *stream)
 {
 	if (stream == NULL || stream->type != chm_stream_mem)
@@ -322,7 +333,7 @@ FILE *CHMStream_filep(CHMStream *stream)
 
 gboolean CHMStream_close(CHMStream *stream)
 {
-	if (stream == NULL)
+	if (stream == NULL || stream->owned)
 		return FALSE;
 	return stream->close(stream);
 }
@@ -373,4 +384,54 @@ int CHMStream_fputc(CHMStream *stream, int c)
 {
 	assert(stream);
 	return stream->fputc(stream, c);
+}
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
+uint16_t chmstream_read_le16(CHMStream *stream)
+{
+	uint32_t c1, c2;
+	
+	c1 = CHMStream_fgetc(stream);
+	c2 = CHMStream_fgetc(stream);
+	return (c2 << 8) | c1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+uint32_t chmstream_read_le32(CHMStream *stream)
+{
+	uint32_t c1, c2, c3, c4;
+	
+	c1 = CHMStream_fgetc(stream);
+	c2 = CHMStream_fgetc(stream);
+	c3 = CHMStream_fgetc(stream);
+	c4 = CHMStream_fgetc(stream);
+	return (c4 << 24) | (c3 << 16) | (c2 << 8) | c1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+uint64_t chmstream_read_le64(CHMStream *stream)
+{
+	uint64_t l1, l2;
+	
+	l1 = chmstream_read_le32(stream);
+	l2 = chmstream_read_le32(stream);
+	return (l2 << 32) | l1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+uint32_t chmstream_read_be32(CHMStream *stream)
+{
+	uint32_t c1, c2, c3, c4;
+	
+	c1 = CHMStream_fgetc(stream);
+	c2 = CHMStream_fgetc(stream);
+	c3 = CHMStream_fgetc(stream);
+	c4 = CHMStream_fgetc(stream);
+	return (c1 << 24) | (c2 << 16) | (c3 << 8) | c4;
 }

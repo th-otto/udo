@@ -48,4 +48,19 @@
 
 extern int verbose;
 
+#ifndef G_DIR_SEPARATOR
+#  define G_DIR_SEPARATOR '/'
+#endif
+
+/*
+ * we need to deal with path names
+ * coming either from filesystem or from ITSF storage files
+ */
+#undef G_IS_DIR_SEPARATOR
+#define G_IS_DIR_SEPARATOR(c) ((c) == '/' || (c) == '\\')
+
+void CHMStream_TakeOwner(CHMStream *stream, gboolean owned);
+
+int g_mkdir_with_parents(const char *pathname, int mode);
+
 #endif /* __CHMTOOLS_H__ */

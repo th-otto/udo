@@ -8,18 +8,20 @@
 /*
  * Return tag name, case preserved
  */
-char *GetTagName(const char *tag)
+char *GetTagName(const char *tag, size_t len)
 {
 	const char *P;
 	const char *S;
+	const char *end;
 	
 	P = tag;
-	while (*P == '<' || *P == ' ' || *P == '\t')
+	end = tag + len;
+	while (P < end && (*P == '<' || *P == ' ' || *P == '\t'))
 	{
 		P++;
 	}
 	S = P;
-	while (*P != '\0' && *P != ' ' && *P != '>')
+	while (P < end && *P != '\0' && *P != ' ' && *P != '>')
 	{
 		P++;
 	}
@@ -33,9 +35,9 @@ char *GetTagName(const char *tag)
 /*
  * Return tag name in uppercase
  */
-char *GetUpTagName(const char *tag)
+char *GetUpTagName(const char *tag, size_t len)
 {
-	return g_strup(GetTagName(tag));
+	return g_strup(GetTagName(tag, len));
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -43,7 +45,7 @@ char *GetUpTagName(const char *tag)
 /*
  * Return name=value pair ignoring case of NAME, preserving case of VALUE
  */
-char *GetNameValPair(const char *tag, const char *attribname_ci)
+char *GetNameValPair(const char *tag, size_t taglen, const char *attribname_ci)
 {
 	const char *P;
 	const char *S;
@@ -54,12 +56,12 @@ char *GetNameValPair(const char *tag, const char *attribname_ci)
 	char c;
 	char *result = NULL;
 	
-	if (empty(tag) || empty(attribname_ci))
+	if (taglen == 0 || empty(tag) || empty(attribname_ci))
 		return NULL;
 	/* must be space before case insensitive NAME, i.e. <a HREF="" STYLE="" */
 	UpperAttrib = g_strconcat(" ", attribname_ci, NULL);
 	g_strup(UpperAttrib);
-	UpperTag = g_strup(g_strdup(tag));
+	UpperTag = g_strup(g_strndup(tag, taglen));
 	P = UpperTag;
 	S = strstr(P, UpperAttrib);
 	if (S != NULL)
@@ -143,10 +145,10 @@ char *GetValFromNameVal(const char *namevalpair)
 /*
  * return value of an attribute (attribname_ci), case ignored for NAME portion, but return value case is preserved
  */
-char *GetVal(const char *tag, const char *attribname_ci)
+char *GetVal(const char *tag, size_t taglen, const char *attribname_ci)
 {
 	/* returns full name=value pair */
-	char *namevalpair = GetNameValPair(tag, attribname_ci);
+	char *namevalpair = GetNameValPair(tag, taglen, attribname_ci);
 	/* extracts value portion only */
 	char *result = GetValFromNameVal(namevalpair);
 	g_free(namevalpair);

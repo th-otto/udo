@@ -18,6 +18,7 @@ chmls_SOURCES = \
 	chmtypes.c chmtypes.h \
 	chmstream.c chmstream.h \
 	chmreader.c chmreader.h \
+	chmsitemap.c chmsitemap.h \
 	chmfiftimain.c chmfiftimain.h \
 	chmglib.c \
 	lzxdec.c lzx.h \

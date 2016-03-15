@@ -135,6 +135,7 @@ typedef struct _CHMWindow {
 #define CHM_WIN_MINSIZE 0xbc
 #define CHM_WIN_V3SIZE 0xc4
 
+char *xml_quote(const char *str);
 CHMWindow *CHMWindow_Create(const char *s);
 void CHMWindow_Destroy(CHMWindow *win);
 void CHMWindow_loadfromini(CHMWindow *win, const char *txt);
@@ -261,47 +262,56 @@ typedef struct _TopicEntry {
 	uint16_t Unknown;		/* 0,2,4,8,10,12,16,32 */
 } TopicEntry;
 
+/*
+ * contents of $WWKeywordLinks/Btree (index sitemap)
+ *         and $WWAssociativeLinks/Btree (Alinks)
+ */
 typedef struct _BtreeHeader {
-	char ident[2];				/* $3B $29 */
-	uint16_t flags;				/* bit $2 is always 1, bit $0400 1 if dir? (always on) */
-	uint16_t blocksize;			/* size of blocks (2048) */
-	char dataformat[16];		/* "X44" always the same, see specs. */
-	uint32_t unknown0;			/* always 0 */
-	uint32_t lastlstblock;		/* index of last listing block in the file */
-	uint32_t indexrootblock;	/* Index of the root block in the file. */
-	uint32_t unknown1;			/* always -1 */
-	uint32_t nrblock;			/* Number of blocks */
-	uint16_t treedepth;			/* The depth of the tree of blocks (1 if no index blocks, 2 one level of index blocks, ...) */
-	uint32_t nrkeywords;		/* number of keywords in the file. */
-	uint32_t codepage;			/* Windows code page identifier (usually 1252 - Windows 3.1 US (ANSI)) */
-	uint32_t lcid;				/* LCID from the HHP file. */
-	uint32_t ischm;				/* 0 if this a BTREE and is part of a CHW file, 1 if it is a BTree and is part of a CHI or CHM file */
-	uint32_t unknown2;			/* Unknown. Almost always 10031. Also 66631 (accessib.chm, ieeula.chm, iesupp.chm, iexplore.chm, msoe.chm, mstask.chm, ratings.chm, wab.chm). */
-	uint32_t unknown3;			/* unknown 0 */
-	uint32_t unknown4;			/* unknown 0 */
-	uint32_t unknown5;			/* unknown 0 */
+	/* 0000 */ char ident[2];				/* $3B $29 */
+	/* 0002 */ uint16_t flags;				/* bit $2 is always 1, bit $0400 1 if dir? (always on) */
+	/* 0004 */ uint16_t blocksize;			/* size of blocks (2048) */
+	/* 0006 */ char dataformat[16];			/* "X44" always the same, see specs. */
+	/* 0016 */ uint32_t unknown0;			/* always 0 */
+	/* 001a */ uint32_t lastlistblock;		/* index of last listing block in the file */
+	/* 001e */ uint32_t indexrootblock;		/* Index of the root block in the file. */
+	/* 0022 */ uint32_t unknown1;			/* always -1 */
+	/* 0026 */ uint32_t nrblock;			/* Number of blocks */
+	/* 002a */ uint16_t treedepth;			/* The depth of the tree of blocks (1 if no index blocks, 2 one level of index blocks, ...) */
+	/* 002c */ uint32_t nrkeywords;			/* number of keywords in the file. */
+	/* 0030 */ uint32_t codepage;			/* Windows code page identifier (usually 1252 - Windows 3.1 US (ANSI)) */
+	/* 0034 */ uint32_t lcid;				/* LCID from the HHP file. */
+	/* 0038 */ uint32_t ischm;				/* 0 if this a BTREE and is part of a CHW file, 1 if it is a BTree and is part of a CHI or CHM file */
+	/* 003c */ uint32_t unknown2;			/* Unknown. Almost always 10031. Also 66631 (accessib.chm, ieeula.chm, iesupp.chm, iexplore.chm, msoe.chm, mstask.chm, ratings.chm, wab.chm). */
+	/* 0040 */ uint32_t unknown3;			/* unknown 0 */
+	/* 0044 */ uint32_t unknown4;			/* unknown 0 */
+	/* 0048 */ uint32_t unknown5;			/* unknown 0 */
+	/* 004c */ 
 } BtreeHeader;
+#define SIZEOF_BTREEHEADER 0x4c
 
 typedef struct _BtreeBlockHeader {
-	uint16_t Length;			/* Length of free space at the } of the block. */
+	uint16_t Length;			/* Length of free space at the end of the block. */
 	uint16_t NumberOfEntries;	/* Number of entries in the block. */
 	uint32_t IndexOfPrevBlock;	/* Index of the previous block. -1 if this is the first listing block. */
 	uint32_t IndexOfNextBlock;	/* Index of the next block. -1 if this is the last listing block. */
-} BtreeBlockHeader, *PBtreeBlockHeader;
+} BtreeBlockHeader;
+#define SIZEOF_BTREEBLOCKHEADER 0x000c
 
 typedef struct _BtreeBlockEntry {
 	uint16_t isseealso;		/* 2 if this keyword is a See Also keyword, 0 if it is not. */
 	uint16_t entrydepth;	/* Depth of this entry into the tree. */
 	uint32_t charindex;		/* Character index of the last keyword in the ", " separated list. */
 	uint32_t unknown0;		/* 0 (unknown) */
-	uint32_t NrPairs;		/* Number of Name, Local pairs */
-} BtreeBlockEntry, *PBtreeBlockEntry;
+	uint32_t nrpairs;		/* Number of Name, Local pairs */
+} BtreeBlockEntry;
+#define SIZEOF_BTREEBLOCKENTRY 0x0010
 
 typedef struct _BtreeIndexBlockHeader {
 	uint16_t length;			/* Length of free space at the } of the block. */
 	uint16_t NumberOfEntries;	/* Number of entries in the block. */
 	uint32_t IndexOfChildBlock;	/* Index of Child Block */
-} BtreeIndexBlockHeader, *PBtreeIndexBlockHeader;
+} BtreeIndexBlockHeader;
+#define SIZEOF_BTREEINDEXBLOCKHEADER 0x0008
 
 typedef struct _BtreeIndexBlockEntry {
 	uint16_t isseealso;		/* 2 if this keyword is a See Also keyword, 0 if it is not. */
@@ -309,7 +319,8 @@ typedef struct _BtreeIndexBlockEntry {
 	uint32_t charindex;		/* Character index of the last keyword in the ", " separated list. */
 	uint32_t unknown0;		/* 0 (unknown) */
 	uint32_t NrPairs;		/* Number of Name, Local pairs */
-} BtreeIndexBlockEntry, *PBtreeIndexBlockEntry;
+} BtreeIndexBlockEntry;
+#define SIZEOF_BTREEINDEXBLOCKENTRY 0x0010
 
 int PageBookInfoRecordSize(PTOCEntryPageBookInfo ARecord);
 

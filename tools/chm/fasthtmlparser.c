@@ -8,16 +8,18 @@
 /*
  * default dummy "do nothing" events if events are unassigned
  */
-void HTMLParser_NilOnFoundTag(const char *ActualTag, size_t len)
+void HTMLParser_NilOnFoundTag(void *obj, const char *ActualTag, size_t len)
 {
+	UNUSED(obj);
 	UNUSED(ActualTag);
 	UNUSED(len);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-void HTMLParser_NilOnFoundText(const char *Text, size_t len)
+void HTMLParser_NilOnFoundText(void *obj, const char *Text, size_t len)
 {
+	UNUSED(obj);
 	UNUSED(Text);
 	UNUSED(len);
 }
@@ -26,7 +28,7 @@ void HTMLParser_NilOnFoundText(const char *Text, size_t len)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-HTMLParser *HTMLParser_Create(const char *sRaw)
+HTMLParser *HTMLParser_Create(const char *sRaw, size_t size)
 {
 	HTMLParser *parser;
 	
@@ -40,7 +42,9 @@ HTMLParser *HTMLParser_Create(const char *sRaw)
 	parser->OnFoundTag = HTMLParser_NilOnFoundTag;
 	parser->OnFoundText = HTMLParser_NilOnFoundText;
 	parser->Raw = sRaw;
+	parser->size = size;
 	parser->FCurrent = NULL;
+	parser->obj = NULL;
 	return parser;
 }
 
@@ -75,20 +79,22 @@ void HTMLParser_Exec(HTMLParser *parser)
 	const char *TagStart;
 	const char *TextStart;
 	const char *P;
+	const char *end;
 	char c;
 	
 	parser->Done = FALSE;
 	P = parser->Raw;
 	if (P == NULL)
 		return;
-	TL = strlen(P);
+	TL = parser->size;
+	end = P + TL;
 	I = 0;
 
 	TagStart = NULL;
 	do {
 		TextStart = P;
 		/* Get next tag position */
-		while (*P != '<' && *P != '\0')
+		while (I < TL && *P != '<' && *P != '\0')
 		{
 			++P;
 			++I;
@@ -107,14 +113,14 @@ void HTMLParser_Exec(HTMLParser *parser)
 			L = P - TextStart;
 			/* Yes, copy to buffer */
 			parser->FCurrent = P;
-			parser->OnFoundText(TextStart, L);
+			parser->OnFoundText(parser->obj, TextStart, L);
 		} else
 		{
 			TextStart = NULL;
 		}
 		
 		TagStart = P;
-		while (*P != '>' && *P != '\0')
+		while (I < TL && *P != '>' && *P != '\0')
 		{
 			/* Find string in tag */
 			if (*P == '"' || *P == '\'')
@@ -123,7 +129,7 @@ void HTMLParser_Exec(HTMLParser *parser)
 				P++;
 				I++;
 				/* Skip until string end */
-				while (*P != '\0' && *P != c)
+				while (I < TL && *P != '\0' && *P != c)
 				{
 					P++;
 					I++;
@@ -142,7 +148,7 @@ void HTMLParser_Exec(HTMLParser *parser)
 		/* Copy this tag to buffer */
 		L = P - TagStart + 1;
 		parser->FCurrent = P;
-		parser->OnFoundTag(TagStart, L);
+		parser->OnFoundTag(parser->obj, TagStart, L);
 		P++;
 		I++;
 		if (I >= TL)

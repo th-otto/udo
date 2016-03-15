@@ -4,20 +4,11 @@
 
 char const gl_program_name[] = "chmls";
 
-typedef struct _ListObject {
-	uint32_t section;
-	uint32_t count;
-	gboolean donotpage;
-	gboolean nameonly;
-	FILE *out;
-} ListObject;
-
 typedef enum _CmdEnum {
 	cmdnone,
 	cmdlist,
 	cmdextract,
 	cmdextractall,
-	cmdunblock,
 	cmdextractalias,
 	cmdextracttoc,
 	cmdextractindex,
@@ -32,7 +23,6 @@ static const char *const CmdNames[] = {
 	"list",
 	"extract",
 	"extractall",
-	"unblock",
 	"extractalias",
 	"extracttoc",
 	"extractindex",
@@ -48,55 +38,81 @@ enum {
 	OPTION_NAME_ONLY = 'n',
 	OPTION_VERSION = 'V',
 	OPTION_VERBOSE = 'v',
+	OPTION_NULLS = '0',
+	
+	OPTION_INTERNALS = 256,
+	OPTION_NO_INTERNALS,
+	OPTION_FORCEXML,
 };
 
 static struct option const long_options[] = {
 	{ "help", no_argument, NULL, OPTION_HELP },
-	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
 	{ "name-only", no_argument, NULL, OPTION_NAME_ONLY },
+	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
 	{ "verbose", no_argument, NULL, OPTION_VERBOSE },
+	{ "internals", no_argument, NULL, OPTION_INTERNALS },
+	{ "no-internals", no_argument, NULL, OPTION_NO_INTERNALS },
+	{ "null", no_argument, NULL, OPTION_NULLS },
+	{ "forcexml", no_argument, NULL, OPTION_FORCEXML },
 	
 	{ NULL, no_argument, NULL, 0 }
 };
 
 int verbose = 0;
-static gboolean donotpage = FALSE;
 static gboolean nameonly = FALSE;
+static gboolean include_internals = TRUE;
+static gboolean printnulls = FALSE;
+static gboolean forcexml = FALSE;
 
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static void ListObject_OnFileEntry(void *obj, const char *Name, chm_off_t Offset, chm_off_t UncompressedSize, uint32_t ASection)
+typedef struct _ListObject {
+	uint32_t section;
+	uint32_t count;
+	uint32_t listed;
+	gboolean nameonly;
+	gboolean printnulls;
+	gboolean include_internals;
+	FILE *out;
+} ListObject;
+
+static void ListObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 {
 	ListObject *list = (ListObject *)obj;
 	
 	++list->count;
-	if (list->section != (uint32_t)-1 && ASection != list->section)
+	if (!list->include_internals && info->type != chm_name_external)
 		return;
-	if (list->count == 1)
+	if (list->section != (uint32_t)-1 && info->section != list->section)
+		return;
+	if (list->listed == 0)
 	{
 		if (!list->nameonly)
 			fprintf(list->out, _("<Section>   <Offset> <UnCompSize> "));
-		fprintf(list->out, _("<Name>\n"));
+		if (!list->nameonly)
+			fprintf(list->out, _("<Name>\n"));
 	}
+	++list->listed;
 	if (!list->nameonly)
 	{
-		fprintf(list->out, _("%9u %10" PRIu64 " %12" PRIu64 " "), ASection, Offset, UncompressedSize);
+		fprintf(list->out, _("%9u %10" PRIu64 " %12" PRIu64 " "), info->section, info->offset, info->uncompressedsize);
 	}
-	fprintf(list->out, "%s\n", Name);
+	fputs(info->name, list->out);
+	fputc(list->nameonly && list->printnulls ? 0 : '\n', list->out);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
 static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 {
-	ListObject JunkObject;
+	ListObject listObject;
 	FILE *fp;
 	CHMStream *Stream;
-	ITSFReader *ITS;
-	gboolean result = TRUE;
+	ITSFReader *itsf;
+	gboolean result = FALSE;
 	chm_error err;
 	
 	if ((fp = fopen(filename, "rb")) == NULL)
@@ -106,24 +122,32 @@ static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 	}
 	Stream = CHMStream_CreateForFile(fp);
 	
-	JunkObject.section = section;
-	JunkObject.count = 0;
-	JunkObject.donotpage = donotpage;
-	JunkObject.nameonly = nameonly;
-	JunkObject.out = out;
+	listObject.section = section;
+	listObject.count = 0;
+	listObject.listed = 0;
+	listObject.nameonly = nameonly;
+	listObject.printnulls = printnulls;
+	listObject.include_internals = include_internals;
+	listObject.out = out;
 	
-	ITS = ITSFReader_Create(Stream, TRUE);
-	if ((err = ITSFReader_GetError(ITS)) != CHM_ERR_NO_ERR)
+	itsf = ITSFReader_Create(Stream, TRUE);
+	if ((err = ITSFReader_GetError(itsf)) != CHM_ERR_NO_ERR)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
-		result = FALSE;
 	} else
 	{
-		ITSFReader_GetCompleteFileList(ITS, &JunkObject, ListObject_OnFileEntry, TRUE);
+		result = TRUE;
+		ITSFReader_GetCompleteFileList(itsf, &listObject, ListObject_OnFileEntry);
 	
-		fprintf(out, _("Total Files in chm: %u\n"), JunkObject.count);
+		if (!listObject.nameonly)
+		{
+			if (listObject.listed == listObject.count)
+				fprintf(out, _("Total Files in chm: %u\n"), listObject.count);
+			else
+				fprintf(out, _("Total Files in chm: %u (%u listed)\n"), listObject.count, listObject.listed);
+		}
 	}
-	ITSFReader_Destroy(ITS);
+	ITSFReader_Destroy(itsf);
 
 	return result;
 }
@@ -132,34 +156,235 @@ static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean ExtractFile(const char *chm, const char *readfrom, const char *saveto)
+static gboolean savetofile(CHMStream *from, FILE *out)
 {
-	UNUSED(chm);
-	UNUSED(readfrom);
-	UNUSED(saveto);
-	return FALSE;
+	chm_off_t size;
+	size_t count, written;
+#define COPY_BUFSIZE 4096
+	char buf[COPY_BUFSIZE];
+	
+	size = CHMStream_Size(from);
+	while (size)
+	{
+		count = size > COPY_BUFSIZE ? COPY_BUFSIZE : size;
+		if (CHMStream_read(from, buf, count) == FALSE)
+		{
+			return FALSE;
+		}
+		written = fwrite(buf, 1, count, out);
+		if (written != count)
+		{
+			return FALSE;
+		}
+		size -= count;
+	}
+	return TRUE;
+}
+
+static gboolean ExtractFile(const char *filename, const char *readfrom, const char *saveto)
+{
+	FILE *fp;
+	CHMStream *stream;
+	gboolean result = FALSE;
+	chm_error err;
+	CHMMemoryStream *m = NULL;
+	ITSFReader *itsf;
+	FILE *out = NULL;
+	
+	if ((fp = fopen(filename, "rb")) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	stream = CHMStream_CreateForFile(fp);
+	itsf = ITSFReader_Create(stream, TRUE);
+	if ((err = ITSFReader_GetError(itsf)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((m = ITSFReader_GetObject(itsf, readfrom)) == NULL)
+	{
+		fprintf(stderr, _("Can't find file %s in %s\n"), readfrom, filename);
+	} else if ((out = fopen(saveto, "wb")) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
+	} else
+	{
+		printf(_("Extracting ms-its:/%s::%s to %s\n"), filename, readfrom, saveto);
+		result = savetofile(m, out);
+		if (result == FALSE)
+			fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
+		fclose(out);
+	}
+	
+	CHMStream_close(m);
+	ITSFReader_Destroy(itsf);
+	return result;
 }
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean ExtractFileAll(const char *chm, const char *dirto2)
+typedef struct _ExtractObject {
+	const char *basedir;
+	ITSFReader *r;
+	gboolean include_internals;
+	int errors;
+} ExtractObject;
+
+static char *craftpath(const char *path, const char *filename)
 {
-	UNUSED(chm);
-	UNUSED(dirto2);
-	return FALSE;
+	size_t lenpath, lenfn;
+	gboolean pathends, filenameends;
+	char *result;
+	
+	lenpath = strlen(path);
+	lenfn = strlen(filename);
+	if (lenpath == 0)
+	{
+		result = g_strdup(filename);
+	} else
+	{
+		pathends = FALSE;
+		filenameends = FALSE;
+		
+		if (lenpath > 0 && (path[lenpath -1] == '/' || path[lenpath -1] == '\\'))
+			pathends = TRUE;
+	
+		if (lenfn > 0 && (filename[0] == '/' || filename[0] == '\\'))
+			filenameends = TRUE;
+		
+		if (pathends && filenameends)
+			result = g_strconcat(path, filename + 1, NULL);
+		else if (pathends || filenameends)
+			result = g_strconcat(path, filename, NULL);
+		else
+			result = g_strconcat(path, "/", filename, NULL);
+	}
+	convslash(result);
+	
+	return result;
 }
 
-/******************************************************************************/
-/*** ---------------------------------------------------------------------- ***/
-/******************************************************************************/
 
-static gboolean unblockchms(int argc, const char **argv)
+static gboolean mkleadingdirectories(const char *filename)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-	return FALSE;
+	char *trie = g_strdup(filename);
+	char *p;
+	int result;
+	
+	/*
+	 * cut off filename first
+	 */
+	p = strrchr(trie, G_DIR_SEPARATOR);
+	if (p == NULL)
+	{
+		g_free(trie);
+		return TRUE;
+	}
+	*p = '\0';
+	result = g_mkdir_with_parents(trie, 0755);
+	g_free(trie);
+	return result == 0;
+}
+
+
+static void ExtractObject_OnFileEntry(void *obj, const ChmFileInfo *info)
+{
+	ExtractObject *list = (ExtractObject *)obj;
+	CHMMemoryStream *mem;
+	
+	if (info->namelen > 0 && info->name[info->namelen - 1] == '/')
+	{
+		fprintf(stderr, _("Skipping directory %s\n"), info->name);
+		return;
+	}
+	if (info->uncompressedsize == 0)
+	{
+		fprintf(stderr, _("Skipping empty file %s\n"), info->name);
+		return;
+	}
+	if (!list->include_internals && info->type != chm_name_external)
+	{
+		fprintf(stderr, _("Skipping internal file %s\n"), info->name);
+		return;
+	}
+	mem = ITSFReader_GetObject(list->r, info->name);
+	if (mem != NULL)
+	{
+		FILE *out;
+		char *saveto;
+
+		saveto = craftpath(list->basedir, info->name);
+		mkleadingdirectories(saveto);
+		
+		if ((out = fopen(saveto, "wb")) == NULL)
+		{
+			fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
+			list->errors++;
+		} else
+		{
+			if (savetofile(mem, out) == FALSE)
+			{
+				fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
+				list->errors++;
+			}
+			fclose(out);
+		}		
+		CHMStream_close(mem);
+		g_free(saveto);
+	} else
+	{
+		fprintf(stderr, _("Can't extract %s\n"), info->name);
+		list->errors++;
+	}
+}
+
+static gboolean ExtractFileAll(const char *filename, const char *dirto)
+{
+	FILE *fp;
+	CHMStream *stream;
+	gboolean result = FALSE;
+	chm_error err;
+	ITSFReader *itsf;
+	struct stat st;
+	ExtractObject extractObject;
+	
+	if ((fp = fopen(filename, "rb")) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+
+	if (stat(dirto, &st) != 0)
+	{
+		if (mkdir(dirto, 0755) != 0)
+		{
+			fprintf(stderr, "%s: %s: %s\n", gl_program_name, dirto, strerror(errno));
+			fclose(fp);
+			return FALSE;
+		}
+	}
+	
+	stream = CHMStream_CreateForFile(fp);
+	itsf = ITSFReader_Create(stream, TRUE);
+	
+	extractObject.basedir = dirto;
+	extractObject.r = itsf;
+	extractObject.include_internals = include_internals;
+	extractObject.errors = 0;
+	
+	if ((err = ITSFReader_GetError(itsf)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else
+	{
+		ITSFReader_GetCompleteFileList(itsf, &extractObject, ExtractObject_OnFileEntry);
+		result = extractObject.errors == 0;
+	}
+	
+	ITSFReader_Destroy(itsf);
+	return result;
 }
 
 /******************************************************************************/
@@ -208,7 +433,7 @@ static gboolean extractalias(int argc, const char **argv)
 	else
 		prefixfn = changefileext(filename, NULL);
 	if (argc > 2)
-		symbolname = argv[1];
+		symbolname = argv[2];
 	
 	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
@@ -217,7 +442,7 @@ static gboolean extractalias(int argc, const char **argv)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((list = ChmReader_GetContextList(r)) == NULL)
 	{
-		fprintf(stderr, "This CHM doesn''t contain a #IVB internal file.\n");
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#IVB");
 	} else
 	{
 		outname = g_strconcat(prefixfn, ".ali", NULL);
@@ -270,10 +495,51 @@ static gboolean extractalias(int argc, const char **argv)
 
 static gboolean extracttocindex(int argc, const char **argv, SiteMapType sttype)
 {
-	UNUSED(argc);
-	UNUSED(argv);
-	UNUSED(sttype);
-	return FALSE;
+	const char *filename = argv[0];
+	char *extractfn;
+	FILE *fp;
+	ChmReader *r;
+	CHMFileStream *fs;
+	gboolean result = FALSE;
+	chm_error err;
+	ChmSiteMap *sitemap;
+	
+	if ((fp = fopen(filename, "rb")) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	if (argc > 1)
+		extractfn = g_strdup(argv[1]);
+	else
+		extractfn = changefileext(filename, sttype == stTOC ? ".hhc" : ".hhk");
+	
+	fs = CHMStream_CreateForFile(fp);
+	r = ChmReader_Create(fs, TRUE);
+	
+	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((sitemap = sttype == stTOC ? ChmReader_GetTOCSitemap(r, forcexml) : ChmReader_GetIndexSitemap(r, forcexml)) == NULL)
+	{
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), sttype == stTOC ? "#TOCIDX" : "$WWKeywordLinks");
+	} else
+	{
+		if (ChmSiteMap_SaveToFile(sitemap, extractfn) == FALSE)
+		{
+			fprintf(stderr, "%s: %s: %s\n", gl_program_name, extractfn, strerror(errno));
+		} else
+		{
+			result = TRUE;
+			if (strcmp(extractfn, "-") != 0)
+				printf(_("extracted %s to %s\n"), sttype == stTOC ? "TOC" : "Index", extractfn);
+		}
+		ChmSiteMap_Destroy(sitemap);
+	}
+
+	g_free(extractfn);
+	ChmReader_Destroy(r);
+	return result;
 }
 
 /******************************************************************************/
@@ -333,7 +599,7 @@ static gboolean printidxhdr(FILE *out, const char *filename)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((idx = ChmReader_GetIdxhdr(r)) == NULL)
 	{
-		fprintf(stderr, "This CHM doesn''t contain a #IDXHDR internal file.\n");
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#IDXHDR");
 	} else
 	{
 		result = TRUE;
@@ -376,7 +642,7 @@ static gboolean printsystem(FILE *out, const char *filename)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((sys = ChmReader_GetSystem(r)) == NULL)
 	{
-		fprintf(stderr, "This CHM doesn''t contain a #SYSTEM internal file. Odd.\n");
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file. Odd.\n"), "#SYSTEM");
 	} else
 	{
 		result = TRUE;
@@ -456,7 +722,7 @@ static gboolean printwindows(FILE *out, const char *filename)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((windows = ChmReader_GetWindows(r)) == NULL)
 	{
-		fprintf(stderr, "This CHM doesn''t contain a #WINDOWS internal file. Odd.\n");
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file. Odd.\n"), "#WINDOWS");
 	} else
 	{
 		const GSList *l;
@@ -601,9 +867,72 @@ static gboolean printwindows(FILE *out, const char *filename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean printtopics(const char *chm)
+static gboolean printtopics(FILE *out, const char *filename)
 {
-	UNUSED(chm);
+	FILE *fp;
+	CHMFileStream *fs;
+	ChmReader *r;
+	gboolean result = FALSE;
+	chm_error err;
+	CHMMemoryStream *m = NULL;
+	uint32_t i, entries;
+	uint32_t cnt;
+	
+	if ((fp = fopen(filename, "rb")) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	fs = CHMStream_CreateForFile(fp);
+	r = ChmReader_Create(fs, TRUE);
+	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((m = ChmReader_GetObject(r, "/#TOPICS")) == NULL)
+	{
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#TOPICS");
+	} else
+	{
+		result = TRUE;
+		entries = CHMStream_Size(m) / 16;
+		for (i = 0; i < entries; i++)
+		{
+			fprintf(out, _("#TOPICS entry : %u\n"), i);
+			cnt = chmstream_read_le32(m);
+			fprintf(out, _(" TOCIDX index : %d\n"), cnt);
+			fprintf(out, _(" Tag name     : "));
+			cnt = chmstream_read_le32(m);
+			if (cnt == 0xffffffff)
+			{
+				fprintf(out, "%d\n", cnt);
+			} else
+			{
+				char *s = ChmReader_ReadStringsEntry(r, cnt);
+				fprintf(out, "$%08x: %s\n", cnt, printnull(s));
+				g_free(s);
+			}
+			fprintf(out, _(" Tag value    : "));
+			cnt = chmstream_read_le32(m);
+			if (cnt == 0xffffffff)
+			{
+				fprintf(out, "%d\n", cnt);
+			} else
+			{
+				const char *s = ChmReader_ReadURLSTR(r, cnt);
+				fprintf(out, "$%08x: %s\n", cnt, printnull(s));
+			}
+			cnt = chmstream_read_le16(m);
+			fprintf(out, _(" contents val : %d (%s)\n"), cnt,
+				cnt == 2 ? _("not in contents") :
+				cnt == 6 ? _("in contents") :
+				"unknown");
+			cnt = chmstream_read_le16(m);
+			fprintf(out, _(" unknown val  : %d (0,2,4,8,10,12,16,32)\n"), cnt);
+		}
+	}
+	
+	CHMStream_close(m);
+	ChmReader_Destroy(r);
 	return FALSE;
 }
 
@@ -626,8 +955,10 @@ static void usage(FILE *out)
 	fprintf(out, "\n");
 	fprintf(out, _("Switches :\n"));
 	fprintf(out, _(" -h, --help      : this screen\n"));
-	fprintf(out, _(" -p, --no-page   : do not page list output\n"));
 	fprintf(out, _(" -n, --name-only : only show \"name\" column in list output\n"));
+	fprintf(out, _(" -v, --verbose   : increase verbosity\n"));
+	fprintf(out, _(" -0, --null      : use null characters to separate filenames\n"));
+	fprintf(out, _("     --forcexml  : read text version of file objects\n"));
 	fprintf(out, "\n");
 	fprintf(out, _("Where command is one of the following or if omitted, equal to LIST.\n"));
 	fprintf(out, _(" list           <filename> [section number]\n"));
@@ -638,9 +969,6 @@ static void usage(FILE *out)
 	fprintf(out, _(" extractall     <chm filename> [directory]\n"));
 	fprintf(out, _("                Extracts all files from archive <filename> to directory\n"));
 	fprintf(out, _("                <directory>\n"));
-	fprintf(out, _(" unblockchm     <filespec1> [filespec2] ...\n"));
-	fprintf(out, _("                Mass unblocks (XPsp2+) the relevant CHMs. Multiple files\n"));
-	fprintf(out, _("                and wildcards allowed\n"));
 	fprintf(out, _(" extractalias   <chmfilename> [basefilename] [symbolprefix]\n"));
 	fprintf(out, _("                Extracts context info from file <chmfilename>\n"));
 	fprintf(out, _("                to a <basefilename>.h and <basefilename>.ali,\n"));
@@ -671,23 +999,6 @@ static void WrongNrParam(CmdEnum cmd, int number)
 
 /*** ---------------------------------------------------------------------- ***/
 
-#if 0
-static void test(void)
-{
-	CHMWindow *win;
-	CHMStream *stream;
-	
-	stream = CHMStream_CreateForFile(stdout);
-	win = CHMWindow_Create("main=\"title\",\"hcp.hhc\",\"hcp.hhk\",\"default.html\",\"home.html\",\"jump1.html\",\"jump1 text\",\"jump2.html\",\"jump2 text\",0x63520,11,0x00304e,13,14,15,16,17,18,19,20");
-	win->flags = ~0;
-	CHMWindow_savetoxml(win, stream);
-	stream->close(stream);
-	exit(0);
-}
-#endif
-
-/*** ---------------------------------------------------------------------- ***/
-
 int main(int argc, const char **argv)
 {
 	int c;
@@ -706,14 +1017,26 @@ int main(int argc, const char **argv)
 	{
 		switch (c)
 		{
-		case OPTION_NO_PAGE:
-			donotpage = TRUE;
-			break;
 		case OPTION_NAME_ONLY:
 			nameonly = TRUE;
 			break;
+		case OPTION_NO_PAGE:
+			/* ignored for compatibilty */
+			break;
 		case OPTION_VERBOSE:
 			verbose++;
+			break;
+		case OPTION_INTERNALS:
+			include_internals = TRUE;
+			break;
+		case OPTION_NO_INTERNALS:
+			include_internals = FALSE;
+			break;
+		case OPTION_NULLS:
+			printnulls = TRUE;
+			break;
+		case OPTION_FORCEXML:
+			forcexml = TRUE;
 			break;
 		case OPTION_VERSION:
 			print_version(stdout);
@@ -819,18 +1142,6 @@ int main(int argc, const char **argv)
 		}
 		break;
 	
-	case cmdunblock:
-		if (argc > 0)
-		{
-			if (unblockchms(argc, argv) == FALSE)
-				exit_code = EXIT_FAILURE;
-		} else
-		{
-			WrongNrParam(cmd, argc);
-			exit_code = EXIT_FAILURE;
-		}
-		break;
-			
 	case cmdextractalias:
 		if (argc > 0)
 		{
@@ -906,7 +1217,7 @@ int main(int argc, const char **argv)
 	case cmdprinttopics:
 		if (argc == 1)
 		{
-			if (printtopics(argv[0]) == FALSE)
+			if (printtopics(out, argv[0]) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
