@@ -52,7 +52,8 @@ typedef unsigned int SiteMapTags;
 #define smbtUL      (1 << 1)
 #define smbtLI      (1 << 2)
 #define smbtOBJECT  (1 << 3)
-#define smbtPARAM   (1 << 4)
+#define smbtPROPS   (1 << 4)
+#define smbtSITEMAP (1 << 5)
 typedef unsigned int SiteMapBodyTags;
 
 typedef enum _LIObjectParamType { ptName, ptLocal, ptKeyword } LIObjectParamType;

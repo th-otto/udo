@@ -284,25 +284,38 @@ static void FoundTag(void *obj, const char *tag, size_t taglen)
 			self->levelforced = TRUE;
 		} else if (strcmp(TagName, "OBJECT") == 0)
 		{
+			char *TagAttributeType = GetVal(tag, taglen, "type");
+			
 			self->sitemapbodytags |= smbtOBJECT;
-			if (self->levelforced)
-				IncreaseULevel(self);
-			if (self->level > 0)		/* if it is zero it is the site properties */
-				NewSiteMapItem(self);
+			if (TagAttributeType)
+			{
+				if (strcmp(TagAttributeType, "text/site properties") == 0)
+				{
+					self->sitemapbodytags |= smbtPROPS;
+				} else if (strcmp(TagAttributeType, "text/sitemap") == 0)
+				{
+					self->sitemapbodytags |= smbtSITEMAP;
+					if (self->levelforced)
+						IncreaseULevel(self);
+				}
+				g_free(TagAttributeType);
+				if (self->level > 0 && (self->sitemapbodytags & smbtSITEMAP))		/* if it is zero it is the site properties */
+					NewSiteMapItem(self);
+			}
 		} else if (strcmp(TagName, "/OBJECT") == 0)
 		{
-			self->sitemapbodytags &= ~smbtOBJECT;
-			if (self->levelforced)
+			if (self->levelforced && (self->sitemapbodytags & smbtSITEMAP))
 			{
 				DecreaseULevel(self);
 				self->levelforced = FALSE;;
 			}
+			self->sitemapbodytags &= ~(smbtOBJECT | smbtPROPS | smbtSITEMAP);
 		} else
 		{
 			/* we are the properties of the object tag */
 			if (self->sitemapbodytags & smbtOBJECT)
 			{
-				if (self->level > 0)
+				if (self->level > 0 && (self->sitemapbodytags & smbtSITEMAP))
 				{
 					if (strcmp(TagName, "PARAM") == 0)
 					{
@@ -357,7 +370,7 @@ static void FoundTag(void *obj, const char *tag, size_t taglen)
 						g_free(TagAttributeValue);
 						g_free(TagAttributeName);
 					}
-				} else
+				} else if (self->level <= 0 && (self->sitemapbodytags & smbtPROPS))
 				{
 					/* object and level is zero? */
 					if (strcmp(TagName, "PARAM") == 0)
