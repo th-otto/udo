@@ -8,20 +8,20 @@
 
 #include "chmtools.h"
 
-struct _CHMStream {
+struct _ChmStream {
 	chmstream_type type;
 	chm_off_t len;
 	gboolean owned;
 	gboolean supports_64bit;
 	gboolean warned_64bit;
 	char *filename;
-	gboolean (*close)(CHMStream *stream);
-	gboolean (*seek)(CHMStream *stream, chm_off_t pos, int whence);
-	chm_off_t (*tell)(CHMStream *stream);
-	gboolean (*write)(CHMStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
-	gboolean (*read)(CHMStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
-	int (*fgetc)(CHMStream *stream) G_GNUC_WARN_UNUSED_RESULT;
-	int (*fputc)(CHMStream *stream, int c) G_GNUC_WARN_UNUSED_RESULT;
+	gboolean (*close)(ChmStream *stream);
+	gboolean (*seek)(ChmStream *stream, chm_off_t pos, int whence);
+	chm_off_t (*tell)(ChmStream *stream);
+	gboolean (*write)(ChmStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+	gboolean (*read)(ChmStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+	int (*fgetc)(ChmStream *stream) G_GNUC_WARN_UNUSED_RESULT;
+	int (*fputc)(ChmStream *stream, int c) G_GNUC_WARN_UNUSED_RESULT;
 	union {
 		FILE *file;
 		int fd;
@@ -37,7 +37,7 @@ struct _CHMStream {
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean check_64bit(CHMStream *stream, chm_off_t pos)
+static gboolean check_64bit(ChmStream *stream, chm_off_t pos)
 {
 	if (!stream->supports_64bit && pos > (uint32_t)0x7fffffff)
 	{
@@ -56,7 +56,7 @@ static gboolean check_64bit(CHMStream *stream, chm_off_t pos)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean file_close(CHMStream *stream)
+static gboolean file_close(ChmStream *stream)
 {
 	int ret;
 	
@@ -73,7 +73,7 @@ static gboolean file_close(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static chm_off_t file_tell(CHMStream *stream)
+static chm_off_t file_tell(ChmStream *stream)
 {
 #ifdef __WIN32__
 	return ftello64(stream->file);
@@ -84,7 +84,7 @@ static chm_off_t file_tell(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean file_seek(CHMStream *stream, chm_off_t pos, int whence)
+static gboolean file_seek(ChmStream *stream, chm_off_t pos, int whence)
 {
 	int res;
 	
@@ -105,7 +105,7 @@ static gboolean file_seek(CHMStream *stream, chm_off_t pos, int whence)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean file_write(CHMStream *stream, const void *buffer, size_t len)
+static gboolean file_write(ChmStream *stream, const void *buffer, size_t len)
 {
 	chm_off_t written = fwrite(buffer, 1, len, stream->file);
 	return written == len;
@@ -113,7 +113,7 @@ static gboolean file_write(CHMStream *stream, const void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean file_read(CHMStream *stream, void *buffer, size_t len)
+static gboolean file_read(ChmStream *stream, void *buffer, size_t len)
 {
 	chm_off_t read = fread(buffer, 1, len, stream->file);
 	return read == len;
@@ -121,27 +121,27 @@ static gboolean file_read(CHMStream *stream, void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int file_getc(CHMStream *stream)
+static int file_getc(ChmStream *stream)
 {
 	return getc(stream->file);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int file_putc(CHMStream *stream, int c)
+static int file_putc(ChmStream *stream, int c)
 {
 	return putc(c, stream->file);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMStream *CHMStream_CreateForFile(FILE *fp)
+ChmStream *ChmStream_CreateForFile(FILE *fp)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	
 	if (fp == NULL)
 		return NULL;
-	stream = g_new0(CHMStream, 1);
+	stream = g_new0(ChmStream, 1);
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_file;
@@ -175,9 +175,9 @@ CHMStream *CHMStream_CreateForFile(FILE *fp)
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMStream *ChmStream_Open(const char *filename, gboolean readonly)
+ChmStream *ChmStream_Open(const char *filename, gboolean readonly)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	FILE *fp;
 	
 	if (!readonly && strcmp(filename, "-") == 0)
@@ -190,7 +190,7 @@ CHMStream *ChmStream_Open(const char *filename, gboolean readonly)
 	}
 	if (fp == NULL)
 		return NULL;
-	stream = CHMStream_CreateForFile(fp);
+	stream = ChmStream_CreateForFile(fp);
 	if (stream)
 		stream->filename = g_strdup(filename);
 	return stream;
@@ -200,7 +200,7 @@ CHMStream *ChmStream_Open(const char *filename, gboolean readonly)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean mem_close(CHMStream *stream)
+static gboolean mem_close(ChmStream *stream)
 {
 	if (stream->mem.alloced)
 	{
@@ -212,14 +212,14 @@ static gboolean mem_close(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static chm_off_t mem_tell(CHMStream *stream)
+static chm_off_t mem_tell(ChmStream *stream)
 {
 	return stream->mem.pos;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean mem_seek(CHMStream *stream, chm_off_t pos, int whence)
+static gboolean mem_seek(ChmStream *stream, chm_off_t pos, int whence)
 {
 	if (whence != SEEK_SET)
 		return FALSE;
@@ -234,7 +234,7 @@ static gboolean mem_seek(CHMStream *stream, chm_off_t pos, int whence)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean mem_write(CHMStream *stream, const void *buffer, size_t len)
+static gboolean mem_write(ChmStream *stream, const void *buffer, size_t len)
 {
 	chm_off_t space = stream->len - stream->mem.pos;
 	
@@ -250,7 +250,7 @@ static gboolean mem_write(CHMStream *stream, const void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean mem_read(CHMStream *stream, void *buffer, size_t len)
+static gboolean mem_read(ChmStream *stream, void *buffer, size_t len)
 {
 	chm_off_t space = stream->len - stream->mem.pos;
 	
@@ -266,7 +266,7 @@ static gboolean mem_read(CHMStream *stream, void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int mem_getc(CHMStream *stream)
+static int mem_getc(ChmStream *stream)
 {
 	if (stream->mem.pos >= stream->len)
 		return EOF;
@@ -275,7 +275,7 @@ static int mem_getc(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int mem_putc(CHMStream *stream, int c)
+static int mem_putc(ChmStream *stream, int c)
 {
 	if (stream->mem.pos >= stream->len)
 		return EOF;
@@ -285,11 +285,11 @@ static int mem_putc(CHMStream *stream, int c)
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMMemoryStream *CHMStream_CreateMem(size_t size)
+ChmMemoryStream *ChmStream_CreateMem(size_t size)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	
-	stream = g_new0(CHMStream, 1);
+	stream = g_new0(ChmStream, 1);
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_mem;
@@ -322,7 +322,7 @@ CHMMemoryStream *CHMStream_CreateMem(size_t size)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean CHMStream_CopyFrom(CHMMemoryStream *stream, CHMStream *src, size_t size)
+gboolean ChmStream_CopyFrom(ChmMemoryStream *stream, ChmStream *src, size_t size)
 {
 	chm_off_t space;
 
@@ -340,7 +340,7 @@ gboolean CHMStream_CopyFrom(CHMMemoryStream *stream, CHMStream *src, size_t size
 
 /*** ---------------------------------------------------------------------- ***/
 
-chm_off_t CHMStream_Size(CHMStream *stream)
+chm_off_t ChmStream_Size(ChmStream *stream)
 {
 	if (stream == NULL)
 		return 0;
@@ -349,7 +349,7 @@ chm_off_t CHMStream_Size(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-void CHMStream_TakeOwner(CHMStream *stream, gboolean owned)
+void ChmStream_TakeOwner(ChmStream *stream, gboolean owned)
 {
 	if (stream)
 		stream->owned = owned;
@@ -357,7 +357,7 @@ void CHMStream_TakeOwner(CHMStream *stream, gboolean owned)
 
 /*** ---------------------------------------------------------------------- ***/
 
-unsigned char *CHMStream_Memptr(CHMStream *stream)
+unsigned char *ChmStream_Memptr(ChmStream *stream)
 {
 	if (stream == NULL || stream->type != chm_stream_mem)
 		return NULL;
@@ -366,21 +366,21 @@ unsigned char *CHMStream_Memptr(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-chmstream_type CHMStream_type(CHMStream *stream)
+chmstream_type ChmStream_Type(ChmStream *stream)
 {
 	return stream ? stream->type : chm_stream_null;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-FILE *CHMStream_filep(CHMStream *stream)
+FILE *ChmStream_Fileptr(ChmStream *stream)
 {
 	return stream && stream->type == chm_stream_file ? stream->file : NULL;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean CHMStream_close(CHMStream *stream)
+gboolean ChmStream_Close(ChmStream *stream)
 {
 	if (stream == NULL || stream->owned)
 		return FALSE;
@@ -390,7 +390,7 @@ gboolean CHMStream_close(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean CHMStream_seek(CHMStream *stream, chm_off_t pos)
+gboolean ChmStream_Seek(ChmStream *stream, chm_off_t pos)
 {
 	assert(stream);
 	return stream->seek(stream, pos, SEEK_SET);
@@ -398,7 +398,7 @@ gboolean CHMStream_seek(CHMStream *stream, chm_off_t pos)
 
 /*** ---------------------------------------------------------------------- ***/
 
-chm_off_t CHMStream_tell(CHMStream *stream)
+chm_off_t ChmStream_Tell(ChmStream *stream)
 {
 	assert(stream);
 	return stream->tell(stream);
@@ -406,7 +406,7 @@ chm_off_t CHMStream_tell(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean CHMStream_write(CHMStream *stream, const void *buffer, size_t len)
+gboolean ChmStream_Write(ChmStream *stream, const void *buffer, size_t len)
 {
 	assert(stream);
 	return stream->write(stream, buffer, len);
@@ -414,7 +414,7 @@ gboolean CHMStream_write(CHMStream *stream, const void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean CHMStream_read(CHMStream *stream, void *buffer, size_t len)
+gboolean ChmStream_Read(ChmStream *stream, void *buffer, size_t len)
 {
 	assert(stream);
 	return stream->read(stream, buffer, len);
@@ -422,7 +422,7 @@ gboolean CHMStream_read(CHMStream *stream, void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-int CHMStream_fgetc(CHMStream *stream)
+int ChmStream_fgetc(ChmStream *stream)
 {
 	assert(stream);
 	return stream->fgetc(stream);
@@ -430,7 +430,7 @@ int CHMStream_fgetc(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-int CHMStream_fputc(CHMStream *stream, int c)
+int ChmStream_fputc(ChmStream *stream, int c)
 {
 	assert(stream);
 	return stream->fputc(stream, c);
@@ -438,7 +438,7 @@ int CHMStream_fputc(CHMStream *stream, int c)
 
 /*** ---------------------------------------------------------------------- ***/
 
-const char *ChmStream_GetFilename(CHMStream *stream)
+const char *ChmStream_GetFilename(ChmStream *stream)
 {
 	if (stream == NULL)
 		return NULL;
@@ -449,31 +449,31 @@ const char *ChmStream_GetFilename(CHMStream *stream)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-uint16_t chmstream_read_le16(CHMStream *stream)
+uint16_t chmstream_read_le16(ChmStream *stream)
 {
 	uint32_t c1, c2;
 	
-	c1 = CHMStream_fgetc(stream);
-	c2 = CHMStream_fgetc(stream);
+	c1 = ChmStream_fgetc(stream);
+	c2 = ChmStream_fgetc(stream);
 	return (c2 << 8) | c1;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-uint32_t chmstream_read_le32(CHMStream *stream)
+uint32_t chmstream_read_le32(ChmStream *stream)
 {
 	uint32_t c1, c2, c3, c4;
 	
-	c1 = CHMStream_fgetc(stream);
-	c2 = CHMStream_fgetc(stream);
-	c3 = CHMStream_fgetc(stream);
-	c4 = CHMStream_fgetc(stream);
+	c1 = ChmStream_fgetc(stream);
+	c2 = ChmStream_fgetc(stream);
+	c3 = ChmStream_fgetc(stream);
+	c4 = ChmStream_fgetc(stream);
 	return (c4 << 24) | (c3 << 16) | (c2 << 8) | c1;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-uint64_t chmstream_read_le64(CHMStream *stream)
+uint64_t chmstream_read_le64(ChmStream *stream)
 {
 	uint64_t l1, l2;
 	
@@ -484,13 +484,13 @@ uint64_t chmstream_read_le64(CHMStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-uint32_t chmstream_read_be32(CHMStream *stream)
+uint32_t chmstream_read_be32(ChmStream *stream)
 {
 	uint32_t c1, c2, c3, c4;
 	
-	c1 = CHMStream_fgetc(stream);
-	c2 = CHMStream_fgetc(stream);
-	c3 = CHMStream_fgetc(stream);
-	c4 = CHMStream_fgetc(stream);
+	c1 = ChmStream_fgetc(stream);
+	c2 = ChmStream_fgetc(stream);
+	c3 = ChmStream_fgetc(stream);
+	c4 = ChmStream_fgetc(stream);
 	return (c1 << 24) | (c2 << 16) | (c3 << 8) | c4;
 }

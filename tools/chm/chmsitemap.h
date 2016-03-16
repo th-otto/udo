@@ -102,9 +102,9 @@ struct _ChmSiteMap {
 ChmSiteMap *ChmSiteMap_Create(SiteMapType type);
 void ChmSiteMap_Destroy(ChmSiteMap *self);
 gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename);
-gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, CHMStream *stream);
+gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, ChmStream *stream);
 gboolean ChmSiteMap_SaveToFile(ChmSiteMap *self, const char *filename);
-gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, CHMStream *stream);
+gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream);
 
 void ChmSiteMap_SetItems(ChmSiteMap *self, ChmSiteMapItems *items);
 

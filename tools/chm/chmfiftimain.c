@@ -5,7 +5,7 @@
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-ChmSearchReader *ChmSearchReader_Create(CHMStream *AStream, gboolean AFreeStreamOnDestroy)
+ChmSearchReader *ChmSearchReader_Create(ChmStream *AStream, gboolean AFreeStreamOnDestroy)
 {
 	ChmSearchReader *reader = NULL;
 	(void) AStream;

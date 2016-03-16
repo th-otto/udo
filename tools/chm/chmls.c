@@ -111,7 +111,7 @@ static void ListObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 {
 	ListObject listObject;
-	CHMStream *Stream;
+	ChmStream *Stream;
 	ITSFReader *itsf;
 	gboolean result = FALSE;
 	chm_error err;
@@ -156,18 +156,18 @@ static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean savetofile(CHMStream *from, FILE *out)
+static gboolean savetofile(ChmStream *from, FILE *out)
 {
 	chm_off_t size;
 	size_t count, written;
 #define COPY_BUFSIZE 4096
 	char buf[COPY_BUFSIZE];
 	
-	size = CHMStream_Size(from);
+	size = ChmStream_Size(from);
 	while (size)
 	{
 		count = size > COPY_BUFSIZE ? COPY_BUFSIZE : size;
-		if (CHMStream_read(from, buf, count) == FALSE)
+		if (ChmStream_Read(from, buf, count) == FALSE)
 		{
 			return FALSE;
 		}
@@ -183,12 +183,12 @@ static gboolean savetofile(CHMStream *from, FILE *out)
 
 static gboolean ExtractFile(const char *filename, const char *readfrom, const char *saveto)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	gboolean result = FALSE;
 	chm_error err;
-	CHMMemoryStream *m = NULL;
+	ChmMemoryStream *m = NULL;
 	ITSFReader *itsf;
-	CHMStream *os = NULL;
+	ChmStream *os = NULL;
 	
 	if ((stream = ChmStream_Open(filename, TRUE)) == NULL)
 	{
@@ -207,15 +207,15 @@ static gboolean ExtractFile(const char *filename, const char *readfrom, const ch
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
 	} else
 	{
-		FILE *out = CHMStream_filep(os);
+		FILE *out = ChmStream_Fileptr(os);
 		printf(_("Extracting ms-its:/%s::%s to %s\n"), filename, readfrom, saveto);
 		result = savetofile(m, out);
 		if (result == FALSE)
 			fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
-		CHMStream_close(os);
+		ChmStream_Close(os);
 	}
 	
-	CHMStream_close(m);
+	ChmStream_Close(m);
 	ITSFReader_Destroy(itsf);
 	return result;
 }
@@ -291,7 +291,7 @@ static gboolean mkleadingdirectories(const char *filename)
 static void ExtractObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 {
 	ExtractObject *list = (ExtractObject *)obj;
-	CHMMemoryStream *mem;
+	ChmMemoryStream *mem;
 	
 	if (info->namelen > 0 && info->name[info->namelen - 1] == '/')
 	{
@@ -330,7 +330,7 @@ static void ExtractObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 			}
 			fclose(out);
 		}		
-		CHMStream_close(mem);
+		ChmStream_Close(mem);
 		g_free(saveto);
 	} else
 	{
@@ -341,7 +341,7 @@ static void ExtractObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 
 static gboolean ExtractFileAll(const char *filename, const char *dirto)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	gboolean result = FALSE;
 	chm_error err;
 	ITSFReader *itsf;
@@ -359,7 +359,7 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 		if (mkdir(dirto, 0755) != 0)
 		{
 			fprintf(stderr, "%s: %s: %s\n", gl_program_name, dirto, strerror(errno));
-			CHMStream_close(stream);
+			ChmStream_Close(stream);
 			return FALSE;
 		}
 	}
@@ -391,7 +391,7 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 static gboolean extractalias(int argc, const char **argv)
 {
 	const char *symbolname = "helpid";
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
@@ -476,7 +476,7 @@ static gboolean extracttocindex(int argc, const char **argv, SiteMapType sttype)
 	const char *filename = argv[0];
 	char *extractfn;
 	ChmReader *r;
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	gboolean result = FALSE;
 	chm_error err;
 	ChmSiteMap *sitemap;
@@ -587,7 +587,7 @@ static void print_idxhdr(FILE *out, ChmIdxhdr *idx)
 
 static gboolean printidxhdr(FILE *out, const char *filename)
 {
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
@@ -628,7 +628,7 @@ static gboolean printidxhdr(FILE *out, const char *filename)
 
 static gboolean printsystem(FILE *out, const char *filename)
 {
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
@@ -706,7 +706,7 @@ static gboolean printsystem(FILE *out, const char *filename)
 
 static gboolean printwindows(FILE *out, const char *filename)
 {
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
@@ -870,11 +870,11 @@ static gboolean printwindows(FILE *out, const char *filename)
 
 static gboolean printtopics(FILE *out, const char *filename)
 {
-	CHMFileStream *fs;
+	ChmFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
-	CHMMemoryStream *m = NULL;
+	ChmMemoryStream *m = NULL;
 	uint32_t i, entries;
 	uint32_t cnt;
 	
@@ -893,7 +893,7 @@ static gboolean printtopics(FILE *out, const char *filename)
 	} else
 	{
 		result = TRUE;
-		entries = CHMStream_Size(m) / 16;
+		entries = ChmStream_Size(m) / 16;
 		for (i = 0; i < entries; i++)
 		{
 			fprintf(out, _("#TOPICS entry : %u\n"), i);
@@ -930,7 +930,7 @@ static gboolean printtopics(FILE *out, const char *filename)
 		}
 	}
 	
-	CHMStream_close(m);
+	ChmStream_Close(m);
 	ChmReader_Destroy(r);
 	return result;
 }

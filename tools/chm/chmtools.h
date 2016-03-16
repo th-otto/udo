@@ -61,7 +61,7 @@ extern char const gl_program_version[];
 #undef G_IS_DIR_SEPARATOR
 #define G_IS_DIR_SEPARATOR(c) ((c) == '/' || (c) == '\\')
 
-void CHMStream_TakeOwner(CHMStream *stream, gboolean owned);
+void ChmStream_TakeOwner(ChmStream *stream, gboolean owned);
 char *changefileext(const char *filename, const char *ext);
 
 int g_mkdir_with_parents(const char *pathname, int mode);

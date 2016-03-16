@@ -3,7 +3,7 @@
 
 typedef struct _ChmSearchReader {
 /* private: */
-	CHMStream *Stream;
+	ChmStream *Stream;
 	gboolean FileIsValid;
 	gboolean FreeStreamOnDestroy;
 	int DocRootSize;
@@ -16,7 +16,7 @@ typedef struct _ChmSearchReader {
 	uint32_t NextLeafNode;
 } ChmSearchReader;
 
-ChmSearchReader *ChmSearchReader_Create(CHMStream *AStream, gboolean AFreeStreamOnDestroy);
+ChmSearchReader *ChmSearchReader_Create(ChmStream *AStream, gboolean AFreeStreamOnDestroy);
 void ChmSearchReader_Destroy(ChmSearchReader *reader);
 
 #endif /* __CHMFIFITIMAIN_H__ */

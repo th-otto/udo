@@ -28,10 +28,10 @@ gboolean DirectoryChunk_CanHold(DirectoryChunk *dir, unsigned int ASize);
 unsigned int DirectoryChunk_FreeSpace(DirectoryChunk *dir);
 void DirectoryChunk_WriteHeader(DirectoryChunk *dir, void *AHeader);
 gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, void *Data) G_GNUC_WARN_UNUSED_RESULT;
-gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *Stream) G_GNUC_WARN_UNUSED_RESULT;
+gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream) G_GNUC_WARN_UNUSED_RESULT;
 void DirectoryChunk_Clear(DirectoryChunk *dir);
 
-gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *Stream, int *AIndex, gboolean Final /* = FALSE */) G_GNUC_WARN_UNUSED_RESULT;
+gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream, int *AIndex, gboolean Final /* = FALSE */) G_GNUC_WARN_UNUSED_RESULT;
 
 typedef struct _FileEntryRec {
 	const char *Path;
@@ -138,7 +138,7 @@ typedef struct _CHMWindow {
 CHMWindow *CHMWindow_Create(const char *s);
 void CHMWindow_Destroy(CHMWindow *win);
 void CHMWindow_loadfromini(CHMWindow *win, const char *txt);
-void CHMWindow_savetoxml(CHMWindow *win, CHMStream *out);
+void CHMWindow_savetoxml(CHMWindow *win, ChmStream *out);
 void CHMWindow_loadfromxml(CHMWindow *win, const char *tag);
 
 /*

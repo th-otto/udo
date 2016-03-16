@@ -452,7 +452,7 @@ static void FoundTag(void *obj, const char *tag, size_t taglen)
 
 gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	chm_off_t size;
 	gboolean result = FALSE;
 	HTMLParser *htmlparser;
@@ -460,7 +460,7 @@ gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 	stream = ChmStream_Open(filename, TRUE);
 	if (stream == NULL)
 		return FALSE;
-	size = CHMStream_Size(stream);
+	size = ChmStream_Size(stream);
 	if (size >= (chm_off_t)0x7fffffffUL)
 	{
 		errno = EFBIG;
@@ -468,7 +468,7 @@ gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 	{
 		char *buffer = g_new(char, size + 1);
 		if (buffer != NULL &&
-			CHMStream_read(stream, buffer, size))
+			ChmStream_Read(stream, buffer, size))
 		{
 			buffer[size] = '\0';
 			htmlparser = HTMLParser_Create(buffer, size);
@@ -484,17 +484,17 @@ gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 		}
 		g_free(buffer);
 	}
-	CHMStream_close(stream);
+	ChmStream_Close(stream);
 	return result;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, CHMStream *stream)
+gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, ChmStream *stream)
 {
 	gboolean result = FALSE;
-	size_t size = CHMStream_Size(stream);
-	char *buffer = (char *)CHMStream_Memptr(stream);
+	size_t size = ChmStream_Size(stream);
+	char *buffer = (char *)ChmStream_Memptr(stream);
 	HTMLParser *htmlparser = HTMLParser_Create(buffer, size);
 	if (htmlparser != NULL)
 	{
@@ -513,11 +513,11 @@ gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, CHMStream *stream)
 gboolean ChmSiteMap_SaveToFile(ChmSiteMap *self, const char *filename)
 {
 	gboolean result = FALSE;
-	CHMStream *stream;
+	ChmStream *stream;
 	
 	stream = ChmStream_Open(filename, FALSE);
 	result = ChmSiteMap_SaveToStream(self, stream);
-	CHMStream_close(stream);
+	ChmStream_Close(stream);
 	return result;
 }
 
@@ -596,7 +596,7 @@ static void writeentries(ChmSiteMap *self, ChmSiteMapItems *items, FILE *out, in
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, CHMStream *stream)
+gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream)
 {
 	gboolean result = FALSE;
 	FILE *out;
@@ -604,7 +604,7 @@ gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, CHMStream *stream)
 	
 	if (self == NULL || stream == NULL)
 		return FALSE;
-	out = CHMStream_filep(stream);
+	out = ChmStream_Fileptr(stream);
 	
 	fputs("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n", out);
 	fputs("<HTML>\n", out);

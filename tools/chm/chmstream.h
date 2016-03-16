@@ -10,34 +10,34 @@ typedef enum _chmstream_type {
 
 typedef uint64_t chm_off_t;
 
-typedef struct _CHMStream CHMStream;
+typedef struct _ChmStream ChmStream;
 
-typedef CHMStream CHMMemoryStream;
-typedef CHMStream CHMFileStream;
+typedef ChmStream ChmMemoryStream;
+typedef ChmStream ChmFileStream;
 
-CHMFileStream *CHMStream_CreateForFile(FILE *);
-CHMFileStream *ChmStream_Open(const char *filename, gboolean readonly);
-CHMMemoryStream *CHMStream_CreateMem(size_t size);
-const char *ChmStream_GetFilename(CHMStream *stream);
+ChmFileStream *ChmStream_CreateForFile(FILE *);
+ChmFileStream *ChmStream_Open(const char *filename, gboolean readonly);
+ChmMemoryStream *ChmStream_CreateMem(size_t size);
+const char *ChmStream_GetFilename(ChmStream *stream);
 
-chmstream_type CHMStream_type(CHMStream *stream);
-FILE *CHMStream_filep(CHMStream *stream);
-unsigned char *CHMStream_Memptr(CHMStream *stream);
+chmstream_type ChmStream_Type(ChmStream *stream);
+FILE *ChmStream_Fileptr(ChmStream *stream);
+unsigned char *ChmStream_Memptr(ChmStream *stream);
 
-gboolean CHMStream_close(CHMStream *stream);
-gboolean CHMStream_seek(CHMStream *stream, chm_off_t pos) G_GNUC_WARN_UNUSED_RESULT;
-chm_off_t CHMStream_tell(CHMStream *stream);
-gboolean CHMStream_write(CHMStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
-gboolean CHMStream_read(CHMStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
-int CHMStream_fgetc(CHMStream *stream) G_GNUC_WARN_UNUSED_RESULT;
-int CHMStream_fputc(CHMStream *stream, int c) G_GNUC_WARN_UNUSED_RESULT;
+gboolean ChmStream_Close(ChmStream *stream);
+gboolean ChmStream_Seek(ChmStream *stream, chm_off_t pos) G_GNUC_WARN_UNUSED_RESULT;
+chm_off_t ChmStream_Tell(ChmStream *stream);
+gboolean ChmStream_Write(ChmStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+gboolean ChmStream_Read(ChmStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+int ChmStream_fgetc(ChmStream *stream) G_GNUC_WARN_UNUSED_RESULT;
+int ChmStream_fputc(ChmStream *stream, int c) G_GNUC_WARN_UNUSED_RESULT;
 
-gboolean CHMStream_CopyFrom(CHMMemoryStream *stream, CHMStream *src, size_t size) G_GNUC_WARN_UNUSED_RESULT;
-chm_off_t CHMStream_Size(CHMStream *stream);
+gboolean ChmStream_CopyFrom(ChmMemoryStream *stream, ChmStream *src, size_t size) G_GNUC_WARN_UNUSED_RESULT;
+chm_off_t ChmStream_Size(ChmStream *stream);
 
-uint16_t chmstream_read_le16(CHMStream *stream);
-uint32_t chmstream_read_le32(CHMStream *stream);
-uint64_t chmstream_read_le64(CHMStream *stream);
-uint32_t chmstream_read_be32(CHMStream *stream);
+uint16_t chmstream_read_le16(ChmStream *stream);
+uint32_t chmstream_read_le32(ChmStream *stream);
+uint64_t chmstream_read_le64(ChmStream *stream);
+uint32_t chmstream_read_be32(ChmStream *stream);
 
 #endif /* __CHMSTREAM_H__ */

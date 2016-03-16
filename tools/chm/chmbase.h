@@ -113,12 +113,12 @@ extern CHMSignature const PMGIsig;
  * this function will advance the stream to the end of the compressed integer
  * and return the value
  */
-uint32_t GetCompressedInteger(CHMStream *Stream);
+uint32_t GetCompressedInteger(ChmStream *Stream);
 
 /*
  * returns the number of bytes written to the stream
  */
-uint32_t WriteCompressedInteger(CHMStream *Stream, uint32_t ANumber);
+uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t ANumber);
 uint32_t PutCompressedInteger(void *Buffer, uint32_t ANumber);
 
 /*

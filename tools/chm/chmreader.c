@@ -6,7 +6,7 @@
 	((((unsigned char)s.sig[0] << 24) | ((unsigned char)s.sig[1] << 16) | ((unsigned char)s.sig[2] << 8) | ((unsigned char)s.sig[3])) == \
 	 (((unsigned char)str[0] << 24) | ((unsigned char)str[1] << 16) | ((unsigned char)str[2] << 8) | ((unsigned char)str[3])))
 
-#define NO_SUCH_STREAM ((CHMMemoryStream *)-1)
+#define NO_SUCH_STREAM ((ChmMemoryStream *)-1)
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -88,19 +88,19 @@ chm_nametype chm_get_nametype(const char *name, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean read_guid(CHMStream *stream, GUID *guid)
+static gboolean read_guid(ChmStream *stream, GUID *guid)
 {
 	guid->Data1 = chmstream_read_le32(stream);
 	guid->Data2 = chmstream_read_le16(stream);
 	guid->Data3 = chmstream_read_le16(stream);
-	guid->Data4[0] = CHMStream_fgetc(stream);
-	guid->Data4[1] = CHMStream_fgetc(stream);
-	guid->Data4[2] = CHMStream_fgetc(stream);
-	guid->Data4[3] = CHMStream_fgetc(stream);
-	guid->Data4[4] = CHMStream_fgetc(stream);
-	guid->Data4[5] = CHMStream_fgetc(stream);
-	guid->Data4[6] = CHMStream_fgetc(stream);
-	guid->Data4[7] = CHMStream_fgetc(stream);
+	guid->Data4[0] = ChmStream_fgetc(stream);
+	guid->Data4[1] = ChmStream_fgetc(stream);
+	guid->Data4[2] = ChmStream_fgetc(stream);
+	guid->Data4[3] = ChmStream_fgetc(stream);
+	guid->Data4[4] = ChmStream_fgetc(stream);
+	guid->Data4[5] = ChmStream_fgetc(stream);
+	guid->Data4[6] = ChmStream_fgetc(stream);
+	guid->Data4[7] = ChmStream_fgetc(stream);
 	return TRUE;
 }
 
@@ -110,7 +110,7 @@ static gboolean read_guid(CHMStream *stream, GUID *guid)
 
 static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 {
-	CHMStream *stream = reader->Stream;
+	ChmStream *stream = reader->Stream;
 	ITSFHeaderEntry HeaderEntries[2];
 	
 	/* Copy EntryData into memory */
@@ -127,16 +127,16 @@ static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 	/* otherwise this is filled in below */
 
 	reader->DirectoryHeaderPos = HeaderEntries[1].PosFromZero;
-	if (CHMStream_seek(stream, HeaderEntries[1].PosFromZero) == FALSE)
+	if (ChmStream_Seek(stream, HeaderEntries[1].PosFromZero) == FALSE)
 		return FALSE;
 	
 	/*
 	 * read directory header
 	 */
-	reader->DirectoryHeader.ITSPsig.sig[0] = CHMStream_fgetc(stream);
-	reader->DirectoryHeader.ITSPsig.sig[1] = CHMStream_fgetc(stream);
-	reader->DirectoryHeader.ITSPsig.sig[2] = CHMStream_fgetc(stream);
-	reader->DirectoryHeader.ITSPsig.sig[3] = CHMStream_fgetc(stream);
+	reader->DirectoryHeader.ITSPsig.sig[0] = ChmStream_fgetc(stream);
+	reader->DirectoryHeader.ITSPsig.sig[1] = ChmStream_fgetc(stream);
+	reader->DirectoryHeader.ITSPsig.sig[2] = ChmStream_fgetc(stream);
+	reader->DirectoryHeader.ITSPsig.sig[3] = ChmStream_fgetc(stream);
 	reader->DirectoryHeader.Version = chmstream_read_le32(stream);
 	reader->DirectoryHeader.DirHeaderLength = chmstream_read_le32(stream);
 	reader->DirectoryHeader.Unknown1 = chmstream_read_le32(stream);
@@ -156,7 +156,7 @@ static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 	reader->DirectoryHeader.Unknown4 = chmstream_read_le32(stream);
 	reader->DirectoryHeader.Unknown5 = chmstream_read_le32(stream);
 
-	reader->DirectoryEntriesStartPos = CHMStream_tell(stream);
+	reader->DirectoryEntriesStartPos = ChmStream_Tell(stream);
 	reader->DirectoryHeaderLength = HeaderEntries[1].Length;
 	if (reader->HeaderSuffix.Offset == 0)
 		reader->HeaderSuffix.Offset = reader->DirectoryEntriesStartPos + reader->DirectoryHeader.ChunkSize * reader->DirectoryHeader.DirectoryChunkCount;
@@ -188,14 +188,14 @@ static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 
 gboolean ITSFReader_ReadHeader(ITSFReader *reader)
 {
-	CHMStream *stream = reader->Stream;
+	ChmStream *stream = reader->Stream;
 	
-	if (CHMStream_seek(stream, 0) == FALSE)
+	if (ChmStream_Seek(stream, 0) == FALSE)
 		return FALSE;
-	reader->ITSFheader.ITSFsig.sig[0] = CHMStream_fgetc(stream);
-	reader->ITSFheader.ITSFsig.sig[1] = CHMStream_fgetc(stream);
-	reader->ITSFheader.ITSFsig.sig[2] = CHMStream_fgetc(stream);
-	reader->ITSFheader.ITSFsig.sig[3] = CHMStream_fgetc(stream);
+	reader->ITSFheader.ITSFsig.sig[0] = ChmStream_fgetc(stream);
+	reader->ITSFheader.ITSFsig.sig[1] = ChmStream_fgetc(stream);
+	reader->ITSFheader.ITSFsig.sig[2] = ChmStream_fgetc(stream);
+	reader->ITSFheader.ITSFsig.sig[3] = ChmStream_fgetc(stream);
 	reader->ITSFheader.Version = chmstream_read_le32(stream);
 	reader->ITSFheader.HeaderLength = chmstream_read_le32(stream);
 	reader->ITSFheader.Unknown_1 = chmstream_read_le32(stream);
@@ -239,7 +239,7 @@ gboolean ITSFReader_IsValidFile(ITSFReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_LookupPMGLchunk(CHMMemoryStream *stream, PMGListChunk *PMGLChunk)
+static gboolean ITSFReader_LookupPMGLchunk(ChmMemoryStream *stream, PMGListChunk *PMGLChunk)
 {
 	/* signature already read by GetChunkType */
 	PMGLChunk->UnusedSpace = chmstream_read_le32(stream);
@@ -251,7 +251,7 @@ static gboolean ITSFReader_LookupPMGLchunk(CHMMemoryStream *stream, PMGListChunk
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_LookupPMGIchunk(CHMMemoryStream *stream, PMGIIndexChunk *PMGIChunk)
+static gboolean ITSFReader_LookupPMGIchunk(ChmMemoryStream *stream, PMGIIndexChunk *PMGIChunk)
 {
 	/* signature already read by GetChunkType */
 	PMGIChunk->UnusedSpace = chmstream_read_le32(stream);
@@ -260,7 +260,7 @@ static gboolean ITSFReader_LookupPMGIchunk(CHMMemoryStream *stream, PMGIIndexChu
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(CHMMemoryStream *stream, PMGListChunkEntry *PMGLEntry)
+static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(ChmMemoryStream *stream, PMGListChunkEntry *PMGLEntry)
 {
 	char *buf;
 
@@ -272,7 +272,7 @@ static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(CHMMemoryStream *stream,
 	buf = g_new(char, PMGLEntry->NameLength + 1);
 	if (buf == NULL)
 		return FALSE;
-	if (CHMStream_read(stream, buf, PMGLEntry->NameLength) == FALSE)
+	if (ChmStream_Read(stream, buf, PMGLEntry->NameLength) == FALSE)
 	{
 		g_free(buf);
 		return FALSE;
@@ -287,7 +287,7 @@ static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(CHMMemoryStream *stream,
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_ReadPMGIchunkEntryFromStream(CHMMemoryStream *stream, PMGIIndexChunkEntry *PMGIEntry)
+static gboolean ITSFReader_ReadPMGIchunkEntryFromStream(ChmMemoryStream *stream, PMGIIndexChunkEntry *PMGIEntry)
 {
 	char *buf;
 	
@@ -297,7 +297,7 @@ static gboolean ITSFReader_ReadPMGIchunkEntryFromStream(CHMMemoryStream *stream,
 	buf = g_new(char, PMGIEntry->NameLength + 1);
 	if (buf == NULL)
 		return FALSE;
-	if (CHMStream_read(stream, buf, PMGIEntry->NameLength) == FALSE)
+	if (ChmStream_Read(stream, buf, PMGIEntry->NameLength) == FALSE)
 	{
 		g_free(buf);
 		return FALSE;
@@ -312,16 +312,16 @@ static gboolean ITSFReader_ReadPMGIchunkEntryFromStream(CHMMemoryStream *stream,
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_GetDirectoryChunk(ITSFReader *reader, uint32_t Index, CHMMemoryStream *mem)
+static gboolean ITSFReader_GetDirectoryChunk(ITSFReader *reader, uint32_t Index, ChmMemoryStream *mem)
 {
-	CHMStream *src;
+	ChmStream *src;
 	
 	src = reader->Stream;
-	if (CHMStream_seek(src, reader->DirectoryEntriesStartPos + (reader->DirectoryHeader.ChunkSize * Index)) == FALSE)
+	if (ChmStream_Seek(src, reader->DirectoryEntriesStartPos + (reader->DirectoryHeader.ChunkSize * Index)) == FALSE)
 		return FALSE;
-	if (CHMStream_seek(mem, 0) == FALSE ||
-		CHMStream_CopyFrom(mem, src, reader->DirectoryHeader.ChunkSize) == FALSE ||
-		CHMStream_seek(mem, 0) == FALSE)
+	if (ChmStream_Seek(mem, 0) == FALSE ||
+		ChmStream_CopyFrom(mem, src, reader->DirectoryHeader.ChunkSize) == FALSE ||
+		ChmStream_Seek(mem, 0) == FALSE)
 	{
 		return FALSE;
 	}
@@ -330,12 +330,12 @@ static gboolean ITSFReader_GetDirectoryChunk(ITSFReader *reader, uint32_t Index,
 
 /*** ---------------------------------------------------------------------- ***/
 
-static DirChunkType ChunkType(CHMStream *stream, PMGListChunk *PMGLChunk)
+static DirChunkType ChunkType(ChmStream *stream, PMGListChunk *PMGLChunk)
 {
-	PMGLChunk->PMGLsig.sig[0] = CHMStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[1] = CHMStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[2] = CHMStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[3] = CHMStream_fgetc(stream);
+	PMGLChunk->PMGLsig.sig[0] = ChmStream_fgetc(stream);
+	PMGLChunk->PMGLsig.sig[1] = ChmStream_fgetc(stream);
+	PMGLChunk->PMGLsig.sig[2] = ChmStream_fgetc(stream);
+	PMGLChunk->PMGLsig.sig[3] = ChmStream_fgetc(stream);
 	if (isSig(PMGLChunk->PMGLsig, "PMGL"))
 		return ctPMGL;
 	if (isSig(PMGLChunk->PMGLsig, "PMGI"))
@@ -350,9 +350,9 @@ static DirChunkType ChunkType(CHMStream *stream, PMGListChunk *PMGLChunk)
 /*** ---------------------------------------------------------------------- ***/
 
 #if 0 /* not used */
-static DirChunkType ITSFReader_GetChunkType(ITSFReader *reader, CHMMemoryStream *stream, uint32_t ChunkIndex, PMGListChunk *PMGLChunk)
+static DirChunkType ITSFReader_GetChunkType(ITSFReader *reader, ChmMemoryStream *stream, uint32_t ChunkIndex, PMGListChunk *PMGLChunk)
 {
-	if (CHMStream_seek(stream, reader->DirectoryEntriesStartPos + (reader->DirectoryHeader.ChunkSize * ChunkIndex)) == FALSE)
+	if (ChmStream_Seek(stream, reader->DirectoryEntriesStartPos + (reader->DirectoryHeader.ChunkSize * ChunkIndex)) == FALSE)
 		return ctUnknown;
 	return ChunkType(stream, PMGLChunk);
 }
@@ -362,7 +362,7 @@ static DirChunkType ITSFReader_GetChunkType(ITSFReader *reader, CHMMemoryStream 
 
 gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntryForEach ForEach)
 {
-	CHMMemoryStream *ChunkStream;
+	ChmMemoryStream *ChunkStream;
 	uint32_t i;
 	PMGListChunkEntry Entry;
 	PMGListChunk PMGLChunk;
@@ -373,7 +373,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 	
 	if (reader == NULL || ForEach == NULL)
 		return FALSE;
-	ChunkStream = CHMStream_CreateMem(reader->DirectoryHeader.ChunkSize);
+	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize);
 	if (ChunkStream == NULL)
 		return FALSE;
 	
@@ -394,7 +394,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 			}
 			CHM_DEBUG_LOG(2, "PMGL %u: Unused %u Prev %d Next %d\n", i, PMGLChunk.UnusedSpace, PMGLChunk.PreviousChunkIndex, PMGLChunk.NextChunkIndex);
 			CutOffPoint = reader->DirectoryHeader.ChunkSize - PMGLChunk.UnusedSpace;
-			while (CHMStream_tell(ChunkStream) < CutOffPoint)
+			while (ChmStream_Tell(ChunkStream) < CutOffPoint)
 			{
 				ChmFileInfo info;
 				char *namecopy;
@@ -402,7 +402,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 				Entry.Name = NULL;
 				if (!ITSFReader_ReadPMGLchunkEntryFromStream(ChunkStream, &Entry))
 					break;
-				if (empty(Entry.Name) || CHMStream_tell(ChunkStream) > CutOffPoint)
+				if (empty(Entry.Name) || ChmStream_Tell(ChunkStream) > CutOffPoint)
 				{
 					/* we have entered the quickref section */
 					g_free(Entry.Name);
@@ -430,7 +430,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 			}
 			CHM_DEBUG_LOG(2, "PMGI %u: Unused %u\n", i, PMGIChunk.UnusedSpace);
 			CutOffPoint = reader->DirectoryHeader.ChunkSize - PMGIChunk.UnusedSpace - 10;
-			while (CHMStream_tell(ChunkStream) < CutOffPoint)
+			while (ChmStream_Tell(ChunkStream) < CutOffPoint)
 			{
 				PMGIEntry.Name = NULL;
 				if (!ITSFReader_ReadPMGIchunkEntryFromStream(ChunkStream, &PMGIEntry))
@@ -456,7 +456,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 
 /*** ---------------------------------------------------------------------- ***/
 
-static uint16_t *ReadQuickRefSection(ITSFReader *reader, CHMMemoryStream *ChunkStream)
+static uint16_t *ReadQuickRefSection(ITSFReader *reader, ChmMemoryStream *ChunkStream)
 {
 	chm_off_t OldPosn;
 	chm_off_t Posn;
@@ -466,9 +466,9 @@ static uint16_t *ReadQuickRefSection(ITSFReader *reader, CHMMemoryStream *ChunkS
 	unsigned int qr_entries;
 	uint16_t *QuickRefIndex;
 	
-	OldPosn = CHMStream_tell(ChunkStream);
+	OldPosn = ChmStream_Tell(ChunkStream);
 	Posn = reader->DirectoryHeader.ChunkSize - sizeof(uint16_t);
-	if (CHMStream_seek(ChunkStream, Posn) == FALSE)
+	if (ChmStream_Seek(ChunkStream, Posn) == FALSE)
 		return NULL;
 	
 	num_entries = chmstream_read_le16(ChunkStream);
@@ -477,7 +477,7 @@ static uint16_t *ReadQuickRefSection(ITSFReader *reader, CHMMemoryStream *ChunkS
 	if (Posn < (qr_entries * 2))
 		return NULL;
 	Posn -= qr_entries * 2;
-	if (CHMStream_seek(ChunkStream, Posn) == FALSE)
+	if (ChmStream_Seek(ChunkStream, Posn) == FALSE)
 		return NULL;
 	QuickRefIndex = g_new(uint16_t, qr_entries);
 	for (i = qr_entries; i > 0; )
@@ -485,14 +485,14 @@ static uint16_t *ReadQuickRefSection(ITSFReader *reader, CHMMemoryStream *ChunkS
 		--i;
 		QuickRefIndex[i] = chmstream_read_le16(ChunkStream);
 	}
-	if (!CHMStream_seek(ChunkStream, OldPosn))
+	if (!ChmStream_Seek(ChunkStream, OldPosn))
 		{}
 	return QuickRefIndex;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static char *ReadString(CHMStream *stream)
+static char *ReadString(ChmStream *stream)
 {
 	uint32_t NameLength;
 	char *result;
@@ -501,7 +501,7 @@ static char *ReadString(CHMStream *stream)
 	result = g_new(char, NameLength + 1);
 	if (NameLength > 0)
 	{
-		if (!CHMStream_read(stream, result, NameLength))
+		if (!ChmStream_Read(stream, result, NameLength))
 		{
 			g_free(result);
 			return NULL;
@@ -515,7 +515,7 @@ static char *ReadString(CHMStream *stream)
 
 gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 {
-	CHMMemoryStream *ChunkStream;
+	ChmMemoryStream *ChunkStream;
 	uint16_t *QuickRefIndex;
 	PMGListChunk PMGLChunk;
 	PMGIIndexChunk PMGIChunk;
@@ -548,7 +548,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 		return TRUE;
 	}
 	
-	ChunkStream = CHMStream_CreateMem(reader->DirectoryHeader.ChunkSize);
+	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize);
 	if (ChunkStream == NULL)
 	{
 		g_free(freeme);
@@ -579,12 +579,12 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 			}
 			i = 0;
 			CutOffPoint = reader->DirectoryHeader.ChunkSize - PMGIChunk.UnusedSpace;
-			while (CHMStream_tell(ChunkStream) <= CutOffPoint)
+			while (ChmStream_Tell(ChunkStream) <= CutOffPoint)
 			{
 				EntryName = ReadString(ChunkStream);
 				if (EntryName == NULL)
 					break;
-				if (CHMStream_tell(ChunkStream) >= CutOffPoint)
+				if (ChmStream_Tell(ChunkStream) >= CutOffPoint)
 				{
 					g_free(EntryName);
 					break;
@@ -616,13 +616,13 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 			}
 			i = 0;
 			CutOffPoint = reader->DirectoryHeader.ChunkSize - PMGLChunk.UnusedSpace;
-			while (CHMStream_tell(ChunkStream) <= CutOffPoint)
+			while (ChmStream_Tell(ChunkStream) <= CutOffPoint)
 			{
 				/* we consume the entry by reading it */
 				Entry.Name = NULL;
 				if (!ITSFReader_ReadPMGLchunkEntryFromStream(ChunkStream, &Entry))
 					break;
-				if (empty(Entry.Name) || CHMStream_tell(ChunkStream) > CutOffPoint)
+				if (empty(Entry.Name) || ChmStream_Tell(ChunkStream) > CutOffPoint)
 				{
 					/* we have entered the quickref section */
 					g_free(Entry.Name);
@@ -656,7 +656,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 		g_free(QuickRefIndex);
 	}
 	
-	CHMStream_close(ChunkStream);
+	ChmStream_Close(ChunkStream);
 	
 	g_free(freeme);
 	return result;
@@ -666,7 +666,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 
 WStringList *ITSFReader_GetSections(ITSFReader *reader)
 {
-	CHMStream *stream;
+	ChmStream *stream;
 	uint16_t EntryCount;
 	uint16_t X;
 	uint16_t i;
@@ -680,7 +680,7 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader)
 	if (stream == NULL)
 		return sections;
 
-	if (!CHMStream_seek(stream, 2))
+	if (ChmStream_Seek(stream, 2) == FALSE)
 		return sections;
 	
 	EntryCount = chmstream_read_le16(stream);
@@ -697,7 +697,7 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader)
 		WString[StrLength - 1] = 0;
 		sections = g_slist_append(sections, WString);
 	}
-	CHMStream_close(stream);
+	ChmStream_Close(stream);
 	return sections;
 }
 
@@ -713,12 +713,12 @@ static uint64_t ITSFReader_FindBlocksFromUnCompressedAddr(
 	uint32_t BlockCount;
 	uint32_t i;
 	uint64_t blocksize;
-	CHMStream *stream = reader->Stream;
+	ChmStream *stream = reader->Stream;
 	uint32_t entrysize;
 	uint32_t headersize;
 	LZXResetTableArr table;
 	
-	if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + ResetTableEntry->ContentOffset) == FALSE)
+	if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + ResetTableEntry->ContentOffset) == FALSE)
 		return 0;
 	(void) chmstream_read_le32(stream); /* version? */
 	BlockCount = chmstream_read_le32(stream);
@@ -736,7 +736,7 @@ static uint64_t ITSFReader_FindBlocksFromUnCompressedAddr(
 	if (headersize != 40)
 	{
 		CHM_DEBUG_LOG(0, "bogus header size %u in reset table\n", headersize);
-		if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + ResetTableEntry->ContentOffset + headersize) == FALSE)
+		if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + ResetTableEntry->ContentOffset + headersize) == FALSE)
 			return 0;
 	}
 
@@ -753,7 +753,7 @@ static uint64_t ITSFReader_FindBlocksFromUnCompressedAddr(
 
 /*** ---------------------------------------------------------------------- ***/
 
-static CHMMemoryStream *ITSFReader_GetBlockFromSection(
+static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 	ITSFReader *reader,
 	const char *SectionPrefix,
 	uint64_t StartPos,
@@ -783,8 +783,8 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 	uint32_t LZXCacheSize;
 	int window_bits;
 	char *tmp;
-	CHMStream *result = NULL;
-	CHMStream *stream = reader->Stream;
+	ChmStream *result = NULL;
+	ChmStream *stream = reader->Stream;
 	
 #define ReadBlock() \
 	if (ReadCount > inbuf_size) \
@@ -793,7 +793,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 			goto fail; \
 		inbuf_size = ReadCount; \
 	} \
-	if (CHMStream_read(stream, InBuf, ReadCount) == FALSE) \
+	if (ChmStream_Read(stream, InBuf, ReadCount) == FALSE) \
 		goto fail
 
 	/* okay now the fun stuff ;) */
@@ -808,10 +808,10 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 		g_free(tmp);
 		if (exists)
 		{
-			if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + StartPos) == FALSE)
+			if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + StartPos) == FALSE)
 				goto fail;
-			result = CHMStream_CreateMem(BlockLength);
-			if (CHMStream_CopyFrom(result, stream, BlockLength) == FALSE)
+			result = ChmStream_CreateMem(BlockLength);
+			if (ChmStream_CopyFrom(result, stream, BlockLength) == FALSE)
 				goto fail;
 		}
 		return result;
@@ -830,14 +830,14 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 	g_free(tmp);
 	if (exists)
 	{
-		if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset) == FALSE)
+		if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset) == FALSE)
 			return NULL;
 		CompressionVersion = chmstream_read_le32(stream);
 		CHM_DEBUG_LOG(1, "LZXHeaderLength = %u\n", CompressionVersion);
-		Sig.sig[0] = CHMStream_fgetc(stream);
-		Sig.sig[1] = CHMStream_fgetc(stream);
-		Sig.sig[2] = CHMStream_fgetc(stream);
-		Sig.sig[3] = CHMStream_fgetc(stream);
+		Sig.sig[0] = ChmStream_fgetc(stream);
+		Sig.sig[1] = ChmStream_fgetc(stream);
+		Sig.sig[2] = ChmStream_fgetc(stream);
+		Sig.sig[3] = ChmStream_fgetc(stream);
 		if (!isSig(Sig, "LZXC"))
 		{
 			CHM_DEBUG_LOG(0, "no LZXC signature in control file");
@@ -918,7 +918,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 			goto fail;
 		}
 		
-		result = CHMStream_CreateMem(BlockLength);
+		result = ChmStream_CreateMem(BlockLength);
 		inbuf_size = BlockSize;
 		InBuf = g_new(uint8_t, inbuf_size);
 		OutBuf = g_new(uint8_t, BlockSize);
@@ -926,7 +926,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 		/* if FirstBlock is odd (1,3,5,7 etc) we have to read the even block before it first. */
 		if ((FirstBlock & 1) != 0)
 		{
-			if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + ResetTable[FirstBlock-1]) == FALSE)
+			if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + ResetTable[FirstBlock-1]) == FALSE)
 				goto fail;
 			ReadCount = ResetTable[FirstBlock] - ResetTable[FirstBlock-1];
 			BlockWriteLength = BlockSize;
@@ -936,7 +936,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 		/* now start the actual decompression loop */
 		for (X = FirstBlock; X <= LastBlock; X++)
 		{
-			if (CHMStream_seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + ResetTable[X]) == FALSE)
+			if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + ResetTable[X]) == FALSE)
 				goto fail;
 	
 			if (X == FirstBlock)
@@ -964,7 +964,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 			/* now write the decompressed data to the stream */
 			if (ResultCode == DECR_OK)
 			{
-				if (CHMStream_write(result, &OutBuf[WriteStart], WriteCount) == FALSE)
+				if (ChmStream_Write(result, &OutBuf[WriteStart], WriteCount) == FALSE)
 					goto fail;
 			} else
 			{
@@ -981,7 +981,7 @@ static CHMMemoryStream *ITSFReader_GetBlockFromSection(
 	goto done;
 	
 fail:
-	CHMStream_close(result);
+	ChmStream_Close(result);
 	result = NULL;
 done:
 	g_free(InBuf);
@@ -995,12 +995,12 @@ done:
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
+ChmMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
 {
 	WStringList *SectionNames;
 	PMGListChunkEntry Entry;
 	char *SectionName;
-	CHMMemoryStream *stream;
+	ChmMemoryStream *stream;
 	stream = NULL;
 
 	if (ITSFReader_ObjectExists(reader, Name) == FALSE)
@@ -1011,11 +1011,11 @@ CHMMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
 	Entry = reader->CachedEntry;
 	if (Entry.ContentSection == 0)
 	{
-		stream = CHMStream_CreateMem(Entry.DecompressedLength);
-		if (CHMStream_seek(reader->Stream, reader->HeaderSuffix.Offset + Entry.ContentOffset) == FALSE ||
-			CHMStream_CopyFrom(stream, reader->Stream, Entry.DecompressedLength) == FALSE)
+		stream = ChmStream_CreateMem(Entry.DecompressedLength);
+		if (ChmStream_Seek(reader->Stream, reader->HeaderSuffix.Offset + Entry.ContentOffset) == FALSE ||
+			ChmStream_CopyFrom(stream, reader->Stream, Entry.DecompressedLength) == FALSE)
 		{
-			CHMStream_close(stream);
+			ChmStream_Close(stream);
 			stream = NULL;
 		}
 	} else
@@ -1035,7 +1035,7 @@ CHMMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
 	}
 	if (stream != NULL)
 	{
-		if (CHMStream_seek(stream, 0) == FALSE)
+		if (ChmStream_Seek(stream, 0) == FALSE)
 			{}
 	}
 	return stream;
@@ -1052,7 +1052,7 @@ chm_error ITSFReader_GetError(ITSFReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-ITSFReader *ITSFReader_Create(CHMStream *AStream, gboolean FreeStreamOnDestroy)
+ITSFReader *ITSFReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy)
 {
 	ITSFReader *reader;
 	
@@ -1074,7 +1074,7 @@ void ITSFReader_Destroy(ITSFReader *reader)
 	if (reader == NULL)
 		return;
 	if (reader->FreeStreamOnDestroy)
-		CHMStream_close(reader->Stream);
+		ChmStream_Close(reader->Stream);
 	g_freep(&reader->CachedEntry.Name);
 	g_free(reader);
 }
@@ -1146,13 +1146,13 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
 		if (reader->StringsStream == NULL)
 			reader->StringsStream = NO_SUCH_STREAM;
 		else
-			CHMStream_TakeOwner(reader->StringsStream, TRUE);
+			ChmStream_TakeOwner(reader->StringsStream, TRUE);
 	}
 	if (reader->StringsStream != NO_SUCH_STREAM)
 	{
 		char *base;
 		
-		size = CHMStream_Size(reader->StringsStream);
+		size = ChmStream_Size(reader->StringsStream);
 		if (position >= size)
 		{
 			/*
@@ -1162,7 +1162,7 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
 				return g_strdup("");
 			return g_strdup_printf("<string pos %u exceeds size %u>", position, (unsigned int) size);
 		}
-		base = (char *)CHMStream_Memptr(reader->StringsStream);
+		base = (char *)ChmStream_Memptr(reader->StringsStream);
 		if (base)
 		{
 			size_t len;
@@ -1190,7 +1190,7 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static char *ChmReader_ReadStringsEntryFromStream(ChmReader *reader, CHMStream *strm)
+static char *ChmReader_ReadStringsEntryFromStream(ChmReader *reader, ChmStream *strm)
 {
 	uint32_t pos = chmstream_read_le32(strm);
 	return ChmReader_ReadStringsEntry(reader, pos);
@@ -1200,7 +1200,7 @@ static char *ChmReader_ReadStringsEntryFromStream(ChmReader *reader, CHMStream *
 
 static gboolean ChmReader_ReadWindows(ChmReader *reader)
 {
-	CHMMemoryStream *windows;
+	ChmMemoryStream *windows;
 	uint32_t EntryCount;
 	uint32_t EntrySize;
 	uint32_t X;
@@ -1217,7 +1217,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 		CHM_DEBUG_LOG(1, "\nno #WINDOWS\n\n");
 		return FALSE;
 	}
-	size = CHMStream_Size(windows);
+	size = ChmStream_Size(windows);
 	if (size > 8)
 	{
 		EntryCount = chmstream_read_le32(windows);
@@ -1228,7 +1228,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 			result = TRUE;
 			for (X = 0; X < EntryCount; X++)
 			{
-				if (CHMStream_seek(windows, X * EntrySize + 8) == FALSE)
+				if (ChmStream_Seek(windows, X * EntrySize + 8) == FALSE)
 				{
 					CHM_DEBUG_LOG(0, "/#WINDOWS file corrupted\n");
 					continue;
@@ -1274,7 +1274,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 				win->tabpos = chmstream_read_le32(windows);
 				win->wm_notify_id = chmstream_read_le32(windows);
 				for (i = 0; i <= HH_MAX_TABS; i++)
-					win->taborder[i] = CHMStream_fgetc(windows);
+					win->taborder[i] = ChmStream_fgetc(windows);
 				win->history = chmstream_read_le32(windows);
 				win->jump1_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
 				win->jump2_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
@@ -1302,7 +1302,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 	{
 		CHM_DEBUG_LOG(0, "/#WINDOWS file truncated\n");
 	}
-	CHMStream_close(windows);
+	ChmStream_Close(windows);
 	
 	return result;
 }
@@ -1311,14 +1311,14 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static void read_idxhdr(ChmReader *reader, ChmIdxhdr *idx, CHMMemoryStream *stream, unsigned int size)
+static void read_idxhdr(ChmReader *reader, ChmIdxhdr *idx, ChmMemoryStream *stream, unsigned int size)
 {
 	unsigned int i;
 	
-	idx->sig.sig[0] = CHMStream_fgetc(stream);
-	idx->sig.sig[1] = CHMStream_fgetc(stream);
-	idx->sig.sig[2] = CHMStream_fgetc(stream);
-	idx->sig.sig[3] = CHMStream_fgetc(stream);
+	idx->sig.sig[0] = ChmStream_fgetc(stream);
+	idx->sig.sig[1] = ChmStream_fgetc(stream);
+	idx->sig.sig[2] = ChmStream_fgetc(stream);
+	idx->sig.sig[3] = ChmStream_fgetc(stream);
 	idx->timestamp = chmstream_read_le32(stream);
 	idx->unknown1 = chmstream_read_le32(stream);
 	idx->num_topics = chmstream_read_le32(stream);
@@ -1352,7 +1352,7 @@ static void read_idxhdr(ChmReader *reader, ChmIdxhdr *idx, CHMMemoryStream *stre
 ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader)
 {
 	ChmIdxhdr *idx;
-	CHMMemoryStream *idxhdr;
+	ChmMemoryStream *idxhdr;
 	chm_off_t size;
 	
 	if (reader == NULL)
@@ -1363,17 +1363,17 @@ ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader)
 		CHM_DEBUG_LOG(1, "\nno #IDXHDR\n\n");
 		return NULL;
 	}
-	size = CHMStream_Size(idxhdr);
+	size = ChmStream_Size(idxhdr);
 	if (size < CHM_IDXHDR_MINSIZE)
 	{
 		CHM_DEBUG_LOG(0, "/#IDXHDR has only %u bytes\n", (unsigned int)size);
-		CHMStream_close(idxhdr);
+		ChmStream_Close(idxhdr);
 		return NULL;
 	}
 	idx = ChmIdxhdr_Create();
 	if (idx)
 		read_idxhdr(reader, idx, idxhdr, size);
-	CHMStream_close(idxhdr);
+	ChmStream_Close(idxhdr);
 	return idx;
 }
 
@@ -1398,7 +1398,7 @@ const char *ChmReader_GetContextUrl(ChmReader *reader, HelpContext context)
 /*
  * should already be NUL terminated, but don't count on it
  */
-static char *read_sys_string(CHMMemoryStream *system, unsigned int len)
+static char *read_sys_string(ChmMemoryStream *system, unsigned int len)
 {
 	char *tmp;
 	
@@ -1407,7 +1407,7 @@ static char *read_sys_string(CHMMemoryStream *system, unsigned int len)
 	tmp = g_new(char, len + 1);
 	if (tmp == NULL)
 		return NULL;
-	if (CHMStream_read(system, tmp, len) == FALSE)
+	if (ChmStream_Read(system, tmp, len) == FALSE)
 	{
 		g_free(tmp);
 		return NULL;
@@ -1426,7 +1426,7 @@ static char *read_sys_string(CHMMemoryStream *system, unsigned int len)
 
 static gboolean ChmReader_ReadSystem(ChmReader *reader)
 {
-	CHMMemoryStream *system;
+	ChmMemoryStream *system;
 	uint16_t code;
 	uint16_t EntrySize;
 	chm_off_t pos, size;
@@ -1441,7 +1441,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 		CHM_DEBUG_LOG(1, "\nno #SYSTEM\n\n");
 		return FALSE;
 	}
-	size = CHMStream_Size(system);
+	size = ChmStream_Size(system);
 	if (size > 4)
 	{
 		sys = ChmSystem_Create();
@@ -1449,7 +1449,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 		{
 			reader->system = sys;
 			sys->version = chmstream_read_le32(system);
-			pos = CHMStream_tell(system);
+			pos = ChmStream_Tell(system);
 			
 			result = TRUE;
 			while ((pos + 4) < size)
@@ -1544,7 +1544,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 					break;
 				}
 				pos += EntrySize + 4;
-				if (CHMStream_seek(system, pos) == FALSE)
+				if (ChmStream_Seek(system, pos) == FALSE)
 				{
 					CHM_DEBUG_LOG(0, "/#SYSTEM file corrupted\n");
 					break;
@@ -1561,7 +1561,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 	{
 		CHM_DEBUG_LOG(0, "/#SYSTEM file truncated\n");
 	}
-	CHMStream_close(system);
+	ChmStream_Close(system);
 	
 	return result;
 }
@@ -1570,7 +1570,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 
 static gboolean ChmReader_ReadContextIds(ChmReader *reader)
 {
-	CHMMemoryStream *IVB;
+	ChmMemoryStream *IVB;
 	chm_off_t size, pos;
 	uint32_t ivbsize;
 	uint32_t value;
@@ -1584,10 +1584,10 @@ static gboolean ChmReader_ReadContextIds(ChmReader *reader)
 		CHM_DEBUG_LOG(1, "\nno #IVB\n\n");
 		return FALSE;
 	}
-	size = CHMStream_Size(IVB);
+	size = ChmStream_Size(IVB);
 	if (size < 4)
 	{
-		CHMStream_close(IVB);
+		ChmStream_Close(IVB);
 		CHM_DEBUG_LOG(0, "corrupted #IVB\n");
 		return FALSE;
 	}
@@ -1606,7 +1606,7 @@ static gboolean ChmReader_ReadContextIds(ChmReader *reader)
 		ivbsize -= 8;
 		ContextList_AddContext(&reader->contextList, value, str);
 	}
-	CHMStream_close(IVB);
+	ChmStream_Close(IVB);
 	return TRUE;
 }
 
@@ -1632,7 +1632,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 		if (reader->TOPICSStream == NULL)
 			reader->TOPICSStream = NO_SUCH_STREAM;
 		else
-			CHMStream_TakeOwner(reader->TOPICSStream, TRUE);
+			ChmStream_TakeOwner(reader->TOPICSStream, TRUE);
 	}
 
 	if (reader->URLSTRStream == NULL)
@@ -1641,7 +1641,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 		if (reader->URLSTRStream == NULL)
 			reader->URLSTRStream = NO_SUCH_STREAM;
 		else
-			CHMStream_TakeOwner(reader->URLSTRStream, TRUE);
+			ChmStream_TakeOwner(reader->URLSTRStream, TRUE);
 	}
 
 	if (reader->URLTBLStream == NULL)
@@ -1650,7 +1650,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 		if (reader->URLTBLStream == NULL)
 			reader->URLTBLStream = NO_SUCH_STREAM;
 		else
-			CHMStream_TakeOwner(reader->URLTBLStream, TRUE);
+			ChmStream_TakeOwner(reader->URLTBLStream, TRUE);
 	}
 
 	if (reader->TOPICSStream == NO_SUCH_STREAM)
@@ -1665,10 +1665,10 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name)
+ChmMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name)
 {
 	char *freeme = NULL;
-	CHMMemoryStream *o;
+	ChmMemoryStream *o;
 	
 	if (reader == NULL || empty(Name))
 		return NULL;
@@ -1735,21 +1735,21 @@ const char *ChmReader_ReadURLSTR(ChmReader *reader, uint32_t APosition)
 	if (!ChmReader_CheckCommonStreams(reader))
 		return NULL;
 
-	if (CHMStream_seek(reader->URLTBLStream, APosition) == FALSE)
+	if (ChmStream_Seek(reader->URLTBLStream, APosition) == FALSE)
 		return NULL;
 	chmstream_read_le32(reader->URLTBLStream); /* unknown */
 	chmstream_read_le32(reader->URLTBLStream); /* TOPIC index # */
 	URLStrURLOffset = chmstream_read_le32(reader->URLTBLStream);
-	URLStrURLSize = CHMStream_Size(reader->URLSTRStream);
+	URLStrURLSize = ChmStream_Size(reader->URLSTRStream);
 	if (URLStrURLSize == 0)
 		return NULL;
-	if (URLStrURLOffset >= URLStrURLSize || CHMStream_seek(reader->URLSTRStream, URLStrURLOffset) == FALSE)
+	if (URLStrURLOffset >= URLStrURLSize || ChmStream_Seek(reader->URLSTRStream, URLStrURLOffset) == FALSE)
 		return NULL;
 	chmstream_read_le32(reader->URLSTRStream);
 	chmstream_read_le32(reader->URLSTRStream);
 	URLStrURLOffset += 8;
 	if (URLStrURLOffset < URLStrURLSize)
-		return (const char *)CHMStream_Memptr(reader->URLSTRStream) + URLStrURLOffset;
+		return (const char *)ChmStream_Memptr(reader->URLSTRStream) + URLStrURLOffset;
 	return NULL;
 }
 
@@ -1765,7 +1765,7 @@ const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char
 	if (!ChmReader_CheckCommonStreams(reader))
 		return NULL;
 	topic_pos = ATopicID * 16;
-	if (CHMStream_seek(reader->TOPICSStream, topic_pos))
+	if (ChmStream_Seek(reader->TOPICSStream, topic_pos))
 	{
 		chmstream_read_le32(reader->TOPICSStream);	/* skip TOCIDX offset */
 		TopicTitleOffset = chmstream_read_le32(reader->TOPICSStream);
@@ -1808,7 +1808,7 @@ const ChmSystem *ChmReader_GetSystem(ChmReader *reader)
 static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 {
 	ChmSiteMap *sitemap = NULL;
-	CHMMemoryStream *Index;
+	ChmMemoryStream *Index;
 	const char *o;
 	char *freeme = NULL;
 	
@@ -1829,7 +1829,7 @@ static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 	{
 		sitemap = ChmSiteMap_Create(stIndex);
 		ChmSiteMap_LoadFromStream(sitemap, Index);
-		CHMStream_close(Index);
+		ChmStream_Close(Index);
 	}
 	g_free(freeme);
 	return sitemap;
@@ -1849,12 +1849,12 @@ static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 #  define DEBUG_BININDEX(fmt, ...)
 #endif
 
-static gboolean LoadBtreeHeader(CHMStream *m, BtreeHeader *hdr)
+static gboolean LoadBtreeHeader(ChmStream *m, BtreeHeader *hdr)
 {
 	unsigned char buf[SIZEOF_BTREEHEADER];
 	const unsigned char *p = buf;
 	
-	if (CHMStream_read(m, buf, SIZEOF_BTREEHEADER) == FALSE)
+	if (ChmStream_Read(m, buf, SIZEOF_BTREEHEADER) == FALSE)
 		return FALSE;
 	hdr->ident[0] = *p++;
 	hdr->ident[1] = *p++;
@@ -2065,7 +2065,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 	BtreeHeader hdr;
 	uint8_t *block;
 	uint32_t i;
-	CHMMemoryStream *Index;
+	ChmMemoryStream *Index;
 	ChmSiteMap *sitemap;
 	ChmSiteMapItem *item;
 	chm_off_t indexsize;
@@ -2078,7 +2078,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 	
 	if (!ChmReader_CheckCommonStreams(reader))
 	{
-		CHMStream_close(Index);
+		ChmStream_Close(Index);
 		return ChmReader_GetIndexSitemapXML(reader);
 	}
 	
@@ -2088,7 +2088,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 	trytextual = TRUE;
 	hdr.lastlistblock = 0;
 	
-	indexsize = CHMStream_Size(Index);
+	indexsize = ChmStream_Size(Index);
 	if (indexsize >= SIZEOF_BTREEHEADER &&
 		LoadBtreeHeader(Index, &hdr) &&
 		hdr.lastlistblock != 0xffffffff &&
@@ -2100,7 +2100,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 		{
 			for (i = 0; i <= hdr.lastlistblock; i++)
 			{
-				if (CHMStream_read(Index, block, hdr.blocksize) == FALSE)
+				if (ChmStream_Read(Index, block, hdr.blocksize) == FALSE)
 					break;
 				parselistingblock(reader, sitemap, &item, block, hdr.blocksize);
 			}
@@ -2109,7 +2109,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 		trytextual = FALSE;
 	}
 
-	CHMStream_close(Index);
+	ChmStream_Close(Index);
 	if (trytextual)
 	{
 		ChmSiteMap_Destroy(sitemap);
@@ -2124,7 +2124,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 {
 	ChmSiteMap *sitemap = NULL;
-	CHMMemoryStream *TOC;
+	ChmMemoryStream *TOC;
 	const char *o;
 	char *freeme = NULL;
 
@@ -2145,7 +2145,7 @@ static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 	{
 		sitemap = ChmSiteMap_Create(stTOC);
 		ChmSiteMap_LoadFromStream(sitemap, TOC);
-		CHMStream_close(TOC);
+		ChmStream_Close(TOC);
 	}
 	g_free(freeme);
 	return sitemap;
@@ -2153,7 +2153,7 @@ static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static uint32_t AddTOCItem(ChmReader *reader, CHMMemoryStream *TOC, uint32_t itemoffset, ChmSiteMapItems *items)
+static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t itemoffset, ChmSiteMapItems *items)
 {
 	uint32_t props;
 	ChmSiteMapItem *item;
@@ -2162,7 +2162,7 @@ static uint32_t AddTOCItem(ChmReader *reader, CHMMemoryStream *TOC, uint32_t ite
 	char *title;
 	uint32_t result;
 	
-	if (CHMStream_seek(TOC, itemoffset + 4) == FALSE)
+	if (ChmStream_Seek(TOC, itemoffset + 4) == FALSE)
 		return 0;
 	item = ChmSiteMapItems_NewItem(items);
 	props = chmstream_read_le32(TOC);
@@ -2192,7 +2192,7 @@ static uint32_t AddTOCItem(ChmReader *reader, CHMMemoryStream *TOC, uint32_t ite
 
 ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 {
-	CHMMemoryStream *TOC;
+	ChmMemoryStream *TOC;
 	ChmSiteMap *sitemap = NULL;
 	uint32_t TOPICSOffset;
 	uint32_t EntriesOffset;
@@ -2213,7 +2213,7 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 	 */
 	if (!ChmReader_CheckCommonStreams(reader))
 	{
-		CHMStream_close(TOC);
+		ChmStream_Close(TOC);
 		return ChmReader_GetTOCSitemapXML(reader);
 	}
 	
@@ -2233,13 +2233,13 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 		while (NextItem != 0);
 	}
 	
-	CHMStream_close(TOC);
+	ChmStream_Close(TOC);
 	return sitemap;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-ChmReader *ChmReader_Create(CHMStream *AStream, gboolean FreeStreamOnDestroy)
+ChmReader *ChmReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy)
 {
 	ChmReader *reader;
 	
@@ -2268,23 +2268,23 @@ void ChmReader_Destroy(ChmReader *reader)
 	ChmSearchReader_Destroy(reader->SearchReader);
 	if (reader->TOPICSStream != NO_SUCH_STREAM)
 	{
-		CHMStream_TakeOwner(reader->TOPICSStream, FALSE);
-		CHMStream_close(reader->TOPICSStream);
+		ChmStream_TakeOwner(reader->TOPICSStream, FALSE);
+		ChmStream_Close(reader->TOPICSStream);
 	}
 	if (reader->URLSTRStream != NO_SUCH_STREAM)
 	{
-		CHMStream_TakeOwner(reader->URLSTRStream, FALSE);
-		CHMStream_close(reader->URLSTRStream);
+		ChmStream_TakeOwner(reader->URLSTRStream, FALSE);
+		ChmStream_Close(reader->URLSTRStream);
 	}
 	if (reader->URLTBLStream != NO_SUCH_STREAM)
 	{
-		CHMStream_TakeOwner(reader->URLTBLStream, FALSE);
-		CHMStream_close(reader->URLTBLStream);
+		ChmStream_TakeOwner(reader->URLTBLStream, FALSE);
+		ChmStream_Close(reader->URLTBLStream);
 	}
 	if (reader->StringsStream != NO_SUCH_STREAM)
 	{
-		CHMStream_TakeOwner(reader->StringsStream, FALSE);
-		CHMStream_close(reader->StringsStream);
+		ChmStream_TakeOwner(reader->StringsStream, FALSE);
+		ChmStream_Close(reader->StringsStream);
 	}
 	ITSFReader_Destroy(reader->itsf);
 	g_free(reader);

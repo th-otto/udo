@@ -61,7 +61,7 @@ typedef enum _chm_error {
 
 typedef struct _ITSFReader {
 /* protected: */
-	CHMStream *Stream;
+	ChmStream *Stream;
 	gboolean FreeStreamOnDestroy;
 	ITSFHeader ITSFheader;
 	ITSFHeaderSuffix HeaderSuffix;
@@ -78,7 +78,7 @@ typedef struct _ITSFReader {
 typedef GSList StringList; /* of const char * */
 typedef GSList WStringList; /* of chm_wchar_t * */
 
-ITSFReader *ITSFReader_Create(CHMStream *AStream, gboolean FreeStreamOnDestroy);
+ITSFReader *ITSFReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy);
 void ITSFReader_Destroy(ITSFReader *reader);
 void ITSFReader_Destroy(ITSFReader *reader);
 gboolean ITSFReader_ReadHeader(ITSFReader *reader) G_GNUC_WARN_UNUSED_RESULT;
@@ -86,16 +86,16 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader);
 gboolean ITSFReader_IsValidFile(ITSFReader *reader);
 gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntryForEach ForEach);
 gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name);
-CHMMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name); /* YOU must Free the stream */
+ChmMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name); /* YOU must Free the stream */
 chm_error ITSFReader_GetError(ITSFReader *reader);
 
 typedef struct _ChmReader {
 /* protected: */
 	ContextList *contextList;
-	CHMMemoryStream *TOPICSStream;
-	CHMMemoryStream *URLSTRStream;
-	CHMMemoryStream *URLTBLStream;
-	CHMMemoryStream *StringsStream;
+	ChmMemoryStream *TOPICSStream;
+	ChmMemoryStream *URLSTRStream;
+	ChmMemoryStream *URLTBLStream;
+	ChmMemoryStream *StringsStream;
 	GSList *WindowsList; /* of CHMWindow * */
 	ChmSystem *system;
 /* private: */
@@ -103,7 +103,7 @@ typedef struct _ChmReader {
 	ChmSearchReader *SearchReader;
 } ChmReader;
 
-ChmReader *ChmReader_Create(CHMStream *AStream, gboolean FreeStreamOnDestroy);
+ChmReader *ChmReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy);
 void ChmReader_Destroy(ChmReader *reader);
 
 chm_nametype chm_get_nametype(const char *name, size_t len);
@@ -116,7 +116,7 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML /* = FA
 ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML /* = FALSE */);
 const ContextList *ChmReader_GetContextList(ChmReader *reader);
 const char *ChmReader_GetContextUrl(ChmReader *reader, HelpContext Context);
-CHMMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name); /* YOU must Free the stream */
+ChmMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name); /* YOU must Free the stream */
 chm_error ChmReader_GetError(ChmReader *reader);
 const GSList *ChmReader_GetWindows(ChmReader *reader);
 const ChmSystem *ChmReader_GetSystem(ChmReader *reader);

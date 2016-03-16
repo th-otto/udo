@@ -74,7 +74,7 @@ gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, void 
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *Stream)
+gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream)
 {
 	unsigned int ReversePos;
 	uint16_t TmpItemCount;
@@ -83,7 +83,7 @@ gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *Strea
 	TmpItemCount = (uint16_t)dir->ItemCount;
 	DirectoryChunk_put_le16(dir, ReversePos, TmpItemCount);
 
-	if (!CHMStream_write(Stream, dir->Buffer, DIR_BLOCK_SIZE))
+	if (!ChmStream_Write(Stream, dir->Buffer, DIR_BLOCK_SIZE))
 		return FALSE;
 	CHM_DEBUG_LOG(2, "Writing %c%c%c%c ChunkToStream\n", dir->Buffer[0], dir->Buffer[1], dir->Buffer[2], dir->Buffer[3]);
 	return TRUE;
@@ -265,7 +265,7 @@ void FileEntryList_Destroy(FileEntryList *list)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean G_GNUC_WARN_UNUSED_RESULT FinishBlock(DirectoryChunk *dir, CHMStream *Stream, int *AIndex, gboolean Final)
+static gboolean G_GNUC_WARN_UNUSED_RESULT FinishBlock(DirectoryChunk *dir, ChmStream *Stream, int *AIndex, gboolean Final)
 {
 	PMGIIndexChunk Header;
 	
@@ -279,7 +279,7 @@ static gboolean G_GNUC_WARN_UNUSED_RESULT FinishBlock(DirectoryChunk *dir, CHMSt
 	return TRUE;
 }
 
-gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *Stream, int *AIndex, gboolean Final)
+gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream, int *AIndex, gboolean Final)
 {
 	uint8_t NewBuffer[DIR_BLOCK_SIZE];
 	int EntryLength;
@@ -293,10 +293,10 @@ gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *S
 		return FALSE;
 	}
 	
-	OldPos = CHMStream_tell(Stream);
+	OldPos = ChmStream_Tell(Stream);
 	if (DirectoryChunk_WriteChunkToStream(dir, Stream) == FALSE)
 		return FALSE;
-	NewPos = CHMStream_tell(Stream);
+	NewPos = ChmStream_Tell(Stream);
 	++dir->ChunkLevelCount;
 
 	if (Final && dir->ChunkLevelCount < 2)
@@ -309,15 +309,15 @@ gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, CHMStream *S
 		dir->ParentChunk = DirectoryChunk_Create(dir->HeaderSize);
 
 	NewStart = OldPos + dir->HeaderSize;
-	if (CHMStream_seek(Stream, NewStart) == FALSE)
+	if (ChmStream_Seek(Stream, NewStart) == FALSE)
 		return FALSE;
 	EntryLength = GetCompressedInteger(Stream);
-	WriteSize = (CHMStream_tell(Stream) - NewStart) + EntryLength;
+	WriteSize = (ChmStream_Tell(Stream) - NewStart) + EntryLength;
 	assert(WriteSize < DIR_BLOCK_SIZE);
 	memcpy(NewBuffer, &dir->Buffer[dir->HeaderSize], WriteSize);
 	WriteSize += PutCompressedInteger(&NewBuffer[WriteSize], *AIndex);
 
-	if (CHMStream_seek(Stream, NewPos) == FALSE)
+	if (ChmStream_Seek(Stream, NewPos) == FALSE)
 		return FALSE;
 	
 	if (!DirectoryChunk_CanHold(dir->ParentChunk, WriteSize))
@@ -505,13 +505,13 @@ void CHMWindow_loadfromini(CHMWindow *win, const char *txt)
 
 /*** ---------------------------------------------------------------------- ***/
 
-void CHMWindow_savetoxml(CHMWindow *win, CHMStream *stream)
+void CHMWindow_savetoxml(CHMWindow *win, ChmStream *stream)
 {
 	char *s;
 	FILE *out;
 	
-	assert(CHMStream_type(stream) == chm_stream_file);
-	out = CHMStream_filep(stream);
+	assert(ChmStream_Type(stream) == chm_stream_file);
+	out = ChmStream_Fileptr(stream);
 	fprintf(out, "    <window");
 	s = xml_quote(win->window_name.c);
 	fprintf(out, " name=%s", s);

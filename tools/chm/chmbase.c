@@ -9,20 +9,20 @@ CHMSignature const ITSPHeaderSig = { { 'I', 'T', 'S', 'P' } };
 
 CHMSignature const PMGIsig = { { 'P', 'M', 'G', 'I' } };
 
-uint32_t GetCompressedInteger(CHMStream *Stream)
+uint32_t GetCompressedInteger(ChmStream *Stream)
 {
 	uint64_t total = 0;
 	int temp;
 	int sanity = 0;
 	
-	temp = CHMStream_fgetc(Stream);
+	temp = ChmStream_fgetc(Stream);
 	if (temp == EOF)
 		return 0;
 	while (temp >= 0x80)
 	{
 		total <<= 7;
 		total += temp & 0x7f;
-		temp = CHMStream_fgetc(Stream);
+		temp = ChmStream_fgetc(Stream);
 		if (temp == EOF)
 			return 0;
 		++sanity;
@@ -37,11 +37,11 @@ uint32_t GetCompressedInteger(CHMStream *Stream)
 /*
  * returns the number of bytes written to the stream
  */
-uint32_t WriteCompressedInteger(CHMStream *Stream, uint32_t ANumber)
+uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t ANumber)
 {
 	uint64_t Buffer;
 	uint32_t count = PutCompressedInteger(&Buffer, ANumber);
-	return CHMStream_write(Stream, &Buffer, count) ? count : 0;
+	return ChmStream_Write(Stream, &Buffer, count) ? count : 0;
 }
 
 
