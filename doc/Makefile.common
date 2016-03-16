@@ -1230,6 +1230,7 @@ htmlhelp: .stamp.htmlhelp
 		 else \
 		(cd $(HTMLHELP_DIR); \
 		 $(HHC) udo$(OUTPUT_LANG).hhp; \
+		 test -f udo$(VER).chm && rm -f *.htm*; \
 		); \
 		$(CP) $(HTMLHELP_DIR)udo$(VER).chm $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER).chm || exit 1; \
 		: $(RMDIRHIER) "$(HTMLHELP_DIR)"; \
