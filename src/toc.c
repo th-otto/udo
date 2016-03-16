@@ -5494,10 +5494,10 @@ LOCAL void print_htmlhelp_contents(FILE *file, int indent, const TOCIDX ti)
    
    print_indent(file, indent);
    fprintf(file, "<LI> <OBJECT type=\"text/sitemap\">\n");
-   print_indent(file, indent);
-   fprintf(file, "\t<param name=\"Name\" value=\"%s\">\n", tocname);
-   print_indent(file, indent);
-   fprintf(file, "\t<param name=\"Local\" value=\"%s%s\">\n", filename, outfile.suff);
+   print_indent(file, indent + 1);
+   fprintf(file, "<param name=\"Name\" value=\"%s\">\n", tocname);
+   print_indent(file, indent + 1);
+   fprintf(file, "<param name=\"Local\" value=\"%s%s\">\n", filename, outfile.suff);
    print_indent(file, indent);
    fprintf(file, "</OBJECT></LI>\n");
 }
@@ -5698,11 +5698,13 @@ GLOBAL _BOOL save_htmlhelp_index(const char *filename)
    num_index = 0;
    for (j = 1; j <= p1_lab_counter; j++)
    {
-      if (label_table[j] != NULL && !label_table[j]->ignore_index)
+   	  LABEL *l;
+   	  
+      if ((l = label_table[j]) != NULL && !l->ignore_index)
       {
-         html_index[num_index].toc_index = label_table[j]->tocindex;
+         html_index[num_index].toc_index = l->tocindex;
          tocname = html_index[num_index].tocname;
-         strcpy(tocname, label_table[j]->name);
+         strcpy(tocname, l->name);
          replace_macros(tocname);
          c_internal_styles(tocname);
 /*       replace_udo_quotes(tocname); */
@@ -5710,6 +5712,16 @@ GLOBAL _BOOL save_htmlhelp_index(const char *filename)
          replace_udo_tilde(tocname);
          replace_udo_nbsp(tocname);
          del_html_styles(tocname);
+         /*
+          * if label was a nodename,
+          * then recoding did already occur, and we must not do
+          * it again, otherwise the '&' in entity names would be replaced
+          * by '&amp;'
+          * If it was from !index however,
+          * we must recode here. sigh.
+          */
+		 if (!l->is_node && l->is_alias)
+	         recode_chrtab(tocname, CHRTAB_HTML);
          num_index++;
       }
    }
@@ -5732,7 +5744,7 @@ GLOBAL _BOOL save_htmlhelp_index(const char *filename)
    fprintf(file, "</HTML>\n");
    fclose(file);
    
-   free((void *)html_index);
+   free(html_index);
    
    return TRUE;
 }
