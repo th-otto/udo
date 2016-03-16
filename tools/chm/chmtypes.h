@@ -3,10 +3,9 @@
 
 #include "chm_htmlhelp.h"
 
-typedef enum {
-	snMSCompressed,
-	snUnCompressed
-} TSectionName;
+#define snMSCompressed (1 << 0)
+#define snUnCompressed (1 << 1)
+typedef unsigned int SectionNames;
 
 #define DIR_BLOCK_SIZE 0x1000
 

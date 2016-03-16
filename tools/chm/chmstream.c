@@ -167,7 +167,7 @@ ChmStream *ChmStream_CreateForFile(FILE *fp)
 #ifdef __WIN32__
 	stream->supports_64bit = TRUE;
 #else
-	stream->supports_64bit = TRUE;
+	stream->supports_64bit = sizeof(off_t) >= 8;
 #endif
 	stream->warned_64bit = FALSE;
 	return stream;
@@ -328,14 +328,24 @@ gboolean ChmStream_CopyFrom(ChmMemoryStream *stream, ChmStream *src, size_t size
 
 	assert(stream);
 	assert(src);
-	assert(stream->type == chm_stream_mem);
-	space = stream->len - stream->mem.pos;
-	if (space < size)
-		return FALSE;
-	if (src->read(src, stream->mem.base + stream->mem.pos, size) == FALSE)
-		return FALSE;
-	stream->mem.pos += size;
-	return TRUE;
+	if (stream->type == chm_stream_mem)
+	{
+		space = stream->len - stream->mem.pos;
+		if (space < size)
+			return FALSE;
+		if (src->read(src, stream->mem.base + stream->mem.pos, size) == FALSE)
+			return FALSE;
+		stream->mem.pos += size;
+		return TRUE;
+	} else if (src->type == chm_stream_mem)
+	{
+		if (stream->write(stream, src->mem.base + src->mem.pos, size) == FALSE)
+			return FALSE;
+		src->mem.pos += size;
+		return TRUE;
+	}
+	/* NYI */
+	return FALSE;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -484,6 +494,17 @@ uint64_t chmstream_read_le64(ChmStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
+uint16_t chmstream_read_be16(ChmStream *stream)
+{
+	uint32_t c1, c2;
+	
+	c2 = ChmStream_fgetc(stream);
+	c1 = ChmStream_fgetc(stream);
+	return (c2 << 8) | c1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 uint32_t chmstream_read_be32(ChmStream *stream)
 {
 	uint32_t c1, c2, c3, c4;
@@ -493,4 +514,94 @@ uint32_t chmstream_read_be32(ChmStream *stream)
 	c3 = ChmStream_fgetc(stream);
 	c4 = ChmStream_fgetc(stream);
 	return (c1 << 24) | (c2 << 16) | (c3 << 8) | c4;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+uint64_t chmstream_read_be64(ChmStream *stream)
+{
+	uint64_t l1, l2;
+	
+	l2 = chmstream_read_be32(stream);
+	l1 = chmstream_read_be32(stream);
+	return (l2 << 32) | l1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_le16(ChmStream *stream, uint16_t val)
+{
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	val >>= 8;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_le32(ChmStream *stream, uint32_t val)
+{
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	val >>= 8;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	val >>= 8;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	val >>= 8;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_le64(ChmStream *stream, uint64_t val)
+{
+	if (chmstream_write_le32(stream, val) == FALSE)
+		return FALSE;
+	val >>= 32;
+	if (chmstream_write_le32(stream, val) == FALSE)
+		return FALSE;
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_be16(ChmStream *stream, uint16_t val)
+{
+	if (ChmStream_fputc(stream, val >> 8) < 0)
+		return FALSE;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_be32(ChmStream *stream, uint32_t val)
+{
+	if (ChmStream_fputc(stream, val >> 24) < 0)
+		return FALSE;
+	if (ChmStream_fputc(stream, val >> 16) < 0)
+		return FALSE;
+	if (ChmStream_fputc(stream, val >> 8) < 0)
+		return FALSE;
+	if (ChmStream_fputc(stream, val) < 0)
+		return FALSE;
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean chmstream_write_be64(ChmStream *stream, uint64_t val)
+{
+	if (chmstream_write_be32(stream, val >> 32) == FALSE)
+		return FALSE;
+	if (chmstream_write_be32(stream, val) == FALSE)
+		return FALSE;
+	return TRUE;
 }

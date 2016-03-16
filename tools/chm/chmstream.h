@@ -38,6 +38,17 @@ chm_off_t ChmStream_Size(ChmStream *stream);
 uint16_t chmstream_read_le16(ChmStream *stream);
 uint32_t chmstream_read_le32(ChmStream *stream);
 uint64_t chmstream_read_le64(ChmStream *stream);
+
+uint16_t chmstream_read_be16(ChmStream *stream);
 uint32_t chmstream_read_be32(ChmStream *stream);
+uint64_t chmstream_read_be64(ChmStream *stream);
+
+gboolean chmstream_write_le16(ChmStream *stream, uint16_t val);
+gboolean chmstream_write_le32(ChmStream *stream, uint32_t val);
+gboolean chmstream_write_le64(ChmStream *stream, uint64_t val);
+
+gboolean chmstream_write_be16(ChmStream *stream, uint16_t val);
+gboolean chmstream_write_be32(ChmStream *stream, uint32_t val);
+gboolean chmstream_write_be64(ChmStream *stream, uint64_t val);
 
 #endif /* __CHMSTREAM_H__ */

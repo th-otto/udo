@@ -20,6 +20,7 @@ chmls_SOURCES = \
 	chmreader.c chmreader.h \
 	chmsitemap.c chmsitemap.h \
 	chmfiftimain.c chmfiftimain.h \
+	chmspecialfiles.c chmspecialfiles.h \
 	chmglib.c \
 	lzxdec.c lzx.h \
 	xgetopt.c \
