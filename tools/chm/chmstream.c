@@ -12,6 +12,9 @@ struct _CHMStream {
 	chmstream_type type;
 	chm_off_t len;
 	gboolean owned;
+	gboolean supports_64bit;
+	gboolean warned_64bit;
+	char *filename;
 	gboolean (*close)(CHMStream *stream);
 	gboolean (*seek)(CHMStream *stream, chm_off_t pos, int whence);
 	chm_off_t (*tell)(CHMStream *stream);
@@ -29,6 +32,25 @@ struct _CHMStream {
 		} mem;
 	};
 };
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
+static gboolean check_64bit(CHMStream *stream, chm_off_t pos)
+{
+	if (!stream->supports_64bit && pos > (uint32_t)0x7fffffff)
+	{
+		if (!stream->warned_64bit)
+		{
+			fprintf(stderr, "seek error (file too large?)\n");
+			stream->warned_64bit = TRUE;
+		}
+		errno = EFBIG;
+		return FALSE;
+	}
+	return TRUE;
+}
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -54,7 +76,7 @@ static gboolean file_close(CHMStream *stream)
 static chm_off_t file_tell(CHMStream *stream)
 {
 #ifdef __WIN32__
-	return _ftelli64(stream->file);
+	return ftello64(stream->file);
 #else
 	return ftello(stream->file);
 #endif
@@ -66,6 +88,8 @@ static gboolean file_seek(CHMStream *stream, chm_off_t pos, int whence)
 {
 	int res;
 	
+	if (!check_64bit(stream, pos))
+		return FALSE;
 #ifdef __WIN32__
 	res = fseeko64(stream->file, pos, whence);
 #else
@@ -74,18 +98,6 @@ static gboolean file_seek(CHMStream *stream, chm_off_t pos, int whence)
 	if (res != 0 ||
 		stream->tell(stream) != pos)
 	{
-		if (pos > (uint32_t)0x7fffffff)
-		{
-			static int warned;
-			if (!warned)
-			{
-				int save_errno = errno;
-				
-				fprintf(stderr, "seek error (file too large?)\n");
-				warned = TRUE;
-				errno = save_errno;
-			}
-		}
 		return FALSE;
 	}
 	return TRUE;
@@ -129,11 +141,12 @@ CHMStream *CHMStream_CreateForFile(FILE *fp)
 	
 	if (fp == NULL)
 		return NULL;
-	stream = g_new(CHMStream, 1);
+	stream = g_new0(CHMStream, 1);
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_file;
 	stream->owned = FALSE;
+	stream->filename = NULL;
 	stream->len = 0;
 	stream->file = fp;
 	stream->close = file_close;
@@ -151,6 +164,35 @@ CHMStream *CHMStream_CreateForFile(FILE *fp)
 			stream->seek(stream, 0, SEEK_SET);
 		}
 	}		
+#ifdef __WIN32__
+	stream->supports_64bit = TRUE;
+#else
+	stream->supports_64bit = TRUE;
+#endif
+	stream->warned_64bit = FALSE;
+	return stream;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+CHMStream *ChmStream_Open(const char *filename, gboolean readonly)
+{
+	CHMStream *stream;
+	FILE *fp;
+	
+	if (!readonly && strcmp(filename, "-") == 0)
+	{
+		fp = stdout;
+		filename = "<stdout>";
+	} else
+	{
+		fp = fopen(filename, readonly ? "rb" : "wb");
+	}
+	if (fp == NULL)
+		return NULL;
+	stream = CHMStream_CreateForFile(fp);
+	if (stream)
+		stream->filename = g_strdup(filename);
 	return stream;
 }
 
@@ -247,11 +289,12 @@ CHMMemoryStream *CHMStream_CreateMem(size_t size)
 {
 	CHMStream *stream;
 	
-	stream = g_new(CHMStream, 1);
+	stream = g_new0(CHMStream, 1);
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_mem;
 	stream->owned = FALSE;
+	stream->filename = NULL;
 	stream->mem.base = g_new(unsigned char, size);
 	if (stream->mem.base == NULL)
 	{
@@ -268,6 +311,12 @@ CHMMemoryStream *CHMStream_CreateMem(size_t size)
 	stream->read = mem_read;
 	stream->fgetc = mem_getc;
 	stream->fputc = mem_putc;
+	/*
+	 * even if it would work on 64bit hosts,
+	 * we don't want memory streams of excessive size
+	 */
+	stream->supports_64bit = FALSE;
+	stream->warned_64bit = FALSE;
 	return stream;
 }
 
@@ -335,6 +384,7 @@ gboolean CHMStream_close(CHMStream *stream)
 {
 	if (stream == NULL || stream->owned)
 		return FALSE;
+	g_free(stream->filename);
 	return stream->close(stream);
 }
 
@@ -384,6 +434,15 @@ int CHMStream_fputc(CHMStream *stream, int c)
 {
 	assert(stream);
 	return stream->fputc(stream, c);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+const char *ChmStream_GetFilename(CHMStream *stream)
+{
+	if (stream == NULL)
+		return NULL;
+	return stream->filename;
 }
 
 /******************************************************************************/

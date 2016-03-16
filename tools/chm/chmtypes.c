@@ -1,6 +1,7 @@
 #include "chmtools.h"
 #include "chmtypes.h"
 #include "htmlutil.h"
+#include "chmxml.h"
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -503,11 +504,6 @@ void CHMWindow_loadfromini(CHMWindow *win, const char *txt)
 }
 
 /*** ---------------------------------------------------------------------- ***/
-
-char *xml_quote(const char *str)
-{
-	return g_strdup_printf("\"%s\"", str ? str : "");
-}
 
 void CHMWindow_savetoxml(CHMWindow *win, CHMStream *stream)
 {

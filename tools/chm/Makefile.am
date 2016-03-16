@@ -3,7 +3,7 @@ include ../../silent.am
 INCLUDES = -I$(top_srcdir)/tools/hypview/include
 AM_CPPFLAGS = $(GLIB_CFLAGS)
 
-noinst_PROGRAMS = chmls
+noinst_PROGRAMS = chmls xmltest
 
 if !CROSS_COMPILING
 noinst_SCRIPTS = $(build_triplet)-chmls$(EXEEXT)
@@ -24,8 +24,13 @@ chmls_SOURCES = \
 	lzxdec.c lzx.h \
 	xgetopt.c \
 	cp_1252.h \
+	chmxml.c chmxml.h htmlentity.h \
+	kwset.c obstack.c \
 	$(empty)
 chmls_LDADD = $(GLIB_LIBS) $(INTLLIBS)
 
 $(build_triplet)-chmls$(EXEEXT): chmls$(EXEEXT)
 	cp -a $? $@
+
+xmltest_SOURCES = xmltest.c kwset.c obstack.c
+xmltest_LDADD = $(GLIB_LIBS)

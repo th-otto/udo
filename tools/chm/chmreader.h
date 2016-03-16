@@ -16,7 +16,7 @@ typedef struct _ContextItem {
 typedef GSList ContextList; /* of ContextItem */
 
 void ContextList_AddContext(ContextList **list, HelpContext Context, char *Url);
-const char *ContextList_GetURL(ContextList *list, HelpContext Context);
+const char *ContextList_GetURL(const ContextList *list, HelpContext Context);
 void ContextList_Destroy(ContextList *list);
 
 typedef enum {
@@ -114,11 +114,11 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position);
 const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char **ATitle);
 ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML /* = FALSE */);
 ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML /* = FALSE */);
-ContextList *ChmReader_GetContextList(ChmReader *reader);
+const ContextList *ChmReader_GetContextList(ChmReader *reader);
 const char *ChmReader_GetContextUrl(ChmReader *reader, HelpContext Context);
 CHMMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name); /* YOU must Free the stream */
 chm_error ChmReader_GetError(ChmReader *reader);
-GSList *ChmReader_GetWindows(ChmReader *reader);
+const GSList *ChmReader_GetWindows(ChmReader *reader);
 const ChmSystem *ChmReader_GetSystem(ChmReader *reader);
 ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader);
 

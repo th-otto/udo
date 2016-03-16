@@ -1,5 +1,6 @@
 #include "chmtools.h"
 #include "htmlutil.h"
+#include "chmxml.h"
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -135,7 +136,12 @@ char *GetValFromNameVal(const char *namevalpair)
 			P++;
 
 		if (P != S)
-			result = g_strndup(S, P - S);
+		{
+			char *tmp;
+			tmp = g_strndup(S, P - S);
+			result = xml_dequote(tmp, tmp ? strlen(tmp) : 0);
+			g_free(tmp);
+		}
 	}
 	return result;
 }

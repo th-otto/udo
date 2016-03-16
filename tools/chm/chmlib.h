@@ -20,7 +20,15 @@ typedef unsigned short wchar_t;
 #define GLIB_DISABLE_DEPRECATION_WARNINGS
 
 #if defined(HAVE_GLIB)
+
+#define g_slist_length g_slist_length_noconst
+#define g_slist_nth_data g_slist_nth_data_noconst
+
 #include <glib.h>
+
+#undef g_slist_length
+#undef g_slist_nth_data 
+
 #endif
 
 #if defined(__WIN32__)
@@ -200,11 +208,12 @@ GSList *g_slist_sort(GSList *list, GCompareFunc compare_func) G_GNUC_WARN_UNUSED
 
 char *g_strup(char *s);
 char *g_strdown(char *s);
-GSList *g_slist_nth(GSList *list, unsigned int i);
-void *g_slist_nth_data(GSList *list, unsigned int i);
-unsigned int g_slist_length(GSList *list);
 
 #endif /* __G_LIB_H__ */
+
+GSList *g_slist_nth(GSList *list, unsigned int i);
+void *g_slist_nth_data(const GSList *list, unsigned int i);
+unsigned int g_slist_length(const GSList *list);
 
 #ifndef G_LOCK_DEFINE_STATIC
 #define G_LOCK_DEFINE_STATIC(x) extern int x

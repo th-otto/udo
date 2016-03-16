@@ -26,11 +26,32 @@ const char *ChmErrorToStr(chm_error Error)
 
 /*** ---------------------------------------------------------------------- ***/
 
+char *changefileext(const char *filename, const char *ext)
+{
+	const char *p;
+	char *changed;
+	char *tmp;
+	
+	p = strrchr(filename, '.');
+	if (p == NULL)
+		return g_strconcat(filename, ext, NULL);
+	tmp = g_strndup(filename, p - filename);
+	changed = g_strconcat(tmp, ext, NULL);
+	g_free(tmp);
+	return changed;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 const char *print_guid(const GUID *guid)
 {
+	/*
+	 * non-reentrant here, but this function
+	 * is only used for debug output
+	 */
 	static char buf[50];
 	sprintf(buf, "{%08X-%04X-%04X-%02X%02X-%02X%02X%02X%02X%02X%02X}",
-		guid->Data1,
+		(unsigned int)guid->Data1,
 		guid->Data2,
 		guid->Data3,
 		guid->Data4[0],
@@ -1076,7 +1097,7 @@ void ContextList_AddContext(ContextList **list, HelpContext context, char *url)
 
 /*** ---------------------------------------------------------------------- ***/
 
-const char *ContextList_GetURL(ContextList *list, HelpContext context)
+const char *ContextList_GetURL(const ContextList *list, HelpContext context)
 {
 	while (list != NULL)
 	{
@@ -1358,7 +1379,7 @@ ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-ContextList *ChmReader_GetContextList(ChmReader *reader)
+const ContextList *ChmReader_GetContextList(ChmReader *reader)
 {
 	return reader->contextList;
 }
@@ -1758,7 +1779,7 @@ const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char
 
 /*** ---------------------------------------------------------------------- ***/
 
-GSList *ChmReader_GetWindows(ChmReader *reader)
+const GSList *ChmReader_GetWindows(ChmReader *reader)
 {
 	if (reader == NULL)
 		return NULL;
@@ -1781,6 +1802,40 @@ const ChmSystem *ChmReader_GetSystem(ChmReader *reader)
 /*
  * sitemap functions
  */
+
+/*** ---------------------------------------------------------------------- ***/
+
+static ChmSiteMap *AbortAndTryTextual(ChmReader *reader)
+{
+	ChmSiteMap *sitemap = NULL;
+	CHMMemoryStream *Index;
+	const char *o;
+	char *freeme = NULL;
+	
+	if (reader->system != NULL && reader->system->index_file.c != NULL)
+	{
+		o = reader->system->index_file.c;
+	} else if (reader->system != NULL && reader->system->chm_filename.c)
+	{
+		freeme = g_strconcat(reader->system->chm_filename.c, ".hhk", NULL);
+		o = freeme;
+	} else if ((o = ChmStream_GetFilename(reader->itsf->Stream)) != NULL)
+	{
+		freeme = changefileext(chm_basename(o), ".hhk");
+		o = freeme;
+	}
+	Index = ChmReader_GetObject(reader, o);
+	if (Index != NULL)
+	{
+		sitemap = ChmSiteMap_Create(stIndex);
+		ChmSiteMap_LoadFromStream(sitemap, Index);
+		CHMStream_close(Index);
+	}
+	g_free(freeme);
+	return sitemap;
+}
+
+/*** ---------------------------------------------------------------------- ***/
 
 #define get_le16(var, p) \
 	var = ((uint16_t)((p)[1]) << 8) | (uint16_t)((p)[0]), p += 2
@@ -1821,18 +1876,20 @@ static gboolean LoadBtreeHeader(CHMStream *m, BtreeHeader *hdr)
 	get_le32(hdr->unknown4, p);
 	get_le32(hdr->unknown5, p);
 	assert(p == (buf + SIZEOF_BTREEHEADER));
-	DEBUG_BININDEX("btree: flagx : $%x\n", hdr->flags);
+	DEBUG_BININDEX("btree: flags : $%x\n", hdr->flags);
 	DEBUG_BININDEX("btree: blocksize : %u\n", hdr->blocksize);
 	DEBUG_BININDEX("btree: lastlistblock : %d\n", hdr->lastlistblock);
 	DEBUG_BININDEX("btree: indexrootblock : %d\n", hdr->indexrootblock);
 	DEBUG_BININDEX("btree: nrblock: %d\n", hdr->nrblock);
 	DEBUG_BININDEX("btree: treedepth: %d\n", hdr->treedepth);
 	DEBUG_BININDEX("btree: nrkeywords: %d\n", hdr->nrkeywords);
-	DEBUG_BININDEX("btree: codepage: $%x\n", hdr->codepage);
+	DEBUG_BININDEX("btree: codepage: %d\n", hdr->codepage);
 	DEBUG_BININDEX("btree: lcid: $%x\n", hdr->lcid);
 	DEBUG_BININDEX("btree: ischm: %u\n", hdr->ischm);
 	return TRUE;
 }
+
+/*** ---------------------------------------------------------------------- ***/
 
 static void createindexsitemapentry(ChmSiteMap *sitemap, ChmSiteMapItem **item, const chm_wchar_t *name, int charindex, const char *topic, const char *title)
 {
@@ -1845,6 +1902,7 @@ static void createindexsitemapentry(ChmSiteMap *sitemap, ChmSiteMapItem **item, 
 		(*item)->local = g_strdup(topic);
 		if (title && strcmp((*item)->name, title) != 0)
 			(*item)->keyword = g_strdup(title);
+		printf("new item: %s %s\n", (*item)->name, (*item)->local);
 	} else
 	{
 		char *longpart = chm_wchar_to_utf8(name + charindex, STR0TERM);
@@ -1868,25 +1926,6 @@ static void createindexsitemapentry(ChmSiteMap *sitemap, ChmSiteMapItem **item, 
 			litem->keyword = g_strdup(title); /* recursively split this? No examples. */
 		}
 	}
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
-static ChmSiteMap *AbortAndTryTextual(ChmReader *reader)
-{
-	ChmSiteMap *sitemap = NULL;
-	CHMMemoryStream *Index;
-	
-	if (reader->system == NULL || reader->system->index_file.c == NULL)
-		return NULL;
-	Index = ChmReader_GetObject(reader, reader->system->index_file.c);
-	if (Index != NULL)
-	{
-		sitemap = ChmSiteMap_Create(stIndex);
-		ChmSiteMap_LoadFromStream(sitemap, Index);
-		CHMStream_close(Index);
-	}
-	return sitemap;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -1920,7 +1959,6 @@ static gboolean readwcharstring(const uint8_t **head, const uint8_t *tail, chm_w
 
 static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSiteMapItem **item, const uint8_t *p, unsigned int blocksize)
 {
-	int curitemdepth;
 	const uint8_t *head, *tail;
 	BtreeBlockHeader hdr;
 	chm_wchar_t *Name;
@@ -1945,7 +1983,6 @@ static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSit
 		CHM_DEBUG_LOG(0, "invalid length %u in btree block header\n", hdr.Length);
 		return FALSE;
 	}
-	curitemdepth = 0;
 	
 	tail = p + blocksize - hdr.Length - SIZEOF_BTREEBLOCKHEADER;
 	head = p;
@@ -2015,6 +2052,7 @@ static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSit
 			DEBUG_BININDEX("blockentry %u: Zero based index (13 higher than last) : %u\n", entrynum, dummy);
 		}
 		entrynum++;
+		UNUSED(dummy);
 	}
 	return TRUE;
 }
@@ -2115,7 +2153,7 @@ void ChmReader_Destroy(ChmReader *reader)
 {
 	if (reader == NULL)
 		return;
-	g_slist_free(reader->contextList);
+	ContextList_Destroy(reader->contextList);
 	g_slist_free_full(reader->WindowsList, (GDestroyNotify)CHMWindow_Destroy);
 	ChmSystem_Destroy(reader->system);
 	ChmSearchReader_Destroy(reader->SearchReader);

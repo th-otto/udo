@@ -233,8 +233,10 @@ LZXstate *LZXinit(int window_bits)
 	}
 	
 	/* allocate state and associated window */
-	lzx = (LZXstate *) malloc(sizeof(*lzx));
-	if ((lzx->window = (uint8_t *) malloc(window_size)) == NULL)
+	lzx = (LZXstate *) calloc(1, sizeof(*lzx));
+	if (lzx == NULL)
+		return NULL;
+	if ((lzx->window = (uint8_t *) calloc(1, window_size)) == NULL)
 	{
 		free(lzx);
 		return NULL;

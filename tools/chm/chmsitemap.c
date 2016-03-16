@@ -2,6 +2,7 @@
 #include "chmreader.h"
 #include "fasthtmlparser.h"
 #include "htmlutil.h"
+#include "chmxml.h"
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -438,16 +439,14 @@ static void FoundTag(void *obj, const char *tag, size_t taglen)
 
 gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 {
-	FILE *fp;
 	CHMStream *stream;
 	chm_off_t size;
 	gboolean result = FALSE;
 	HTMLParser *htmlparser;
 	
-	fp = fopen(filename, "rb");
-	if (fp == NULL)
+	stream = ChmStream_Open(filename, TRUE);
+	if (stream == NULL)
 		return FALSE;
-	stream = CHMStream_CreateForFile(fp);
 	size = CHMStream_Size(stream);
 	if (size >= (chm_off_t)0x7fffffffUL)
 	{
@@ -500,20 +499,10 @@ gboolean ChmSiteMap_LoadFromStream(ChmSiteMap *self, CHMStream *stream)
 
 gboolean ChmSiteMap_SaveToFile(ChmSiteMap *self, const char *filename)
 {
-	FILE *fp;
 	gboolean result = FALSE;
 	CHMStream *stream;
 	
-	if (strcmp(filename, "-") == 0)
-	{
-		fp = stdout;
-	} else
-	{
-		fp = fopen(filename, "w");
-	}
-	if (fp == NULL)
-		return FALSE;
-	stream = CHMStream_CreateForFile(fp);
+	stream = ChmStream_Open(filename, FALSE);
 	result = ChmSiteMap_SaveToStream(self, stream);
 	CHMStream_close(stream);
 	return result;
@@ -607,7 +596,7 @@ gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, CHMStream *stream)
 	fputs("<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML//EN\">\n", out);
 	fputs("<HTML>\n", out);
 	fputs("<HEAD>\n", out);
-	fputs("<meta name=\"GENERATOR\" content=\"Microsoft&reg; HTML Help Workshop 4.1\">\n", out);
+	fprintf(out, "<meta name=\"GENERATOR\" content=\"%s version %s\">\n", gl_program_name, gl_program_version);
 	fputs("<!-- Sitemap 1.0 -->\n", out);
 	fputs("</HEAD><BODY>\n", out);
 

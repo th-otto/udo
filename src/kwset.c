@@ -8,8 +8,10 @@
 #include <limits.h>
 #include "kwset.h"
 #include "uobstack.h"
+#ifndef NO_MEM_REPLACE
 #include "udoport.h"
 #include "udomem.h"
+#endif
 
 #define NCHAR (256 + 1)
 

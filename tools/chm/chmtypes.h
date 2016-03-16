@@ -135,7 +135,6 @@ typedef struct _CHMWindow {
 #define CHM_WIN_MINSIZE 0xbc
 #define CHM_WIN_V3SIZE 0xc4
 
-char *xml_quote(const char *str);
 CHMWindow *CHMWindow_Create(const char *s);
 void CHMWindow_Destroy(CHMWindow *win);
 void CHMWindow_loadfromini(CHMWindow *win, const char *txt);

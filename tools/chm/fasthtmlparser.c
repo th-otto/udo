@@ -79,7 +79,6 @@ void HTMLParser_Exec(HTMLParser *parser)
 	const char *TagStart;
 	const char *TextStart;
 	const char *P;
-	const char *end;
 	char c;
 	
 	parser->Done = FALSE;
@@ -87,7 +86,6 @@ void HTMLParser_Exec(HTMLParser *parser)
 	if (P == NULL)
 		return;
 	TL = parser->size;
-	end = P + TL;
 	I = 0;
 
 	TagStart = NULL;

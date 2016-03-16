@@ -510,9 +510,9 @@ GSList *g_slist_nth(GSList *list, unsigned int i)
 
 /*** ---------------------------------------------------------------------- ***/
 
-void *g_slist_nth_data(GSList *list, unsigned int i)
+void *g_slist_nth_data(const GSList *list, unsigned int i)
 {
-	GSList *l;
+	const GSList *l;
 	unsigned int index;
 	
 	for (l = list, index = 0; l != NULL; l = l->next, index++)
@@ -523,9 +523,9 @@ void *g_slist_nth_data(GSList *list, unsigned int i)
 
 /*** ---------------------------------------------------------------------- ***/
 
-unsigned int g_slist_length(GSList *list)
+unsigned int g_slist_length(const GSList *list)
 {
-	GSList *l;
+	const GSList *l;
 	unsigned int index;
 	
 	for (l = list, index = 0; l != NULL; l = l->next, index++)
@@ -988,62 +988,6 @@ const char *chm_basename(const char *path)
 	}
 
 /*** ---------------------------------------------------------------------- ***/
-
-#define chm_put_unichar(p, wc) \
-	if (wc < 0x80) \
-	{ \
-		*p++ = wc; \
-	} else if (wc < 0x800) \
-	{ \
-		p[1] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[0] = wc | 0xc0; \
-		p += 2; \
-	} else if (wc < 0x10000UL) \
-	{ \
-		p[2] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[1] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[0] = wc | 0xe0; \
-		p += 3; \
-	} else if (wc < 0x200000UL) \
-	{ \
-		p[3] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[2] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[1] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[0] = wc | 0xf0; \
-		p += 4; \
-	} else if (wc < 0x4000000UL) \
-	{ \
-		p[4] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[3] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[2] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[1] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[0] = wc | 0xf8; \
-		p += 5; \
-	} else \
-	{ \
-		p[5] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[4] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[3] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[2] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[1] = (wc & 0x3f) | 0x80; \
-		wc >>= 6; \
-		p[0] = wc | 0xfc; \
-		p += 6; \
-	}
 
 char *chm_conv_to_utf8(const void *src, size_t len)
 {

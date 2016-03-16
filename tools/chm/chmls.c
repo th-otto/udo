@@ -1,8 +1,10 @@
 #include "chmtools.h"
 #include "chmreader.h"
 #include "xgetopt.h"
+#include "chmxml.h"
 
 char const gl_program_name[] = "chmls";
+char const gl_program_version[] = "1.0";
 
 typedef enum _CmdEnum {
 	cmdnone,
@@ -109,18 +111,16 @@ static void ListObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 static gboolean ListChm(FILE *out, const char *filename, uint32_t section)
 {
 	ListObject listObject;
-	FILE *fp;
 	CHMStream *Stream;
 	ITSFReader *itsf;
 	gboolean result = FALSE;
 	chm_error err;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((Stream = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	Stream = CHMStream_CreateForFile(fp);
 	
 	listObject.section = section;
 	listObject.count = 0;
@@ -183,20 +183,18 @@ static gboolean savetofile(CHMStream *from, FILE *out)
 
 static gboolean ExtractFile(const char *filename, const char *readfrom, const char *saveto)
 {
-	FILE *fp;
 	CHMStream *stream;
 	gboolean result = FALSE;
 	chm_error err;
 	CHMMemoryStream *m = NULL;
 	ITSFReader *itsf;
-	FILE *out = NULL;
+	CHMStream *os = NULL;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((stream = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	stream = CHMStream_CreateForFile(fp);
 	itsf = ITSFReader_Create(stream, TRUE);
 	if ((err = ITSFReader_GetError(itsf)) != CHM_ERR_NO_ERR)
 	{
@@ -204,16 +202,17 @@ static gboolean ExtractFile(const char *filename, const char *readfrom, const ch
 	} else if ((m = ITSFReader_GetObject(itsf, readfrom)) == NULL)
 	{
 		fprintf(stderr, _("Can't find file %s in %s\n"), readfrom, filename);
-	} else if ((out = fopen(saveto, "wb")) == NULL)
+	} else if ((os = ChmStream_Open(saveto, FALSE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
 	} else
 	{
+		FILE *out = CHMStream_filep(os);
 		printf(_("Extracting ms-its:/%s::%s to %s\n"), filename, readfrom, saveto);
 		result = savetofile(m, out);
 		if (result == FALSE)
 			fprintf(stderr, "%s: %s: %s\n", gl_program_name, saveto, strerror(errno));
-		fclose(out);
+		CHMStream_close(os);
 	}
 	
 	CHMStream_close(m);
@@ -342,7 +341,6 @@ static void ExtractObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 
 static gboolean ExtractFileAll(const char *filename, const char *dirto)
 {
-	FILE *fp;
 	CHMStream *stream;
 	gboolean result = FALSE;
 	chm_error err;
@@ -350,7 +348,7 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 	struct stat st;
 	ExtractObject extractObject;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((stream = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
@@ -361,12 +359,11 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 		if (mkdir(dirto, 0755) != 0)
 		{
 			fprintf(stderr, "%s: %s: %s\n", gl_program_name, dirto, strerror(errno));
-			fclose(fp);
+			CHMStream_close(stream);
 			return FALSE;
 		}
 	}
 	
-	stream = CHMStream_CreateForFile(fp);
 	itsf = ITSFReader_Create(stream, TRUE);
 	
 	extractObject.basedir = dirto;
@@ -391,39 +388,21 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static char *changefileext(const char *filename, const char *ext)
-{
-	const char *p;
-	char *changed;
-	char *tmp;
-	
-	p = strrchr(filename, '.');
-	if (p == NULL)
-		return g_strconcat(filename, ext, NULL);
-	tmp = g_strndup(filename, p - filename);
-	changed = g_strconcat(tmp, ext, NULL);
-	g_free(tmp);
-	return changed;
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
 static gboolean extractalias(int argc, const char **argv)
 {
 	const char *symbolname = "helpid";
-	FILE *fp;
 	CHMFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
 	const char *filename = argv[0];
 	char *prefixfn;
-	ContextList *list;
-	ContextList *l;
+	const ContextList *list;
+	const ContextList *l;
 	FILE *out;
 	char *outname;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
@@ -435,7 +414,6 @@ static gboolean extractalias(int argc, const char **argv)
 	if (argc > 2)
 		symbolname = argv[2];
 	
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
 	{
@@ -497,14 +475,13 @@ static gboolean extracttocindex(int argc, const char **argv, SiteMapType sttype)
 {
 	const char *filename = argv[0];
 	char *extractfn;
-	FILE *fp;
 	ChmReader *r;
 	CHMFileStream *fs;
 	gboolean result = FALSE;
 	chm_error err;
 	ChmSiteMap *sitemap;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
@@ -514,7 +491,6 @@ static gboolean extracttocindex(int argc, const char **argv, SiteMapType sttype)
 	else
 		extractfn = changefileext(filename, sttype == stTOC ? ".hhc" : ".hhk");
 	
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
@@ -522,7 +498,38 @@ static gboolean extracttocindex(int argc, const char **argv, SiteMapType sttype)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((sitemap = sttype == stTOC ? ChmReader_GetTOCSitemap(r, forcexml) : ChmReader_GetIndexSitemap(r, forcexml)) == NULL)
 	{
-		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), sttype == stTOC ? "#TOCIDX" : "$WWKeywordLinks");
+		const char *internal;
+		char *freeme = NULL;
+		
+		if (forcexml)
+		{
+			if (sttype == stTOC)
+			{
+				if (r->system && r->system->toc_file.c)
+				{
+					internal = r->system->toc_file.c;
+				} else
+				{
+					freeme = changefileext(chm_basename(filename), ".hhc");
+					internal = freeme;
+				}
+			} else
+			{
+				if (r->system && r->system->index_file.c)
+				{
+					internal = r->system->index_file.c;
+				} else
+				{
+					freeme = changefileext(chm_basename(filename), ".hhk");
+					internal = freeme;
+				}
+			}
+		} else
+		{
+			internal = sttype == stTOC ? "#TOCIDX" : "$WWKeywordLinks";
+		}
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), internal);
+		g_free(freeme);
 	} else
 	{
 		if (ChmSiteMap_SaveToFile(sitemap, extractfn) == FALSE)
@@ -580,19 +587,17 @@ static void print_idxhdr(FILE *out, ChmIdxhdr *idx)
 
 static gboolean printidxhdr(FILE *out, const char *filename)
 {
-	FILE *fp;
 	CHMFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
 	ChmIdxhdr *idx = NULL;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
 	{
@@ -623,19 +628,17 @@ static gboolean printidxhdr(FILE *out, const char *filename)
 
 static gboolean printsystem(FILE *out, const char *filename)
 {
-	FILE *fp;
 	CHMFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
 	const ChmSystem *sys;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
 	{
@@ -703,19 +706,17 @@ static gboolean printsystem(FILE *out, const char *filename)
 
 static gboolean printwindows(FILE *out, const char *filename)
 {
-	FILE *fp;
 	CHMFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
 	chm_error err;
-	GSList *windows;
+	const GSList *windows;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
 	{
@@ -869,7 +870,6 @@ static gboolean printwindows(FILE *out, const char *filename)
 
 static gboolean printtopics(FILE *out, const char *filename)
 {
-	FILE *fp;
 	CHMFileStream *fs;
 	ChmReader *r;
 	gboolean result = FALSE;
@@ -878,12 +878,11 @@ static gboolean printtopics(FILE *out, const char *filename)
 	uint32_t i, entries;
 	uint32_t cnt;
 	
-	if ((fp = fopen(filename, "rb")) == NULL)
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
 		return FALSE;
 	}
-	fs = CHMStream_CreateForFile(fp);
 	r = ChmReader_Create(fs, TRUE);
 	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
 	{
@@ -933,7 +932,7 @@ static gboolean printtopics(FILE *out, const char *filename)
 	
 	CHMStream_close(m);
 	ChmReader_Destroy(r);
-	return FALSE;
+	return result;
 }
 
 /******************************************************************************/
@@ -1065,6 +1064,8 @@ int main(int argc, const char **argv)
 		usage(stderr);
 		return EXIT_FAILURE;
 	}
+	
+	xml_init();
 	
 	cmd = cmdnone;
 	c = getopt_ind_r(d);
@@ -1232,6 +1233,7 @@ int main(int argc, const char **argv)
 	}
 	
 	getopt_finish_r(&d);
+	xml_exit();
 	
 	return exit_code;
 }
