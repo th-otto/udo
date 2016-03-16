@@ -122,22 +122,6 @@ const GSList *ChmReader_GetWindows(ChmReader *reader);
 const ChmSystem *ChmReader_GetSystem(ChmReader *reader);
 ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader);
 
-typedef struct _ChmFileList ChmFileList;
-typedef void (*ChmFileOpenEvent)(ChmFileList *list, int Index);
-
-struct _ChmFileList {
-/* protected: */
-	ChmReader *LastChm;
-	StringList *UnNotifiedFiles;
-	ChmFileOpenEvent OnOpenNewFile;
-};
-
-ChmFileList *ChmFileList_Create(const char *PrimaryFileName);
-void ChmFileList_Destroy(ChmFileList *list);
-CHMMemoryStream *ChmFileList_GetObject(ChmFileList *list, const char *Name);
-gboolean ChmFileList_IsAnOpenFile(ChmFileList *list, const char *AFileName);
-gboolean ChmFileList_ObjectExists(ChmFileList *list, const char *Name, ChmReader **fChm);
-
 const char *ChmErrorToStr(chm_error Error);
 
 #endif /* __CHMREADER_H__ */

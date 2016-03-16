@@ -1805,7 +1805,7 @@ const ChmSystem *ChmReader_GetSystem(ChmReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static ChmSiteMap *AbortAndTryTextual(ChmReader *reader)
+static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 {
 	ChmSiteMap *sitemap = NULL;
 	CHMMemoryStream *Index;
@@ -2066,20 +2066,20 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 	uint8_t *block;
 	uint32_t i;
 	CHMMemoryStream *Index;
-	ChmSiteMap *sitemap = NULL;
+	ChmSiteMap *sitemap;
 	ChmSiteMapItem *item;
 	chm_off_t indexsize;
 	
 	/* First Try Binary */
 	if (ForceXML || (Index = ChmReader_GetObject(reader, "/$WWKeywordLinks/BTree")) == NULL)
 	{
-		return AbortAndTryTextual(reader);
+		return ChmReader_GetIndexSitemapXML(reader);
 	}
 	
 	if (!ChmReader_CheckCommonStreams(reader))
 	{
 		CHMStream_close(Index);
-		return AbortAndTryTextual(reader);
+		return ChmReader_GetIndexSitemapXML(reader);
 	}
 	
 	sitemap = ChmSiteMap_Create(stIndex);
@@ -2113,7 +2113,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 	if (trytextual)
 	{
 		ChmSiteMap_Destroy(sitemap);
-		sitemap = AbortAndTryTextual(reader);
+		sitemap = ChmReader_GetIndexSitemapXML(reader);
 	}
 
 	return sitemap;
@@ -2121,11 +2121,120 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 
 /*** ---------------------------------------------------------------------- ***/
 
+static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
+{
+	ChmSiteMap *sitemap = NULL;
+	CHMMemoryStream *TOC;
+	const char *o;
+	char *freeme = NULL;
+
+	if (reader->system != NULL && reader->system->toc_file.c != NULL)
+	{
+		o = reader->system->toc_file.c;
+	} else if (reader->system != NULL && reader->system->chm_filename.c)
+	{
+		freeme = g_strconcat(reader->system->chm_filename.c, ".hhc", NULL);
+		o = freeme;
+	} else if ((o = ChmStream_GetFilename(reader->itsf->Stream)) != NULL)
+	{
+		freeme = changefileext(chm_basename(o), ".hhc");
+		o = freeme;
+	}
+	TOC = ChmReader_GetObject(reader, o);
+	if (TOC != NULL)
+	{
+		sitemap = ChmSiteMap_Create(stTOC);
+		ChmSiteMap_LoadFromStream(sitemap, TOC);
+		CHMStream_close(TOC);
+	}
+	g_free(freeme);
+	return sitemap;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static uint32_t AddTOCItem(ChmReader *reader, CHMMemoryStream *TOC, uint32_t itemoffset, ChmSiteMapItems *items)
+{
+	uint32_t props;
+	ChmSiteMapItem *item;
+	uint32_t NextEntry;
+	uint32_t TopicsIndex;
+	char *title;
+	uint32_t result;
+	
+	if (CHMStream_seek(TOC, itemoffset + 4) == FALSE)
+		return 0;
+	item = ChmSiteMapItems_NewItem(items);
+	props = chmstream_read_le32(TOC);
+	TopicsIndex = chmstream_read_le32(TOC);
+	if (!(props & TOC_ENTRY_HAS_LOCAL))
+	{
+		item->name = ChmReader_ReadStringsEntry(reader, TopicsIndex);
+	} else
+	{
+		item->local = g_strdup(ChmReader_LookupTopicByID(reader, TopicsIndex, &title));
+		item->name = title;
+	}
+	chmstream_read_le32(TOC); /* skip offset to parent book */
+	result = chmstream_read_le32(TOC);
+	
+	if (props & TOC_ENTRY_HAS_CHILDREN)
+	{
+		NextEntry = chmstream_read_le32(TOC);
+		do
+			NextEntry = AddTOCItem(reader, TOC, NextEntry, item->children);
+		while (NextEntry != 0);
+	}
+	return result;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 {
-	(void) reader;
-	(void) ForceXML;
-	return NULL;
+	CHMMemoryStream *TOC;
+	ChmSiteMap *sitemap = NULL;
+	uint32_t TOPICSOffset;
+	uint32_t EntriesOffset;
+	uint32_t EntryCount;
+	uint32_t EntryInfoOffset;
+	uint32_t NextItem;
+
+	/* First Try Binary */
+	if (ForceXML || (TOC = ChmReader_GetObject(reader, "/#TOCIDX")) == NULL)
+	{
+		/* Second Try text toc */
+		return ChmReader_GetTOCSitemapXML(reader);
+	}
+	
+	/*
+	 * TOPICS URLSTR URLTBL must all exist to read binary toc
+	 * if they don't then try text file
+	 */
+	if (!ChmReader_CheckCommonStreams(reader))
+	{
+		CHMStream_close(TOC);
+		return ChmReader_GetTOCSitemapXML(reader);
+	}
+	
+	/* Binary Toc Exists */
+	sitemap = ChmSiteMap_Create(stTOC);
+
+	EntryInfoOffset = chmstream_read_le32(TOC);
+	EntriesOffset = chmstream_read_le32(TOC);
+	EntryCount = chmstream_read_le32(TOC);
+	TOPICSOffset = chmstream_read_le32(TOC);
+
+	if (EntryCount != 0)
+	{
+		NextItem = EntryInfoOffset;
+		do
+			NextItem = AddTOCItem(reader, TOC, NextItem, sitemap->items);
+		while (NextItem != 0);
+	}
+	
+	CHMStream_close(TOC);
+	return sitemap;
 }
 
 /*** ---------------------------------------------------------------------- ***/
