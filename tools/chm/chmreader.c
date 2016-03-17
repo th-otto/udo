@@ -239,7 +239,7 @@ gboolean ITSFReader_IsValidFile(ITSFReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_LookupPMGLchunk(ChmMemoryStream *stream, PMGListChunk *PMGLChunk)
+static gboolean ITSFReader_LookupPMGLchunk(ChmMemoryStream *stream, PMGLListChunk *PMGLChunk)
 {
 	/* signature already read by GetChunkType */
 	PMGLChunk->UnusedSpace = chmstream_read_le32(stream);
@@ -260,7 +260,32 @@ static gboolean ITSFReader_LookupPMGIchunk(ChmMemoryStream *stream, PMGIIndexChu
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(ChmMemoryStream *stream, PMGListChunkEntry *PMGLEntry)
+static gboolean ITSFReader_LookupAOLIchunk(ChmMemoryStream *stream, AOLIIndexChunk *chunk)
+{
+	/* signature already read by GetChunkType */
+	chunk->QuickRefSize = chmstream_read_le32(stream);
+	chunk->ChunkIndex = chmstream_read_le64(stream);
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean ITSFReader_LookupAOLLchunk(ChmMemoryStream *stream, AOLLListChunk *chunk)
+{
+	/* signature already read by GetChunkType */
+	chunk->QuickRefSize = chmstream_read_le32(stream);
+	chunk->ChunkIndex = chmstream_read_le64(stream);
+	chunk->PreviousChunkIndex = chmstream_read_le64(stream);
+	chunk->NextChunkIndex = chmstream_read_le64(stream);
+	chunk->FirstEntryIndex = chmstream_read_le64(stream);
+	chunk->unknown0 = chmstream_read_le32(stream);
+	chunk->unknown1 = chmstream_read_le32(stream);
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(ChmMemoryStream *stream, PMGLListChunkEntry *PMGLEntry)
 {
 	char *buf;
 
@@ -330,19 +355,19 @@ static gboolean ITSFReader_GetDirectoryChunk(ITSFReader *reader, uint32_t Index,
 
 /*** ---------------------------------------------------------------------- ***/
 
-static DirChunkType ChunkType(ChmStream *stream, PMGListChunk *PMGLChunk)
+static DirChunkType ChunkType(ChmStream *stream, PMGLListChunk *PMGLChunk)
 {
-	PMGLChunk->PMGLsig.sig[0] = ChmStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[1] = ChmStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[2] = ChmStream_fgetc(stream);
-	PMGLChunk->PMGLsig.sig[3] = ChmStream_fgetc(stream);
-	if (isSig(PMGLChunk->PMGLsig, "PMGL"))
+	PMGLChunk->sig.sig[0] = ChmStream_fgetc(stream);
+	PMGLChunk->sig.sig[1] = ChmStream_fgetc(stream);
+	PMGLChunk->sig.sig[2] = ChmStream_fgetc(stream);
+	PMGLChunk->sig.sig[3] = ChmStream_fgetc(stream);
+	if (isSig(PMGLChunk->sig, "PMGL"))
 		return ctPMGL;
-	if (isSig(PMGLChunk->PMGLsig, "PMGI"))
+	if (isSig(PMGLChunk->sig, "PMGI"))
 		return ctPMGI;
-	if (isSig(PMGLChunk->PMGLsig, "AOLL"))
+	if (isSig(PMGLChunk->sig, "AOLL"))
 		return ctAOLL;
-	if (isSig(PMGLChunk->PMGLsig, "AOLI"))
+	if (isSig(PMGLChunk->sig, "AOLI"))
 		return ctAOLI;
 	return ctUnknown;
 }
@@ -350,7 +375,7 @@ static DirChunkType ChunkType(ChmStream *stream, PMGListChunk *PMGLChunk)
 /*** ---------------------------------------------------------------------- ***/
 
 #if 0 /* not used */
-static DirChunkType ITSFReader_GetChunkType(ITSFReader *reader, ChmMemoryStream *stream, uint32_t ChunkIndex, PMGListChunk *PMGLChunk)
+static DirChunkType ITSFReader_GetChunkType(ITSFReader *reader, ChmMemoryStream *stream, uint32_t ChunkIndex, PMGLListChunk *PMGLChunk)
 {
 	if (ChmStream_Seek(stream, reader->DirectoryEntriesStartPos + (reader->DirectoryHeader.ChunkSize * ChunkIndex)) == FALSE)
 		return ctUnknown;
@@ -364,10 +389,12 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 {
 	ChmMemoryStream *ChunkStream;
 	uint32_t i;
-	PMGListChunkEntry Entry;
-	PMGListChunk PMGLChunk;
+	PMGLListChunkEntry Entry;
+	PMGLListChunk PMGLChunk;
+	AOLLListChunk AOLLChunk;
 	uint32_t CutOffPoint;
 	PMGIIndexChunk PMGIChunk;
+	AOLIIndexChunk AOLIChunk;
 	PMGIIndexChunkEntry PMGIEntry;
 	gboolean result = TRUE;
 	
@@ -422,7 +449,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 			}
 			break;
 		case ctPMGI:
-			PMGIChunk.PMGIsig = PMGLChunk.PMGLsig;
+			PMGIChunk.sig = PMGLChunk.sig;
 			if (!ITSFReader_LookupPMGIchunk(ChunkStream, &PMGIChunk))
 			{
 				result = FALSE;
@@ -439,15 +466,29 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 				g_free(PMGIEntry.Name);
 			}
 			break;
-		case ctUnknown:
 		case ctAOLL:
+			AOLLChunk.sig = PMGLChunk.sig;
+			if (!ITSFReader_LookupAOLLchunk(ChunkStream, &AOLLChunk))
+			{
+				result = FALSE;
+				break;
+			}
+			break;
 		case ctAOLI:
+			AOLIChunk.sig = PMGLChunk.sig;
+			if (!ITSFReader_LookupAOLIchunk(ChunkStream, &AOLIChunk))
+			{
+				result = FALSE;
+				break;
+			}
+			break;
+		case ctUnknown:
 		default:
 			CHM_DEBUG_LOG(0, "%u: unknown chunktype '%c%c%c%c'\n", i,
-				PMGLChunk.PMGLsig.sig[0],
-				PMGLChunk.PMGLsig.sig[1],
-				PMGLChunk.PMGLsig.sig[2],
-				PMGLChunk.PMGLsig.sig[3]);
+				PMGLChunk.sig.sig[0],
+				PMGLChunk.sig.sig[1],
+				PMGLChunk.sig.sig[2],
+				PMGLChunk.sig.sig[3]);
 			break;
 		}
 	}
@@ -517,9 +558,9 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 {
 	ChmMemoryStream *ChunkStream;
 	uint16_t *QuickRefIndex;
-	PMGListChunk PMGLChunk;
+	PMGLListChunk PMGLChunk;
 	PMGIIndexChunk PMGIChunk;
-	PMGListChunkEntry Entry;
+	PMGLListChunkEntry Entry;
 	int32_t NextIndex;
 	char *EntryName;
 	int CRes;
@@ -571,7 +612,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 		switch (ChunkType(ChunkStream, &PMGLChunk))
 		{
 		case ctPMGI: /* we must follow the PMGI tree until we reach a PMGL block */
-			PMGIChunk.PMGIsig = PMGLChunk.PMGLsig;
+			PMGIChunk.sig = PMGLChunk.sig;
 			if (!ITSFReader_LookupPMGIchunk(ChunkStream, &PMGIChunk))
 			{
 				NextIndex = -1;
@@ -645,10 +686,10 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 		case ctAOLI:
 		default:
 			CHM_DEBUG_LOG(0, "unknown chunktype '%c%c%c%c'\n",
-				PMGLChunk.PMGLsig.sig[0],
-				PMGLChunk.PMGLsig.sig[1],
-				PMGLChunk.PMGLsig.sig[2],
-				PMGLChunk.PMGLsig.sig[3]);
+				PMGLChunk.sig.sig[0],
+				PMGLChunk.sig.sig[1],
+				PMGLChunk.sig.sig[2],
+				PMGLChunk.sig.sig[3]);
 			NextIndex = -1;
 			break;
 		}
@@ -705,7 +746,7 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader)
 
 static uint64_t ITSFReader_FindBlocksFromUnCompressedAddr(
 	ITSFReader *reader,
-	const PMGListChunkEntry *ResetTableEntry,
+	const PMGLListChunkEntry *ResetTableEntry,
 	uint64_t *CompressedSize,
 	uint64_t *UnCompressedSize,
 	LZXResetTableArr *LZXResetTable)
@@ -764,7 +805,7 @@ static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 	uint32_t CompressionVersion;
 	uint64_t CompressedSize;
 	uint64_t UnCompressedSize;
-	PMGListChunkEntry ResetTableEntry;
+	PMGLListChunkEntry ResetTableEntry;
 	LZXResetTableArr ResetTable = NULL;
 	uint64_t WriteCount;
 	uint64_t BlockWriteLength;
@@ -998,7 +1039,7 @@ done:
 ChmMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
 {
 	WStringList *SectionNames;
-	PMGListChunkEntry Entry;
+	PMGLListChunkEntry Entry;
 	char *SectionName;
 	ChmMemoryStream *stream;
 	stream = NULL;

@@ -73,25 +73,25 @@ typedef struct _ITSPHeader {
 
 typedef enum { ctPMGL, ctPMGI, ctAOLL, ctAOLI, ctUnknown } DirChunkType;
 
-typedef struct _PMGListChunk {
-	CHMSignature PMGLsig;
+typedef struct _PMGLListChunk {
+	CHMSignature sig;			/* 'PMGL' */
 	uint32_t UnusedSpace;		/* !!! this value can also represent the size of quickref area in the end of the chunk */
 	uint32_t Unknown1;			/* always 0 */
 	int32_t PreviousChunkIndex;	/* chunk number of the prev listing chunk when reading dir in sequence */
 								/* (-1 if this is the first listing chunk) */
 	int32_t NextChunkIndex;		/* chunk number of the next listing chunk (-1 if this is the last chunk */
-} PMGListChunk;
+} PMGLListChunk;
 
-typedef struct _PMGListChunkEntry {
+typedef struct _PMGLListChunkEntry {
 	uint32_t NameLength;
 	char *Name;					/* utf-8 */
 	uint32_t ContentSection;
 	uint64_t ContentOffset;
 	uint64_t DecompressedLength;
-} PMGListChunkEntry;
+} PMGLListChunkEntry;
 
 typedef struct _PMGIIndexChunk {
-	CHMSignature PMGIsig;
+	CHMSignature sig;			/* 'PMGI' */
 	uint32_t UnusedSpace;		/* has a quickref area */
 } PMGIIndexChunk;
 
@@ -101,6 +101,108 @@ typedef struct _PMGIIndexChunkEntry {
 	uint32_t ListingChunk;
 } PMGIIndexChunkEntry;
 
+typedef struct _AOLLListChunk {
+	CHMSignature sig;			/* 'AOLL' */
+	uint32_t QuickRefSize;
+	uint64_t ChunkIndex;		/* must be correct in the order written */
+	int64_t PreviousChunkIndex;	/* chunk number of the prev listing chunk when reading dir in sequence */
+								/* (-1 if this is the first listing chunk) */
+	int64_t NextChunkIndex;		/* chunk number of the next listing chunk (-1 if this is the last chunk */
+	int64_t FirstEntryIndex;
+	uint32_t unknown0;
+	uint32_t unknown1;
+} AOLLListChunk;
+
+typedef struct _AOLIIIndexChunk {
+	CHMSignature sig;			/* 'AOLI' */
+	uint32_t QuickRefSize;		/* Length of quickref area at end of directory chunk */
+	uint64_t ChunkIndex;		/* Directory chunk number */
+} AOLIIndexChunk;
+
+
+typedef struct _ITOLITLSHeader {
+   CHMSignature sig[2];         /* 'ITLO'/'ITLS' */
+   uint32_t Version;            /* = 1 */
+   uint32_t HeaderSectionTableOffset;
+   uint32_t HeaderSectionEntryCount;
+   uint32_t PostHeaderTableSize;
+   GUID guid;                   /* {0A9007C1-4076-11D3-8789-0000F8105754} */
+} ITOLITLSHeader;
+
+
+typedef struct _ChunkDirInfo {
+	int64_t TopAOLIChunkIndex; /* -1 if none */
+	int64_t FirstAOLLChunkIndex;
+	int64_t LastAOLLChunkIndex;
+	int64_t Unknown0;          /* 0 */
+	uint32_t ChunkSize;        /* = $2000 if list $200 if Index */
+	uint32_t QuickRefDensity;  /* = 2 */
+	uint32_t unknown1;         /* = 0 */
+	uint32_t DirDepth;         /* 1 there is no index, 2 if there is one level of AOLI 3 if two index levels etc */
+	uint64_t unknown2;         /* 0 */
+	int64_t DirEntryCount;     /* Number Of Directory Entries */
+} ChunkDirInfo;
+
+typedef struct _CAOLRec {
+	CHMSignature sig;          /* 'CAOL' */
+	uint32_t version;          /* 2 */
+	uint32_t CAOLSize;         /* includes ITSF section = $50 */
+	char CompilerID[2];        /* = "HH" */
+	uint16_t unknown;          /* 0 */
+	uint32_t unknown1;         /* $43ED or 0 */
+	uint32_t DirChunkSize;     /* $2000 */
+	uint32_t DirIndexChunkSize;/* $200 */
+	uint32_t Unknown2;		   /* $100000 */
+	uint32_t Unknown3;         /* $20000 */
+	uint32_t Unknown4;
+	uint32_t Unknown5;
+	uint32_t Unknown6;         /* = 0 */
+	ITSFHeader itsfheader;
+} CAOLRec;
+
+typedef struct _ITOLITLSPostHeader {
+	uint32_t version;         /* 2 */
+	uint32_t CAOLOffset;      /* usually $98 (is from start of PostHeader) */
+	ChunkDirInfo ListChunkInfo;
+	ChunkDirInfo IndexChunkInfo;
+	uint32_t unknown3;        /* = $100000 */
+	uint32_t Unknown4;        /* =  $20000 */
+	uint64_t Unknown5;        /* 0 */
+} ITOLITLSPostHeader;
+
+typedef struct _IFCMRec {
+	CHMSignature sig;         /* = 'IFCM' */
+	uint32_t version;         /* = 1 */
+	uint32_t ChunkSize;       /* = $2000 */
+	uint32_t unknown;         /* = $100000 */
+	uint32_t unknown1;        /* = -1 */
+	uint32_t unknown2;        /* = -1 */
+	uint32_t ChunkCount;
+	uint32_t unknown3;        /* = 0 */
+} IFCMRec;
+
+typedef struct _LZXv3ControlData {
+	CHMSignature sig;		  /* 'LZXC' */
+	uint32_t version;
+	uint32_t ResetInterval;
+	uint32_t WindowSize;
+	uint32_t CacheSize;
+	uint32_t Unknown1;
+	uint32_t Unknown2;        /* 0 */
+} LZXv3ControlData;
+
+typedef struct _LZXv3ResetTable {
+	uint32_t version;
+	uint32_t EntryCount;
+	uint32_t EntrySize;
+	uint32_t EntryStart;
+	uint64_t UnCompressedSize;
+	uint64_t CompressedSize;
+	uint64_t BlockSize;       /* $8000 */
+} LZXv3ResetTable;
+
+
+
 extern GUID const ITSFHeaderGUID;
 extern CHMSignature const ITSFFileSig;
 
@@ -108,6 +210,8 @@ extern GUID const ITSPHeaderGUID;
 extern CHMSignature const ITSPHeaderSig;
 
 extern CHMSignature const PMGIsig;
+
+extern GUID const ITOLITLSGuid;
 
 /*
  * this function will advance the stream to the end of the compressed integer

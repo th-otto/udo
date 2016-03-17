@@ -9,6 +9,9 @@ CHMSignature const ITSPHeaderSig = { { 'I', 'T', 'S', 'P' } };
 
 CHMSignature const PMGIsig = { { 'P', 'M', 'G', 'I' } };
 
+DEFINE_GUID(ITOLITLSGuid, 0x0A9007C1, 0x4076, 0x11D3, 0x87, 0x89, 0x00, 0x00, 0xF8, 0x10, 0x57, 0x54);
+
+
 uint32_t GetCompressedInteger(ChmStream *Stream)
 {
 	uint64_t total = 0;

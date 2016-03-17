@@ -69,7 +69,7 @@ typedef struct _ITSFReader {
 	chm_off_t DirectoryHeaderPos;
 	chm_off_t DirectoryHeaderLength;
 	chm_off_t DirectoryEntriesStartPos;
-	PMGListChunkEntry CachedEntry; /* contains the last entry found by ObjectExists */
+	PMGLListChunkEntry CachedEntry; /* contains the last entry found by ObjectExists */
 	uint32_t DirectoryEntriesCount;
 /* public: */
 	chm_error ChmLastError;

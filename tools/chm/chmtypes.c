@@ -270,7 +270,7 @@ static gboolean G_GNUC_WARN_UNUSED_RESULT FinishBlock(DirectoryChunk *dir, ChmSt
 	PMGIIndexChunk Header;
 	
 	++(*AIndex);
-	Header.PMGIsig = PMGIsig;
+	Header.sig = PMGIsig;
 	Header.UnusedSpace = DirectoryChunk_FreeSpace(dir->ParentChunk);
 	DirectoryChunk_WriteHeader(dir->ParentChunk, &Header);
 	if (PMGIDirectoryChunk_WriteChunkToStream(dir->ParentChunk, Stream, AIndex, Final) == FALSE)
