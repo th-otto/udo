@@ -1093,14 +1093,16 @@ chm_error ITSFReader_GetError(ITSFReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-ITSFReader *ITSFReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy)
+ITSFReader *ITSFReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 {
 	ITSFReader *reader;
 	
+	if (stream == NULL)
+		return NULL;
 	reader = g_new0(ITSFReader, 1);
 	if (reader == NULL)
 		return NULL;
-	reader->Stream = AStream;
+	reader->Stream = stream;
 	reader->FreeStreamOnDestroy = FreeStreamOnDestroy;
 	if (!ITSFReader_ReadHeader(reader) ||
 		!ITSFReader_IsValidFile(reader))
@@ -2168,13 +2170,14 @@ static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 	ChmMemoryStream *TOC;
 	const char *o;
 	char *freeme = NULL;
-
-	if (reader->system != NULL && reader->system->toc_file.c != NULL)
+	const ChmSystem *sys;
+	
+	if ((sys = reader->system) != NULL && sys->toc_file.c != NULL)
 	{
-		o = reader->system->toc_file.c;
-	} else if (reader->system != NULL && reader->system->chm_filename.c)
+		o = sys->toc_file.c;
+	} else if (sys != NULL && sys->chm_filename.c)
 	{
-		freeme = g_strconcat(reader->system->chm_filename.c, ".hhc", NULL);
+		freeme = g_strconcat(sys->chm_filename.c, ".hhc", NULL);
 		o = freeme;
 	} else if ((o = ChmStream_GetFilename(reader->itsf->Stream)) != NULL)
 	{
@@ -2280,14 +2283,23 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 
 /*** ---------------------------------------------------------------------- ***/
 
-ChmReader *ChmReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy)
+gboolean ChmReader_ObjectExists(ChmReader *reader, const char *name)
+{
+	return reader != NULL && ITSFReader_ObjectExists(reader->itsf, name);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+ChmReader *ChmReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 {
 	ChmReader *reader;
 	
+	if (stream == NULL)
+		return NULL;
 	reader = g_new0(ChmReader, 1);
 	if (reader == NULL)
 		return NULL;
-	reader->itsf = ITSFReader_Create(AStream, FreeStreamOnDestroy);
+	reader->itsf = ITSFReader_Create(stream, FreeStreamOnDestroy);
 	if (!ITSFReader_IsValidFile(reader->itsf))
 	{
 		ChmReader_Destroy(reader);

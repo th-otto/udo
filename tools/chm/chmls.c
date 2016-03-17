@@ -16,7 +16,8 @@ typedef enum _CmdEnum {
 	cmdprintidxhdr,
 	cmdprintsystem,
 	cmdprintwindows,
-	cmdprinttopics
+	cmdprinttopics,
+	cmdprintproject
 } CmdEnum;
 
 static const char *const CmdNames[] = {
@@ -29,7 +30,8 @@ static const char *const CmdNames[] = {
 	"printidxhdr",
 	"printsystem",
 	"printwindows",
-	"printtopics"
+	"printtopics",
+	"project"
 };
 
 enum {
@@ -51,6 +53,7 @@ enum {
 	OPTION_PRINTSYSTEM,
 	OPTION_PRINTWINDOWS,
 	OPTION_PRINTTOPICS,
+	OPTION_PRINTPROJECT,
 	OPTION_INTERNALS,
 	OPTION_NO_INTERNALS,
 	OPTION_FORCEXML,
@@ -69,6 +72,7 @@ static struct option const long_options[] = {
 	{ "system", no_argument, NULL, OPTION_PRINTSYSTEM },
 	{ "windows", no_argument, NULL, OPTION_PRINTWINDOWS },
 	{ "topics", no_argument, NULL, OPTION_PRINTTOPICS },
+	{ "project", no_argument, NULL, OPTION_PRINTPROJECT },
 	{ "help", no_argument, NULL, OPTION_HELP },
 	{ "name-only", no_argument, NULL, OPTION_NAME_ONLY },
 	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
@@ -520,6 +524,189 @@ static gboolean extractalias(const char *filename)
 	ChmReader_Destroy(r);
 	return result;
 }
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
+static gboolean printproject(const char *filename)
+{
+	ChmFileStream *fs;
+	ChmReader *r;
+	gboolean result = FALSE;
+	chm_error err;
+	FILE *out;
+	char *outname;
+
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	if (outfilename)
+		outname = g_strdup(outfilename);
+	else
+		outname = changefileext(filename, ".hhp");
+
+	r = ChmReader_Create(fs, TRUE);
+	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((out = open_stdout(outname)) != NULL)
+	{
+		const ChmSystem *sys = ChmReader_GetSystem(r);
+		char *o;
+		const GSList *windows, *l;
+		char *indexname;
+		char *tocname;
+		
+		fprintf(out, "[OPTIONS]\n");
+		if (sys && sys->caption.c)
+			fprintf(out, "Title=%s\n", sys->caption.c);
+		
+		fprintf(out, "Compatibility=%s\n", sys && sys->version >= 3 ? "1.1 or later" : "1.0");
+		
+		o = sys && sys->chm_filename.c ? g_strconcat(sys->chm_filename.c, ".chm", NULL) : g_strdup(chm_basename(filename));
+		fprintf(out, "Compiled file=%s\n", o);
+		g_free(o);
+		
+		/* not really a setting that can be obtained from file */
+		o = sys && sys->chm_filename.c ? g_strconcat(sys->chm_filename.c, ".log", NULL) : changefileext(chm_basename(filename), ".log");
+		fprintf(out, "Error log=%s\n", o);
+		g_free(o);
+
+		/* not really a setting that can be obtained from file */
+		fprintf(out, "Display compile progress=No\n");
+		fprintf(out, "Display compile note=No\n");
+		
+		if (sys != NULL && sys->toc_file.c != NULL)
+		{
+			tocname = g_strdup(sys->toc_file.c);
+		} else if (sys != NULL && sys->chm_filename.c)
+		{
+			tocname = g_strconcat(sys->chm_filename.c, ".hhc", NULL);
+		} else
+		{
+			tocname = changefileext(chm_basename(filename), ".hhc");
+		}
+		if (ChmReader_ObjectExists(r, "/#TOCIDX") ||
+			ChmReader_ObjectExists(r, tocname))
+		{
+			fprintf(out, "Contents file=%s\n", tocname);
+		}
+		
+		fprintf(out, "Binary TOC=%s\n", ChmReader_ObjectExists(r, "/#TOCIDX") ? "Yes" : "No");
+		
+		if (sys != NULL && sys->index_file.c != NULL)
+		{
+			indexname = g_strdup(sys->index_file.c);
+		} else if (sys != NULL && sys->chm_filename.c)
+		{
+			indexname = g_strconcat(sys->chm_filename.c, ".hhk", NULL);
+		} else
+		{
+			indexname = changefileext(chm_basename(filename), ".hhk");
+		}
+		if (ChmReader_ObjectExists(r, "/$WWKeywordLinks/BTree") ||
+			ChmReader_ObjectExists(r, indexname))
+		{
+			fprintf(out, "Index file=%s\n", indexname);
+		}
+		
+		fprintf(out, "Binary Index=%s\n", ChmReader_ObjectExists(r, "/$WWKeywordLinks/BTree") ? "Yes" : "No");
+
+		if (sys && sys->default_page.c)
+			fprintf(out, "Default topic=%s\n", sys->default_page.c);
+
+		if (sys && sys->default_window.c)
+			fprintf(out, "Default Window=%s\n", sys->default_window.c);
+
+		if (sys && sys->preferred_font.c)
+			fprintf(out, "Default Font=%s\n", sys->preferred_font.c);
+
+		if (sys && sys->locale_id)
+			fprintf(out, "Language=0x%x\n", sys->locale_id);
+
+		fprintf(out, "Full-text search=%s\n", sys && sys->fulltextsearch ? "Yes" : "No");
+		
+		/* TODO: Auto Index=Yes/No */
+		/* TODO: CreateCHIFile=Yes/No */
+		/* TODO: Full text search stop list file= */
+		
+		fprintf(out, "\n");
+		
+		fprintf(out, "[WINDOWS]\n");
+		windows = ChmReader_GetWindows(r);
+		for (l = windows; l; l = l->next)
+		{
+			const CHMWindow *win = (const CHMWindow *)l->data;
+			
+			fprintf(out, "%s=%s,\"%s\",\"%s\",\"%s\",\"%s\",",
+				fixnull(win->window_name.c),
+				fixnull(win->caption.c),
+				fixnull(win->toc_file.c),
+				fixnull(win->index_file.c),
+				fixnull(win->default_file.c),
+				fixnull(win->home_button_file.c)
+				);
+			if (!empty(win->jump1_url.c))
+				fprintf(out, "\"%s\"", win->jump1_url.c);
+			fprintf(out, ",");
+			if (!empty(win->jump1_text.c))
+				fprintf(out, "\"%s\"", win->jump1_text.c);
+			fprintf(out, ",");
+			if (!empty(win->jump2_url.c))
+				fprintf(out, "\"%s\"", win->jump2_url.c);
+			fprintf(out, ",");
+			if (!empty(win->jump2_text.c))
+				fprintf(out, "\"%s\"", win->jump2_text.c);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_PROPERTIES)
+				fprintf(out, "0x%x", win->win_properties);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_NAV_WIDTH)
+				fprintf(out, "%d", win->navpanewidth);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_TB_FLAGS)
+				fprintf(out, "0x%x", win->buttons);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_RECT)
+				fprintf(out, "[%d,%d,%d,%d]", win->pos.left, win->pos.top, win->pos.right, win->pos.bottom);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_STYLES)
+				fprintf(out, "0x%x", win->styleflags);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_EXSTYLES)
+				fprintf(out, "0x%x", win->xtdstyleflags);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_SHOWSTATE)
+				fprintf(out, "%d", win->show_state);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_EXPANSION)
+				fprintf(out, "%d", win->not_expanded);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_CUR_TAB)
+				fprintf(out, "%d", win->navtype);
+			fprintf(out, ",");
+			if (win->flags & HHWIN_PARAM_TABPOS)
+				fprintf(out, "%d", win->tabpos);
+			fprintf(out, ",");
+			if ((win->flags & HHWIN_PARAM_NOTIFY_ID) || win->wm_notify_id)
+				fprintf(out, "%d", win->wm_notify_id);
+			fprintf(out, "\n");
+		}
+		
+		g_free(tocname);
+		g_free(indexname);
+		close_stdout(out);
+		result = TRUE;
+	}
+		
+	g_free(outname);
+	ChmReader_Destroy(r);
+	return result;
+}
+
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -1108,6 +1295,9 @@ int main(int argc, const char **argv)
 		case OPTION_PRINTTOPICS:
 			cmd = cmdprinttopics;
 			break;
+		case OPTION_PRINTPROJECT:
+			cmd = cmdprintproject;
+			break;
 		case OPTION_NAME_ONLY:
 			nameonly = TRUE;
 			break;
@@ -1298,11 +1488,23 @@ int main(int argc, const char **argv)
 			exit_code = EXIT_FAILURE;
 		}
 		break;
-			
+		
 	case cmdprinttopics:
 		if (argc == 1)
 		{
 			if (printtopics(argv[0]) == FALSE)
+				exit_code = EXIT_FAILURE;
+		} else
+		{
+			WrongNrParam(cmd, argc);
+			exit_code = EXIT_FAILURE;
+		}
+		break;
+
+	case cmdprintproject:
+		if (argc == 1)
+		{
+			if (printproject(argv[0]) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{

@@ -121,6 +121,7 @@ chm_error ChmReader_GetError(ChmReader *reader);
 const GSList *ChmReader_GetWindows(ChmReader *reader);
 const ChmSystem *ChmReader_GetSystem(ChmReader *reader);
 ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader);
+gboolean ChmReader_ObjectExists(ChmReader *reader, const char *name);
 
 const char *ChmErrorToStr(chm_error Error);
 
