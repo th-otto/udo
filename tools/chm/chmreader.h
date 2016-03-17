@@ -122,6 +122,7 @@ const GSList *ChmReader_GetWindows(ChmReader *reader);
 const ChmSystem *ChmReader_GetSystem(ChmReader *reader);
 ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader);
 gboolean ChmReader_ObjectExists(ChmReader *reader, const char *name);
+gboolean ChmReader_GetCompleteFileList(ChmReader *reader, void *obj, FileEntryForEach ForEach);
 
 const char *ChmErrorToStr(chm_error Error);
 

@@ -6,6 +6,8 @@
 char const gl_program_name[] = "chmls";
 char const gl_program_version[] = "1.0";
 
+int verbose = 0;
+
 typedef enum _CmdEnum {
 	cmdlist,
 	cmdextract,
@@ -88,14 +90,27 @@ static struct option const long_options[] = {
 	{ NULL, no_argument, NULL, 0 }
 };
 
-int verbose = 0;
-static gboolean nameonly = FALSE;
-static gboolean include_internals = TRUE;
-static gboolean printnulls = FALSE;
-static gboolean forcexml = FALSE;
-static const char *outfilename;
-static const char *symbolname = "helpid";
+typedef struct _ListObject {
+	uint32_t section;
+	uint32_t count;
+	uint32_t listed;
+	gboolean nameonly;
+	gboolean printnulls;
+	gboolean include_internals;
+	gboolean flat;
+	FILE *out;
+} ListObject;
 
+static ListObject listObject;
+
+typedef struct _ExtractObject {
+	const char *basedir;
+	ITSFReader *r;
+	gboolean include_internals;
+	int errors;
+} ExtractObject;
+
+static ExtractObject extractObject;
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
@@ -127,16 +142,6 @@ static void close_stdout(FILE *fp)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-typedef struct _ListObject {
-	uint32_t section;
-	uint32_t count;
-	uint32_t listed;
-	gboolean nameonly;
-	gboolean printnulls;
-	gboolean include_internals;
-	FILE *out;
-} ListObject;
-
 static void ListObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 {
 	ListObject *list = (ListObject *)obj;
@@ -146,25 +151,30 @@ static void ListObject_OnFileEntry(void *obj, const ChmFileInfo *info)
 		return;
 	if (list->section != (uint32_t)-1 && info->section != list->section)
 		return;
-	if (list->listed == 0)
+	if (list->out)
 	{
+		if (list->listed == 0)
+		{
+			if (!list->nameonly)
+				fprintf(list->out, _("<Section>   <Offset> <UnCompSize> "));
+			if (!list->nameonly)
+				fprintf(list->out, _("<Name>\n"));
+		}
 		if (!list->nameonly)
-			fprintf(list->out, _("<Section>   <Offset> <UnCompSize> "));
-		if (!list->nameonly)
-			fprintf(list->out, _("<Name>\n"));
+		{
+			fprintf(list->out, _("%9u %10" PRIu64 " %12" PRIu64 " "), info->section, info->offset, info->uncompressedsize);
+		}
+		fputs(info->name, list->out);
+		fputc(list->nameonly && list->printnulls ? 0 : '\n', list->out);
 	}
+	if (*info->name == '/' && strchr(info->name + 1, '/') != NULL)
+		list->flat = FALSE;
 	++list->listed;
-	if (!list->nameonly)
-	{
-		fprintf(list->out, _("%9u %10" PRIu64 " %12" PRIu64 " "), info->section, info->offset, info->uncompressedsize);
-	}
-	fputs(info->name, list->out);
-	fputc(list->nameonly && list->printnulls ? 0 : '\n', list->out);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean ListChm(const char *filename, uint32_t section)
+static gboolean ListChm(const char *filename, const char *outfilename)
 {
 	ChmStream *Stream;
 	ITSFReader *itsf;
@@ -184,16 +194,8 @@ static gboolean ListChm(const char *filename, uint32_t section)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((out = open_stdout(outfilename)) != NULL)
 	{
-		ListObject listObject;
-		
 		result = TRUE;
 
-		listObject.section = section;
-		listObject.count = 0;
-		listObject.listed = 0;
-		listObject.nameonly = nameonly;
-		listObject.printnulls = printnulls;
-		listObject.include_internals = include_internals;
 		listObject.out = out;
 		
 		ITSFReader_GetCompleteFileList(itsf, &listObject, ListObject_OnFileEntry);
@@ -242,7 +244,7 @@ static gboolean savetofile(ChmStream *from, FILE *out)
 	return TRUE;
 }
 
-static gboolean ExtractFile(const char *filename, const char *readfrom)
+static gboolean ExtractFile(const char *filename, const char *readfrom, const char *outfilename)
 {
 	ChmStream *stream;
 	gboolean result = FALSE;
@@ -285,13 +287,6 @@ static gboolean ExtractFile(const char *filename, const char *readfrom)
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
-
-typedef struct _ExtractObject {
-	const char *basedir;
-	ITSFReader *r;
-	gboolean include_internals;
-	int errors;
-} ExtractObject;
 
 static char *craftpath(const char *path, const char *filename)
 {
@@ -408,7 +403,6 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 	chm_error err;
 	ITSFReader *itsf;
 	struct stat st;
-	ExtractObject extractObject;
 	
 	if ((stream = ChmStream_Open(filename, TRUE)) == NULL)
 	{
@@ -430,7 +424,6 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 	
 	extractObject.basedir = dirto;
 	extractObject.r = itsf;
-	extractObject.include_internals = include_internals;
 	extractObject.errors = 0;
 	
 	if ((err = ITSFReader_GetError(itsf)) != CHM_ERR_NO_ERR)
@@ -450,7 +443,7 @@ static gboolean ExtractFileAll(const char *filename, const char *dirto)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean extractalias(const char *filename)
+static gboolean extractalias(const char *filename, const char *outfilename, const char *symbolname)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -478,7 +471,7 @@ static gboolean extractalias(const char *filename)
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
 	} else if ((list = ChmReader_GetContextList(r)) == NULL)
 	{
-		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#IVB");
+		fprintf(stderr, _("%s: %s: This CHM doesn't contain a %s internal file.\n"), gl_program_name, filename, "#IVB");
 	} else
 	{
 		outname = g_strconcat(prefixfn, ".ali", NULL);
@@ -529,7 +522,7 @@ static gboolean extractalias(const char *filename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean printproject(const char *filename)
+static gboolean printproject(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -537,7 +530,7 @@ static gboolean printproject(const char *filename)
 	chm_error err;
 	FILE *out;
 	char *outname;
-
+	
 	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
 	{
 		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
@@ -559,6 +552,8 @@ static gboolean printproject(const char *filename)
 		const GSList *windows, *l;
 		char *indexname;
 		char *tocname;
+		const ContextList *contextlist;
+		ChmIdxhdr *idx;
 		
 		fprintf(out, "[OPTIONS]\n");
 		if (sys && sys->caption.c)
@@ -577,7 +572,7 @@ static gboolean printproject(const char *filename)
 
 		/* not really a setting that can be obtained from file */
 		fprintf(out, "Display compile progress=No\n");
-		fprintf(out, "Display compile note=No\n");
+		fprintf(out, "Display compile notes=No\n");
 		
 		if (sys != NULL && sys->toc_file.c != NULL)
 		{
@@ -630,9 +625,22 @@ static gboolean printproject(const char *filename)
 		fprintf(out, "Full-text search=%s\n", sys && sys->fulltextsearch ? "Yes" : "No");
 		
 		/* TODO: Auto Index=Yes/No */
+		/* TODO: Auto TOC=9 */
 		/* TODO: CreateCHIFile=Yes/No */
 		/* TODO: Full text search stop list file= */
+		/* TODO: Enhanced decompilation=Yes/No */
 		
+		/* get the setting of "Flat" by looking at the filenames */
+		listObject.section = (uint32_t)-1;
+		listObject.count = 0;
+		listObject.listed = 0;
+		listObject.nameonly = TRUE;
+		listObject.printnulls = FALSE;
+		listObject.include_internals = FALSE;
+		listObject.flat = TRUE;
+		listObject.out = NULL;
+		ChmReader_GetCompleteFileList(r, &listObject, ListObject_OnFileEntry);
+		fprintf(out, "Flat=%s\n", listObject.flat ? "Yes" : "No");
 		fprintf(out, "\n");
 		
 		fprintf(out, "[WINDOWS]\n");
@@ -695,6 +703,47 @@ static gboolean printproject(const char *filename)
 				fprintf(out, "%d", win->wm_notify_id);
 			fprintf(out, "\n");
 		}
+		fprintf(out, "\n");
+		
+		if ((contextlist = ChmReader_GetContextList(r)) != NULL)
+		{
+			char *fname;
+			
+			fprintf(out, "[ALIAS]\n");
+			if (sys != NULL && sys->chm_filename.c)
+			{
+				fname = g_strconcat(sys->chm_filename.c, ".ali", NULL);
+			} else
+			{
+				indexname = changefileext(chm_basename(filename), ".ali");
+			}
+			fprintf(out, "#include \"%s\"\n", fname);
+			fprintf(out, "\n");
+			g_free(fname);
+			
+			fprintf(out, "[MAP]\n");
+			if (sys != NULL && sys->chm_filename.c)
+			{
+				fname = g_strconcat(sys->chm_filename.c, ".hhm", NULL);
+			} else
+			{
+				indexname = changefileext(chm_basename(filename), ".hhm");
+			}
+			fprintf(out, "#include \"%s\"\n", fname);
+			fprintf(out, "\n");
+			g_free(fname);
+		}
+
+		if ((idx = ChmReader_GetIdxhdr(r)) != NULL && idx->num_merge_files != 0)
+		{
+			unsigned int i;
+			
+			fprintf(out, "[MERGE FILES]\n");
+			for (i = 0; i < idx->num_merge_files; i++)
+				fprintf(out, "%s\n", fixnull(idx->merge_files[i].c));
+			fprintf(out, "\n");
+		}
+		ChmIdxhdr_Destroy(idx);
 		
 		g_free(tocname);
 		g_free(indexname);
@@ -712,7 +761,7 @@ static gboolean printproject(const char *filename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean extracttocindex(const char *filename, SiteMapType sttype)
+static gboolean extracttocindex(const char *filename, const char *outfilename, SiteMapType sttype, gboolean forcexml)
 {
 	char *extractfn;
 	ChmReader *r;
@@ -816,16 +865,16 @@ static void print_idxhdr(FILE *out, ChmIdxhdr *idx)
 	fprintf(out, _("  Number of Information Types  : %d\n"), idx->num_information_types);
 	fprintf(out, _("  Unknown 5                    : %d\n"), idx->unknown5);
 	fprintf(out, _("  Number of [MERGE FILES]      : %u\n"), idx->num_merge_files);
-	fprintf(out, _("  Unknown 6                    : %d\n"), idx->unknown6);
 	for (i = 0; i < idx->num_merge_files; i++)
-		fprintf(out, _("     %u                        : %s\n"), i, printnull(idx->merge_files[i].c));
+		fprintf(out, _("     %3u                       : %s\n"), i, printnull(idx->merge_files[i].c));
+	fprintf(out, _("  Unknown 6                    : %d\n"), idx->unknown6);
 }
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean printidxhdr(const char *filename)
+static gboolean printidxhdr(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -868,7 +917,7 @@ static gboolean printidxhdr(const char *filename)
 #define NT_SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)NT_SECSPERDAY)
 #define NT_TICKS_1601_TO_1970 (NT_SECS_1601_TO_1970 * NT_TICKSPERSEC)
 
-static gboolean printsystem(const char *filename)
+static gboolean printsystem(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -949,7 +998,7 @@ static gboolean printsystem(const char *filename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean printwindows(const char *filename)
+static gboolean printwindows(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -1116,7 +1165,7 @@ static gboolean printwindows(const char *filename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static gboolean printtopics(const char *filename)
+static gboolean printtopics(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
 	ChmReader *r;
@@ -1251,13 +1300,20 @@ static void WrongNrParam(CmdEnum cmd, int number)
 
 /*** ---------------------------------------------------------------------- ***/
 
+static gboolean nameonly = FALSE;
+static gboolean include_internals = TRUE;
+static gboolean printnulls = FALSE;
+static gboolean forcexml = FALSE;
+static const char *outfilename;
+static const char *symbolname = "helpid";
+static uint32_t section = (uint32_t)-1;
+
 int main(int argc, const char **argv)
 {
 	int c;
 	int exit_code = EXIT_SUCCESS;
 	CmdEnum cmd = cmdlist;
 	char *end;
-	uint32_t section = (uint32_t)-1;
 	struct _getopt_data *d;
 	
 	getopt_init_r(gl_program_name, &d);
@@ -1363,6 +1419,16 @@ int main(int argc, const char **argv)
 		return EXIT_FAILURE;
 	}
 	
+	listObject.section = section;
+	listObject.count = 0;
+	listObject.listed = 0;
+	listObject.nameonly = nameonly;
+	listObject.printnulls = printnulls;
+	listObject.include_internals = include_internals;
+	listObject.flat = TRUE;
+		
+	extractObject.include_internals = include_internals;
+	
 	xml_init();
 	
 	c = getopt_ind_r(d);
@@ -1381,7 +1447,7 @@ int main(int argc, const char **argv)
 			exit_code = EXIT_FAILURE;
 			break;
 		}
-		if (exit_code == EXIT_SUCCESS && ListChm(argv[0], section) == FALSE)
+		if (exit_code == EXIT_SUCCESS && ListChm(argv[0], outfilename) == FALSE)
 			exit_code = EXIT_FAILURE;
 		break;
 
@@ -1389,7 +1455,7 @@ int main(int argc, const char **argv)
 		switch (argc)
 		{
 		case 2:
-			if (ExtractFile(argv[0], argv[1]) == FALSE)
+			if (ExtractFile(argv[0], argv[1], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 			break;
 		default:
@@ -1420,7 +1486,7 @@ int main(int argc, const char **argv)
 	case cmdextractalias:
 		if (argc == 1)
 		{
-			if (extractalias(argv[0]) == FALSE)
+			if (extractalias(argv[0], outfilename, symbolname) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1432,7 +1498,7 @@ int main(int argc, const char **argv)
 	case cmdextracttoc:
 		if (argc == 1)
 		{
-			if (extracttocindex(argv[0], stTOC) == FALSE)
+			if (extracttocindex(argv[0], outfilename, stTOC, forcexml) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1444,7 +1510,7 @@ int main(int argc, const char **argv)
 	case cmdextractindex:
 		if (argc == 1)
 		{
-			if (extracttocindex(argv[0], stIndex) == FALSE)
+			if (extracttocindex(argv[0], outfilename, stIndex, forcexml) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1456,7 +1522,7 @@ int main(int argc, const char **argv)
 	case cmdprintidxhdr:
 		if (argc == 1)
 		{
-			if (printidxhdr(argv[0]) == FALSE)
+			if (printidxhdr(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1468,7 +1534,7 @@ int main(int argc, const char **argv)
 	case cmdprintsystem:
 		if (argc == 1)
 		{
-			if (printsystem(argv[0]) == FALSE)
+			if (printsystem(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1480,7 +1546,7 @@ int main(int argc, const char **argv)
 	case cmdprintwindows:
 		if (argc == 1)
 		{
-			if (printwindows(argv[0]) == FALSE)
+			if (printwindows(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1492,7 +1558,7 @@ int main(int argc, const char **argv)
 	case cmdprinttopics:
 		if (argc == 1)
 		{
-			if (printtopics(argv[0]) == FALSE)
+			if (printtopics(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{
@@ -1504,7 +1570,7 @@ int main(int argc, const char **argv)
 	case cmdprintproject:
 		if (argc == 1)
 		{
-			if (printproject(argv[0]) == FALSE)
+			if (printproject(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{

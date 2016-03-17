@@ -1400,7 +1400,7 @@ ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader)
 	
 	if (reader == NULL)
 		return NULL;
-	idxhdr = ChmReader_GetObject(reader, "/#IDXHDR");
+	idxhdr = ITSFReader_GetObject(reader->itsf, "/#IDXHDR");
 	if (idxhdr == NULL)
 	{
 		CHM_DEBUG_LOG(1, "\nno #IDXHDR\n\n");
@@ -2286,6 +2286,13 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 gboolean ChmReader_ObjectExists(ChmReader *reader, const char *name)
 {
 	return reader != NULL && ITSFReader_ObjectExists(reader->itsf, name);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean ChmReader_GetCompleteFileList(ChmReader *reader, void *obj, FileEntryForEach ForEach)
+{
+	return reader != NULL && ITSFReader_GetCompleteFileList(reader->itsf, obj, ForEach);
 }
 
 /*** ---------------------------------------------------------------------- ***/
