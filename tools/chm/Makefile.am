@@ -33,5 +33,5 @@ chmls_LDADD = $(GLIB_LIBS) $(INTLLIBS)
 $(build_triplet)-chmls$(EXEEXT): chmls$(EXEEXT)
 	cp -a $? $@
 
-xmltest_SOURCES = xmltest.c kwset.c obstack.c
+xmltest_SOURCES = xmltest.c kwset.c obstack.c chmglib.c
 xmltest_LDADD = $(GLIB_LIBS)

@@ -1,9 +1,6 @@
 #include "chmtools.h"
 #include <ctype.h>
 
-typedef uint32_t chm_unichar_t;
-#define CHM_UTF8_CHARMAX 6
-
 #include "cp_1252.h"
 
 #undef __set_errno
@@ -1115,7 +1112,7 @@ size_t g_utf8_str_len(const char *p, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static const char *chm_utf8_getchar(const char *p, chm_unichar_t *ch)
+const char *chm_utf8_getchar(const char *p, chm_unichar_t *ch)
 {
 	const char *last;
 

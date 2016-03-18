@@ -237,6 +237,9 @@ void convslash(char *str);
 #define fixnull(str) ((str) != NULL ? (str) : "")
 #define printnull(str) ((str) != NULL ? (const char *)(str) : "(nil)")
 
+typedef uint32_t chm_unichar_t;
+#define CHM_UTF8_CHARMAX 6
+
 typedef uint16_t chm_wchar_t;
 size_t chm_wcslen(const chm_wchar_t *str);
 char *chm_wchar_to_utf8(const chm_wchar_t *str, size_t wlen);
@@ -245,6 +248,7 @@ size_t g_utf8_str_len(const char *p, size_t len);
 const char *g_utf8_skipchar(const char *p);
 gboolean g_utf8_validate(const char *str, ssize_t max_len, const char **end);
 char *chm_conv_to_utf8(const void *src, size_t len);
+const char *chm_utf8_getchar(const char *p, chm_unichar_t *ch);
 
 #include "chmstream.h"
 #include "chmbase.h"

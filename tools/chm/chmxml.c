@@ -3,8 +3,10 @@
 #include "kwset.h"
 #include "chmxml.h"
 
-typedef uint32_t chm_unichar_t;
-#define CHM_UTF8_CHARMAX 6
+/*
+ * define this to activate code to reprint the table
+ */
+#define XML_PRINT_TABLE 0
 
 typedef struct _htmlEntityDesc {
 	/* the UNICODE value for the character */	
@@ -19,9 +21,20 @@ typedef struct _htmlEntityDesc {
 	const char *desc;
 } htmlEntityDesc;
 
+#define USE_KWSET 0
+
+#if USE_KWSET
 static kwset_t xml_dequote_kwset;
 static kwset_t xml_enquote_kwset;
+#endif
 
+/*
+ * from
+ * https://dev.w3.org/html5/html-author/charref
+ * http://www.w3.org/MarkUp/DTD/xhtml-lat1.ent
+ * http://www.w3.org/MarkUp/DTD/xhtml-special.ent
+ * http://www.w3.org/MarkUp/DTD/xhtml-symbol.ent
+ */
 #include "htmlentity.h"
 
 #define chm_put_unichar(p, wc) \
@@ -88,11 +101,13 @@ static kwset_t xml_enquote_kwset;
  * code to check and re-print the table, in case you
  * need to add some entries
  */
-#if 0
+#if XML_PRINT_TABLE
 typedef struct _sortentry {
+	int pos;
 	const char *name;
 	chm_unichar_t value;
-	int pos;
+	const char *desc;
+	int by_name;
 } sortentry;
 
 static int cmpname(const void *_e1, const void *_e2)
@@ -106,6 +121,14 @@ static int cmpvalue(const void *_e1, const void *_e2)
 {
 	const sortentry *e1 = (const sortentry *)_e1;
 	const sortentry *e2 = (const sortentry *)_e2;
+	if (e1->value == e2->value)
+	{
+		if (e1->desc != NULL && e2->desc == NULL)
+			return -1;
+		if (e1->desc == NULL && e2->desc != NULL)
+			return 1;
+		return 0;
+	}
 	return (e1->value > e2->value) ? 1 : -1;
 }
 
@@ -127,21 +150,26 @@ static void my__assert(int i, const char *filename, int line, const char *msg)
 void xml_print_table(void);
 void xml_print_table(void)
 {
-	int i;
+	int i, j;
 	int n = (sizeof(htmlEntitiesTable) / sizeof(htmlEntitiesTable[0]));
 	unsigned char bytes[CHM_UTF8_CHARMAX];
 	int utf8len, name_len;
 	unsigned char *p;
 	chm_unichar_t wc;
 	int pos;
+	int maxlen;
+	int maxutf8;
 	
 	table = g_new(sortentry, n);
 	for (i = 0; i < n; i++)
 	{
+		table[i].pos = i;
 		table[i].name = htmlEntitiesTable[i].name;
 		table[i].value = htmlEntitiesTable[i].value;
-		table[i].pos = i;
+		table[i].desc = htmlEntitiesTable[i].desc;
 	}
+	maxlen = 0;
+	maxutf8 = 0;
 	
 	/*
 	 * do some sanity checks,
@@ -152,7 +180,10 @@ void xml_print_table(void)
 		assert(htmlEntitiesTable[i].value != 0);
 		assert(htmlEntitiesTable[i].name);
 		assert(htmlEntitiesTable[i].name[0] == '&');
+		assert(htmlEntitiesTable[i].desc == NULL || htmlEntitiesTable[i].desc[0] != 0);
 		name_len = (int)strlen(htmlEntitiesTable[i].name);
+		if (name_len > maxlen)
+			maxlen = name_len;
 		assert(name_len < 256);
 		assert(htmlEntitiesTable[i].name[name_len - 1] == ';');
 		p = bytes;
@@ -161,21 +192,43 @@ void xml_print_table(void)
 		chm_put_unichar(p, wc);
 		utf8len = (int)(p - bytes);
 		assert(name_len > utf8len);
+		if (utf8len > maxutf8)
+			maxutf8 = utf8len;
 	}
 		
 	/*
-	 * sort by value, and check that it is unique
+	 * sort by value.
+	 * The value is not unique (there are several historical names
+	 * allowed as alternative), but only the "officical" name
+	 * should have a description
 	 */
 	qsort(table, n, sizeof(*table), cmpvalue);
-	for (i = 0; i < (n - 1); i++)
+	for (i = 0; i < n; i++)
 	{
-		assert(htmlEntitiesTable[table[i].pos].value < htmlEntitiesTable[table[i + 1].pos].value);
+		assert((i + 1) >= n || htmlEntitiesTable[table[i].pos].value <= htmlEntitiesTable[table[i + 1].pos].value);
+		if (htmlEntitiesTable[table[i].pos].desc != NULL)
+		{
+			for (j = i + 1; j < n && htmlEntitiesTable[table[i].pos].value == htmlEntitiesTable[table[j].pos].value; j++)
+			{
+				assert(htmlEntitiesTable[table[j].pos].desc == NULL);
+			}
+		}
+		table[i].by_name = i;
 	}
 	
 	/*
-	 * now sort by name, and spit out table
+	 * sort by name, and check that it is unique
 	 */
 	qsort(table, n, sizeof(*table), cmpname);
+	for (i = 0; i < n; i++)
+	{
+		assert((i + 1) >= n || strcmp(htmlEntitiesTable[table[i].pos].name, htmlEntitiesTable[table[i + 1].pos].name) < 0);
+	}
+	
+	/*
+	 * now sort by value, and spit out table
+	 */
+	qsort(table, n, sizeof(*table), cmpvalue);
 	printf("static const htmlEntityDesc htmlEntitiesTable[] =\n");
 	printf("{\n");
 	for (i = 0; i < n; i++)
@@ -187,18 +240,33 @@ void xml_print_table(void)
 		chm_put_unichar(p, wc);
 		utf8len = (int)(p - bytes);
 		name_len = (int)strlen(htmlEntitiesTable[pos].name);
-		printf("\t{ 0x%04x, { 0x%02x, 0x%02x, 0x%02x, 0x%02x, 0x%02x, 0x%02x }, %u, %u, \"%s\", \"%s\" }%s\n",
+		printf("\t{ 0x%04x, { 0x%02x, 0x%02x, 0x%02x, 0x%02x, 0x%02x, 0x%02x }, %u, %u, \"%s\", %s%s%s }%s\n",
 			htmlEntitiesTable[pos].value,
 			bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5],
 			utf8len,
 			name_len,
 			htmlEntitiesTable[pos].name,
+			htmlEntitiesTable[pos].desc ? "\"" : "",
 			htmlEntitiesTable[pos].desc ? htmlEntitiesTable[pos].desc : "NULL",
+			htmlEntitiesTable[pos].desc ? "\"" : "",
 			(i + 1) < n ? "," : "");
 	}
 	printf("};\n");
 	printf("\n");
-	
+	qsort(table, n, sizeof(*table), cmpname);
+	printf("static const int htmlEntitiesByname[] =\n");
+	printf("{\n");
+	for (i = 0; i < n; i++)
+	{
+		printf("\t %d%s\n",
+			table[i].by_name,
+			(i + 1) < n ? "," : "");
+	}
+	printf("};\n");
+	printf("\n");
+	printf("#define HTML_ENT_MAXLEN %d\n", maxlen);
+	printf("#define HTML_ENT_MAXUTF8 %d\n", maxutf8);
+	printf("\n");
 }
 
 #endif
@@ -216,14 +284,14 @@ int printmatch;
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static char *xml_dequote_slow(const char *src, size_t len)
+static char *xml_dequote_bin(const char *src, size_t len)
 {
 	const char *end;
 	const char *p = src;
 	size_t allocsize = 1024;
 	size_t dstlen;
 	char *dst;
-	int i, n;
+	int n;
 	
 	dst = g_new(char, allocsize);
 	dstlen = 0;
@@ -238,27 +306,54 @@ static char *xml_dequote_slow(const char *src, size_t len)
 		
 		if (*p == '&')
 		{
-			for (i = 0; i < n; i++)
+			int cmp, left, right, middle;
+			
+			int entlen = 1;
+			while((p + entlen) < end && p[entlen] != ';')
+				entlen++;
+				
+			left = 0;
+			right = n - 1;
+			do
 			{
-				size_t l;
-				l = htmlEntitiesTable[i].name_len;
-				if (p + l <= end && strncmp(p, htmlEntitiesTable[i].name, l) == 0)
+				/* pick new midpoint */
+				middle = (left + right) >> 1;
+	
+				cmp = strncmp(p, htmlEntitiesTable[htmlEntitiesByname[middle]].name, entlen);
+	
+				if (cmp == 0)
 				{
-#ifdef MAIN
-					replacements++;
-#endif
-					p += l;
-					l = htmlEntitiesTable[i].utf8_len;
-					if ((dstlen + l) > allocsize)
-					{
-						allocsize += 1024;
-						dst = g_renew(char, dst, allocsize);
-					}
-					memcpy(dst + dstlen, htmlEntitiesTable[i].utf8_bytes, l);
-					dstlen += l;
 					found = TRUE;
 					break;
 				}
+				if (cmp < 0)
+				{
+					if (middle)
+						right = middle - 1;
+					else
+						break;
+				} else
+				{
+					left = middle + 1;
+				}
+			} while (left <= right);
+
+			if (found)
+			{
+				size_t l;
+				
+#ifdef MAIN
+				replacements++;
+#endif
+				p += entlen;
+				l = htmlEntitiesTable[htmlEntitiesByname[middle]].utf8_len;
+				if ((dstlen + l) > allocsize)
+				{
+					allocsize += 1024;
+					dst = g_renew(char, dst, allocsize);
+				}
+				memcpy(dst + dstlen, htmlEntitiesTable[htmlEntitiesByname[middle]].utf8_bytes, l);
+				dstlen += l;
 			}
 		}
 		
@@ -284,7 +379,7 @@ char *xml_dequote_inplace(char *src, size_t len)
 	const char *end;
 	const char *p = src;
 	char *dst;
-	int i, n;
+	int n;
 	
 	dst = src;
 	end = src + len;
@@ -298,21 +393,49 @@ char *xml_dequote_inplace(char *src, size_t len)
 		
 		if (*p == '&')
 		{
-			for (i = 0; i < n; i++)
+			int cmp, left, right, middle;
+			
+			int entlen = 1;
+			while((p + entlen) < end && p[entlen] != ';')
+				entlen++;
+				
+			left = 0;
+			right = n - 1;
+			do
 			{
-				size_t l;
-				l = htmlEntitiesTable[i].name_len;
-				if (p + l <= end && strncmp(p, htmlEntitiesTable[i].name, l) == 0)
+				/* pick new midpoint */
+				middle = (left + right) >> 1;
+	
+				cmp = strncmp(p, htmlEntitiesTable[htmlEntitiesByname[middle]].name, entlen);
+	
+				if (cmp == 0)
 				{
-#ifdef MAIN
-					replacements++;
-#endif
-					p += l;
-					l = htmlEntitiesTable[i].utf8_len;
-					memcpy(dst, htmlEntitiesTable[i].utf8_bytes, l);
 					found = TRUE;
 					break;
 				}
+				if (cmp < 0)
+				{
+					if (middle)
+						right = middle - 1;
+					else
+						break;
+				} else
+				{
+					left = middle + 1;
+				}
+			} while (left <= right);
+
+			if (found)
+			{
+				size_t l;
+
+#ifdef MAIN
+				replacements++;
+#endif
+				p += entlen;
+				l = htmlEntitiesTable[htmlEntitiesByname[middle]].utf8_len;
+				memcpy(dst, htmlEntitiesTable[htmlEntitiesByname[middle]].utf8_bytes, l);
+				dst += l;
 			}
 		}
 		
@@ -327,6 +450,7 @@ char *xml_dequote_inplace(char *src, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
+#if USE_KWSET
 static char *xml_dequote_fast(const char *src, size_t len)
 {
 	const char *end;
@@ -383,28 +507,31 @@ static char *xml_dequote_fast(const char *src, size_t len)
 	dst[dstlen] = '\0';
 	return dst;
 }
+#endif
 
 /*** ---------------------------------------------------------------------- ***/
 
 char *xml_dequote(const char *src, size_t len)
 {
+#if USE_KWSET
 	if (xml_dequote_kwset)
 		return xml_dequote_fast(src, len);
-	return xml_dequote_slow(src, len);
+#endif
+	return xml_dequote_bin(src, len);
 }
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static char *xml_enquote_slow(const char *src, size_t len)
+static char *xml_enquote_bin(const char *src, size_t len)
 {
 	const char *end;
 	const char *p = src;
 	size_t allocsize = 1024;
 	size_t dstlen;
 	char *dst;
-	int i, n;
+	int n;
 	
 	dst = g_new(char, allocsize);
 	dstlen = 0;
@@ -417,27 +544,57 @@ static char *xml_enquote_slow(const char *src, size_t len)
 	while (p < end)
 	{
 		int found = FALSE;
+		chm_unichar_t wc;
+		int left, right, middle;
 		
-		for (i = 0; i < n; i++)
+		/*
+		 * skip ASCII characters unless absolutely needed
+		 */
+		if ((unsigned char)(*p) >= 0x80 ||
+			*p == 0x22 ||
+			*p == 0x26 ||
+			*p == 0x27 ||
+			*p == 0x3c ||
+			*p == 0x3e)
 		{
-			size_t l;
-			l = htmlEntitiesTable[i].utf8_len;
-			if (p + l <= end && memcmp(p, htmlEntitiesTable[i].utf8_bytes, l) == 0)
+			p = chm_utf8_getchar(p, &wc);
+			left = 0;
+			right = n - 1;
+			do
 			{
+				/* pick new midpoint */
+				middle = (left + right) >> 1;
+				if (wc == htmlEntitiesTable[middle].value)
+				{
+					found = TRUE;
+					break;
+				}
+				if (wc < htmlEntitiesTable[middle].value)
+				{
+					if (middle)
+						right = middle - 1;
+					else
+						break;
+				} else
+				{
+					left = middle + 1;
+				}
+			} while (left <= right);
+
+			if (found)
+			{
+				size_t l;
 #ifdef MAIN
 				replacements++;
 #endif
-				p += l;
-				l = htmlEntitiesTable[i].name_len;
+				l = htmlEntitiesTable[middle].name_len;
 				if ((dstlen + l + 2) > allocsize)
 				{
 					allocsize += 1024;
 					dst = g_renew(char, dst, allocsize);
 				}
-				memcpy(dst + dstlen, htmlEntitiesTable[i].name, l);
+				memcpy(dst + dstlen, htmlEntitiesTable[middle].name, l);
 				dstlen += l;
-				found = TRUE;
-				break;
 			}
 		}
 		
@@ -459,6 +616,7 @@ static char *xml_enquote_slow(const char *src, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
+#if USE_KWSET
 static char *xml_enquote_fast(const char *src, size_t len)
 {
 	const char *end;
@@ -517,6 +675,7 @@ static char *xml_enquote_fast(const char *src, size_t len)
 	dst[dstlen] = '\0';
 	return dst;
 }
+#endif
 
 /*** ---------------------------------------------------------------------- ***/
 
@@ -530,12 +689,14 @@ char *xml_enquote(const char *src, size_t len)
 		dst[0] = '"';
 		dst[1] = '"';
 		dst[2] = '\0';
+#if USE_KWSET
 	} else if (xml_dequote_kwset)
 	{
 		dst = xml_enquote_fast(src, len);
+#endif
 	} else
 	{
-		dst = xml_enquote_slow(src, len);
+		dst = xml_enquote_bin(src, len);
 	}
 	return dst;
 }
@@ -555,6 +716,7 @@ char *xml_quote(const char *src)
 
 int xml_init(void)
 {
+#if USE_KWSET
 	int i, n;
 
 	n = (int)(sizeof(htmlEntitiesTable) / sizeof(htmlEntitiesTable[0]));
@@ -588,12 +750,28 @@ int xml_init(void)
 		
 		for (i = 0; i < n; i++)
 		{
-			if (kwsincr(xml_enquote_kwset, (const char *)htmlEntitiesTable[i].utf8_bytes, htmlEntitiesTable[i].utf8_len, NULL) == FALSE)
+			/*
+			 * skip ASCII characters unless absolutely needed
+			 */
+			if (htmlEntitiesTable[i].value >= 0x80 ||
+				htmlEntitiesTable[i].value == 0x22 ||
+				htmlEntitiesTable[i].value == 0x26 ||
+				htmlEntitiesTable[i].value == 0x27 ||
+				htmlEntitiesTable[i].value == 0x3c ||
+				htmlEntitiesTable[i].value == 0x3e)
 			{
-				kwsfree(xml_enquote_kwset);
-				xml_enquote_kwset = NULL;
-				break;
+				if (kwsincr(xml_enquote_kwset, (const char *)htmlEntitiesTable[i].utf8_bytes, htmlEntitiesTable[i].utf8_len, NULL) == FALSE)
+				{
+					kwsfree(xml_enquote_kwset);
+					xml_enquote_kwset = NULL;
+					break;
+				}
 			}
+			/*
+			 * skip duplicate values
+			 */
+			while ((i + 1) < n && htmlEntitiesTable[i].value == htmlEntitiesTable[i + 1].value)
+				i++;
 		}
 		if (kwsprep(xml_enquote_kwset) == FALSE)
 		{
@@ -604,6 +782,7 @@ int xml_init(void)
 		if (xml_enquote_kwset == NULL)
 			return FALSE;
 	}
+#endif
 	
 	return TRUE;
 }
@@ -612,10 +791,12 @@ int xml_init(void)
 
 void xml_exit(void)
 {
+#if USE_KWSET
 	kwsfree(xml_dequote_kwset);
 	xml_dequote_kwset = NULL;
 	kwsfree(xml_enquote_kwset);
 	xml_enquote_kwset = NULL;
+#endif
 }
 
 /******************************************************************************/
@@ -650,14 +831,15 @@ void benchmark(void)
 	const int test_secs = 5;
 	const long test_duration = test_secs * USECS;
 
-#if 0
+#if 1
 	{
 		char *p;
+		printf("dequote bin\n");
 		START();
 		for (loops = 0; ; loops++)
 		{
 			printmatch = loops == 0;
-			p = xml_dequote_slow(testinp, len);
+			p = xml_dequote_bin(testinp, len);
 			g_free(p);
 			ELAPSED();
 			if (elapsed >= test_duration)
@@ -667,9 +849,10 @@ void benchmark(void)
 	}
 #endif
 
-#if 0
+#if 1
 	{
 		char *p;
+		printf("dequote inplace\n");
 		START();
 		for (loops = 0; ; loops++)
 		{
@@ -686,9 +869,11 @@ void benchmark(void)
 	}
 #endif
 	
+#if USE_KWSET
 #if 1
 	{
 		char *p;
+		printf("dequote fast\n");
 		START();
 		for (loops = 0; ; loops++)
 		{
@@ -702,13 +887,37 @@ void benchmark(void)
 		printf("%ld loops in %ld.%ld secs, %d replacements\n", loops, elapsed / USECS, elapsed % USECS, replacements);
 	}
 #endif
+#endif
 
-#if 0
+#if 1
 	{
-		char *dequote = xml_dequote_fast(testinp, len);
+		char *dequote = xml_dequote(testinp, len);
 		size_t dequote_len = strlen(dequote);
 		char *p;
 		
+		printf("enquote bin\n");
+		START();
+		for (loops = 0; ; loops++)
+		{
+			printmatch = loops == 0;
+			p = xml_enquote_bin(dequote, dequote_len);
+			g_free(p);
+			ELAPSED();
+			if (elapsed >= test_duration)
+				break;
+		}
+		printf("%ld loops in %ld.%ld secs, %d replacements\n", loops, elapsed / USECS, elapsed % USECS, replacements);
+	}
+#endif
+
+#if USE_KWSET
+#if 1
+	{
+		char *dequote = xml_dequote(testinp, len);
+		size_t dequote_len = strlen(dequote);
+		char *p;
+		
+		printf("enquote fast\n");
 		START();
 		for (loops = 0; ; loops++)
 		{
@@ -721,6 +930,7 @@ void benchmark(void)
 		}
 		printf("%ld loops in %ld.%ld secs, %d replacements\n", loops, elapsed / USECS, elapsed % USECS, replacements);
 	}
+#endif
 #endif
 
 #undef START
@@ -736,7 +946,11 @@ int main(void)
 		perror("");
 		return 1;
 	}
+#if XML_PRINT_TABLE
+	xml_print_table();
+#else
 	benchmark();
+#endif
 	
 	xml_exit();
 	
