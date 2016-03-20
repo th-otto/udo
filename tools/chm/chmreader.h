@@ -2,7 +2,8 @@
 #define __CHMREADER_H__
 
 #include "chmsitemap.h"
-#include "chmfiftimain.h"
+
+typedef struct _ChmReader ChmReader;
 
 typedef uint64_t *LZXResetTableArr;
 
@@ -89,7 +90,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name);
 ChmMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name); /* YOU must Free the stream */
 chm_error ITSFReader_GetError(ITSFReader *reader);
 
-typedef struct _ChmReader {
+struct _ChmReader {
 /* protected: */
 	ContextList *contextList;
 	ChmMemoryStream *TOPICSStream;
@@ -100,8 +101,7 @@ typedef struct _ChmReader {
 	ChmSystem *system;
 /* private: */
 	ITSFReader *itsf;
-	ChmSearchReader *SearchReader;
-} ChmReader;
+};
 
 ChmReader *ChmReader_Create(ChmStream *AStream, gboolean FreeStreamOnDestroy);
 void ChmReader_Destroy(ChmReader *reader);

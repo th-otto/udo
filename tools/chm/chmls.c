@@ -1,5 +1,6 @@
 #include "chmtools.h"
 #include "chmreader.h"
+#include "chmsearchreader.h"
 #include "xgetopt.h"
 #include "chmxml.h"
 
@@ -19,7 +20,9 @@ typedef enum _CmdEnum {
 	cmdprintsystem,
 	cmdprintwindows,
 	cmdprinttopics,
-	cmdprintproject
+	cmdprintproject,
+	cmdprintsearchindex,
+	cmdlookup
 } CmdEnum;
 
 static const char *const CmdNames[] = {
@@ -33,7 +36,9 @@ static const char *const CmdNames[] = {
 	"printsystem",
 	"printwindows",
 	"printtopics",
-	"project"
+	"project",
+	"printsearchindex",
+	"lookup"
 };
 
 enum {
@@ -56,6 +61,8 @@ enum {
 	OPTION_PRINTWINDOWS,
 	OPTION_PRINTTOPICS,
 	OPTION_PRINTPROJECT,
+	OPTION_PRINTSEARCHINDEX,
+	OPTION_LOOKUP,
 	OPTION_INTERNALS,
 	OPTION_NO_INTERNALS,
 	OPTION_FORCEXML,
@@ -75,6 +82,8 @@ static struct option const long_options[] = {
 	{ "windows", no_argument, NULL, OPTION_PRINTWINDOWS },
 	{ "topics", no_argument, NULL, OPTION_PRINTTOPICS },
 	{ "project", no_argument, NULL, OPTION_PRINTPROJECT },
+	{ "searchindex", no_argument, NULL, OPTION_PRINTSEARCHINDEX },
+	{ "lookup", no_argument, NULL, OPTION_LOOKUP },
 	{ "help", no_argument, NULL, OPTION_HELP },
 	{ "name-only", no_argument, NULL, OPTION_NAME_ONLY },
 	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
@@ -522,6 +531,29 @@ static gboolean extractalias(const char *filename, const char *outfilename, cons
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
+#define NT_TICKSPERSEC        ((uint64_t)10000000UL)
+#define NT_SECSPERDAY         86400UL
+#define NT_SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)NT_SECSPERDAY)
+#define NT_TICKS_1601_TO_1970 (NT_SECS_1601_TO_1970 * NT_TICKSPERSEC)
+
+static const char *make_time_t_string(uint32_t timestamp)
+{
+	time_t t = timestamp;
+	char *s = ctime(&t);
+	char *p = strchr(s, '\n');
+	if (p) *p = '\0';
+	return s;
+}
+
+static const char *make_filetime_string(uint64_t timestamp)
+{
+	time_t t = (timestamp - NT_TICKS_1601_TO_1970) / NT_TICKSPERSEC;
+	char *s = ctime(&t);
+	char *p = strchr(s, '\n');
+	if (p) *p = '\0';
+	return s;
+}
+
 static gboolean printproject(const char *filename, const char *outfilename)
 {
 	ChmFileStream *fs;
@@ -552,14 +584,55 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		const GSList *windows, *l;
 		char *indexname;
 		char *tocname;
+		char *fts_stop_list_file_name;
 		const ContextList *contextlist;
 		ChmIdxhdr *idx;
+		gboolean print_defaults = TRUE;
+		gboolean stp_success = FALSE; /* TODO */
+		LCID compiler_lcid = 0;
+		LCID os_lcid = 0;
 		
+		if (sys && !empty(sys->chm_compiler_version.c))
+			fprintf(out, ";Compiled by: %s\n", sys->chm_compiler_version.c);
+		{
+			ChmMemoryStream *BSSC;
+			if ((BSSC = ChmReader_GetObject(r, "/#BSSC")) != NULL)
+			{
+				fprintf(out, ";Prepared using: RoboHelp version %.*s\n", (int)ChmStream_Size(BSSC), ChmStream_Memptr(BSSC));
+				ChmStream_Close(BSSC);
+			}
+		}
+		if (os_lcid)
+		{
+			const char *lcid_string = get_lcid_string(os_lcid);
+			if (lcid_string)
+				fprintf(out, ";Compilation operating system language: %s (0x%x)\n", lcid_string, os_lcid);
+			else
+				fprintf(out, ";Compilation operating system language: 0x%x\n", os_lcid);
+		}
+		if (compiler_lcid)
+		{
+			const char *lcid_string = get_lcid_string(compiler_lcid);
+			if (lcid_string)
+				fprintf(out, ";Compiler language id: %s (0x%x)\n", lcid_string, compiler_lcid);
+			else
+				fprintf(out, ";Compiler language id: 0x%x\n", compiler_lcid);
+		}
+		if (sys && sys->local_timestamp)
+		{
+			fprintf(out, ";Compilation date: %s (%u seconds after 0:00 Jan 1 1970)\n", make_time_t_string(sys->local_timestamp), sys->local_timestamp);
+		}
+		if (sys && sys->timestamp)
+		{
+			fprintf(out, ";Compilation date: %s (%" PRIu64 "00 nano-seconds after 0:00 Jan 1 1600)\n", make_time_t_string(sys->timestamp), sys->timestamp);
+		}
+				
 		fprintf(out, "[OPTIONS]\n");
 		if (sys && sys->caption.c)
 			fprintf(out, "Title=%s\n", sys->caption.c);
 		
-		fprintf(out, "Compatibility=%s\n", sys && sys->version >= 3 ? "1.1 or later" : "1.0");
+		if (sys->version <= 2 || print_defaults)
+			fprintf(out, "Compatibility=%s\n", sys && sys->version >= 3 ? "1.1 or later" : "1.0");
 		
 		o = sys && sys->chm_filename.c ? g_strconcat(sys->chm_filename.c, ".chm", NULL) : g_strdup(chm_basename(filename));
 		fprintf(out, "Compiled file=%s\n", o);
@@ -590,7 +663,11 @@ static gboolean printproject(const char *filename, const char *outfilename)
 			fprintf(out, "Contents file=%s\n", tocname);
 		}
 		
-		fprintf(out, "Binary TOC=%s\n", ChmReader_ObjectExists(r, "/#TOCIDX") ? "Yes" : "No");
+		{
+			gboolean binary_toc = (sys && sys->binary_toc_dword != 0) || ChmReader_ObjectExists(r, "/#TOCIDX");
+			if (binary_toc || print_defaults)
+				fprintf(out, "Binary TOC=%s\n", binary_toc ? "Yes" : "No");
+		}
 		
 		if (sys != NULL && sys->index_file.c != NULL)
 		{
@@ -608,27 +685,88 @@ static gboolean printproject(const char *filename, const char *outfilename)
 			fprintf(out, "Index file=%s\n", indexname);
 		}
 		
-		fprintf(out, "Binary Index=%s\n", ChmReader_ObjectExists(r, "/$WWKeywordLinks/BTree") ? "Yes" : "No");
-
+		{
+			gboolean binary_index = (sys && sys->binary_index_dword != 0) || ChmReader_ObjectExists(r, "/$WWKeywordLinks/BTree");
+			if (!binary_index || print_defaults)
+				fprintf(out, "Binary Index=%s\n", binary_index ? "Yes" : "No");
+		}
+		
 		if (sys && sys->default_page.c)
 			fprintf(out, "Default topic=%s\n", sys->default_page.c);
 
 		if (sys && sys->default_window.c)
 			fprintf(out, "Default Window=%s\n", sys->default_window.c);
 
-		if (sys && sys->preferred_font.c)
-			fprintf(out, "Default Font=%s\n", sys->preferred_font.c);
+		if (sys && sys->default_font.c)
+			fprintf(out, "Default Font=%s\n", sys->default_font.c);
 
-		if (sys && sys->locale_id)
-			fprintf(out, "Language=0x%x\n", sys->locale_id);
-
-		fprintf(out, "Full-text search=%s\n", sys && sys->fulltextsearch ? "Yes" : "No");
+		{
+			LCID lcid = 0;
+			ChmSiteMap *sitemap;
+			
+			if (sys && sys->locale_id != 0)
+				lcid = sys->locale_id;
+			if (lcid == 0 && (sitemap = ChmReader_GetIndexSitemap(r, FALSE)) != NULL)
+			{
+				lcid = sitemap->lcid;
+				ChmSiteMap_Destroy(sitemap);
+			}
+#if 0
+			if (lcid == 0 && (sitemap = ChmReader_GetAssocSitemap(r, FALSE)) != NULL)
+			{
+				lcid = sitemap->lcid;
+				ChmSiteMap_Destroy(sitemap);
+			}
+#endif
+			/* FIXME: check the LCIDs in $OBJINST */
+			if (lcid != 0)
+			{
+				const char *language_string = get_lcid_string(lcid);
+				fprintf(out, "Language=0x%x %s\n", lcid, fixnull(language_string));
+			}
+		}
 		
-		/* TODO: Auto Index=Yes/No */
+		{
+			gboolean fts = (sys && sys->fulltextsearch) || ChmReader_ObjectExists(r, "/$FIftiMain");
+			if (fts || print_defaults)
+				fprintf(out, "Full-text search=%s\n", fts ? "Yes" : "No");
+		}
+			
+		if (sys && (sys->klinks || print_defaults))
+			fprintf(out, "Auto Index=%s\n", sys->klinks ? "Yes" : "No");
+		
+		{
+			gboolean create_chi_file =
+				ChmReader_ObjectExists(r, "/#SYSTEM") &&
+				ChmReader_ObjectExists(r, "/$OBJINST") &&
+				ChmReader_ObjectExists(r, "/$FIftiMain") &&
+				!ChmReader_ObjectExists(r, "/$WWAssociativeLinks") &&
+				!ChmReader_ObjectExists(r, "/$WWKeywordLinks") &&
+				!ChmReader_ObjectExists(r, "/#IDXHDR") &&
+				!ChmReader_ObjectExists(r, "/#TOCIDX") &&
+				!ChmReader_ObjectExists(r, "/#URLSTR") &&
+				!ChmReader_ObjectExists(r, "/#WINDOWS") &&
+				!ChmReader_ObjectExists(r, "/#ITBITS") &&
+				!ChmReader_ObjectExists(r, "/#STRINGS") &&
+				!ChmReader_ObjectExists(r, "/#TOPICS") &&
+				!ChmReader_ObjectExists(r, "/#URLTBL");
+			if (create_chi_file || print_defaults)
+				fprintf(out, "Create CHI file=%s\n", create_chi_file ? "Yes" : "No");
+		}
+		
+		{
+			gboolean dbcs = sys && sys->dbcs;
+			if (dbcs || print_defaults)
+				fprintf(out, "DBCS=%s\n", dbcs ? "Yes" : "No");
+		}
+		
 		/* TODO: Auto TOC=9 */
 		/* TODO: CreateCHIFile=Yes/No */
-		/* TODO: Full text search stop list file= */
 		/* TODO: Enhanced decompilation=Yes/No */
+		
+		fts_stop_list_file_name = changefileext(chm_basename(filename), ".stp");
+		if (stp_success /* || print_defaults */)
+			fprintf(out, "Full text search stop list file=%s\n", fts_stop_list_file_name);
 		
 		/* get the setting of "Flat" by looking at the filenames */
 		listObject.section = (uint32_t)-1;
@@ -640,7 +778,8 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		listObject.flat = TRUE;
 		listObject.out = NULL;
 		ChmReader_GetCompleteFileList(r, &listObject, ListObject_OnFileEntry);
-		fprintf(out, "Flat=%s\n", listObject.flat ? "Yes" : "No");
+		if (!listObject.flat || print_defaults)
+			fprintf(out, "Flat=%s\n", listObject.flat ? "Yes" : "No");
 		fprintf(out, "\n");
 		
 		fprintf(out, "[WINDOWS]\n");
@@ -715,7 +854,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 				fname = g_strconcat(sys->chm_filename.c, ".ali", NULL);
 			} else
 			{
-				indexname = changefileext(chm_basename(filename), ".ali");
+				fname = changefileext(chm_basename(filename), ".ali");
 			}
 			fprintf(out, "#include \"%s\"\n", fname);
 			fprintf(out, "\n");
@@ -727,7 +866,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 				fname = g_strconcat(sys->chm_filename.c, ".hhm", NULL);
 			} else
 			{
-				indexname = changefileext(chm_basename(filename), ".hhm");
+				fname = changefileext(chm_basename(filename), ".hhm");
 			}
 			fprintf(out, "#include \"%s\"\n", fname);
 			fprintf(out, "\n");
@@ -745,6 +884,11 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		}
 		ChmIdxhdr_Destroy(idx);
 		
+		/* TODO: [TEXT POPUPS] */
+		/* TODO: [INFOTYPES] */
+		/* TODO: [SUBSETS] */
+		
+		g_free(fts_stop_list_file_name);
 		g_free(tocname);
 		g_free(indexname);
 		close_stdout(out);
@@ -912,10 +1056,119 @@ static gboolean printidxhdr(const char *filename, const char *outfilename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-#define NT_TICKSPERSEC        ((uint64_t)10000000UL)
-#define NT_SECSPERDAY         86400UL
-#define NT_SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)NT_SECSPERDAY)
-#define NT_TICKS_1601_TO_1970 (NT_SECS_1601_TO_1970 * NT_TICKSPERSEC)
+typedef struct _DumpObject {
+	ChmSearchReader *search;
+	FILE *out;
+} DumpObject;
+
+static void print_words(FILE *out, const char *word, gboolean title, const ChmWLCTopicArray hits)
+{
+	unsigned int i, j;
+	
+	if (hits == NULL)
+		return;
+	fprintf(out, "%s:%s\n", word, title ? _(" (in title)") : _(" (in text)"));
+	for (i = 0; hits[i].LocationCodes != NULL; i++)
+	{
+		fprintf(out, "%5u (%s) ", hits[i].TopicIndex, printnull(hits[i].topic));
+		for (j = 0; j < hits[i].NumLocationCodes; j++)
+			fprintf(out, "%s%u", j == 0 ? "" : ", ", hits[i].LocationCodes[j]);
+		fprintf(out, "\n");
+	}
+}
+
+static void printsearchindex_cb(void *obj, const char *word, gboolean title, const ChmWLCTopicArray hits)
+{
+	DumpObject *dump = (DumpObject *)obj;
+	print_words(dump->out, word, title, hits);
+}
+
+static gboolean printsearchindex(const char *filename, const char *outfilename)
+{
+	ChmFileStream *fs;
+	ChmReader *r;
+	gboolean result = FALSE;
+	chm_error err;
+	ChmSearchReader *search = NULL;
+	FILE *out;
+	
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	r = ChmReader_Create(fs, TRUE);
+	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((search = ChmSearchReader_Create(r)) == NULL)
+	{
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#FIftiMain");
+	} else if ((out = open_stdout(outfilename)) != NULL)
+	{
+		DumpObject dump;
+		
+		result = TRUE;
+		dump.search = search;
+		dump.out = out;
+		fprintf(out, "--- #FIftiMain ---\n");
+		ChmSearchReader_DumpData(search, printsearchindex_cb, &dump);
+		close_stdout(out);
+	}
+
+	ChmSearchReader_Destroy(search);
+	ChmReader_Destroy(r);
+	return result;
+}
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
+static gboolean lookupword(const char *filename, const char *word, const char *outfilename)
+{
+	ChmFileStream *fs;
+	ChmReader *r;
+	gboolean result = FALSE;
+	chm_error err;
+	ChmSearchReader *search = NULL;
+	FILE *out;
+	
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	r = ChmReader_Create(fs, TRUE);
+	if ((err = ChmReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((search = ChmSearchReader_Create(r)) == NULL)
+	{
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#FIftiMain");
+	} else if ((out = open_stdout(outfilename)) != NULL)
+	{
+		ChmWLCTopicArray TitleHits;
+		ChmWLCTopicArray WordHits;
+		
+		result = ChmSearchReader_LookupWord(search, word, &TitleHits, &WordHits, FALSE);
+		if (TitleHits == NULL && WordHits == NULL)
+			fprintf(stderr, "%s: %s: %s\n", gl_program_name, word, _("not found"));
+		print_words(out, word, TRUE, TitleHits);
+		print_words(out, word, FALSE, WordHits);
+		ChmSearchReader_FreeTopics(TitleHits);
+		ChmSearchReader_FreeTopics(WordHits);
+		close_stdout(out);
+	}
+
+	ChmSearchReader_Destroy(search);
+	ChmReader_Destroy(r);
+	return result;
+}
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
 
 static gboolean printsystem(const char *filename, const char *outfilename)
 {
@@ -952,13 +1205,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 		fprintf(out, _("One if fulltext search is on   : %d\n"), sys->fulltextsearch);
 		fprintf(out, _("Non zero if there are KLinks   : %d\n"), sys->klinks);
 		fprintf(out, _("Non zero if there are ALinks   : %d\n"), sys->alinks);
-		{
-			time_t t = (sys->timestamp - NT_TICKS_1601_TO_1970) / NT_TICKSPERSEC;
-			char *s = ctime(&t);
-			char *p = strchr(s, '\n');
-			if (p) *p = '\0';
-			fprintf(out, _("Timestamp                      : $%016" PRIx64 " (%s)\n"), sys->timestamp, s);
-		}
+		fprintf(out, _("Timestamp                      : $%016" PRIx64 " (%s)\n"), sys->timestamp, make_filetime_string(sys->timestamp));
 		fprintf(out, _("Collection                     : %d\n"), sys->collection);
 		fprintf(out, _("Unknown1                       : %d\n"), sys->unknown1);
 		fprintf(out, _("Default Window from [options]  : %s\n"), printnull(sys->default_window.c));
@@ -969,13 +1216,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 		fprintf(out, _("Unknown3                       : %d\n"), sys->unknown3);
 		fprintf(out, _("Abbreviation explanation       : %s\n"), printnull(sys->abbrev_explanation.c));
 		fprintf(out, _("CHM compiler version           : %s\n"), printnull(sys->chm_compiler_version.c));
-		{
-			time_t t = sys->local_timestamp;
-			char *s = ctime(&t);
-			char *p = strchr(s, '\n');
-			if (p) *p = '\0';
-			fprintf(out, _("Local timestamp                : $%08" PRIx32 " (%s)\n"), sys->local_timestamp, s);
-		}
+		fprintf(out, _("Local timestamp                : $%08" PRIx32 " (%s)\n"), sys->local_timestamp, make_time_t_string(sys->local_timestamp));
 		fprintf(out, _("DWord when Binary TOC is on    : $%x\n"), sys->binary_toc_dword);
 		fprintf(out, _("Number of Information types    : %d\n"), sys->num_information_types);
 		if (sys->idxhdr)
@@ -985,7 +1226,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 		}
 		fprintf(out, _("MS Office related constants    : $%x\n"), sys->msoffice_windows);
 		fprintf(out, _("Information type checksum      : $%x\n"), sys->info_type_checksum);
-		fprintf(out, _("Preferred font                 : %s\n"), printnull(sys->preferred_font.c));
+		fprintf(out, _("Preferred font                 : %s\n"), printnull(sys->default_font.c));
 		
 		close_stdout(out);
 	}
@@ -1284,8 +1525,10 @@ static void usage(FILE *out)
 	fprintf(out, _("                prints #SYSTEM in readable format\n"));
 	fprintf(out, _(" --windows      <chmfilename>\n"));
 	fprintf(out, _("                prints #WINDOWS in readable format\n"));
-	fprintf(out, _(" --topics       <chmfilename>\n"));
-	fprintf(out, _("                prints #TOPICS in readable format\n"));
+	fprintf(out, _(" --searchindex  <chmfilename>\n"));
+	fprintf(out, _("                prints the complete keyword search index\n"));
+	fprintf(out, _(" --lookup       <chmfilename> <word>\n"));
+	fprintf(out, _("                looks up <word> in the keyword search index\n"));
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -1353,6 +1596,12 @@ int main(int argc, const char **argv)
 			break;
 		case OPTION_PRINTPROJECT:
 			cmd = cmdprintproject;
+			break;
+		case OPTION_PRINTSEARCHINDEX:
+			cmd = cmdprintsearchindex;
+			break;
+		case OPTION_LOOKUP:
+			cmd = cmdlookup;
 			break;
 		case OPTION_NAME_ONLY:
 			nameonly = TRUE;
@@ -1571,6 +1820,30 @@ int main(int argc, const char **argv)
 		if (argc == 1)
 		{
 			if (printproject(argv[0], outfilename) == FALSE)
+				exit_code = EXIT_FAILURE;
+		} else
+		{
+			WrongNrParam(cmd, argc);
+			exit_code = EXIT_FAILURE;
+		}
+		break;
+
+	case cmdprintsearchindex:
+		if (argc == 1)
+		{
+			if (printsearchindex(argv[0], outfilename) == FALSE)
+				exit_code = EXIT_FAILURE;
+		} else
+		{
+			WrongNrParam(cmd, argc);
+			exit_code = EXIT_FAILURE;
+		}
+		break;
+
+	case cmdlookup:
+		if (argc == 2)
+		{
+			if (lookupword(argv[0], argv[1], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{

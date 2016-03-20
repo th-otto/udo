@@ -184,7 +184,7 @@ typedef struct _ChmSystem {
 	/*  2 */ strptr default_page;
 	/*  3 */ strptr caption;
 	/*  4 */ struct {
-		uint32_t locale_id;			/* determines encoding of most strings */
+		LCID locale_id;				/* determines encoding of most strings */
 		uint32_t dbcs;
 		uint32_t fulltextsearch;
 		uint32_t klinks;
@@ -212,7 +212,7 @@ typedef struct _ChmSystem {
 		/* followed by 2 strings per window */
 	};
 	/* 15 */ uint32_t info_type_checksum;
-	/* 16 */ strptr preferred_font;
+	/* 16 */ strptr default_font;
 	/* not from file: */
 	gboolean strings_alloced;
 } ChmSystem;
@@ -277,7 +277,7 @@ typedef struct _BtreeHeader {
 	/* 002a */ uint16_t treedepth;			/* The depth of the tree of blocks (1 if no index blocks, 2 one level of index blocks, ...) */
 	/* 002c */ uint32_t nrkeywords;			/* number of keywords in the file. */
 	/* 0030 */ uint32_t codepage;			/* Windows code page identifier (usually 1252 - Windows 3.1 US (ANSI)) */
-	/* 0034 */ uint32_t lcid;				/* LCID from the HHP file. */
+	/* 0034 */ LCID lcid;					/* LCID from the HHP file. */
 	/* 0038 */ uint32_t ischm;				/* 0 if this a BTREE and is part of a CHW file, 1 if it is a BTree and is part of a CHI or CHM file */
 	/* 003c */ uint32_t unknown2;			/* Unknown. Almost always 10031. Also 66631 (accessib.chm, ieeula.chm, iesupp.chm, iexplore.chm, msoe.chm, mstask.chm, ratings.chm, wab.chm). */
 	/* 0040 */ uint32_t unknown3;			/* unknown 0 */

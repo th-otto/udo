@@ -104,12 +104,12 @@ typedef struct _TObject TObject;
  * when tag content found in HTML, including names and values
  * case insensitive analysis available via NoCaseTag
  */
-typedef void (*TOnFoundTag)(void *obj, const char *ActualTag, size_t len);
+typedef gboolean (*TOnFoundTag)(void *obj, const char *ActualTag, size_t len);
 
 /*
  * when text found in the HTML
  */
-typedef void (*TOnFoundText)(void *obj, const char *Text, size_t len);
+typedef gboolean (*TOnFoundText)(void *obj, const char *Text, size_t len);
 
 typedef struct _HTMLParser {
 /* private: */
@@ -129,7 +129,7 @@ void HTMLParser_Destroy(HTMLParser *parser);
 
 size_t HTMLParser_CurrentPos(HTMLParser *parser);
 
-void HTMLParser_NilOnFoundTag(void *obj, const char *ActualTag, size_t len);
-void HTMLParser_NilOnFoundText(void *obj, const char *Text, size_t len);
+gboolean HTMLParser_NilOnFoundTag(void *obj, const char *ActualTag, size_t len);
+gboolean HTMLParser_NilOnFoundText(void *obj, const char *Text, size_t len);
 
 #endif /* __FASTHTMLPARSER_H__ */

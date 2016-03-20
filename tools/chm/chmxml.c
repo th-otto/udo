@@ -567,6 +567,8 @@ static char *xml_enquote_bin(const char *src, size_t len)
 				if (wc == htmlEntitiesTable[middle].value)
 				{
 					found = TRUE;
+					while (middle > 0 && htmlEntitiesTable[middle - 1].value == wc)
+						middle--;
 					break;
 				}
 				if (wc < htmlEntitiesTable[middle].value)
@@ -642,6 +644,8 @@ static char *xml_enquote_fast(const char *src, size_t len)
 			const htmlEntityDesc *ent = &htmlEntitiesTable[i];
 			size_t l;
 			
+			while (ent > htmlEntitiesTable && ent[-1].value == ent->value)
+				ent--;
 #ifdef MAIN
 			replacements++;
 #endif

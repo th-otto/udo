@@ -8,20 +8,22 @@
 /*
  * default dummy "do nothing" events if events are unassigned
  */
-void HTMLParser_NilOnFoundTag(void *obj, const char *ActualTag, size_t len)
+gboolean HTMLParser_NilOnFoundTag(void *obj, const char *ActualTag, size_t len)
 {
 	UNUSED(obj);
 	UNUSED(ActualTag);
 	UNUSED(len);
+	return FALSE;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-void HTMLParser_NilOnFoundText(void *obj, const char *Text, size_t len)
+gboolean HTMLParser_NilOnFoundText(void *obj, const char *Text, size_t len)
 {
 	UNUSED(obj);
 	UNUSED(Text);
 	UNUSED(len);
+	return FALSE;
 }
 
 /******************************************************************************/
@@ -111,7 +113,8 @@ void HTMLParser_Exec(HTMLParser *parser)
 			L = P - TextStart;
 			/* Yes, copy to buffer */
 			parser->FCurrent = P;
-			parser->OnFoundText(parser->obj, TextStart, L);
+			if (parser->OnFoundText(parser->obj, TextStart, L))
+				parser->Done = TRUE;
 		} else
 		{
 			TextStart = NULL;
@@ -146,7 +149,8 @@ void HTMLParser_Exec(HTMLParser *parser)
 		/* Copy this tag to buffer */
 		L = P - TagStart + 1;
 		parser->FCurrent = P;
-		parser->OnFoundTag(parser->obj, TagStart, L);
+		if (parser->OnFoundTag(parser->obj, TagStart, L))
+			parser->Done = TRUE;
 		P++;
 		I++;
 		if (I >= TL)

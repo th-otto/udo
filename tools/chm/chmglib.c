@@ -409,6 +409,25 @@ int g_ascii_strncasecmp(const char *s1, const char *s2, size_t n)
 
 /*** ---------------------------------------------------------------------- ***/
 
+#ifndef g_strdown
+char *g_strdown(char *str)
+{
+	char *dst;
+	
+	if (str == NULL)
+		return NULL;
+	dst = str;
+	while (*str)
+	{
+		*str = tolower(*str);
+		str++;
+	}
+	return dst;
+}
+#endif
+
+/*** ---------------------------------------------------------------------- ***/
+
 GSList *g_slist_remove(GSList *list, gconstpointer data)
 {
 	GSList *l, **last;

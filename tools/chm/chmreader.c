@@ -8,6 +8,26 @@
 
 #define NO_SUCH_STREAM ((ChmMemoryStream *)-1)
 
+enum SYSTEM_CODE {
+	Contents_file_CODE = 0,
+	Index_file_CODE = 1,
+	Default_topic_CODE = 2,
+	Title_CODE = 3,
+	Language_DBCS_FTS_KLinks_ALinks_FILETIME_CODE = 4,
+	Default_Window_CODE = 5,
+	Compiled_file_CODE = 6,
+	Binary_Index_CODE = 7,
+	ABBREVIATIONS_N_EXPLANATIONS_CODE = 8,
+	COMPILED_BY_CODE = 9,
+	time_t_STAMP_CODE = 10,
+	Binary_TOC_CODE = 11,
+	NUM_INFORMATION_TYPES_CODE = 12,
+	IDXHDR_FILE_CODE = 13,
+	Custom_tabs_CODE = 14,
+	INFORMATION_TYPE_CHECKSUM_CODE = 15,
+	Default_Font_CODE = 16
+};
+
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
@@ -1502,19 +1522,19 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 				
 				switch (code)
 				{
-				case 0:
+				case Contents_file_CODE:
 					sys->toc_file.s = read_sys_string(system, EntrySize);
 					break;
-				case 1:
+				case Index_file_CODE:
 					sys->index_file.s = read_sys_string(system, EntrySize);
 					break;
-				case 2:
+				case Default_topic_CODE:
 					sys->default_page.s = read_sys_string(system, EntrySize);
 					break;
-				case 3:
+				case Title_CODE:
 					sys->caption.s = read_sys_string(system, EntrySize);
 					break;
-				case 4:
+				case Language_DBCS_FTS_KLinks_ALinks_FILETIME_CODE:
 					if (EntrySize < 0x20)
 					{
 						CHM_DEBUG_LOG(0, "entry #%u in /#SYSTEM has only %u bytes\n", code, EntrySize);
@@ -1530,16 +1550,16 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 						sys->unknown1 = chmstream_read_le32(system);
 					}
 					break;
-				case 5:
+				case Default_Window_CODE:
 					sys->default_window.s = read_sys_string(system, EntrySize);
 					break;
-				case 6:
+				case Compiled_file_CODE:
 					sys->chm_filename.s = read_sys_string(system, EntrySize);
 					break;
-				case 7:
+				case Binary_Index_CODE:
 					sys->binary_index_dword = chmstream_read_le32(system);
 					break;
-				case 8:
+				case ABBREVIATIONS_N_EXPLANATIONS_CODE:
 					if (EntrySize < 0x10)
 					{
 						CHM_DEBUG_LOG(0, "entry #%u in /#SYSTEM has only %u bytes\n", code, EntrySize);
@@ -1551,19 +1571,19 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 						sys->abbrev_explanation.c = ChmReader_ReadStringsEntryFromStream(reader, system);
 					}
 					break;
-				case 9:
+				case COMPILED_BY_CODE:
 					sys->chm_compiler_version.s = read_sys_string(system, EntrySize);
 					break;
-				case 10:
+				case time_t_STAMP_CODE:
 					sys->local_timestamp = chmstream_read_le32(system);
 					break;
-				case 11:
+				case Binary_TOC_CODE:
 					sys->binary_toc_dword = chmstream_read_le32(system);
 					break;
-				case 12:
+				case NUM_INFORMATION_TYPES_CODE:
 					sys->num_information_types = chmstream_read_le32(system);
 					break;
-				case 13:
+				case IDXHDR_FILE_CODE:
 					if (EntrySize < CHM_IDXHDR_MINSIZE)
 					{
 						CHM_DEBUG_LOG(0, "entry #%u in /#SYSTEM has only %u bytes\n", code, EntrySize);
@@ -1573,14 +1593,14 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 						read_idxhdr(reader, sys->idxhdr, system, EntrySize);
 					}
 					break;
-				case 14:
+				case Custom_tabs_CODE:
 					sys->msoffice_windows = chmstream_read_le32(system);
 					break;
-				case 15:
+				case INFORMATION_TYPE_CHECKSUM_CODE:
 					sys->info_type_checksum = chmstream_read_le32(system);
 					break;
-				case 16:
-					sys->preferred_font.c = ChmReader_ReadStringsEntryFromStream(reader, system);
+				case Default_Font_CODE:
+					sys->default_font.c = ChmReader_ReadStringsEntryFromStream(reader, system);
 					break;
 				default:
 					CHM_DEBUG_LOG(0, "unknown entry #%u in /#SYSTEM file (size %u)\n", code, EntrySize);
@@ -1804,7 +1824,8 @@ const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char
 	uint32_t TopicTitleOffset;
 	size_t topic_pos;
 
-	*ATitle = NULL;
+	if (ATitle)
+		*ATitle = NULL;
 	if (!ChmReader_CheckCommonStreams(reader))
 		return NULL;
 	topic_pos = ATopicID * 16;
@@ -1813,7 +1834,7 @@ const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char
 		chmstream_read_le32(reader->TOPICSStream);	/* skip TOCIDX offset */
 		TopicTitleOffset = chmstream_read_le32(reader->TOPICSStream);
 		TopicURLTBLOffset = chmstream_read_le32(reader->TOPICSStream);
-		if (TopicTitleOffset != 0xFFFFFFFFUL)
+		if (ATitle && TopicTitleOffset != 0xFFFFFFFFUL)
 			*ATitle = ChmReader_ReadStringsEntry(reader, TopicTitleOffset);
 		return ChmReader_ReadURLSTR(reader, TopicURLTBLOffset);
 	}
@@ -1945,7 +1966,6 @@ static void createindexsitemapentry(ChmSiteMap *sitemap, ChmSiteMapItem **item, 
 		(*item)->local = g_strdup(topic);
 		if (title && strcmp((*item)->name, title) != 0)
 			(*item)->keyword = g_strdup(title);
-		printf("new item: %s %s\n", (*item)->name, (*item)->local);
 	} else
 	{
 		char *longpart = chm_wchar_to_utf8(name + charindex, STR0TERM);
@@ -2137,6 +2157,9 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 		hdr.lastlistblock != 0xffffffff &&
 		hdr.blocksize >= 0x200)
 	{
+		sitemap->lcid = hdr.lcid;
+		sitemap->codepage = hdr.codepage;
+		
 		block = g_new(uint8_t, hdr.blocksize);
 		
 		if (block != NULL)
@@ -2307,12 +2330,10 @@ ChmReader *ChmReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 	if (reader == NULL)
 		return NULL;
 	reader->itsf = ITSFReader_Create(stream, FreeStreamOnDestroy);
-	if (!ITSFReader_IsValidFile(reader->itsf))
+	if (ITSFReader_IsValidFile(reader->itsf))
 	{
-		ChmReader_Destroy(reader);
-		return NULL;
+		ChmReader_ReadCommonData(reader);
 	}
-	ChmReader_ReadCommonData(reader);
 	return reader;
 }
 
@@ -2325,7 +2346,6 @@ void ChmReader_Destroy(ChmReader *reader)
 	ContextList_Destroy(reader->contextList);
 	g_slist_free_full(reader->WindowsList, (GDestroyNotify)CHMWindow_Destroy);
 	ChmSystem_Destroy(reader->system);
-	ChmSearchReader_Destroy(reader->SearchReader);
 	if (reader->TOPICSStream != NO_SUCH_STREAM)
 	{
 		ChmStream_TakeOwner(reader->TOPICSStream, FALSE);

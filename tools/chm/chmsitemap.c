@@ -167,6 +167,8 @@ static void ChmSiteMap_Reset(ChmSiteMap *self)
 	self->sitemapbodytags = smbtNone;
 	self->level = 0;
 	self->levelforced = FALSE;
+	self->lcid = 0;
+	self->codepage = 0;
 	ChmSiteMapItems_Reset(self->items);
 }
 
@@ -238,14 +240,14 @@ static void NewSiteMapItem(ChmSiteMap *self)
 	ChmSiteMapItems_Add(self->currentitems, ChmSiteMapItem_Create(self->currentitems));
 }
 
-static void FoundTag(void *obj, const char *tag, size_t taglen)
+static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 {
 	ChmSiteMap *self = (ChmSiteMap *)obj;
 	char *TagName;
 	
 	TagName = GetUpTagName(tag, taglen);
 	if (TagName == NULL)
-		return;
+		return FALSE;
 
 #if 0
 	if (!(self->sitemaptags & smtHTML))
@@ -446,6 +448,7 @@ static void FoundTag(void *obj, const char *tag, size_t taglen)
 		}
 	}
 	g_free(TagName);
+	return FALSE;
 }
 
 /*** ---------------------------------------------------------------------- ***/

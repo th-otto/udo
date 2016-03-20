@@ -11,7 +11,7 @@ endif
 
 chmls_SOURCES = \
 	chmls.c \
-	chmbase.c chmbase.h \
+	chmbase.c chmbase.h chm_htmlhelp.h langid.h \
 	chmwriter.c chmobjinstconst.h \
 	fasthtmlparser.c fasthtmlparser.h \
 	htmlutil.c htmlutil.h \
@@ -19,8 +19,11 @@ chmls_SOURCES = \
 	chmstream.c chmstream.h \
 	chmreader.c chmreader.h \
 	chmsitemap.c chmsitemap.h \
-	chmfiftimain.c chmfiftimain.h \
 	chmspecialfiles.c chmspecialfiles.h \
+	htmlindexer.c htmlindexer.h \
+	avltree.c avltree.h \
+	chmsearchreader.c chmsearchreader.h chmfiftimain.h \
+	chmsearchwriter.c chmsearchwriter.h \
 	chmglib.c \
 	lzxdec.c lzx.h \
 	xgetopt.c \

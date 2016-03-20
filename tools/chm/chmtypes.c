@@ -719,7 +719,7 @@ static void ChmSystem_freestrings(ChmSystem *sys)
 		g_free(sys->abbrev.s);
 		g_free(sys->abbrev_explanation.s);
 		g_free(sys->chm_compiler_version.s);
-		g_free(sys->preferred_font.s);
+		g_free(sys->default_font.s);
 	}
 	sys->toc_file.s = NULL;
 	sys->index_file.s = NULL;

@@ -1,6 +1,8 @@
 #ifndef __CHMBASE_H__
 #define __CHMBASE_H__ 1
 
+#include "langid.h"
+
 #if ! (defined _GUID_DEFINED || defined GUID_DEFINED) /* also defined in winnt.h */
 #define GUID_DEFINED
 typedef struct _GUID
@@ -234,5 +236,6 @@ const char *chm_basename(const char *name);
 
 const char *print_guid(const GUID *guid);
 
+const char *get_lcid_string(LCID lcid);
 
 #endif /* __CHMBASE_H__ */
