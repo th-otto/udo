@@ -27,6 +27,7 @@ chmls_SOURCES = \
 	chmglib.c \
 	lzxdec.c lzx.h \
 	xgetopt.c \
+	profile.c \
 	cp_1252.h \
 	chmxml.c chmxml.h htmlentity.h \
 	kwset.c obstack.c \

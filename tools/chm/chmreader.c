@@ -1307,6 +1307,7 @@ const char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position, gbo
 			m = (l + r) >> 1;				/* == ((a + b) / 2) */
 			if (position == reader->strings_converted[m].pos)
 			{
+				l = m;
 				found = TRUE;
 				break;
 			}
@@ -1357,7 +1358,7 @@ const char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position, gbo
 			reader->strings_converted[l].s = s;
 		}
 		
-		return reader->strings_converted[m].s;
+		return reader->strings_converted[l].s;
 	}
 	return position == 0 ? "" : "<no #STRINGS>";
 }

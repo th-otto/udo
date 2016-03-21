@@ -180,11 +180,6 @@ char *g_strchug(char *str);
 void g_strfreev(char **str_array);
 unsigned int g_strv_length(char **str_array);
 
-#define G_ASCII_DTOSTR_BUF_SIZE (29 + 10)
-
-char *g_ascii_dtostr(char *buffer, int buf_len, double d);
-char *g_ascii_formatd(char *buffer, int buf_len, const char *format, double d);
-
 #ifndef g_getenv
 #define g_getenv(s) getenv(s)
 #endif
@@ -214,12 +209,6 @@ char *g_strdown(char *s);
 GSList *g_slist_nth(GSList *list, unsigned int i);
 void *g_slist_nth_data(const GSList *list, unsigned int i);
 unsigned int g_slist_length(const GSList *list);
-
-#ifndef G_LOCK_DEFINE_STATIC
-#define G_LOCK_DEFINE_STATIC(x) extern int x
-#define G_LOCK(x)
-#define G_UNLOCK(x)
-#endif
 
 #define STR0TERM  ((size_t)-1)
 

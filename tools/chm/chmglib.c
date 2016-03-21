@@ -33,6 +33,58 @@ char *g_strdup(const char *str)
 
 /*** ---------------------------------------------------------------------- ***/
 
+char *g_build_filename(const char *first, ...)
+{
+	va_list args;
+	size_t len;
+	const char *str;
+	char *ret, *ptr;
+	
+	if (first == NULL)
+		return NULL;
+	len = strlen(first) + 1;
+	va_start(args, first);
+	for (;;)
+	{
+		str = va_arg(args, const char *);
+		if (str == NULL)
+			break;
+		while (G_IS_DIR_SEPARATOR(*str))
+			str++;
+		len += strlen(str) + 1;
+	}
+	va_end(args);
+	ret = g_new(char, len);
+	if (ret == NULL)
+		return NULL;
+	strcpy(ret, first);
+	ptr = ret + strlen(ret);
+	while (ptr > ret && G_IS_DIR_SEPARATOR(ptr[-1]))
+		*--ptr = '\0';
+	va_start(args, first);
+	for (;;)
+	{
+		str = va_arg(args, const char *);
+		if (str == NULL)
+			break;
+		while (G_IS_DIR_SEPARATOR(*str))
+			str++;
+		if (*str == '\0')
+			continue;
+		ptr = ret + strlen(ret);
+		*ptr++ = G_DIR_SEPARATOR;
+		strcpy(ptr, str);
+		ptr += strlen(ptr);
+		while (ptr > ret && G_IS_DIR_SEPARATOR(ptr[-1]))
+			*--ptr = '\0';
+	}
+	va_end(args);
+	convslash(ret);
+	return ret;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 #ifndef g_strndup
 char *g_strndup(const char *str, size_t len)
 {

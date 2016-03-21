@@ -25,6 +25,7 @@
 #include "chmlib.h"
 #include "chmtypes.h"
 #include "chmintl.h"
+#include "profile.h"
 
 #include <assert.h>
 
