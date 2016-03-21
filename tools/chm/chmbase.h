@@ -27,7 +27,7 @@ typedef struct _ITSFHeader {
 	/* 0008 */ uint32_t HeaderLength;
 	/* 000C */ uint32_t Unknown_1;
 	/* 0010 */ uint32_t TimeStamp;	/* bigendian; only lowPart of a FILETIME and hence rather useless */
-	/* 0014 */ uint32_t LanguageID;	/* from the creating system, not from project file */
+	/* 0014 */ LCID LanguageID;		/* from the creating system, not from project file */
 	/* 0018 */ GUID guid1;
 	/* 0028 */ GUID guid2;
 	/* 0038 */ 
@@ -64,7 +64,7 @@ typedef struct _ITSPHeader {
 	/* 0024 */ uint32_t LastPMGLChunkIndex;
 	/* 0028 */ int32_t Unknown2;			/* = -1 */
 	/* 002c */ uint32_t DirectoryChunkCount;
-	/* 0030 */ uint32_t LanguageID;
+	/* 0030 */ LCID LanguageID;
 	/* 0034 */ GUID guid;
 	/* 0044 */ uint32_t LengthAgain;		/* ??? $54 */
 	/* 0048 */ uint32_t Unknown3;			/* = -1 */

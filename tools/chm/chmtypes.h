@@ -56,8 +56,8 @@ typedef unsigned int ValidWindowFields;		/* HHWIN_PARAM_* */
 
 typedef union {
 	/*
-	 * Valid when string was read vom chm file.
-	 * The string data is conatined in the #STRINGS file object
+	 * Valid when string was read from chm file.
+	 * The string data is contained in the #STRINGS file object
 	 * and must not be freed.
 	 */
 	const char *c;
@@ -208,13 +208,11 @@ typedef struct _ChmSystem {
 	/* 12 */ uint32_t num_information_types;
 	/* 13 */ ChmIdxhdr *idxhdr;
 	/* 14 */ struct {
-		uint32_t msoffice_windows;
+		uint32_t custom_tabs;
 		/* followed by 2 strings per window */
 	};
 	/* 15 */ uint32_t info_type_checksum;
 	/* 16 */ strptr default_font;
-	/* not from file: */
-	gboolean strings_alloced;
 } ChmSystem;
 
 ChmSystem *ChmSystem_Create(void);

@@ -147,7 +147,7 @@ static gboolean ChmSearchReader_ReadCommonData(ChmSearchReader *chm)
 	{
 		/* we only can read the files when scale is 2 */
 		chm->FileIsValid = FALSE;
-		chm->reader->itsf->ChmLastError = CHM_ERR_NOT_SUPPORTED_VERSION;
+		ChmReader_SetError(chm->reader, CHM_ERR_NOT_SUPPORTED_VERSION);
 		CHM_DEBUG_LOG(0, "%s: one of the scale parameters has a value other than two, which is not yet supported\n", FIFTIMAIN);
 	}
 

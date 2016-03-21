@@ -688,17 +688,11 @@ ChmIdxhdr *ChmIdxhdr_Create(void)
 
 void ChmIdxhdr_Destroy(ChmIdxhdr *idx)
 {
-	unsigned int i;
-
 	if (idx == NULL)
 		return;
-	
-	g_freep(&idx->imagelist.s);
-	g_freep(&idx->font.s);
-	g_freep(&idx->framename.s);
-	g_freep(&idx->windowname.s);
-	for (i = 0; i < idx->num_merge_files; i++)
-		g_free(idx->merge_files[i].s);
+	/*
+	 * all the strings are from string file object and must not be freed
+	 */
 	g_free(idx);
 }
 
@@ -708,19 +702,16 @@ void ChmIdxhdr_Destroy(ChmIdxhdr *idx)
 
 static void ChmSystem_freestrings(ChmSystem *sys)
 {
-	if (sys->strings_alloced)
-	{
-		g_free(sys->toc_file.s);
-		g_free(sys->index_file.s);
-		g_free(sys->default_page.s);
-		g_free(sys->caption.s);
-		g_free(sys->default_window.s);
-		g_free(sys->chm_filename.s);
-		g_free(sys->abbrev.s);
-		g_free(sys->abbrev_explanation.s);
-		g_free(sys->chm_compiler_version.s);
-		g_free(sys->default_font.s);
-	}
+	g_free(sys->toc_file.s);
+	g_free(sys->index_file.s);
+	g_free(sys->default_page.s);
+	g_free(sys->caption.s);
+	g_free(sys->default_window.s);
+	g_free(sys->chm_filename.s);
+	g_free(sys->chm_compiler_version.s);
+	/*
+	 * font, abbrev & explanation are from strings file object and must not be freed
+	 */
 	sys->toc_file.s = NULL;
 	sys->index_file.s = NULL;
 	sys->default_page.s = NULL;
@@ -730,7 +721,6 @@ static void ChmSystem_freestrings(ChmSystem *sys)
 	sys->abbrev.s = NULL;
 	sys->abbrev_explanation.s = NULL;
 	sys->chm_compiler_version.s = NULL;
-	sys->strings_alloced = FALSE;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -742,7 +732,6 @@ ChmSystem *ChmSystem_Create(void)
 	sys = g_new0(ChmSystem, 1);
 	if (sys == NULL)
 		return NULL;
-	sys->strings_alloced = FALSE;
 	return sys;
 }
 

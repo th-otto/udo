@@ -590,7 +590,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		gboolean print_defaults = TRUE;
 		gboolean stp_success = FALSE; /* TODO */
 		LCID compiler_lcid = 0;
-		LCID os_lcid = 0;
+		LCID os_lcid = ChmReader_GetLCID(r);
 		
 		if (sys && !empty(sys->chm_compiler_version.c))
 			fprintf(out, ";Compiled by: %s\n", sys->chm_compiler_version.c);
@@ -605,18 +605,12 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		if (os_lcid)
 		{
 			const char *lcid_string = get_lcid_string(os_lcid);
-			if (lcid_string)
-				fprintf(out, ";Compilation operating system language: %s (0x%x)\n", lcid_string, os_lcid);
-			else
-				fprintf(out, ";Compilation operating system language: 0x%x\n", os_lcid);
+			fprintf(out, ";Compilation operating system language: 0x%x %s\n", os_lcid, fixnull(lcid_string));
 		}
 		if (compiler_lcid)
 		{
 			const char *lcid_string = get_lcid_string(compiler_lcid);
-			if (lcid_string)
-				fprintf(out, ";Compiler language id: %s (0x%x)\n", lcid_string, compiler_lcid);
-			else
-				fprintf(out, ";Compiler language id: 0x%x\n", compiler_lcid);
+			fprintf(out, ";Compiler language id: 0x%x %s\n", compiler_lcid, fixnull(lcid_string));
 		}
 		if (sys && sys->local_timestamp)
 		{
@@ -624,7 +618,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		}
 		if (sys && sys->timestamp)
 		{
-			fprintf(out, ";Compilation date: %s (%" PRIu64 "00 nano-seconds after 0:00 Jan 1 1600)\n", make_time_t_string(sys->timestamp), sys->timestamp);
+			fprintf(out, ";Compilation date: %s (%" PRIu64 "00 nano-seconds after 0:00 Jan 1 1600)\n", make_filetime_string(sys->timestamp), sys->timestamp);
 		}
 				
 		fprintf(out, "[OPTIONS]\n");
@@ -761,8 +755,8 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		}
 		
 		/* TODO: Auto TOC=9 */
-		/* TODO: CreateCHIFile=Yes/No */
 		/* TODO: Enhanced decompilation=Yes/No */
+		/* TODO: Custom Tabs=... */
 		
 		fts_stop_list_file_name = changefileext(chm_basename(filename), ".stp");
 		if (stp_success /* || print_defaults */)
@@ -936,11 +930,13 @@ static gboolean extracttocindex(const char *filename, const char *outfilename, S
 		
 		if (forcexml)
 		{
+			const ChmSystem *sys = ChmReader_GetSystem(r);
+			
 			if (sttype == stTOC)
 			{
-				if (r->system && r->system->toc_file.c)
+				if (sys && sys->toc_file.c)
 				{
-					internal = r->system->toc_file.c;
+					internal = sys->toc_file.c;
 				} else
 				{
 					freeme = changefileext(chm_basename(filename), ".hhc");
@@ -948,9 +944,9 @@ static gboolean extracttocindex(const char *filename, const char *outfilename, S
 				}
 			} else
 			{
-				if (r->system && r->system->index_file.c)
+				if (sys && sys->index_file.c)
 				{
-					internal = r->system->index_file.c;
+					internal = sys->index_file.c;
 				} else
 				{
 					freeme = changefileext(chm_basename(filename), ".hhk");
@@ -1070,7 +1066,7 @@ static void print_words(FILE *out, const char *word, gboolean title, const ChmWL
 	fprintf(out, "%s:%s\n", word, title ? _(" (in title)") : _(" (in text)"));
 	for (i = 0; hits[i].LocationCodes != NULL; i++)
 	{
-		fprintf(out, "%5u (%s) ", hits[i].TopicIndex, printnull(hits[i].topic));
+		fprintf(out, "  %s (%u): ", printnull(hits[i].topic), hits[i].TopicIndex);
 		for (j = 0; j < hits[i].NumLocationCodes; j++)
 			fprintf(out, "%s%u", j == 0 ? "" : ", ", hits[i].LocationCodes[j]);
 		fprintf(out, "\n");
@@ -1200,7 +1196,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 		fprintf(out, _("Index file from [options]      : %s\n"), printnull(sys->index_file.c));
 		fprintf(out, _("Default topic from [options]   : %s\n"), printnull(sys->default_page.c));
 		fprintf(out, _("Title from [options]           : %s\n"), printnull(sys->caption.c));
-		fprintf(out, _("LCID from HHP file             : $%04x\n"), sys->locale_id);
+		fprintf(out, _("LCID from HHP file             : $%04x %s\n"), sys->locale_id, get_lcid_string(sys->locale_id) ? get_lcid_string(sys->locale_id): _("unknown"));
 		fprintf(out, _("One if DBCS in use             : %d\n"), sys->dbcs);
 		fprintf(out, _("One if fulltext search is on   : %d\n"), sys->fulltextsearch);
 		fprintf(out, _("Non zero if there are KLinks   : %d\n"), sys->klinks);
@@ -1224,7 +1220,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 			fprintf(out, _("IDXHDR:\n"));
 			print_idxhdr(out, sys->idxhdr);
 		}
-		fprintf(out, _("MS Office related constants    : $%x\n"), sys->msoffice_windows);
+		fprintf(out, _("Custom Tabs                    : $%x\n"), sys->custom_tabs);
 		fprintf(out, _("Information type checksum      : $%x\n"), sys->info_type_checksum);
 		fprintf(out, _("Preferred font                 : %s\n"), printnull(sys->default_font.c));
 		
@@ -1445,9 +1441,8 @@ static gboolean printtopics(const char *filename, const char *outfilename)
 				fprintf(out, "%d\n", cnt);
 			} else
 			{
-				char *s = ChmReader_ReadStringsEntry(r, cnt);
+				const char *s = ChmReader_ReadStringsEntry(r, cnt, FALSE);
 				fprintf(out, "$%08x: %s\n", cnt, printnull(s));
-				g_free(s);
 			}
 			fprintf(out, _(" Tag value    : "));
 			cnt = chmstream_read_le32(m);

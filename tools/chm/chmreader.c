@@ -1,4 +1,4 @@
-#include "chmtools.h"
+ #include "chmtools.h"
 #include "chmreader.h"
 #include "lzx.h"
 
@@ -26,6 +26,39 @@ enum SYSTEM_CODE {
 	Custom_tabs_CODE = 14,
 	INFORMATION_TYPE_CHECKSUM_CODE = 15,
 	Default_Font_CODE = 16
+};
+
+struct _ITSFReader {
+	ChmStream *Stream;
+	gboolean FreeStreamOnDestroy;
+	ITSFHeader ITSFheader;
+	ITSFHeaderSuffix HeaderSuffix;
+	ITSPHeader DirectoryHeader;
+	chm_off_t DirectoryHeaderPos;
+	chm_off_t DirectoryHeaderLength;
+	chm_off_t DirectoryEntriesStartPos;
+	PMGLListChunkEntry CachedEntry; /* contains the last entry found by ObjectExists */
+	uint32_t DirectoryEntriesCount;
+	chm_error ChmLastError;
+};
+
+typedef struct _convstr {
+	uint32_t pos;
+	char *s;
+} convstr;
+
+struct _ChmReader {
+	ITSFReader itsf;
+	ContextList *contextList;
+	ChmMemoryStream *TOPICSStream;
+	ChmMemoryStream *URLSTRStream;
+	ChmMemoryStream *URLTBLStream;
+	ChmMemoryStream *StringsStream;
+	convstr *strings_converted;
+	size_t convstrings_len;
+	size_t convstrings_size;
+	GSList *WindowsList; /* of CHMWindow * */
+	ChmSystem *system;
 };
 
 /******************************************************************************/
@@ -194,13 +227,14 @@ static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 	CHM_DEBUG_LOG(1, "Last PMGL               = %u\n", reader->DirectoryHeader.LastPMGLChunkIndex);
 	CHM_DEBUG_LOG(1, "Unknown2                = %d\n", reader->DirectoryHeader.Unknown2);
 	CHM_DEBUG_LOG(1, "DirCount                = %u\n", reader->DirectoryHeader.DirectoryChunkCount);
-	CHM_DEBUG_LOG(1, "LanguageID              = $%04x\n", reader->DirectoryHeader.LanguageID);
+	CHM_DEBUG_LOG(1, "LanguageID              = $%04x %s\n", reader->DirectoryHeader.LanguageID, fixnull(get_lcid_string(reader->DirectoryHeader.LanguageID)));
 	CHM_DEBUG_LOG(1, "guid                    = %s\n", print_guid(&reader->DirectoryHeader.guid));
 	CHM_DEBUG_LOG(1, "LengthAgain             = %u\n", reader->DirectoryHeader.LengthAgain);
 	CHM_DEBUG_LOG(1, "Unknown3                = %d\n", reader->DirectoryHeader.Unknown3);
 	CHM_DEBUG_LOG(1, "Unknown4                = %d\n", reader->DirectoryHeader.Unknown4);
 	CHM_DEBUG_LOG(1, "Unknown5                = %d\n", reader->DirectoryHeader.Unknown5);
 	CHM_DEBUG_LOG(1, "First Section           = $%016" PRIx64 "\n", reader->HeaderSuffix.Offset);
+	
 	return TRUE;
 }
 
@@ -227,7 +261,7 @@ gboolean ITSFReader_ReadHeader(ITSFReader *reader)
 	CHM_DEBUG_LOG(1, "Header length = %u\n", reader->ITSFheader.HeaderLength);
 	CHM_DEBUG_LOG(1, "Unknown 1     = %u\n", reader->ITSFheader.Unknown_1);
 	CHM_DEBUG_LOG(1, "TimeStamp     = $%08x\n", reader->ITSFheader.TimeStamp);
-	CHM_DEBUG_LOG(1, "LanguageID    = $%04x\n", reader->ITSFheader.LanguageID);
+	CHM_DEBUG_LOG(1, "LanguageID    = $%04x %s\n", reader->ITSFheader.LanguageID, fixnull(get_lcid_string(reader->ITSFheader.LanguageID)));
 	if (reader->ITSFheader.Version < 4)
 	{
 		if (read_guid(stream, &reader->ITSFheader.guid1) == FALSE)
@@ -1113,6 +1147,35 @@ chm_error ITSFReader_GetError(ITSFReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
+void ITSFReader_SetError(ITSFReader *reader, chm_error err)
+{
+	if (reader == NULL)
+		return;
+	reader->ChmLastError = err;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void ITSFReader_Init(ITSFReader *reader, ChmStream *stream, gboolean FreeStreamOnDestroy)
+{
+	reader->Stream = stream;
+	reader->FreeStreamOnDestroy = FreeStreamOnDestroy;
+	if (!ITSFReader_ReadHeader(reader) ||
+		!ITSFReader_IsValidFile(reader))
+		{}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+LCID ITSFReader_GetLCID(ITSFReader *reader)
+{
+	if (reader == NULL)
+		return 0;
+	return reader->ITSFheader.LanguageID;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 ITSFReader *ITSFReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 {
 	ITSFReader *reader;
@@ -1122,11 +1185,7 @@ ITSFReader *ITSFReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 	reader = g_new0(ITSFReader, 1);
 	if (reader == NULL)
 		return NULL;
-	reader->Stream = stream;
-	reader->FreeStreamOnDestroy = FreeStreamOnDestroy;
-	if (!ITSFReader_ReadHeader(reader) ||
-		!ITSFReader_IsValidFile(reader))
-		{}
+	ITSFReader_Init(reader, stream, FreeStreamOnDestroy);
 	return reader;
 }
 
@@ -1146,7 +1205,7 @@ void ITSFReader_Destroy(ITSFReader *reader)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-void ContextList_AddContext(ContextList **list, HelpContext context, char *url)
+static void ContextList_AddContext(ContextList **list, HelpContext context, const char *url)
 {
 	ContextItem *item;
 	
@@ -1177,7 +1236,7 @@ const char *ContextList_GetURL(const ContextList *list, HelpContext context)
 static void destroy_context_item(void *data)
 {
 	ContextItem *item = (ContextItem *)data;
-	g_free(item->url);
+	/* the url is from the strings table and must not be freed */
 	g_free(item);
 }
 
@@ -1194,26 +1253,37 @@ chm_error ChmReader_GetError(ChmReader *reader)
 {
 	if (reader == NULL)
 		return CHM_ERR_STREAM_NOT_ASSIGNED;
-	return ITSFReader_GetError(reader->itsf);
+	return ITSFReader_GetError(&reader->itsf);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
+void ChmReader_SetError(ChmReader *reader, chm_error err)
+{
+	if (reader == NULL)
+		return;
+	return ITSFReader_SetError(&reader->itsf, err);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+const char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position, gboolean convslash)
 {
 	size_t size;
+	const char *base;
 	
 	if (reader->StringsStream == NULL)
 	{
-		reader->StringsStream = ITSFReader_GetObject(reader->itsf, "/#STRINGS");
+		reader->StringsStream = ITSFReader_GetObject(&reader->itsf, "/#STRINGS");
 		if (reader->StringsStream == NULL)
 			reader->StringsStream = NO_SUCH_STREAM;
 		else
 			ChmStream_TakeOwner(reader->StringsStream, TRUE);
 	}
-	if (reader->StringsStream != NO_SUCH_STREAM)
+	if (reader->StringsStream != NO_SUCH_STREAM && (base = (const char *)ChmStream_Memptr(reader->StringsStream)) != NULL)
 	{
-		char *base;
+		uint32_t l, r, m;
+		gboolean found;
 		
 		size = ChmStream_Size(reader->StringsStream);
 		if (position >= size)
@@ -1222,14 +1292,51 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
 			 * quite often an offset of -1 is used
 			 */
 			if (position == 0xffffffff)
-				return g_strdup("");
-			return g_strdup_printf("<string pos %u exceeds size %u>", position, (unsigned int) size);
+				return "";
+			CHM_DEBUG_LOG(0, "string pos %u exceeds size %u", position, (unsigned int) size);
+			return "<out-of-range>";
 		}
-		base = (char *)ChmStream_Memptr(reader->StringsStream);
-		if (base)
+		/*
+		 * look up converted string
+		 */
+		l = 0;
+		r = reader->convstrings_len;
+		found = FALSE;
+		while (l < r)
+		{
+			m = (l + r) >> 1;				/* == ((a + b) / 2) */
+			if (position == reader->strings_converted[m].pos)
+			{
+				found = TRUE;
+				break;
+			}
+			if (position < reader->strings_converted[m].pos)
+				r = m;
+			else
+				l = m + 1;
+		}
+		if (!found)
 		{
 			size_t len;
+			char *s;
 			
+			if (reader->convstrings_len >= reader->convstrings_size)
+			{
+				size_t newstring_size = reader->convstrings_size + 10;
+				convstr *newstr = g_renew(convstr, reader->strings_converted, newstring_size);
+				if (newstr == NULL)
+					return "";
+				reader->strings_converted = newstr;
+				reader->convstrings_size = newstring_size;
+			}
+			for (r = reader->convstrings_len; r != l; )
+			{
+				--r;
+				reader->strings_converted[r + 1] = reader->strings_converted[r];
+			}
+			reader->convstrings_len++;
+			reader->strings_converted[l].pos = position;
+
 			base += position;
 			len = 0;
 			/* be paranoid... */
@@ -1238,25 +1345,29 @@ char *ChmReader_ReadStringsEntry(ChmReader *reader, uint32_t position)
 				len++;
 				position++;
 			}
-			if (position >= size || !g_utf8_validate(base, len, NULL))
+			if (!g_utf8_validate(base, len, NULL))
 			{
-				base = chm_conv_to_utf8(base, len);
+				s = chm_conv_to_utf8(base, len);
 			} else
 			{
-				base = g_strndup(base, len);
+				s = g_strndup(base, len);
 			}
-			return base;
+			if (convslash)
+				convexternalslash(s);
+			reader->strings_converted[l].s = s;
 		}
+		
+		return reader->strings_converted[m].s;
 	}
-	return g_strdup(position == 0 ? "" : "<no #STRINGS>");
+	return position == 0 ? "" : "<no #STRINGS>";
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static char *ChmReader_ReadStringsEntryFromStream(ChmReader *reader, ChmStream *strm)
+static const char *ChmReader_ReadStringsEntryFromStream(ChmReader *reader, ChmStream *strm, gboolean convslash)
 {
 	uint32_t pos = chmstream_read_le32(strm);
-	return ChmReader_ReadStringsEntry(reader, pos);
+	return ChmReader_ReadStringsEntry(reader, pos, convslash);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -1274,7 +1385,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 	
 	if (reader->WindowsList != NULL)
 		return TRUE;
-	windows = ITSFReader_GetObject(reader->itsf, "/#WINDOWS");
+	windows = ITSFReader_GetObject(&reader->itsf, "/#WINDOWS");
 	if (windows == NULL)
 	{
 		CHM_DEBUG_LOG(1, "\nno #WINDOWS\n\n");
@@ -1301,10 +1412,10 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 					break;
 				win->version = chmstream_read_le32(windows);
 				win->unicode_strings = chmstream_read_le32(windows);
-				win->window_name.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
+				win->window_name.c = ChmReader_ReadStringsEntryFromStream(reader, windows, FALSE);
 				win->flags = chmstream_read_le32(windows);
 				win->win_properties = chmstream_read_le32(windows);
-				win->caption.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
+				win->caption.c = ChmReader_ReadStringsEntryFromStream(reader, windows, FALSE);
 				win->styleflags = chmstream_read_le32(windows);
 				win->xtdstyleflags = chmstream_read_le32(windows);
 				win->pos.left = (int)chmstream_read_le32(windows);
@@ -1323,14 +1434,10 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 				win->topic.top = (int)chmstream_read_le32(windows);
 				win->topic.right = (int)chmstream_read_le32(windows);
 				win->topic.bottom = (int)chmstream_read_le32(windows);
-				win->toc_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->toc_file.s);
-				win->index_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->index_file.s);
-				win->default_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->default_file.s);
-				win->home_button_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->home_button_file.s);
+				win->toc_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
+				win->index_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
+				win->default_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
+				win->home_button_file.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
 				win->buttons = chmstream_read_le32(windows);
 				win->not_expanded = chmstream_read_le32(windows);
 				win->navtype = chmstream_read_le32(windows);
@@ -1339,12 +1446,10 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 				for (i = 0; i <= HH_MAX_TABS; i++)
 					win->taborder[i] = ChmStream_fgetc(windows);
 				win->history = chmstream_read_le32(windows);
-				win->jump1_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				win->jump2_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				win->jump1_url.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->jump1_url.s);
-				win->jump2_url.c = ChmReader_ReadStringsEntryFromStream(reader, windows);
-				convexternalslash(win->jump2_url.s);
+				win->jump1_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows, FALSE);
+				win->jump2_text.c = ChmReader_ReadStringsEntryFromStream(reader, windows, FALSE);
+				win->jump1_url.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
+				win->jump2_url.c = ChmReader_ReadStringsEntryFromStream(reader, windows, TRUE);
 				win->minsize.left = (int)chmstream_read_le32(windows);
 				win->minsize.top = (int)chmstream_read_le32(windows);
 				win->minsize.right = (int)chmstream_read_le32(windows);
@@ -1352,10 +1457,10 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 				
 				reader->WindowsList = g_slist_append(reader->WindowsList, win);
 				/*
-				 * due to character set conversion, we can't
-				 * directly use the entries from #STRINGS
+				 * the strings are owned by the string file object
+				 * and must not be freed
 				 */
-				win->strings_alloced = TRUE;
+				win->strings_alloced = FALSE;
 			}
 		} else
 		{
@@ -1386,17 +1491,17 @@ static void read_idxhdr(ChmReader *reader, ChmIdxhdr *idx, ChmMemoryStream *stre
 	idx->unknown1 = chmstream_read_le32(stream);
 	idx->num_topics = chmstream_read_le32(stream);
 	idx->unknown2 = chmstream_read_le32(stream);
-	idx->imagelist.c = ChmReader_ReadStringsEntryFromStream(reader, stream);
+	idx->imagelist.c = ChmReader_ReadStringsEntryFromStream(reader, stream, FALSE);
 	idx->unknown3 = chmstream_read_le32(stream);
 	idx->imagetype_is_folder = chmstream_read_le32(stream);
 	idx->background = chmstream_read_le32(stream);
 	idx->foreground = chmstream_read_le32(stream);
-	idx->foreground = chmstream_read_le32(stream);
+	idx->font.c = ChmReader_ReadStringsEntryFromStream(reader, stream, FALSE);
 	idx->window_styles = chmstream_read_le32(stream);
 	idx->exwindow_styles = chmstream_read_le32(stream);
 	idx->unknown4 = chmstream_read_le32(stream);
-	idx->framename.c = ChmReader_ReadStringsEntryFromStream(reader, stream);
-	idx->windowname.c = ChmReader_ReadStringsEntryFromStream(reader, stream);
+	idx->framename.c = ChmReader_ReadStringsEntryFromStream(reader, stream, FALSE);
+	idx->windowname.c = ChmReader_ReadStringsEntryFromStream(reader, stream, FALSE);
 	idx->num_information_types = chmstream_read_le32(stream);
 	idx->unknown5 = chmstream_read_le32(stream);
 	idx->num_merge_files = chmstream_read_le32(stream);
@@ -1407,7 +1512,7 @@ static void read_idxhdr(ChmReader *reader, ChmIdxhdr *idx, ChmMemoryStream *stre
 		idx->num_merge_files = (size - CHM_IDXHDR_MINSIZE) / 4;
 	}
 	for (i = 0; i < idx->num_merge_files; i++)
-		idx->merge_files[i].c = ChmReader_ReadStringsEntryFromStream(reader, stream);
+		idx->merge_files[i].c = ChmReader_ReadStringsEntryFromStream(reader, stream, TRUE);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -1420,7 +1525,7 @@ ChmIdxhdr *ChmReader_GetIdxhdr(ChmReader *reader)
 	
 	if (reader == NULL)
 		return NULL;
-	idxhdr = ITSFReader_GetObject(reader->itsf, "/#IDXHDR");
+	idxhdr = ITSFReader_GetObject(&reader->itsf, "/#IDXHDR");
 	if (idxhdr == NULL)
 	{
 		CHM_DEBUG_LOG(1, "\nno #IDXHDR\n\n");
@@ -1498,7 +1603,7 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 	
 	if (reader->system != NULL)
 		return TRUE;
-	system = ITSFReader_GetObject(reader->itsf, "/#SYSTEM");
+	system = ITSFReader_GetObject(&reader->itsf, "/#SYSTEM");
 	if (system == NULL)
 	{
 		CHM_DEBUG_LOG(1, "\nno #SYSTEM\n\n");
@@ -1566,9 +1671,9 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 					} else
 					{
 						sys->unknown2 = chmstream_read_le32(system);
-						sys->abbrev.c = ChmReader_ReadStringsEntryFromStream(reader, system);
+						sys->abbrev.c = ChmReader_ReadStringsEntryFromStream(reader, system, FALSE);
 						sys->unknown3 = chmstream_read_le32(system);
-						sys->abbrev_explanation.c = ChmReader_ReadStringsEntryFromStream(reader, system);
+						sys->abbrev_explanation.c = ChmReader_ReadStringsEntryFromStream(reader, system, FALSE);
 					}
 					break;
 				case COMPILED_BY_CODE:
@@ -1594,13 +1699,13 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 					}
 					break;
 				case Custom_tabs_CODE:
-					sys->msoffice_windows = chmstream_read_le32(system);
+					sys->custom_tabs = chmstream_read_le32(system);
 					break;
 				case INFORMATION_TYPE_CHECKSUM_CODE:
 					sys->info_type_checksum = chmstream_read_le32(system);
 					break;
 				case Default_Font_CODE:
-					sys->default_font.c = ChmReader_ReadStringsEntryFromStream(reader, system);
+					sys->default_font.c = ChmReader_ReadStringsEntryFromStream(reader, system, FALSE);
 					break;
 				default:
 					CHM_DEBUG_LOG(0, "unknown entry #%u in /#SYSTEM file (size %u)\n", code, EntrySize);
@@ -1613,12 +1718,6 @@ static gboolean ChmReader_ReadSystem(ChmReader *reader)
 					break;
 				}
 			}
-
-			/*
-			 * due to character set conversion, we can't
-			 * directly use the entries from #STRINGS
-			 */
-			sys->strings_alloced = TRUE;
 		}
 	} else
 	{
@@ -1637,11 +1736,11 @@ static gboolean ChmReader_ReadContextIds(ChmReader *reader)
 	chm_off_t size, pos;
 	uint32_t ivbsize;
 	uint32_t value;
-	char *str;
+	const char *str;
 	
 	if (reader->contextList != NULL)
 		return TRUE;
-	IVB = ITSFReader_GetObject(reader->itsf, "/#IVB");
+	IVB = ITSFReader_GetObject(&reader->itsf, "/#IVB");
 	if (IVB == NULL)
 	{
 		CHM_DEBUG_LOG(1, "\nno #IVB\n\n");
@@ -1664,8 +1763,7 @@ static gboolean ChmReader_ReadContextIds(ChmReader *reader)
 	while (ivbsize >= 8)
 	{
 		value = chmstream_read_le32(IVB);
-		str = ChmReader_ReadStringsEntryFromStream(reader, IVB);
-		convexternalslash(str);
+		str = ChmReader_ReadStringsEntryFromStream(reader, IVB, TRUE);
 		ivbsize -= 8;
 		ContextList_AddContext(&reader->contextList, value, str);
 	}
@@ -1691,7 +1789,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 	
 	if (reader->TOPICSStream == NULL)
 	{
-		reader->TOPICSStream = ITSFReader_GetObject(reader->itsf, "/#TOPICS");
+		reader->TOPICSStream = ITSFReader_GetObject(&reader->itsf, "/#TOPICS");
 		if (reader->TOPICSStream == NULL)
 			reader->TOPICSStream = NO_SUCH_STREAM;
 		else
@@ -1700,7 +1798,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 
 	if (reader->URLSTRStream == NULL)
 	{
-		reader->URLSTRStream = ITSFReader_GetObject(reader->itsf, "/#URLSTR");
+		reader->URLSTRStream = ITSFReader_GetObject(&reader->itsf, "/#URLSTR");
 		if (reader->URLSTRStream == NULL)
 			reader->URLSTRStream = NO_SUCH_STREAM;
 		else
@@ -1709,7 +1807,7 @@ static gboolean ChmReader_CheckCommonStreams(ChmReader *reader)
 
 	if (reader->URLTBLStream == NULL)
 	{
-		reader->URLTBLStream = ITSFReader_GetObject(reader->itsf, "/#URLTBL");
+		reader->URLTBLStream = ITSFReader_GetObject(&reader->itsf, "/#URLTBL");
 		if (reader->URLTBLStream == NULL)
 			reader->URLTBLStream = NO_SUCH_STREAM;
 		else
@@ -1753,7 +1851,7 @@ ChmMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name)
 	}
 	if (ChmCompareText(Name, "/#STRINGS") == 0)
 	{
-		g_free(ChmReader_ReadStringsEntry(reader, 0));
+		ChmReader_ReadStringsEntry(reader, 0, FALSE);
 		if (reader->StringsStream == NO_SUCH_STREAM)
 			o = NULL;
 		else
@@ -1782,7 +1880,7 @@ ChmMemoryStream *ChmReader_GetObject(ChmReader *reader, const char *Name)
 			o = reader->URLTBLStream;
 	} else
 	{
-		o = ITSFReader_GetObject(reader->itsf, Name);
+		o = ITSFReader_GetObject(&reader->itsf, Name);
 	}
 	g_free(freeme);
 	return o;
@@ -1818,7 +1916,7 @@ const char *ChmReader_ReadURLSTR(ChmReader *reader, uint32_t APosition)
 
 /*** ---------------------------------------------------------------------- ***/
 
-const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char **ATitle)
+const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, const char **ATitle)
 {
 	uint32_t TopicURLTBLOffset;
 	uint32_t TopicTitleOffset;
@@ -1835,7 +1933,7 @@ const char *ChmReader_LookupTopicByID(ChmReader *reader, uint32_t ATopicID, char
 		TopicTitleOffset = chmstream_read_le32(reader->TOPICSStream);
 		TopicURLTBLOffset = chmstream_read_le32(reader->TOPICSStream);
 		if (ATitle && TopicTitleOffset != 0xFFFFFFFFUL)
-			*ATitle = ChmReader_ReadStringsEntry(reader, TopicTitleOffset);
+			*ATitle = ChmReader_ReadStringsEntry(reader, TopicTitleOffset, FALSE);
 		return ChmReader_ReadURLSTR(reader, TopicURLTBLOffset);
 	}
 	return NULL;
@@ -1883,7 +1981,7 @@ static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 	{
 		freeme = g_strconcat(reader->system->chm_filename.c, ".hhk", NULL);
 		o = freeme;
-	} else if ((o = ChmStream_GetFilename(reader->itsf->Stream)) != NULL)
+	} else if ((o = ChmStream_GetFilename(reader->itsf.Stream)) != NULL)
 	{
 		freeme = changefileext(chm_basename(o), ".hhk");
 		o = freeme;
@@ -2029,7 +2127,7 @@ static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSit
 	BtreeBlockEntry entry;
 	unsigned int i;
 	uint32_t dummy;
-	char *title;
+	const char *title;
 	const char *topic;
 	uint16_t entrynum;
 	
@@ -2094,7 +2192,6 @@ static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSit
 				uint32_t nameind;
 				
 				get_le32(nameind, head);
-				g_free(title);
 				topic = ChmReader_LookupTopicByID(reader, nameind, &title);
 				DEBUG_BININDEX("blockentry %u: topic: %s\n", entrynum, topic);
 				DEBUG_BININDEX("blockentry %u: title: %s\n", entrynum, title);
@@ -2104,7 +2201,6 @@ static gboolean parselistingblock(ChmReader *reader, ChmSiteMap *sitemap, ChmSit
 		if (entry.nrpairs > 0)
 			createindexsitemapentry(sitemap, item, Name, entry.charindex, topic, title);
 		g_free(Name);
-		g_free(title);
 		if (head < tail)
 		{
 			get_le32(dummy, head);  /* always 1 */
@@ -2202,7 +2298,7 @@ static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 	{
 		freeme = g_strconcat(sys->chm_filename.c, ".hhc", NULL);
 		o = freeme;
-	} else if ((o = ChmStream_GetFilename(reader->itsf->Stream)) != NULL)
+	} else if ((o = ChmStream_GetFilename(reader->itsf.Stream)) != NULL)
 	{
 		freeme = changefileext(chm_basename(o), ".hhc");
 		o = freeme;
@@ -2226,7 +2322,7 @@ static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t ite
 	ChmSiteMapItem *item;
 	uint32_t NextEntry;
 	uint32_t TopicsIndex;
-	char *title;
+	const char *title;
 	uint32_t result;
 	
 	if (ChmStream_Seek(TOC, itemoffset + 4) == FALSE)
@@ -2236,11 +2332,11 @@ static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t ite
 	TopicsIndex = chmstream_read_le32(TOC);
 	if (!(props & TOC_ENTRY_HAS_LOCAL))
 	{
-		item->name = ChmReader_ReadStringsEntry(reader, TopicsIndex);
+		item->name = g_strdup(ChmReader_ReadStringsEntry(reader, TopicsIndex, FALSE));
 	} else
 	{
 		item->local = g_strdup(ChmReader_LookupTopicByID(reader, TopicsIndex, &title));
-		item->name = title;
+		item->name = g_strdup(title);
 	}
 	chmstream_read_le32(TOC); /* skip offset to parent book */
 	result = chmstream_read_le32(TOC);
@@ -2308,14 +2404,21 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 
 gboolean ChmReader_ObjectExists(ChmReader *reader, const char *name)
 {
-	return reader != NULL && ITSFReader_ObjectExists(reader->itsf, name);
+	return reader != NULL && ITSFReader_ObjectExists(&reader->itsf, name);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
 gboolean ChmReader_GetCompleteFileList(ChmReader *reader, void *obj, FileEntryForEach ForEach)
 {
-	return reader != NULL && ITSFReader_GetCompleteFileList(reader->itsf, obj, ForEach);
+	return reader != NULL && ITSFReader_GetCompleteFileList(&reader->itsf, obj, ForEach);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+LCID ChmReader_GetLCID(ChmReader *reader)
+{
+	return ITSFReader_GetLCID(&reader->itsf);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -2329,8 +2432,8 @@ ChmReader *ChmReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 	reader = g_new0(ChmReader, 1);
 	if (reader == NULL)
 		return NULL;
-	reader->itsf = ITSFReader_Create(stream, FreeStreamOnDestroy);
-	if (ITSFReader_IsValidFile(reader->itsf))
+	ITSFReader_Init(&reader->itsf, stream, FreeStreamOnDestroy);
+	if (ITSFReader_IsValidFile(&reader->itsf))
 	{
 		ChmReader_ReadCommonData(reader);
 	}
@@ -2341,6 +2444,8 @@ ChmReader *ChmReader_Create(ChmStream *stream, gboolean FreeStreamOnDestroy)
 
 void ChmReader_Destroy(ChmReader *reader)
 {
+	size_t i;
+	
 	if (reader == NULL)
 		return;
 	ContextList_Destroy(reader->contextList);
@@ -2366,6 +2471,9 @@ void ChmReader_Destroy(ChmReader *reader)
 		ChmStream_TakeOwner(reader->StringsStream, FALSE);
 		ChmStream_Close(reader->StringsStream);
 	}
-	ITSFReader_Destroy(reader->itsf);
-	g_free(reader);
+	for (i = 0; i < reader->convstrings_len; i++)
+		g_free(reader->strings_converted[i].s);
+	g_free(reader->strings_converted);
+	
+	ITSFReader_Destroy(&reader->itsf);
 }
