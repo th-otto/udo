@@ -1,6 +1,8 @@
 chmls
 chmcmd
+chmc
 *-chmls
 *-chmcmd
+*-chmc
 tests
 xmltest

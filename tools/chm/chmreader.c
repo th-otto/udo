@@ -57,7 +57,7 @@ struct _ChmReader {
 	convstr *strings_converted;
 	size_t convstrings_len;
 	size_t convstrings_size;
-	GSList *WindowsList; /* of CHMWindow * */
+	GSList *WindowsList; /* of ChmWindow * */
 	ChmSystem *system;
 };
 
@@ -546,6 +546,9 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 			break;
 		}
 	}
+	
+	ChmStream_Close(ChunkStream);
+	
 	return result;
 }
 
@@ -1381,7 +1384,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 	uint32_t X;
 	chm_off_t size;
 	gboolean result = FALSE;
-	CHMWindow *win;
+	ChmWindow *win;
 	int i;
 	
 	if (reader->WindowsList != NULL)
@@ -1408,7 +1411,7 @@ static gboolean ChmReader_ReadWindows(ChmReader *reader)
 					CHM_DEBUG_LOG(0, "/#WINDOWS file corrupted\n");
 					continue;
 				}
-				win = CHMWindow_Create(NULL);
+				win = ChmWindow_Create();
 				if (win == NULL)
 					break;
 				win->version = chmstream_read_le32(windows);
@@ -2450,7 +2453,7 @@ void ChmReader_Destroy(ChmReader *reader)
 	if (reader == NULL)
 		return;
 	ContextList_Destroy(reader->contextList);
-	g_slist_free_full(reader->WindowsList, (GDestroyNotify)CHMWindow_Destroy);
+	g_slist_free_full(reader->WindowsList, (GDestroyNotify)ChmWindow_Destroy);
 	ChmSystem_Destroy(reader->system);
 	if (reader->TOPICSStream != NO_SUCH_STREAM)
 	{

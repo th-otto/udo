@@ -3,14 +3,13 @@ include ../../silent.am
 INCLUDES = -I$(top_srcdir)/tools/hypview/include
 AM_CPPFLAGS = $(GLIB_CFLAGS)
 
-noinst_PROGRAMS = chmls xmltest
+noinst_PROGRAMS = chmls chmc xmltest
 
 if !CROSS_COMPILING
-noinst_SCRIPTS = $(build_triplet)-chmls$(EXEEXT)
+noinst_SCRIPTS = $(build_triplet)-chmls$(EXEEXT) $(build_triplet)-chmc$(EXEEXT)
 endif
 
-chmls_SOURCES = \
-	chmls.c \
+common_sources = \
 	chmbase.c chmbase.h chm_htmlhelp.h langid.h \
 	chmwriter.c chmobjinstconst.h \
 	fasthtmlparser.c fasthtmlparser.h \
@@ -32,9 +31,24 @@ chmls_SOURCES = \
 	chmxml.c chmxml.h htmlentity.h \
 	kwset.c obstack.c \
 	$(empty)
+
+chmls_SOURCES = \
+	chmls.c \
+	$(common_sources)
+
 chmls_LDADD = $(GLIB_LIBS) $(INTLLIBS)
 
 $(build_triplet)-chmls$(EXEEXT): chmls$(EXEEXT)
+	cp -a $? $@
+
+chmc_SOURCES = \
+	chmcmd.c \
+	chmproject.c chmproject.h \
+	$(common_sources)
+
+chmc_LDADD = $(GLIB_LIBS) $(INTLLIBS)
+
+$(build_triplet)-chmc$(EXEEXT): chmc$(EXEEXT)
 	cp -a $? $@
 
 xmltest_SOURCES = xmltest.c kwset.c obstack.c chmglib.c

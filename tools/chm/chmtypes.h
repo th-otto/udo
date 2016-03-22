@@ -84,7 +84,7 @@ typedef union {
 /*
  * contents of a single entry in /#WINDOWS file object
  */
-typedef struct _CHMWindow {
+typedef struct _ChmWindow {
 	/* 0000 */ uint32_t version;			/* size of entry */
 	/* 0004 */ gboolean unicode_strings;
 	/* 0008 */ strptr window_name;			/*	8 Arg 0, name of window; offset into #STRINGS */
@@ -130,15 +130,14 @@ typedef struct _CHMWindow {
 	} minsize;
 	/* not from file: */
 	gboolean strings_alloced;
-} CHMWindow;
+} ChmWindow;
 #define CHM_WIN_MINSIZE 0xbc
 #define CHM_WIN_V3SIZE 0xc4
 
-CHMWindow *CHMWindow_Create(const char *s);
-void CHMWindow_Destroy(CHMWindow *win);
-void CHMWindow_loadfromini(CHMWindow *win, const char *txt);
-void CHMWindow_savetoxml(CHMWindow *win, ChmStream *out);
-void CHMWindow_loadfromxml(CHMWindow *win, const char *tag);
+ChmWindow *ChmWindow_Create(void);
+void ChmWindow_Destroy(ChmWindow *win);
+void ChmWindow_LoadFromXml(ChmWindow *win, const char *tag);
+void ChmWindow_Clear(ChmWindow *win);
 
 /*
  * contents of /#IDXHDR file object

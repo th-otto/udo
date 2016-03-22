@@ -84,7 +84,6 @@ static struct option const long_options[] = {
 	{ "project", no_argument, NULL, OPTION_PRINTPROJECT },
 	{ "searchindex", no_argument, NULL, OPTION_PRINTSEARCHINDEX },
 	{ "lookup", no_argument, NULL, OPTION_LOOKUP },
-	{ "help", no_argument, NULL, OPTION_HELP },
 	{ "name-only", no_argument, NULL, OPTION_NAME_ONLY },
 	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
 	{ "verbose", no_argument, NULL, OPTION_VERBOSE },
@@ -96,6 +95,9 @@ static struct option const long_options[] = {
 	{ "section", required_argument, NULL, OPTION_SECTION },
 	{ "helpid", required_argument, NULL, OPTION_HELPID },
 	
+	{ "help", no_argument, NULL, OPTION_HELP },
+	{ "version", no_argument, NULL, OPTION_VERSION },
+
 	{ NULL, no_argument, NULL, 0 }
 };
 
@@ -780,7 +782,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		windows = ChmReader_GetWindows(r);
 		for (l = windows; l; l = l->next)
 		{
-			const CHMWindow *win = (const CHMWindow *)l->data;
+			const ChmWindow *win = (const ChmWindow *)l->data;
 			
 			fprintf(out, "%s=%s,\"%s\",\"%s\",\"%s\",\"%s\",",
 				fixnull(win->window_name.c),
@@ -1259,14 +1261,14 @@ static gboolean printwindows(const char *filename, const char *outfilename)
 	} else if ((out = open_stdout(outfilename)) != NULL)
 	{
 		const GSList *l;
-		const CHMWindow *win;
+		const ChmWindow *win;
 		
 		result = TRUE;
 		fprintf(out, "--- #WINDOWS---\n");
 		fprintf(out, _("Entries in #Windows                              : %u\n"), g_slist_length(windows));
 		for (l = windows; l; l = l->next)
 		{
-			win = (const CHMWindow *)l->data;
+			win = (const ChmWindow *)l->data;
 			fprintf(out, _("Structure size                                   : %u %s\n"), win->version,
 				win->version == CHM_WIN_MINSIZE ? "Compatibility 1.0" :
 				win->version == CHM_WIN_V3SIZE ? "Compatibility 1.1 or later" :

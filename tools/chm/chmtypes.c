@@ -341,55 +341,7 @@ gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *S
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static char *getnext(const char *s, size_t *i, size_t len)
-{
-	char *result;
-	size_t ind;
-	
-	ind = *i;
-	if (ind >= len)
-		return NULL;
-	if (s[ind] == '"')
-	{
-		++ind;
-		while (ind < len && s[ind] != '"')
-			++ind;
-		result = g_strndup(s + *i + 1, ind - *i - 1);
-		++ind; /* skip " */
-	} else
-	{
-		while (ind < len && s[ind] != ',' && s[ind] != '=')
-			++ind;
-		result = g_strndup(s + *i, ind - *i);
-	}
-	*i =ind + 1; /* skip , */
-	return result;
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
-static int getnextint(const char *txt, size_t *ind, size_t len, ValidWindowFields *flags, ValidWindowFields x)
-{
-	char *s;
-	int result;
-	
-	s = getnext(txt, ind, len);
-	/* set a flag if the field was empty (,,) */
-	if (empty(s))
-	{
-		result = 0;
-	} else
-	{
-		*flags |= x;
-		result = (int)strtoul(s, NULL, 0);
-	}
-	g_free(s);
-	return result;
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
-static void CHMWindow_freestrings(CHMWindow *win)
+void ChmWindow_Clear(ChmWindow *win)
 {
 	if (win->strings_alloced)
 	{
@@ -419,189 +371,6 @@ static void CHMWindow_freestrings(CHMWindow *win)
 
 /*** ---------------------------------------------------------------------- ***/
 
-void CHMWindow_loadfromini(CHMWindow *win, const char *txt)
-{
-	size_t ind;
-	size_t len;
-	int k;
-	int arr[4];
-	gboolean bArr;
-	char *s2;
-	
-	if (empty(txt))
-		return;
-	CHMWindow_freestrings(win);
-	win->strings_alloced = TRUE;
-	ind = 0;
-	len = strlen(txt);
-	win->flags = 0;
-	win->window_name.s = getnext(txt, &ind, len);
-	win->caption.s = getnext(txt, &ind, len);
-	win->toc_file.s = getnext(txt, &ind, len);
-	win->index_file.s = getnext(txt, &ind, len);
-	win->default_file.s = getnext(txt, &ind, len);
-	win->home_button_file.s = getnext(txt, &ind, len);
-	win->jump1_url.s = getnext(txt, &ind, len);
-	win->jump1_text.s = getnext(txt, &ind, len);
-	win->jump2_url.s = getnext(txt, &ind, len);
-	win->jump2_text.s = getnext(txt, &ind, len);
-	win->win_properties = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_PROPERTIES);
-	win->navpanewidth = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_NAV_WIDTH);
-	win->buttons = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_TB_FLAGS);
-
-	/* initialize arr[] */
-	arr[0] = 0;
-	arr[1] = 0;
-	arr[2] = 0;
-	arr[3] = 0;
-	k = 0;
-	bArr = FALSE;
-	/* "[" int,int,int,int "]", |,	*/
-	s2 = getnext(txt, &ind, len);
-	if (!empty(s2))
-	{
-		char *j;
-		
-		/* check if first chart is "[" */
-		if (s2[1] == '[')
-		{
-			memmove(s2, s2 + 1, strlen(s2 + 1) + 1);
-			bArr = TRUE;
-		}
-		/* looking for a max 4 int followed by a closing "]" */
-		do {
-			if (k > 0)
-			{
-				g_free(s2);
-				s2 = getnext(txt, &ind, len);
-			}
-			
-			j = strchr(s2, ']');
-			if (j)
-				*j = '\0';
-			chomp(&s2);
-			if (!empty(s2))
-			{
-				win->flags |= HHWIN_PARAM_RECT;
-				arr[k] = (int)strtoul(s2, NULL, 0);
-			}
-			++k;
-		} while (bArr && j == NULL && ind < len && k < 4);
-		g_free(s2);
-	}
-	 
-	win->pos.left = arr[0];
-	win->pos.top = arr[1];
-	win->pos.right = arr[2];
-	win->pos.bottom = arr[3];
-	win->styleflags = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_STYLES);
-	win->xtdstyleflags = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_EXSTYLES);
-	win->show_state = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_SHOWSTATE);
-	win->not_expanded = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_EXPANSION);
-	win->navtype = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_CUR_TAB);
-	win->tabpos = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_TABPOS);
-	win->wm_notify_id = getnextint(txt, &ind, len, &win->flags, HHWIN_PARAM_NOTIFY_ID);
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
-void CHMWindow_savetoxml(CHMWindow *win, ChmStream *stream)
-{
-	char *s;
-	FILE *out;
-	
-	assert(ChmStream_Type(stream) == chm_stream_file);
-	out = ChmStream_Fileptr(stream);
-	fprintf(out, "    <window");
-	s = xml_quote(win->window_name.c);
-	fprintf(out, " name=%s", s);
-	g_free(s);
-	if (win->caption.c)
-	{
-		s = xml_quote(win->caption.c);
-		fprintf(out, " caption=%s", s);
-		g_free(s);
-	}
-	if (win->toc_file.c)
-	{
-		s = xml_quote(win->toc_file.c);
-		fprintf(out, " toc_file=%s", s);
-		g_free(s);
-	}
-	if (win->index_file.c)
-	{
-		s = xml_quote(win->index_file.c);
-		fprintf(out, " index_file=%s", s);
-		g_free(s);
-	}
-	if (win->default_file.c)
-	{
-		s = xml_quote(win->default_file.c);
-		fprintf(out, " default_file=%s", s);
-		g_free(s);
-	}
-	if (win->home_button_file.c)
-	{
-		s = xml_quote(win->home_button_file.c);
-		fprintf(out, " home_button_file=%s", s);
-		g_free(s);
-	}
-	if (win->jump1_url.c)
-	{
-		s = xml_quote(win->jump1_url.c);
-		fprintf(out, " jump1_url=%s", s);
-		g_free(s);
-	}
-	if (win->jump1_text.c)
-	{
-		s = xml_quote(win->jump1_text.c);
-		fprintf(out, " jump1_text=%s", s);
-		g_free(s);
-	}
-	if (win->jump2_url.c)
-	{
-		s = xml_quote(win->jump2_url.c);
-		fprintf(out, " jump2_url=%s", s);
-		g_free(s);
-	}
-	if (win->jump2_text.c)
-	{
-		s = xml_quote(win->jump2_text.c);
-		fprintf(out, " jump2_text=%s", s);
-		g_free(s);
-	}
-	if (win->flags & HHWIN_PARAM_PROPERTIES)
-		fprintf(out, " win_properties=0x%x", win->win_properties);
-	if (win->flags & HHWIN_PARAM_NAV_WIDTH)
-		fprintf(out, " navpanewidth=%d", win->navpanewidth);
-	if (win->flags & HHWIN_PARAM_TB_FLAGS)
-		fprintf(out, " buttons=0x%x", win->buttons);
-	if (win->flags & HHWIN_PARAM_RECT)
-	{
-		fprintf(out, " left=%d", win->pos.left);
-		fprintf(out, " top=%d", win->pos.top);
-		fprintf(out, " right=%d", win->pos.right);
-		fprintf(out, " bottom=%d", win->pos.bottom);
-	}
-	if (win->flags & HHWIN_PARAM_STYLES)
-		fprintf(out, " styleflags=0x%x", win->styleflags);
-	if (win->flags & HHWIN_PARAM_EXSTYLES)
-		fprintf(out, " xtdstyleflags=0x%x", win->xtdstyleflags);
-	if (win->flags & HHWIN_PARAM_SHOWSTATE)
-		fprintf(out, " show_state=%d", win->show_state);
-	if (win->flags & HHWIN_PARAM_EXPANSION)
-		fprintf(out, " not_expanded=%d", win->not_expanded);
-	if (win->flags & HHWIN_PARAM_CUR_TAB)
-		fprintf(out, " navtype=%d", win->navtype);
-	if (win->flags & HHWIN_PARAM_TABPOS)
-		fprintf(out, " tabpos=%d", win->tabpos);
-	if (win->flags & HHWIN_PARAM_NOTIFY_ID)
-		fprintf(out, " wm_notify_id=%d", win->wm_notify_id);
-	fprintf(out, "/>\n");
-}
-
-/*** ---------------------------------------------------------------------- ***/
-
 static int xml_getintval(const char *tag, size_t taglen, const char *attrib, ValidWindowFields *flags, ValidWindowFields x)
 {
 	char *s = GetVal(tag, taglen, attrib);
@@ -617,11 +386,11 @@ static int xml_getintval(const char *tag, size_t taglen, const char *attrib, Val
 
 /*** ---------------------------------------------------------------------- ***/
 
-void CHMWindow_loadfromxml(CHMWindow *win, const char *tag)
+void ChmWindow_LoadFromXml(ChmWindow *win, const char *tag)
 {
 	size_t taglen = strlen(tag);
 	
-	CHMWindow_freestrings(win);
+	ChmWindow_Clear(win);
 	win->flags = 0;
 	win->strings_alloced = TRUE;
 	win->window_name.s = GetVal(tag, taglen, "name");
@@ -652,26 +421,25 @@ void CHMWindow_loadfromxml(CHMWindow *win, const char *tag)
 
 /*** ---------------------------------------------------------------------- ***/
 
-CHMWindow *CHMWindow_Create(const char *s)
+ChmWindow *ChmWindow_Create(void)
 {
-	CHMWindow *win;
+	ChmWindow *win;
 	
-	win = g_new0(CHMWindow, 1);
+	win = g_new0(ChmWindow, 1);
 	if (win == NULL)
 		return NULL;
 	win->flags = defvalidflags;
 	win->win_properties = HHWIN_DEF_BUTTONS;
-	CHMWindow_loadfromini(win, s);
 	return win;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-void CHMWindow_Destroy(CHMWindow *win)
+void ChmWindow_Destroy(ChmWindow *win)
 {
 	if (win == NULL)
 		return;
-	CHMWindow_freestrings(win);
+	ChmWindow_Clear(win);
 	g_free(win);
 }
 
