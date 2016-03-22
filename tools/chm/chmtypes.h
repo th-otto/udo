@@ -136,7 +136,6 @@ typedef struct _ChmWindow {
 
 ChmWindow *ChmWindow_Create(void);
 void ChmWindow_Destroy(ChmWindow *win);
-void ChmWindow_LoadFromXml(ChmWindow *win, const char *tag);
 void ChmWindow_Clear(ChmWindow *win);
 
 /*

@@ -586,7 +586,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		const GSList *windows, *l;
 		char *indexname;
 		char *tocname;
-		char *fts_stop_list_file_name;
+		char *fts_stop_list_filename;
 		const ContextList *contextlist;
 		ChmIdxhdr *idx;
 		gboolean print_defaults = TRUE;
@@ -760,9 +760,9 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		/* TODO: Enhanced decompilation=Yes/No */
 		/* TODO: Custom Tabs=... */
 		
-		fts_stop_list_file_name = changefileext(chm_basename(filename), ".stp");
+		fts_stop_list_filename = changefileext(chm_basename(filename), ".stp");
 		if (stp_success /* || print_defaults */)
-			fprintf(out, "Full text search stop list file=%s\n", fts_stop_list_file_name);
+			fprintf(out, "Full text search stop list file=%s\n", fts_stop_list_filename);
 		
 		/* get the setting of "Flat" by looking at the filenames */
 		listObject.section = (uint32_t)-1;
@@ -884,7 +884,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		/* TODO: [INFOTYPES] */
 		/* TODO: [SUBSETS] */
 		
-		g_free(fts_stop_list_file_name);
+		g_free(fts_stop_list_filename);
 		g_free(tocname);
 		g_free(indexname);
 		close_stdout(out);

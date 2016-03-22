@@ -96,7 +96,7 @@ static gboolean file_seek(ChmStream *stream, chm_off_t pos, int whence)
 	res = fseeko(stream->file, pos, whence);
 #endif
 	if (res != 0 ||
-		stream->tell(stream) != pos)
+		(whence == SEEK_SET && stream->tell(stream) != pos))
 	{
 		return FALSE;
 	}

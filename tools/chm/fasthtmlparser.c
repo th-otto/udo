@@ -34,8 +34,11 @@ HTMLParser *HTMLParser_Create(const char *sRaw, size_t size)
 {
 	HTMLParser *parser;
 	
-	if (sRaw == NULL || *sRaw == '\0')
+	if (sRaw == NULL)
+	{
+		errno = EINVAL;
 		return NULL;
+	}
 	parser = g_new(HTMLParser, 1);
 	if (parser == NULL)
 		return NULL;

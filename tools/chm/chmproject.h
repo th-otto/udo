@@ -14,7 +14,7 @@ typedef enum {
 typedef struct _ChmProject ChmProject;
 
 typedef void (*ChmProgressCB) (ChmProject *project, const char *CurrentFile);
-typedef void (*ChmErrorCB)(ChmProject *project, ChmProjectErrorKind errorkind, const char *msg, int detaillevel);
+typedef void (*ChmErrorCB)(ChmProject *project, ChmProjectErrorKind errorkind, int detaillevel, const char *msg, ...) __attribute__((format(printf, 4, 5)));
 
 typedef struct _StringIndex StringIndex;
 
@@ -29,8 +29,6 @@ struct _ChmProject {
 	GSList *files;						/* of char *; html files */
 	GSList *otherfiles;					/* of char *; Other files found in a scan files (.css, img etc) */
 	GSList *alias;						/* of ContextNode * */
-	char **alias_contents;
-	char **map_contents;
 	char *index_filename;
 	gboolean MakeBinaryTOC;				/* default: false */
 	gboolean MakeBinaryIndex;			/* default: true */
@@ -41,7 +39,7 @@ struct _ChmProject {
 	gboolean flat;						/* default: true */
 	LCID language_id;
 	ChmProgressCB OnProgress;
-	ChmErrorCB OnError;
+	ChmErrorCB onerror;
 	/* though stored in the project file, it is only there for the program that uses the unit */
 	/* since we actually write to a stream */
 	char *out_filename;
@@ -70,7 +68,7 @@ struct _ChmProject {
 	gboolean create_chi_file;
 	gboolean dbcs;
 	char *error_log_file;
-	char *fts_stop_list_file_name;
+	char *fts_stop_list_filename;
 	int cores;
 };
 
@@ -85,6 +83,5 @@ void ChmProject_ShowUndefinedAnchors(ChmProject *project);
 const char *ChmProject_ProjectDir(ChmProject *project);
 void ChmProject_LoadSitemaps(ChmProject *project);
 void ChmProject_AddFileWithContext(ChmProject *project, const char *filename, int contextid, const char *contextname);
-void ChmProject_Error(ChmProject *project, ChmProjectErrorKind errorkind, const char *msg, int detaillevel);
 
 #endif /* __CHMPROJECT_H__ */
