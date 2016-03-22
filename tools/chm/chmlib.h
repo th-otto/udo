@@ -217,7 +217,7 @@ gboolean g_is_number(const char *val, gboolean is_unsigned);
 int g_ascii_strcasecmp(const char *s1, const char *s2);
 int g_ascii_strncasecmp(const char *s1, const char *s2, size_t n);
 
-void chomp(char **str);
+char *chomp(char *str);
 void g_freep(char **str);
 gboolean convexternalslash(char *str);
 void convslash(char *str);
