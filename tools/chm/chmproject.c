@@ -381,7 +381,7 @@ static void scanlist(ChmProject *project, GSList *toscan, GSList **newfiles, gbo
 			if (stat(path, &st) == 0)
 			{
 				project->onerror(project, chmnote, _("Scanning file %s"), fn);
-				doc = htmlParseFile(path, NULL);
+				doc = htmlReadFile(path, NULL, HTML_PARSE_NOERROR);
 				if (doc != NULL)
 				{
 					localpath = extractfilepath(fn);
@@ -452,7 +452,7 @@ static void ChmProject_ScanHtml(ChmProject *project)
 		AVLTree_Add(project->TotalFileList, strrec);
 	}
 
-	for (l = project->files; l; l = l->next)
+	for (l = project->htmlfiles; l; l = l->next)
 	{
 		strrec = StringIndex_Create();
 		strrec->TheString = g_strdup((const char *)l->data);
@@ -461,7 +461,7 @@ static void ChmProject_ScanHtml(ChmProject *project)
 	}
 
 	localfilelist = NULL;
-	scanlist(project, project->files, &localfilelist, TRUE);
+	scanlist(project, project->htmlfiles, &localfilelist, TRUE);
 	AddStrings(&project->otherfiles, localfilelist);
 	g_slist_free_full(localfilelist, g_free);
 	localfilelist = NULL;
@@ -636,7 +636,7 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	Writer->dbcs = project->dbcs;
 	
 	/* give it the list of html files */
-	AddStrings(&Writer->itsf.FilesToCompress, project->files);
+	AddStrings(&Writer->itsf.FilesToCompress, project->htmlfiles);
 
 	/* give it the list of other files */
 
@@ -653,7 +653,7 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	Writer->toc_filename = g_strdup(project->toc_filename);
 	Writer->itsf.ReadmeMessage = g_strdup(project->ReadmeMessage);
 	Writer->default_window = g_strdup(project->default_window);
-	for (l = project->files; l; l = l->next)
+	for (l = project->htmlfiles; l; l = l->next)
 	{
 		char *s = (char *)l->data;
 		char *path = g_build_filename(project->basepath, s, NULL);
@@ -667,7 +667,7 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	{
 		const ChmContextNode *node = (const ChmContextNode *)l->data;
 		char *s;
-		if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->files, node->fileindex)) != NULL)
+		if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->htmlfiles, node->fileindex)) != NULL)
 		{
 			if (node->number_valid)
 				ChmWriter_AddContext(Writer, node->number_value, s);
@@ -828,7 +828,7 @@ static ChmContextNode *add_alias(ChmProject *project, char *key, char *contextna
 	
 	chomp(key);
 	chomp(contextname);
-	if (!empty(contextname) && (fileindex = add_url(&project->files, key)) >= 0)
+	if (!empty(contextname) && (fileindex = add_url(&project->htmlfiles, key)) >= 0)
 	{
 		for (l = project->alias; l != NULL; l = l->next)
 		{
@@ -1035,8 +1035,8 @@ static void ChmProject_Clear(ChmProject *project)
 {
 	g_freep(&project->default_font);
 	g_freep(&project->default_page);
-	g_slist_free_full(project->files, g_free);
-	project->files = NULL;
+	g_slist_free_full(project->htmlfiles, g_free);
+	project->htmlfiles = NULL;
 	g_slist_free_full(project->alias, (GDestroyNotify)ChmContextNode_Destroy);
 	project->alias = NULL;
 	g_slist_free_full(project->otherfiles, g_free);
@@ -1290,7 +1290,7 @@ gboolean ChmProject_LoadFromHhp(ChmProject *project, const char *filename)
 		for (i = 0; strs[i] != NULL; i++)
 		{
 			cleanupstring(strs[i]);
-			add_url(&project->files, strs[i]);
+			add_url(&project->htmlfiles, strs[i]);
 		}
 	}
 	g_strfreev(strs);
@@ -1482,14 +1482,14 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename)
 		}
 	}
 	
-	if (project->files)
+	if (project->htmlfiles)
 	{
 		GSList *l;
 		const char *name;
 		char *str = g_strdup("");
 		char *tmp;
 		
-		for (l = project->files; l; l = l->next)
+		for (l = project->htmlfiles; l; l = l->next)
 		{
 			name = (const char *)l->data;
 			tmp = g_strconcat(str, name, "\n", NULL);
@@ -1515,7 +1515,7 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename)
 		for (l = project->alias; l; l = l->next)
 		{
 			node = (const ChmContextNode *)l->data;
-			if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->files, node->fileindex)) != NULL)
+			if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->htmlfiles, node->fileindex)) != NULL)
 			{
 				if (node->context_defined_in >= 0)
 				{
@@ -1532,7 +1532,7 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename)
 					}
 				} else
 				{
-					other = (const char *)g_slist_nth_data(project->files, node->fileindex);
+					other = (const char *)g_slist_nth_data(project->htmlfiles, node->fileindex);
 					assert(other != NULL);
 					tmp1 = g_strdup_printf("%s=%s\n", node->contextname, other);
 					tmp2 = g_strconcat(alias, tmp1, NULL);
@@ -1556,7 +1556,7 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename)
 					}
 				} else
 				{
-					other = (const char *)g_slist_nth_data(project->files, node->fileindex);
+					other = (const char *)g_slist_nth_data(project->htmlfiles, node->fileindex);
 					assert(other != NULL);
 					tmp1 = g_strdup_printf("#define %s %s\n", node->contextname, fixnull(node->number));
 					tmp2 = g_strconcat(map, tmp1, NULL);
@@ -1800,13 +1800,13 @@ gboolean ChmProject_SaveToXml(ChmProject *project, const char *filename)
 		fprintf(fp, "  </Windows>\n");
 	}
 	
-	if (project->files)
+	if (project->htmlfiles)
 	{
 		GSList *l;
 		const char *name;
 		
 		fprintf(fp, "  <Files>\n");
-		for (l = project->files; l; l = l->next)
+		for (l = project->htmlfiles; l; l = l->next)
 		{
 			name = (const char *)l->data;
 			xml_write_str(fp, "param", "name", name);
@@ -1842,7 +1842,7 @@ gboolean ChmProject_SaveToXml(ChmProject *project, const char *filename)
 			s = xml_quote(node->contextname);
 			fprintf(fp, "    <param name=%s", printnull(s));
 			g_free(s);
-			if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->files, node->fileindex)) != NULL)
+			if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->htmlfiles, node->fileindex)) != NULL)
 			{
 				s = xml_quote(s);
 				fprintf(fp, " topic=%s", printnull(s));
@@ -2179,7 +2179,7 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 					project->windows = g_slist_append(project->windows, win);
 				} else if ((state->tags & inFiles) && value)
 				{
-					project->files = g_slist_append(project->files, value);
+					project->htmlfiles = g_slist_append(project->htmlfiles, value);
 					value = NULL;
 				} else if ((state->tags & inOther) && value)
 				{

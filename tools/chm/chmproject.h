@@ -26,7 +26,7 @@ struct _ChmProject {
 	gboolean compatibility;				/* true=1.0, false=1.1 (default) */
 	char *default_font;
 	char *default_page;
-	GSList *files;						/* of char *; html files */
+	GSList *htmlfiles;					/* of char *; html files */
 	GSList *otherfiles;					/* of char *; Other files found in a scan files (.css, img etc) */
 	GSList *alias;						/* of ContextNode * */
 	char *index_filename;
