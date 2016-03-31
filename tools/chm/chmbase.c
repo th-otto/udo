@@ -8,6 +8,7 @@ DEFINE_GUID(ITSPHeaderGUID, 0x5D02926A, 0x212E, 0x11D0, 0x9D, 0xF9, 0x00, 0xA0, 
 CHMSignature const ITSPHeaderSig = { { 'I', 'T', 'S', 'P' } };
 
 CHMSignature const PMGIsig = { { 'P', 'M', 'G', 'I' } };
+CHMSignature const PMGLsig = { { 'P', 'M', 'G', 'L' } };
 
 DEFINE_GUID(ITOLITLSGuid, 0x0A9007C1, 0x4076, 0x11D3, 0x87, 0x89, 0x00, 0x00, 0xF8, 0x10, 0x57, 0x54);
 
@@ -40,15 +41,15 @@ uint32_t GetCompressedInteger(ChmStream *Stream)
 /*
  * returns the number of bytes written to the stream
  */
-uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t ANumber)
+uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t number)
 {
 	uint64_t Buffer;
-	uint32_t count = PutCompressedInteger(&Buffer, ANumber);
-	return ChmStream_Write(Stream, &Buffer, count) ? count : 0;
+	uint32_t count = PutCompressedInteger(&Buffer, number);
+	return ChmStream_Write(Stream, &Buffer, count);
 }
 
 
-uint32_t PutCompressedInteger(void *Buffer, uint32_t ANumber)
+uint32_t PutCompressedInteger(void *Buffer, uint32_t number)
 {
 	int bit;
 	uint32_t mask;
@@ -60,13 +61,13 @@ uint32_t PutCompressedInteger(void *Buffer, uint32_t ANumber)
 	for (;;)
 	{
 		mask = (uint32_t)0x7f << bit;
-		if ((bit == 0) || ((ANumber & mask) != 0))
+		if ((bit == 0) || ((number & mask) != 0))
 			break;
 		bit -= 7;
 	}
 	for (;;)
 	{
-		*buf = (uint8_t)(((ANumber >> bit) & 0x7f));
+		*buf = (uint8_t)(((number >> bit) & 0x7f));
 		if (bit == 0)
 			break;
 		*buf++ |= 0x80;
@@ -77,7 +78,7 @@ uint32_t PutCompressedInteger(void *Buffer, uint32_t ANumber)
 	
 	if (TheEnd > 8)
 	{
-		CHM_DEBUG_LOG(0, "%u WRITE_COMPRESSED_INTEGER too big!: %d\n", ANumber, TheEnd);
+		CHM_DEBUG_LOG(0, "%u WRITE_COMPRESSED_INTEGER too big!: %d\n", number, TheEnd);
 	}
 	return TheEnd;
 }

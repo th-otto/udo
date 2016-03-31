@@ -110,6 +110,14 @@ typedef unsigned short wchar_t;
 #endif
 #endif
 
+#ifndef G_GNUC_NULL_TERMINATED
+#if __GNUC_PREREQ(4, 0)
+#define G_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
+#else
+#define G_GNUC_NULL_TERMINATED
+#endif
+#endif
+
 #ifndef EXTERN_C_BEG
 #ifdef __cplusplus
 #  define EXTERN_C_BEG extern "C" {
@@ -167,12 +175,12 @@ char *g_strdup_vprintf(const char *format, va_list args);
 
 char *g_strdup(const char *);
 char *g_strndup(const char *, size_t len);
-char *g_strconcat(const char *, ...);
+char *g_strconcat(const char *, ...) G_GNUC_NULL_TERMINATED;
 char **g_strsplit(const char *string, const char *delimiter, int max_tokens);
 char *g_strjoinv(const char *separator, char **str_array);
 char *g_stpcpy(char *dest, const char *src);
 
-char *g_build_filename(const char *, ...);
+char *g_build_filename(const char *, ...) G_GNUC_NULL_TERMINATED;
 char *g_get_current_dir(void);
 gboolean g_path_is_absolute(const char *path);
 char *g_strchomp(char *str);

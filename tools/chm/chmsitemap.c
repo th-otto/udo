@@ -8,6 +8,17 @@
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
+int PageBookInfoRecordSize(TOCEntryPageBookInfo *record)
+{
+	if (TOC_ENTRY_HAS_CHILDREN & record->Props)
+		return 28;
+	return 20;
+}
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
 ChmSiteMapItem *ChmSiteMapItem_Create(ChmSiteMapItems *owner)
 {
 	ChmSiteMapItem *item;
@@ -80,14 +91,14 @@ void ChmSiteMapItems_Destroy(ChmSiteMapItems *self)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static ChmSiteMapItem *ChmSiteMapItems_GetItem(ChmSiteMapItems *self, int index)
+ChmSiteMapItem *ChmSiteMapItems_GetItem(ChmSiteMapItems *self, int index)
 {
 	return (ChmSiteMapItem *)g_slist_nth_data(self->list, index);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int ChmSiteMapItems_GetCount(ChmSiteMapItems *self)
+int ChmSiteMapItems_GetCount(ChmSiteMapItems *self)
 {
 	if (self == NULL)
 		return 0; /* should not happen; maybe return -1? */
@@ -309,7 +320,7 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 			if (self->levelforced && (self->sitemapbodytags & smbtSITEMAP))
 			{
 				DecreaseULevel(self);
-				self->levelforced = FALSE;;
+				self->levelforced = FALSE;
 			}
 			self->sitemapbodytags &= ~(smbtOBJECT | smbtPROPS | smbtSITEMAP);
 		} else
@@ -471,7 +482,7 @@ gboolean ChmSiteMap_LoadFromFile(ChmSiteMap *self, const char *filename)
 	{
 		char *buffer = g_new(char, size + 1);
 		if (buffer != NULL &&
-			ChmStream_Read(stream, buffer, size))
+			ChmStream_Read(stream, buffer, size) == size)
 		{
 			buffer[size] = '\0';
 			htmlparser = HTMLParser_Create(buffer, size);
@@ -614,9 +625,10 @@ gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream)
 	fputs("<HEAD>\n", out);
 	fprintf(out, "<meta name=\"GENERATOR\" content=\"%s version %s\">\n", gl_program_name, gl_program_version);
 	fputs("<!-- Sitemap 1.0 -->\n", out);
-	fputs("</HEAD><BODY>\n", out);
+	fputs("</HEAD>\n", out);
+	fputs("<BODY>\n", out);
 
-	// Site Properties
+	/* Site Properties */
 	fputs("<OBJECT type=\"text/site properties\">\n", out);
 	++level;
 	/* if (self->sitemaptype == stTOC) */
@@ -644,7 +656,7 @@ gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream)
 	--level;
 	fputs("</OBJECT>\n", out);
 	
-	// And now the items
+	/* And now the items */
 	if (ChmSiteMapItems_GetCount(self->items) > 0)
 	{
 		fputs("<UL>\n", out);
@@ -652,7 +664,8 @@ gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream)
 		fputs("</UL>\n", out);
 	}
 	
-	fputs("</BODY></HTML>\n", out);
+	fputs("</BODY>\n", out);
+	fputs("</HTML>\n", out);
 	
 	result = TRUE;
 	return result;

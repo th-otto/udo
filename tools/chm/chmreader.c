@@ -1,4 +1,4 @@
- #include "chmtools.h"
+#include "chmtools.h"
 #include "chmreader.h"
 #include "lzx.h"
 
@@ -7,26 +7,6 @@
 	 (((unsigned char)str[0] << 24) | ((unsigned char)str[1] << 16) | ((unsigned char)str[2] << 8) | ((unsigned char)str[3])))
 
 #define NO_SUCH_STREAM ((ChmMemoryStream *)-1)
-
-enum SYSTEM_CODE {
-	Contents_file_CODE = 0,
-	Index_file_CODE = 1,
-	Default_topic_CODE = 2,
-	Title_CODE = 3,
-	Language_DBCS_FTS_KLinks_ALinks_FILETIME_CODE = 4,
-	Default_Window_CODE = 5,
-	Compiled_file_CODE = 6,
-	Binary_Index_CODE = 7,
-	ABBREVIATIONS_N_EXPLANATIONS_CODE = 8,
-	COMPILED_BY_CODE = 9,
-	time_t_STAMP_CODE = 10,
-	Binary_TOC_CODE = 11,
-	NUM_INFORMATION_TYPES_CODE = 12,
-	IDXHDR_FILE_CODE = 13,
-	Custom_tabs_CODE = 14,
-	INFORMATION_TYPE_CHECKSUM_CODE = 15,
-	Default_Font_CODE = 16
-};
 
 struct _ITSFReader {
 	ChmStream *Stream;
@@ -351,7 +331,7 @@ static gboolean ITSFReader_ReadPMGLchunkEntryFromStream(ChmMemoryStream *stream,
 	buf = g_new(char, PMGLEntry->NameLength + 1);
 	if (buf == NULL)
 		return FALSE;
-	if (ChmStream_Read(stream, buf, PMGLEntry->NameLength) == FALSE)
+	if (ChmStream_Read(stream, buf, PMGLEntry->NameLength) != PMGLEntry->NameLength)
 	{
 		g_free(buf);
 		return FALSE;
@@ -376,7 +356,7 @@ static gboolean ITSFReader_ReadPMGIchunkEntryFromStream(ChmMemoryStream *stream,
 	buf = g_new(char, PMGIEntry->NameLength + 1);
 	if (buf == NULL)
 		return FALSE;
-	if (ChmStream_Read(stream, buf, PMGIEntry->NameLength) == FALSE)
+	if (ChmStream_Read(stream, buf, PMGIEntry->NameLength) != PMGIEntry->NameLength)
 	{
 		g_free(buf);
 		return FALSE;
@@ -599,7 +579,7 @@ static char *ReadString(ChmStream *stream)
 	result = g_new(char, NameLength + 1);
 	if (NameLength > 0)
 	{
-		if (!ChmStream_Read(stream, result, NameLength))
+		if (ChmStream_Read(stream, result, NameLength) != NameLength)
 		{
 			g_free(result);
 			return NULL;
@@ -891,7 +871,7 @@ static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 			goto fail; \
 		inbuf_size = ReadCount; \
 	} \
-	if (ChmStream_Read(stream, InBuf, ReadCount) == FALSE) \
+	if (ChmStream_Read(stream, InBuf, ReadCount) != ReadCount) \
 		goto fail
 
 	/* okay now the fun stuff ;) */
@@ -1062,7 +1042,7 @@ static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 			/* now write the decompressed data to the stream */
 			if (ResultCode == DECR_OK)
 			{
-				if (ChmStream_Write(result, &OutBuf[WriteStart], WriteCount) == FALSE)
+				if (ChmStream_Write(result, &OutBuf[WriteStart], WriteCount) != WriteCount)
 					goto fail;
 			} else
 			{
@@ -1579,7 +1559,7 @@ static char *read_sys_string(ChmMemoryStream *system, unsigned int len)
 	tmp = g_new(char, len + 1);
 	if (tmp == NULL)
 		return NULL;
-	if (ChmStream_Read(system, tmp, len) == FALSE)
+	if (ChmStream_Read(system, tmp, len) != len)
 	{
 		g_free(tmp);
 		return NULL;
@@ -2007,7 +1987,7 @@ static ChmSiteMap *ChmReader_GetIndexSitemapXML(ChmReader *reader)
 	var = ((uint16_t)((p)[1]) << 8) | (uint16_t)((p)[0]), p += 2
 
 #define get_le32(var, p) \
-		var = ((uint32_t)((p)[3]) << 24) | ((uint32_t)((p)[2]) << 16) | ((uint32_t)((p)[1]) << 8) | (uint32_t)((p)[0]), p += 4
+	var = ((uint32_t)((p)[3]) << 24) | ((uint32_t)((p)[2]) << 16) | ((uint32_t)((p)[1]) << 8) | (uint32_t)((p)[0]), p += 4
 	
 #if 0
 #  define DEBUG_BININDEX(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
@@ -2020,7 +2000,7 @@ static gboolean LoadBtreeHeader(ChmStream *m, BtreeHeader *hdr)
 	unsigned char buf[SIZEOF_BTREEHEADER];
 	const unsigned char *p = buf;
 	
-	if (ChmStream_Read(m, buf, SIZEOF_BTREEHEADER) == FALSE)
+	if (ChmStream_Read(m, buf, SIZEOF_BTREEHEADER) != SIZEOF_BTREEHEADER)
 		return FALSE;
 	hdr->ident[0] = *p++;
 	hdr->ident[1] = *p++;
@@ -2266,7 +2246,7 @@ ChmSiteMap *ChmReader_GetIndexSitemap(ChmReader *reader, gboolean ForceXML)
 		{
 			for (i = 0; i <= hdr.lastlistblock; i++)
 			{
-				if (ChmStream_Read(Index, block, hdr.blocksize) == FALSE)
+				if (ChmStream_Read(Index, block, hdr.blocksize) != hdr.blocksize)
 					break;
 				parselistingblock(reader, sitemap, &item, block, hdr.blocksize);
 			}
@@ -2320,14 +2300,15 @@ static ChmSiteMap *ChmReader_GetTOCSitemapXML(ChmReader *reader)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t itemoffset, ChmSiteMapItems *items)
+static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t itemoffset, ChmSiteMapItems *items, int level)
 {
 	uint32_t props;
 	ChmSiteMapItem *item;
 	uint32_t NextEntry;
 	uint32_t TopicsIndex;
 	const char *title;
-	uint32_t result;
+	uint32_t ParentPageBookInfoOffset;
+	uint32_t NextPageBookOffset;
 	
 	if (ChmStream_Seek(TOC, itemoffset + 4) == FALSE)
 		return 0;
@@ -2342,17 +2323,21 @@ static uint32_t AddTOCItem(ChmReader *reader, ChmMemoryStream *TOC, uint32_t ite
 		item->local = g_strdup(ChmReader_LookupTopicByID(reader, TopicsIndex, &title));
 		item->name = g_strdup(title);
 	}
-	chmstream_read_le32(TOC); /* skip offset to parent book */
-	result = chmstream_read_le32(TOC);
+	ParentPageBookInfoOffset = chmstream_read_le32(TOC);
+	NextPageBookOffset = chmstream_read_le32(TOC);
+#if 0
+	fprintf(stderr, "%d: pos=%04x props=%04x TopicsIndex=%04x parent=%04x next=%04x\n", level, itemoffset, props, TopicsIndex, ParentPageBookInfoOffset, NextPageBookOffset);
+#endif
 	
 	if (props & TOC_ENTRY_HAS_CHILDREN)
 	{
 		NextEntry = chmstream_read_le32(TOC);
 		do
-			NextEntry = AddTOCItem(reader, TOC, NextEntry, item->children);
+			NextEntry = AddTOCItem(reader, TOC, NextEntry, item->children, level + 1);
 		while (NextEntry != 0);
 	}
-	return result;
+	UNUSED(ParentPageBookInfoOffset);
+	return NextPageBookOffset;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -2391,12 +2376,18 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 	EntriesOffset = chmstream_read_le32(TOC);
 	EntryCount = chmstream_read_le32(TOC);
 	TOPICSOffset = chmstream_read_le32(TOC);
-
+#if 0
+	fprintf(stderr, "EntryInfoOffset=%04x\n", EntryInfoOffset);
+	fprintf(stderr, "EntriesOffset=%04x\n", EntriesOffset);
+	fprintf(stderr, "EntryCount=%04x\n", EntryCount);
+	fprintf(stderr, "TOPICSOffset=%04x\n", TOPICSOffset);
+#endif
+	
 	if (EntryCount != 0)
 	{
 		NextItem = EntryInfoOffset;
 		do
-			NextItem = AddTOCItem(reader, TOC, NextItem, sitemap->items);
+			NextItem = AddTOCItem(reader, TOC, NextItem, sitemap->items, 0);
 		while (NextItem != 0);
 	}
 	

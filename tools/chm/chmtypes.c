@@ -7,22 +7,33 @@
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-int PageBookInfoRecordSize(PTOCEntryPageBookInfo ARecord)
-{
-	if (TOC_ENTRY_HAS_CHILDREN & ARecord->Props)
-		return 28;
-	return 20;
-}
-
-/******************************************************************************/
-/*** ---------------------------------------------------------------------- ***/
-/******************************************************************************/
-
 static void DirectoryChunk_put_le16(DirectoryChunk *dir, unsigned int pos, uint16_t value)
 {
 	dir->Buffer[pos + 0] = (uint8_t)value;
 	dir->Buffer[pos + 1] = (uint8_t)(value >> 8);
 }
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void DirectoryChunk_put_le32(DirectoryChunk *dir, unsigned int pos, uint32_t value)
+{
+	dir->Buffer[pos + 0] = (uint8_t)value;
+	dir->Buffer[pos + 1] = (uint8_t)(value >> 8);
+	dir->Buffer[pos + 2] = (uint8_t)(value >> 16);
+	dir->Buffer[pos + 3] = (uint8_t)(value >> 24);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+#if 0
+static void DirectoryChunk_put_be32(DirectoryChunk *dir, unsigned int pos, uint32_t value)
+{
+	dir->Buffer[pos + 3] = (uint8_t)value;
+	dir->Buffer[pos + 2] = (uint8_t)(value >> 8);
+	dir->Buffer[pos + 1] = (uint8_t)(value >> 16);
+	dir->Buffer[pos + 0] = (uint8_t)(value >> 24);
+}
+#endif
 
 /*** ---------------------------------------------------------------------- ***/
 
@@ -33,32 +44,50 @@ gboolean DirectoryChunk_CanHold(DirectoryChunk *dir, unsigned int ASize)
 
 /*** ---------------------------------------------------------------------- ***/
 
-unsigned int DirectoryChunk_FreeSpace(DirectoryChunk *dir)
+unsigned int DirectoryChunk_FreeSpace(const DirectoryChunk *dir)
 {
 	return DIR_BLOCK_SIZE - dir->CurrentPos;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-void DirectoryChunk_WriteHeader(DirectoryChunk *dir, void *AHeader)
+void PMGIDirectoryChunk_WriteHeader(DirectoryChunk *dir, const PMGIIndexChunk *header)
 {
-	memcpy(dir->Buffer, AHeader, dir->HeaderSize);
+	dir->Buffer[0] = header->sig.sig[0];
+	dir->Buffer[1] = header->sig.sig[1];
+	dir->Buffer[2] = header->sig.sig[2];
+	dir->Buffer[3] = header->sig.sig[3];
+	DirectoryChunk_put_le32(dir, 4, header->UnusedSpace);
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, void *Data)
+void PMGLDirectoryChunk_WriteHeader(DirectoryChunk *dir, const PMGLListChunk *header)
+{
+	dir->Buffer[0] = header->sig.sig[0];
+	dir->Buffer[1] = header->sig.sig[1];
+	dir->Buffer[2] = header->sig.sig[2];
+	dir->Buffer[3] = header->sig.sig[3];
+	DirectoryChunk_put_le32(dir, 4, header->UnusedSpace);
+	DirectoryChunk_put_le32(dir, 8, header->Unknown1);
+	DirectoryChunk_put_le32(dir, 12, header->PreviousChunkIndex);
+	DirectoryChunk_put_le32(dir, 16, header->NextChunkIndex);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int size, const void *data)
 {
 	unsigned int ReversePos;
 	uint16_t Value;
 	
-	if (!DirectoryChunk_CanHold(dir, Size))
+	if (!DirectoryChunk_CanHold(dir, size))
 	{
-		fprintf(stderr, "Trying to write past the end of the buffer\n");
+		CHM_DEBUG_LOG(0, "Trying to write past the end of the buffer\n");
 		return FALSE;
 	}
-	memcpy(&dir->Buffer[dir->CurrentPos], Data, Size);
-	dir->CurrentPos += Size;
+	memcpy(&dir->Buffer[dir->CurrentPos], data, size);
+	dir->CurrentPos += size;
 	++dir->ItemCount;
 
 	/* now put a quickref entry if needed */
@@ -66,7 +95,7 @@ gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, void 
 	{
 		++dir->QuickRefEntries;
 		ReversePos = DIR_BLOCK_SIZE - sizeof(uint16_t) - (sizeof(uint16_t) * dir->QuickRefEntries);
-		Value = (uint16_t)(dir->CurrentPos - Size - dir->HeaderSize);
+		Value = (uint16_t)(dir->CurrentPos - size - dir->HeaderSize);
 		DirectoryChunk_put_le16(dir, ReversePos, Value);
 	}
 	return TRUE;
@@ -83,7 +112,7 @@ gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Strea
 	TmpItemCount = (uint16_t)dir->ItemCount;
 	DirectoryChunk_put_le16(dir, ReversePos, TmpItemCount);
 
-	if (!ChmStream_Write(Stream, dir->Buffer, DIR_BLOCK_SIZE))
+	if (ChmStream_Write(Stream, dir->Buffer, DIR_BLOCK_SIZE) != DIR_BLOCK_SIZE)
 		return FALSE;
 	CHM_DEBUG_LOG(2, "Writing %c%c%c%c ChunkToStream\n", dir->Buffer[0], dir->Buffer[1], dir->Buffer[2], dir->Buffer[3]);
 	return TRUE;
@@ -102,14 +131,14 @@ void DirectoryChunk_Clear(DirectoryChunk *dir)
 
 /*** ---------------------------------------------------------------------- ***/
 
-DirectoryChunk *DirectoryChunk_Create(unsigned int AHeaderSize)
+DirectoryChunk *DirectoryChunk_Create(unsigned int HeaderSize)
 {
 	DirectoryChunk *dir;
 	
 	dir = g_new0(DirectoryChunk, 1);
 	if (dir == NULL)
 		return NULL;
-	dir->HeaderSize = AHeaderSize;
+	dir->HeaderSize = HeaderSize;
 	dir->CurrentPos = dir->HeaderSize;
 	return dir;
 }
@@ -148,33 +177,51 @@ static int path_indexof(GSList *list, const char *path)
 	int index;
 	
 	for (l = list, index = 0; l != NULL; l = l->next, index++)
-		if (strcmp((const char *)l->data, path) == 0)
+	{
+		const FileEntryRec *entry = (const FileEntryRec *)l->data;
+		if (ChmCompareText(entry->path.c, path) == 0)
 			return index;
+	}
 	return -1;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-void FileEntryList_AddEntry(FileEntryList *list, FileEntryRec *AFileEntry, gboolean CheckPathIsAdded /* = TRUE */)
+static char *extractfilepath(const char *filename)
+{
+	const char *base;
+
+	base = chm_basename(filename);
+	if (base == filename)
+		return g_strdup(".");
+	return g_strndup(filename, base - filename);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+void FileEntryList_AddEntry(FileEntryList *list, const FileEntryRec *FileEntry, gboolean CheckPathIsAdded /* = TRUE */)
 {
 	FileEntryRec *TmpEntry;
-	char *path;
 	
 	TmpEntry = g_new(FileEntryRec, 1);
-	if (CheckPathIsAdded && path_indexof(list->Paths, AFileEntry->Path) < 0)
+	if (CheckPathIsAdded)
 	{
-		/* all paths are included in the list of files in section 0 with a size and offset of 0 */
-		path = g_strdup(AFileEntry->Path);
-		list->Paths = g_slist_append(list->Paths, path);
-		TmpEntry->Path = path;
-		TmpEntry->Name = NULL;
-		TmpEntry->DecompressedOffset = 0;
-		TmpEntry->DecompressedSize = 0;
-		TmpEntry->Compressed = FALSE;
-		list->items = g_slist_append(list->items, TmpEntry);
-		TmpEntry = g_new(FileEntryRec, 1);
+		char *dir = extractfilepath(FileEntry->path.c);
+		if (path_indexof(list->items, dir) < 0)
+		{
+			/* all paths are included in the list of files in section 0 with a size and offset of 0 */
+			TmpEntry->path.s = dir;
+			TmpEntry->DecompressedOffset = 0;
+			TmpEntry->DecompressedSize = 0;
+			TmpEntry->Compressed = FALSE;
+			TmpEntry->searchable = FALSE;
+			list->items = g_slist_append(list->items, TmpEntry);
+			TmpEntry = g_new(FileEntryRec, 1);
+		}
+		g_free(dir);
 	}
-	*TmpEntry = *AFileEntry;
+	*TmpEntry = *FileEntry;
+	TmpEntry->path.s = g_strdup(FileEntry->path.c);
 	list->items = g_slist_append(list->items, TmpEntry);
 }
 
@@ -183,6 +230,7 @@ void FileEntryList_AddEntry(FileEntryList *list, FileEntryRec *AFileEntry, gbool
 static void FileEntryRec_free(void *_rec)
 {
 	FileEntryRec *rec = (FileEntryRec *)_rec;
+	g_free(rec->path.s);
 	g_free(rec);
 }
 
@@ -201,11 +249,7 @@ static int FileEntrySortFunc(const void * _item1, const void * _item2)
 {
 	const FileEntryRec *item1 = *((const FileEntryRec *const *)_item1);
 	const FileEntryRec *item2 = *((const FileEntryRec *const *)_item2);
-	char *str1 = g_strconcat(item1->Path, item1->Name, NULL);
-	char *str2 = g_strconcat(item2->Path, item2->Name, NULL);
-	int result = ChmCompareText(str1, str2);
-	g_free(str2);
-	g_free(str1);
+	int result = ChmCompareText(item1->path.c, item2->path.c);
 	return result;
 }
 
@@ -244,7 +288,6 @@ FileEntryList *FileEntryList_Create(void)
 	list = g_new(FileEntryList, 1);
 	if (list == NULL)
 		return NULL;
-	list->Paths = NULL;
 	list->items = NULL;
 	return list;
 }
@@ -256,7 +299,6 @@ void FileEntryList_Destroy(FileEntryList *list)
 	if (list)
 	{
 		g_slist_free_full(list->items, FileEntryRec_free);
-		g_slist_free_full(list->Paths, g_free);
 		g_free(list);
 	}
 }
@@ -272,7 +314,7 @@ static gboolean G_GNUC_WARN_UNUSED_RESULT FinishBlock(DirectoryChunk *dir, ChmSt
 	++(*AIndex);
 	Header.sig = PMGIsig;
 	Header.UnusedSpace = DirectoryChunk_FreeSpace(dir->ParentChunk);
-	DirectoryChunk_WriteHeader(dir->ParentChunk, &Header);
+	PMGIDirectoryChunk_WriteHeader(dir->ParentChunk, &Header);
 	if (PMGIDirectoryChunk_WriteChunkToStream(dir->ParentChunk, Stream, AIndex, Final) == FALSE)
 		return FALSE;
 	DirectoryChunk_Clear(dir->ParentChunk);

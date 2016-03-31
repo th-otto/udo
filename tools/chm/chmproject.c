@@ -3,6 +3,8 @@
 #include "chmxml.h"
 #include "fasthtmlparser.h"
 #include "htmlutil.h"
+#include <libxml/HTMLparser.h>
+#include <libxml/tree.h>
 
 #define CREATOR "CHM"
 
@@ -10,6 +12,7 @@ typedef struct _ChmContextNode {
 	int fileindex;			/* index into the project->files list */
 	char *number;			/* mapping definition */
 	gboolean number_valid;
+	HelpContext number_value;
 	char *contextname;		/* title or alias name */
 	int context_defined_in;	/* index into the project->otherfiles list */
 	int number_defined_in;	/* index into the project->otherfiles list */
@@ -42,6 +45,7 @@ static ChmContextNode *ChmContextNode_Create(int fileindex, const char *contextn
 	node->contextname = g_strdup(contextname);
 	node->number = NULL;
 	node->number_valid = FALSE;
+	node->number_value = 0;
 	node->context_defined_in = -1;
 	node->number_defined_in = -1;
 	return node;
@@ -58,13 +62,624 @@ static void ChmContextNode_Destroy(ChmContextNode *node)
 	g_free(node);
 }
 
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean FileInTotalList(ChmProject *project, char *s)
+{
+	StringIndex SpareString;
+	SpareString.TheString = s;
+	SpareString.StrId = 0;
+	return AVLTree_Find(project->TotalFileList, &SpareString) != NULL;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static char *findattribute(xmlNode *node, const char *attributename)
+{
+	xmlAttr *attr;
+	
+	if (node)
+	{
+		for (attr = node->properties; attr; attr = attr->next)
+		{
+			if (g_ascii_strcasecmp(attributename, (const char *)attr->name) == 0)
+			{
+				return attr->children ? (char *)attr->children->content : NULL;
+			}
+		}
+	}
+	return NULL;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static int anchorlist_indexof(GSList *list, const char *name)
+{
+	GSList *l;
+	int index;
+	
+	for (l = list, index = 0; l != NULL; l = l->next, index++)
+		if (g_ascii_strcasecmp((const char *)l->data, name) == 0)
+			return index;
+	return -1;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean sanitizeurl(ChmProject *project, const char *instring, const char *localpath, const char *localname, char **outstring)
+{
+	char *p;
+	char *anchor;
+	int j;
+	
+	*outstring = NULL;
+	if (empty(instring))
+		return FALSE;
+	/* Check for protocols before adding local path */
+	if (g_ascii_strncasecmp(instring, "http:", 5) == 0)
+		return FALSE;
+	if (g_ascii_strncasecmp(instring, "https:", 6) == 0)
+		return FALSE;
+	if (g_ascii_strncasecmp(instring, "ftp:", 4) == 0)
+		return FALSE;
+	if (g_ascii_strncasecmp(instring, "ms-its:", 7) == 0)
+		return FALSE;
+	if (g_ascii_strncasecmp(instring, "mk:@MSITStore:", 14) == 0)
+		return FALSE;
+	if (g_ascii_strncasecmp(instring, "mailto:", 7) == 0)
+		return FALSE;
+	
+	*outstring = g_strconcat(localpath, instring, NULL);
+	p = strchr(*outstring, '#');
+	
+	if (p != NULL)
+	{
+		if (p > *outstring)
+			anchor = g_strdup(*outstring);
+		else
+			anchor = g_strconcat(localname, outstring, NULL);
+		project->onerror(project, chmnote, _("Anchor found %s while scanning %s"), anchor, localname);
+		j = anchorlist_indexof(project->anchorlist, anchor);
+		if (j < 0)
+		{
+			project->anchorlist = g_slist_append(project->anchorlist, anchor);
+			anchor = NULL;
+		}
+		*p = '\0';
+		g_free(anchor);
+	}
+
+	return TRUE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void checkattributes(ChmProject *project, xmlNode *node, const char *attributename, const char *localpath, const char *localname, GSList **filelist)
+{
+	char *fn;
+	char *val;
+	
+	val = findattribute(node, attributename);
+	if (sanitizeurl(project, val, localpath, localname, &fn))
+	{
+		/* Skip links to self using named anchors */
+		if (!empty(fn) && !FileInTotalList(project, fn))
+		{
+			*filelist = g_slist_append(*filelist, fn);
+			fn = NULL;
+		}
+	}
+	g_free(fn);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+/* Seach first matching tag in siblings */
+static void scantags(ChmProject *project, xmlNode *parent, const char *localpath, const char *localname, GSList **filelist)
+{
+	xmlNode *child;
+	char *s;
+	char *anchor;
+	int i;
+	
+	if (parent)
+	{
+		for (child = parent; child; child = child->next)
+		{
+			scantags(project, child->children, localpath, localname, filelist);	/* depth first. */
+			if (child->type == XML_ELEMENT_NODE)
+			{
+				if (g_ascii_strcasecmp((const char *)child->name, "link") == 0)
+				{
+					checkattributes(project, child, "href", localpath, localname, filelist);
+				}
+				if (g_ascii_strcasecmp((const char *)child->name, "img") == 0)
+				{
+					checkattributes(project, child, "src", localpath, localname, filelist);
+				}
+				if (g_ascii_strcasecmp((const char *)child->name, "A") == 0)
+				{
+					checkattributes(project, child, "href", localpath, localname, filelist);
+					s = findattribute(child, "name");
+					if (!empty(s))
+					{
+						anchor = g_strconcat(localname, "#", s, NULL);
+						i = anchorlist_indexof(project->anchorlist, anchor);
+						if (i < 0)
+						{
+							project->anchorlist = g_slist_append(project->anchorlist, anchor);
+							project->onerror(project, chmnote, _("New Anchor with name %s found while scanning %s"), s, localname);
+							anchor = NULL;
+						} else
+						{
+							project->onerror(project, chmwarning, _("Duplicate anchor definitions with name %s found while scanning %s"), s, localname);
+						}
+						g_free(anchor);
+					}
+				}
+			}
+		}
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void scanitems(ChmProject *project, ChmSiteMapItems *it, GSList **newfiles)
+{
+	GSList *l;
+	ChmSiteMapItem *x;
+	char *s;
+	StringIndex *strrec;
+	struct stat st;
+	
+	if (it == NULL)
+		return;
+	for (l = it->list; l != NULL; l = l->next)
+	{
+		x = (ChmSiteMapItem *)l->data;
+		/* sanitize, remove stuff etc. */
+		if (sanitizeurl(project, x->local, "", x->name, &s))
+		{
+			if (!FileInTotalList(project, s))
+			{
+				char *path = g_build_filename(project->basepath, s, NULL);
+				if (stat(path, &st) == 0)
+				{
+					strrec = StringIndex_Create();
+					strrec->TheString = s;
+					AVLTree_Add(project->TotalFileList, strrec);
+					*newfiles = g_slist_append(*newfiles, g_strdup(s));
+					s = NULL;
+				} else
+				{
+					project->onerror(project, chmnote, _("File %s does not exist"), s);
+				}
+				g_free(path);
+			} else
+			{
+				project->onerror(project, chmnote, _("duplicate url: %s"), s);
+			}
+		} else
+		{
+			project->onerror(project, chmnote, _("Bad url: %s"), s);
+		}
+		g_free(s);
+		
+		scanitems(project, x->children, newfiles);
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void AddStrings(GSList **list, GSList *strings)
+{
+	GSList *l;
+	
+	for (l = strings; l; l = l->next)
+		*list = g_slist_append(*list, g_strdup((const char *)l->data));
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean trypath(ChmProject *project, char *vn, const char *fn, GSList **newfiles)
+{
+	StringIndex *strrec;
+	char *path;
+	gboolean result;
+	struct stat st;
+	
+	if (FileInTotalList(project, vn))
+	{
+		project->onerror(project, chmnote, _("Found duplicate file %s while scanning %s"), vn, fn);
+		return TRUE;
+	}
+
+	result = FALSE;
+	path = g_build_filename(project->basepath, vn, NULL);
+	if (stat(vn, &st) == 0)
+	{
+		result = TRUE;
+		strrec = StringIndex_Create();
+		strrec->TheString = g_strdup(vn);
+		strrec->StrId = 0;
+		AVLTree_Add(project->TotalFileList, strrec);
+		*newfiles = g_slist_append(*newfiles, g_strdup(vn));
+		CHM_DEBUG_LOG(0, "Found file %s while scanning %s\n", vn, fn);
+	}
+	g_free(path);
+	return result;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean is_allowed_extension(ChmProject *project, const char *name)
+{
+	GSList *l;
+	const char *ext;
+	
+	ext = strrchr(name, '.');
+	if (ext == NULL)
+		return FALSE;
+	for (l = project->allowed_extensions; l != NULL; l = l->next)
+		if (g_ascii_strcasecmp((const char *)l->data, ext) == 0)
+			return TRUE;
+	return FALSE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static char *extractfilepath(const char *filename)
+{
+	const char *base;
+
+	base = chm_basename(filename);
+	if (base == filename)
+		return g_strdup(".");
+	return g_strndup(filename, base - filename);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+/* toscan, list to search for htmlfiles to scan. */
+/* newfiles, the resulting list of files. */
+/* totalfilelist, the list that contains all found and specified files to check against. */
+/* localfilelist (local var), files found in this file. */
+static void scanlist(ChmProject *project, GSList *toscan, GSList **newfiles, gboolean recursion)
+{
+	GSList *localfilelist;
+	htmlDocPtr doc;
+	char *fn, *s;
+	char *localpath;
+	GSList *l, *local;
+	char *path;
+	struct stat st;
+	
+	localfilelist = NULL;
+	for (l = toscan; l; l = l->next)
+	{
+		fn = (char *)l->data;
+		g_slist_free_full(localfilelist, g_free);
+		localfilelist = NULL;
+		if (is_allowed_extension(project, fn))
+		{
+			path = g_build_filename(project->basepath, fn, NULL);
+			if (stat(path, &st) == 0)
+			{
+				project->onerror(project, chmnote, _("Scanning file %s"), fn);
+				doc = htmlParseFile(path, NULL);
+				if (doc != NULL)
+				{
+					localpath = extractfilepath(fn);
+					scantags(project, doc->children, localpath, chm_basename(fn), &localfilelist);
+					for (local = localfilelist; local; local = local->next)
+					{
+						s = (char *)local->data;
+						if (!trypath(project, s, fn, newfiles))
+							/* if (!trypath(project, localpath+s, fn, newfiles)) */
+								project->onerror(project, chmwarning, _("Found file %s while scanning %s, but couldn''t find it on disk"), s, fn);
+					}
+					g_free(localpath);
+					xmlFreeDoc(doc);
+				} else
+				{
+					project->onerror(project, chmerror, _("Html parsing %s, failed"), fn);
+				}
+			} else
+			{
+				project->onerror(project, chmnote, _("Can't find file %s to scan."), fn);
+			}
+			g_free(path);
+		} else
+		{
+			project->onerror(project, chmnote, _("Not scanning file %s because of unknown extension"), fn);
+		}
+	}
+
+	g_slist_free_full(localfilelist, g_free);
+	localfilelist = NULL;
+	if (*newfiles != NULL && recursion)
+	{
+		scanlist(project, *newfiles, &localfilelist, TRUE);
+		AddStrings(newfiles, localfilelist);
+		g_slist_free_full(localfilelist, g_free);
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void ChmProject_ScanSitemap(ChmProject *project, ChmSiteMap *sitemap, GSList **newfiles, gboolean recursion)
+{
+	GSList *localfilelist;
+	
+	localfilelist = NULL;
+	scanitems(project, sitemap->items, newfiles);
+	scanlist(project, *newfiles, &localfilelist, recursion);
+	AddStrings(newfiles, localfilelist);
+	g_slist_free_full(localfilelist, g_free);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void ChmProject_ScanHtml(ChmProject *project)
+{
+	GSList *helplist;
+	GSList *localfilelist;
+	GSList *l;
+	StringIndex *strrec;
+
+	for (l = project->otherfiles; l; l = l->next)
+	{
+		strrec = StringIndex_Create();
+		strrec->TheString = g_strdup((const char *)l->data);
+		strrec->StrId = 0;
+		AVLTree_Add(project->TotalFileList, strrec);
+	}
+
+	for (l = project->files; l; l = l->next)
+	{
+		strrec = StringIndex_Create();
+		strrec->TheString = g_strdup((const char *)l->data);
+		strrec->StrId = 0;
+		AVLTree_Add(project->TotalFileList, strrec);
+	}
+
+	localfilelist = NULL;
+	scanlist(project, project->files, &localfilelist, TRUE);
+	AddStrings(&project->otherfiles, localfilelist);
+	g_slist_free_full(localfilelist, g_free);
+	localfilelist = NULL;
+	if (!empty(project->default_page) && !FileInTotalList(project, project->default_page))
+	{
+		project->onerror(project, chmnote, _("Scanning default file : %s"), project->default_page);
+		helplist = NULL;
+		helplist = g_slist_append(helplist, project->default_page);
+		scanlist(project, helplist, &localfilelist, TRUE);
+		AddStrings(&project->otherfiles, localfilelist);
+		g_slist_free_full(localfilelist, g_free);
+		localfilelist = NULL;
+		g_slist_free(helplist);
+	}
+	if (project->toc)
+	{
+		project->onerror(project, chmnote, _("Scanning TOC file : %s"), project->toc_filename);
+		ChmProject_ScanSitemap(project, project->toc, &localfilelist, TRUE);
+		AddStrings(&project->otherfiles, localfilelist);
+		g_slist_free_full(localfilelist, g_free);
+		localfilelist = NULL;
+	}
+	if (project->index)
+	{
+		project->onerror(project, chmnote, _("Scanning Index file : %s"), project->index_filename);
+		ChmProject_ScanSitemap(project, project->index, &localfilelist, TRUE);
+		AddStrings(&project->otherfiles, localfilelist);
+		g_slist_free_full(localfilelist, g_free);
+		localfilelist = NULL;
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static ChmMemoryStream *loadfile(const char *filename)
+{
+	ChmStream *stream;
+	chm_off_t size;
+	ChmStream *mem;
+	unsigned char *buffer;
+	
+	stream = ChmStream_Open(filename, TRUE);
+	if (stream == NULL)
+	{
+		return NULL;
+	}
+	size = ChmStream_Size(stream);
+	mem = ChmStream_CreateMem(size);
+	if (mem == NULL ||
+		(buffer = ChmStream_Memptr(mem)) == NULL ||
+		ChmStream_Read(stream, buffer, size) != size)
+	{
+		ChmStream_Close(mem);
+		ChmStream_Close(stream);
+		return NULL;
+	}
+	ChmStream_Close(stream);
+	buffer[size] = '\0';
+	return mem;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static gboolean ChmProject_GetData(void *obj, const char *dataname, ChmMemoryStream **stream)
+{
+	ChmProject *project = (ChmProject *)obj;
+	char *filename = g_build_filename(project->basepath, dataname, NULL);
+	*stream = loadfile(filename);
+	if (project->OnProgress)
+		project->OnProgress(project, dataname);
+	g_free(filename);
+	return FALSE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+/* #IDXHDR (merged files) goes into the system file, and need to keep TOC sitemap around */
+static void ChmProject_LoadSiteMaps(ChmProject *project)
+{
+	char *path;
+	
+	if (!empty(project->toc_filename))
+	{
+		path = g_build_filename(project->basepath, project->toc_filename, NULL);
+		ChmStream_Close(project->tocstream);
+		project->tocstream = NULL;
+		ChmSiteMap_Destroy(project->toc);
+		project->toc = NULL;
+		if ((project->tocstream = loadfile(path)) == NULL ||
+			(project->toc = ChmSiteMap_Create(stTOC)) == NULL ||
+			ChmSiteMap_LoadFromStream(project->toc, project->tocstream) == FALSE)
+		{
+			ChmStream_Close(project->tocstream);
+			project->tocstream = NULL;
+			ChmSiteMap_Destroy(project->toc);
+			project->toc = NULL;
+			project->onerror(project, chmerror, _("Error loading TOC file %s"), project->toc_filename);
+		}
+		g_free(path);
+	}
+
+	if (!empty(project->index_filename))
+	{
+		path = g_build_filename(project->basepath, project->index_filename, NULL);
+		ChmStream_Close(project->indexstream);
+		project->indexstream = NULL;
+		ChmSiteMap_Destroy(project->index);
+		project->index = NULL;
+		if ((project->indexstream = loadfile(path)) == NULL ||
+			(project->index = ChmSiteMap_Create(stIndex)) == NULL ||
+			ChmSiteMap_LoadFromStream(project->index, project->indexstream) == FALSE)
+		{
+			ChmStream_Close(project->indexstream);
+			project->indexstream = NULL;
+			ChmSiteMap_Destroy(project->index);
+			project->index = NULL;
+			project->onerror(project, chmerror, _("Error loading Index file %s"), project->index_filename);
+		}
+		g_free(path);
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static void ChmProject_LastFileAdded(void *obj, void *sender)
+{
+	ChmProject *project = (ChmProject *)obj;
+	ChmWriter *chm = (ChmWriter *)sender;
+
+	/* Assign the TOC and index files */
+	if (project->indexstream)
+	{
+		if (ChmStream_Seek(project->indexstream, 0) == FALSE)
+			{}
+		ChmWriter_AppendIndex(chm, project->indexstream);
+		if (project->MakeBinaryIndex)
+		{
+			ChmWriter_AppendBinaryIndexFromSiteMap(chm, project->index, FALSE);
+		}
+	}
+	if (project->tocstream)
+	{
+		ChmWriter_AppendTOC(chm, project->tocstream);
+		if (project->MakeBinaryTOC)
+		{
+			ChmWriter_AppendBinaryTOCFromSiteMap(chm, project->toc);
+		}
+	}
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
+{
+	ChmWriter *Writer;
+	GSList *l;
+	
+	ChmProject_LoadSiteMaps(project);
+
+	/* Scan html for "rest" files. */
+	if (project->ScanHtmlContents)
+		ChmProject_ScanHtml(project); 								/* Since this is slowing we opt to skip this step, and only do this on html load. */
+
+	Writer = ChmWriter_Create(out, FALSE);
+
+	/* our callback to get data */
+	Writer->itsf.OnGetFileData = ChmProject_GetData;
+	Writer->itsf.OnLastFile = ChmProject_LastFileAdded;
+	Writer->itsf.user_data = project;
+	
+	Writer->locale_id = project->locale_id;
+	Writer->dbcs = project->dbcs;
+	
+	/* give it the list of html files */
+	AddStrings(&Writer->itsf.FilesToCompress, project->files);
+
+	/* give it the list of other files */
+
+	AddStrings(&Writer->itsf.FilesToCompress, project->otherfiles);
+
+	/* now some settings in the chm */
+	Writer->default_page = g_strdup(project->default_page);
+	Writer->title = g_strdup(project->title);
+	Writer->default_font = g_strdup(project->default_font);
+	Writer->FullTextSearch = project->full_text_search;
+	Writer->HasBinaryTOC = project->MakeBinaryTOC;
+	Writer->HasBinaryIndex = project->MakeBinaryIndex;
+	Writer->index_filename = g_strdup(project->index_filename);
+	Writer->toc_filename = g_strdup(project->toc_filename);
+	Writer->itsf.ReadmeMessage = g_strdup(project->ReadmeMessage);
+	Writer->default_window = g_strdup(project->default_window);
+	for (l = project->files; l; l = l->next)
+	{
+		char *s = (char *)l->data;
+		char *path = g_build_filename(project->basepath, s, NULL);
+		struct stat st;
+		
+		if (stat(path, &st) != 0)
+			project->onerror(project, chmwarning, _("File %s does not exist"), s);
+		g_free(path);
+	}
+	for (l = project->alias; l; l = l->next)
+	{
+		const ChmContextNode *node = (const ChmContextNode *)l->data;
+		char *s;
+		if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->files, node->fileindex)) != NULL)
+		{
+			if (node->number_valid)
+				ChmWriter_AddContext(Writer, node->number_value, s);
+		}
+	}
+	ChmWriter_SetWindows(Writer, project->windows);
+	ChmWriter_SetMergefiles(Writer, project->mergefiles);
+	Writer->TocSitemap = project->toc;
+
+	/* and write! */
+
+	project->onerror(project, chmhint, _("Writing CHM %s"), project->out_filename);
+
+	ChmWriter_Execute(Writer);
+
+	ChmWriter_Destroy(Writer);
+	
+	return TRUE;
+}
+
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static int compare_file(const void *s1, const void *s2)
+static int compare_strings(const void *s1, const void *s2)
 {
-	return ChmCompareText((const char *)s1, (const char *)s2);
+	const StringIndex *n1 = (const StringIndex *)s1;
+	const StringIndex *n2 = (const StringIndex *)s2;
+	return ChmCompareText(n1->TheString, n2->TheString);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -137,7 +752,7 @@ static char **loadfromfile(ChmProject *project, const char *filename)
 	fp = fopen(filename, "rb");
 	if (fp == NULL)
 	{
-		project->onerror(project, chmerror, 0, "%s: %s", filename, strerror(errno));
+		project->onerror(project, chmerror, "%s: %s", filename, strerror(errno));
 		return NULL;
 	}
 	fseek(fp, 0, SEEK_END);
@@ -193,7 +808,7 @@ static ChmContextNode *add_alias(ChmProject *project, char *key, char *contextna
 			node = (ChmContextNode *)l->data;
 			if (node->contextname != NULL && strcmp(node->contextname, contextname) == 0)
 			{
-				project->onerror(project, chmwarning, 0, _("redefinition of alias %s"), contextname);
+				project->onerror(project, chmwarning, _("redefinition of alias %s"), contextname);
 				node->fileindex = fileindex;
 				return node;
 			}
@@ -295,17 +910,19 @@ static ChmContextNode *add_map(ChmProject *project, char *number, char *contextn
 		{
 			if (node->number_valid)
 			{
-				project->onerror(project, chmwarning, 0, _("redefinition of mapping %s"), contextname);
+				project->onerror(project, chmwarning, _("redefinition of mapping %s"), contextname);
 			}
 			g_free(node->number);
 			node->number = g_strdup(number);
+			node->number_value = (HelpContext)strtol(number, NULL, 0);
 			node->number_valid = TRUE;
 			return node;
 		}
 	}
-	project->onerror(project, chmwarning, 0, _("alias for %s was not defined"), contextname);
+	project->onerror(project, chmwarning, _("alias for %s was not defined"), contextname);
 	node = ChmContextNode_Create(-1, contextname);
 	node->number = g_strdup(number);
+	node->number_value = (HelpContext)strtol(number, NULL, 0);
 	node->number_valid = TRUE;
 	project->alias = g_slist_append(project->alias, node);
 	return node;
@@ -370,7 +987,7 @@ static void processmap(ChmProject *project, char **strs, int defined_in)
 			}
 		} else
 		{
-			project->onerror(project, chmnote, 0, _("unrecognized entry in [MAP]: %s"), s);
+			project->onerror(project, chmnote, _("unrecognized entry in [MAP]: %s"), s);
 		}
 		g_free(s);
 	}
@@ -390,6 +1007,7 @@ static void ChmProject_Clear(ChmProject *project)
 	project->otherfiles = NULL;
 	g_freep(&project->index_filename);
 	g_freep(&project->hhp_filename);
+	g_freep(&project->xml_filename);
 	g_freep(&project->out_filename);
 	g_freep(&project->toc_filename);
 	g_freep(&project->title);
@@ -429,9 +1047,23 @@ static void ChmProject_Init(ChmProject *project)
 {
 	project->allowed_extensions = g_slist_append(project->allowed_extensions, g_strdup(".htm"));
 	project->allowed_extensions = g_slist_append(project->allowed_extensions, g_strdup(".html"));
-	project->TotalFileList = AVLTree_Create(compare_file, g_free);
+	project->TotalFileList = AVLTree_Create(compare_strings, (GDestroyNotify)StringIndex_Destroy);
+	project->AutoFollowLinks = FALSE;
+	project->auto_index = FALSE;
+	project->auto_toc = 0;
+	project->compatibility = FALSE;
+	project->MakeBinaryTOC = FALSE;
 	project->MakeBinaryIndex = TRUE;
+	project->full_text_search = FALSE;
+	project->display_compile_progress = FALSE;
+	project->display_compile_notes = FALSE;
+	project->enhanced_decompilation = FALSE;
 	project->flat = TRUE;
+	project->locale_id = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
+	project->ScanHtmlContents = TRUE;
+	project->compress = 0;
+	project->create_chi_file = FALSE;
+	project->dbcs = FALSE;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -445,7 +1077,7 @@ static void check_mappings(ChmProject *project)
 	{
 		node = (const ChmContextNode *)l->data;
 		if (!node->number_valid)
-			project->onerror(project, chmwarning, 0, _("no mapping defined for %s"), node->contextname);
+			project->onerror(project, chmwarning, _("no mapping defined for %s"), node->contextname);
 	}
 }
 
@@ -597,23 +1229,22 @@ gboolean ChmProject_LoadFromHhp(ChmProject *project, const char *filename)
 	size_t i;
 	Profile *profile;
 	char *windows;
-	const char *base;
 	char *str;
 	unsigned int id;
 	
 	if ((profile = Profile_Load(filename, CREATOR)) == NULL)
+	{
+		project->onerror(project, chmerror, "%s: %s", filename, strerror(errno));
 		return FALSE;
-
+	}
+	
 	ChmProject_Clear(project);
 	ChmProject_Init(project);
 	
 	project->hhp_filename = g_strdup(filename);
+	project->xml_filename = changefileext(filename, ".xml");
 			
-	base = chm_basename(filename);
-	if (base == filename)
-		project->basepath = g_strdup(".");
-	else
-		project->basepath = g_strndup(filename, base - filename);
+	project->basepath = extractfilepath(filename);
 	
 	/* Do the files section first so that we can emit errors if */
 	/* other sections reference unknown files. */
@@ -676,7 +1307,7 @@ gboolean ChmProject_LoadFromHhp(ChmProject *project, const char *filename)
 	Profile_ReadString(profile, sec_options, "Default Window", &project->default_window);
 	Profile_ReadString(profile, sec_options, "Default Font", &project->default_font);
 	Profile_ReadCard(profile, sec_options, "Language", &id);
-	project->language_id = id;
+	project->locale_id = id;
 	Profile_ReadBool(profile, sec_options, "Auto Index", &project->auto_index);
 	Profile_ReadInt(profile, sec_options, "Auto TOC", &project->auto_toc);
 	if (!Profile_ReadBool(profile, sec_options, "Binary Index", &project->MakeBinaryIndex))
@@ -720,8 +1351,9 @@ gboolean ChmProject_LoadFromHhp(ChmProject *project, const char *filename)
 	/* TODO: [SUBSETS] */
 	
 	Profile_Delete(profile);
-	project->ScanHtmlContents = TRUE;
 	
+	if (project->out_filename == NULL)
+		project->out_filename = changefileext(chm_basename(filename), ".chm");
 	check_mappings(project);
 	
 	return TRUE;
@@ -750,7 +1382,7 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename)
 	Profile_WriteString(profile, sec_options, "Default topic", project->default_page);
 	Profile_WriteString(profile, sec_options, "Default Window", project->default_window);
 	Profile_WriteString(profile, sec_options, "Default Font", project->default_font);
-	Profile_WriteCard(profile, sec_options, "Language", project->language_id);
+	Profile_WriteCard(profile, sec_options, "Language", project->locale_id);
 	Profile_WriteBool(profile, sec_options, "Auto Index", project->auto_index);
 	if (project->auto_toc != 0)
 		Profile_WriteInt(profile, sec_options, "Auto TOC", project->auto_toc);
@@ -1088,7 +1720,7 @@ gboolean ChmProject_SaveToXml(ChmProject *project, const char *filename)
 	xml_write_str(fp, xml_options, "DefaultTopic", project->default_page);
 	xml_write_str(fp, xml_options, "DefaultWindow", project->default_window);
 	xml_write_str(fp, xml_options, "DefaultFont", project->default_font);
-	xml_write_card(fp, xml_options, "Language", project->language_id);
+	xml_write_card(fp, xml_options, "Language", project->locale_id);
 	xml_write_bool(fp, xml_options, "AutoIndex", project->auto_index);
 	if (project->auto_toc != 0)
 		xml_write_int(fp, xml_options, "AutoTOC", project->auto_toc);
@@ -1099,7 +1731,7 @@ gboolean ChmProject_SaveToXml(ChmProject *project, const char *filename)
 	xml_write_str(fp, xml_options, "IndexFilename", project->index_filename);
 	xml_write_str(fp, xml_options, "ErrorlogFilename", project->error_log_file);
 	xml_write_bool(fp, xml_options, "Compatibility", project->compatibility);
-	xml_write_bool(fp, xml_options, "CreateCHIFie", project->create_chi_file);
+	xml_write_bool(fp, xml_options, "CreateCHIFile", project->create_chi_file);
 	xml_write_bool(fp, xml_options, "DBCS", project->dbcs);
 	xml_write_bool(fp, xml_options, "DisplayCompileNotes", project->display_compile_notes);
 	xml_write_bool(fp, xml_options, "DisplayCompileProgress", project->display_compile_progress);
@@ -1384,7 +2016,7 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 			state->tags &= ~inParam;
 		} else
 		{
-			project->onerror(project, chmnote, 0, _("unknown tag %s in project file"), TagName);
+			project->onerror(project, chmnote, _("unknown tag %s in project file"), TagName);
 		}
 		if ((state->tags & inParam) && g_ascii_strcasecmp(TagName, "PARAM") == 0)
 		{
@@ -1413,7 +2045,7 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 						value = NULL;
 					} else if (g_ascii_strcasecmp(name, "Language") == 0)
 					{
-						project->language_id = (LCID)strtoul(value, NULL, 0);
+						project->locale_id = (LCID)strtoul(value, NULL, 0);
 					} else if (g_ascii_strcasecmp(name, "AutoIndex") == 0)
 					{
 						project->auto_index = xml_bool_val(value);
@@ -1438,14 +2070,14 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 					{
 						project->index_filename = value;
 						value = NULL;
-					} else if (g_ascii_strcasecmp(name, "ErrologFilename") == 0)
+					} else if (g_ascii_strcasecmp(name, "ErrorlogFilename") == 0)
 					{
 						project->error_log_file = value;
 						value = NULL;
 					} else if (g_ascii_strcasecmp(name, "Compatibility") == 0)
 					{
 						project->compatibility = xml_bool_val(value);
-					} else if (g_ascii_strcasecmp(name, "CreateCHFile") == 0)
+					} else if (g_ascii_strcasecmp(name, "CreateCHIFile") == 0)
 					{
 						project->create_chi_file = xml_bool_val(value);
 					} else if (g_ascii_strcasecmp(name, "DBCS") == 0)
@@ -1501,7 +2133,7 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 						project->compress = (int)strtol(value, NULL, 0);
 					} else
 					{
-						project->onerror(project, chmnote, 0, _("unsupported setting %s"), name);
+						project->onerror(project, chmnote, _("unsupported setting %s"), name);
 					}
 				} else if (state->tags & inWindows)
 				{
@@ -1533,7 +2165,10 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 					{
 						node->number = GetVal(tag, taglen, "id");
 						if (node->number)
+						{
 							node->number_valid = TRUE;
+							node->number_value = (HelpContext)strtol(node->number, NULL, 0);
+						}
 						other = GetVal(tag, taglen, "aliasinclude");
 						if (other)
 						{
@@ -1567,70 +2202,69 @@ static gboolean FoundTag(void *obj, const char *tag, size_t taglen)
 gboolean ChmProject_LoadFromXml(ChmProject *project, const char *filename)
 {
 	ChmStream *stream;
-	chm_off_t size;
 	gboolean result = FALSE;
 	HTMLParser *htmlparser;
 	XmlProjectState state;
 	
-	stream = ChmStream_Open(filename, TRUE);
+	stream = loadfile(filename);
 	if (stream == NULL)
 	{
-		project->onerror(project, chmerror, 0, "%s: %s", filename, strerror(errno));
+		project->onerror(project, chmerror, "%s: %s", filename, strerror(errno));
 		return FALSE;
 	}
-	size = ChmStream_Size(stream);
-	if (size >= (chm_off_t)0x7fffffffUL)
+	htmlparser = HTMLParser_Create((const char *)ChmStream_Memptr(stream), ChmStream_Size(stream));
+	if (htmlparser != NULL)
 	{
-		errno = EFBIG;
-		project->onerror(project, chmerror, 0, "%s: %s", filename, strerror(errno));
+		state.tags = 0;
+		state.project = project;
+		state.valid = FALSE;
+		
+		htmlparser->obj = &state;
+		htmlparser->OnFoundTag = FoundTag;
+		ChmProject_Clear(project);
+		ChmProject_Init(project);
+		project->xml_filename = g_strdup(filename);
+		project->hhp_filename = changefileext(filename, ".hhp");
+		project->basepath = extractfilepath(filename);
+		HTMLParser_Exec(htmlparser);
+		HTMLParser_Destroy(htmlparser);
+		result = state.valid;
+		if (!state.valid)
+			project->onerror(project, chmerror, _("invalid file fomat"));
+		if (project->out_filename == NULL)
+			project->out_filename = changefileext(chm_basename(filename), ".chm");
+		check_mappings(project);
 	} else
 	{
-		char *buffer = g_new(char, size + 1);
-		if (buffer != NULL &&
-			ChmStream_Read(stream, buffer, size))
-		{
-			buffer[size] = '\0';
-			htmlparser = HTMLParser_Create(buffer, size);
-			if (htmlparser != NULL)
-			{
-				state.tags = 0;
-				state.project = project;
-				state.valid = FALSE;
-				
-				htmlparser->obj = &state;
-				htmlparser->OnFoundTag = FoundTag;
-				ChmProject_Clear(project);
-				ChmProject_Init(project);
-				HTMLParser_Exec(htmlparser);
-				HTMLParser_Destroy(htmlparser);
-				result = state.valid;
-				if (!state.valid)
-					project->onerror(project, chmerror, 0, _("invalid file fomat"));
-				check_mappings(project);
-			} else
-			{
-				project->onerror(project, chmerror, 0, "%s: %s", filename, strerror(errno));
-			}
-		} else
-		{
-			project->onerror(project, chmerror, 0, "%s: %s", filename, strerror(errno));
-		}
-		g_free(buffer);
+		project->onerror(project, chmerror, "%s: %s", filename, strerror(errno));
 	}
 	ChmStream_Close(stream);
 	return result;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+void ChmProject_ShowUndefinedAnchors(ChmProject *project)
+{
+	GSList *l;
+	
+	for (l = project->anchorlist; l; l = l->next)
+	{
+		char *name = (char *)l->data;
+		/* NYI */
+		UNUSED(name);
+	}
 }
 
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-static void ChmProject_OnError(ChmProject *project, ChmProjectErrorKind errorkind, int detaillevel, const char *msg, ...)
+static void ChmProject_OnError(ChmProject *project, ChmProjectErrorKind errorkind, const char *msg, ...)
 {
 	va_list args;
 	
 	UNUSED(project);
-	UNUSED(detaillevel);
 	va_start(args, msg);
 	if ((errorkind == chmhint && verbose >= 1) ||
 		(errorkind == chmnote && verbose >= 1) ||

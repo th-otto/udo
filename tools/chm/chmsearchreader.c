@@ -214,7 +214,7 @@ static char *ChmSearchReader_ReadWordOrPartialWord(ChmSearchReader *chm, const c
 	{
 		size_t len = (WordLength - 1) + CopyLastWordCharCount;
 		result = g_renew(char, result, len + 1);
-		if (ChmStream_Read(stream, result + CopyLastWordCharCount, WordLength - 1))
+		if (ChmStream_Read(stream, result + CopyLastWordCharCount, WordLength - 1) > 0)
 			result[len] = '\0';
 	}
 	return result;
@@ -564,7 +564,7 @@ gboolean ChmSearchReader_LookupWord(ChmSearchReader *chm, const char *word, ChmW
 			if (CompareResult >= 0)
 			{
 				g_free(LastWord);
-				LastWord = NULL;;
+				LastWord = NULL;
 				--NodeLevel;
 				result = ChmSearchReader_MoveToNode(chm, NewNodePosition, NodeLevel);
 			}
@@ -658,7 +658,6 @@ void ChmSearchReader_FreeTopics(ChmWLCTopicArray topics)
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
-
 
 ChmSearchReader *ChmSearchReader_Create(ChmReader *r)
 {

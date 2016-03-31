@@ -9,8 +9,27 @@ typedef unsigned int SectionNames;
 
 #define DIR_BLOCK_SIZE 0x1000
 
+enum SYSTEM_CODE {
+	Contents_file_CODE = 0,
+	Index_file_CODE = 1,
+	Default_topic_CODE = 2,
+	Title_CODE = 3,
+	Language_DBCS_FTS_KLinks_ALinks_FILETIME_CODE = 4,
+	Default_Window_CODE = 5,
+	Compiled_file_CODE = 6,
+	Binary_Index_CODE = 7,
+	ABBREVIATIONS_N_EXPLANATIONS_CODE = 8,
+	COMPILED_BY_CODE = 9,
+	time_t_STAMP_CODE = 10,
+	Binary_TOC_CODE = 11,
+	NUM_INFORMATION_TYPES_CODE = 12,
+	IDXHDR_FILE_CODE = 13,
+	Custom_tabs_CODE = 14,
+	INFORMATION_TYPE_CHECKSUM_CODE = 15,
+	Default_Font_CODE = 16
+};
+
 typedef struct _DirectoryChunk {
-/* private: */
 	unsigned int HeaderSize;
 	unsigned int QuickRefEntries;
 	unsigned int CurrentPos;
@@ -21,32 +40,35 @@ typedef struct _DirectoryChunk {
 	struct _DirectoryChunk *ParentChunk;
 } DirectoryChunk;
 
-DirectoryChunk *DirectoryChunk_Create(unsigned int AHeaderSize);
+DirectoryChunk *DirectoryChunk_Create(unsigned int HeaderSize);
 void DirectoryChunk_Destroy(DirectoryChunk *dir);
-gboolean DirectoryChunk_CanHold(DirectoryChunk *dir, unsigned int ASize);
-unsigned int DirectoryChunk_FreeSpace(DirectoryChunk *dir);
-void DirectoryChunk_WriteHeader(DirectoryChunk *dir, void *AHeader);
-gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, void *Data) G_GNUC_WARN_UNUSED_RESULT;
+gboolean DirectoryChunk_CanHold(DirectoryChunk *dir, unsigned int Size);
+unsigned int DirectoryChunk_FreeSpace(const DirectoryChunk *dir);
+void PMGIDirectoryChunk_WriteHeader(DirectoryChunk *dir, const PMGIIndexChunk *header);
+void PMGLDirectoryChunk_WriteHeader(DirectoryChunk *dir, const PMGLListChunk *header);
+gboolean DirectoryChunk_WriteEntry(DirectoryChunk *dir, unsigned int Size, const void *data) G_GNUC_WARN_UNUSED_RESULT;
 gboolean DirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream) G_GNUC_WARN_UNUSED_RESULT;
 void DirectoryChunk_Clear(DirectoryChunk *dir);
 
 gboolean PMGIDirectoryChunk_WriteChunkToStream(DirectoryChunk *dir, ChmStream *Stream, int *AIndex, gboolean Final /* = FALSE */) G_GNUC_WARN_UNUSED_RESULT;
 
 typedef struct _FileEntryRec {
-	const char *Path;
-	char *Name;
+	union {
+		char *s;
+		const char *c;
+	} path;
 	chm_off_t DecompressedOffset;
 	chm_off_t DecompressedSize;
 	gboolean Compressed;	 /* True means it goes in section1 (snMSCompressed) means section0 (snUnCompressed) */
-} FileEntryRec, *PFileEntryRec;
+	gboolean searchable;
+} FileEntryRec;
 
 typedef struct _FileEntryList {
-	GSList *Paths;	/* of char * */
 	GSList *items;	/* of FileEntryRec * */
 } FileEntryList;
 
 FileEntryRec *FileEntryList_GetFileEntry(FileEntryList *list, int Index);
-void FileEntryList_AddEntry(FileEntryList *list, FileEntryRec *AFileEntry, gboolean CheckPathIsAdded /* = TRUE */);
+void FileEntryList_AddEntry(FileEntryList *list, const FileEntryRec *FileEntry, gboolean CheckPathIsAdded /* = TRUE */);
 void FileEntryList_Delete(FileEntryList *list, int Index);
 void FileEntryList_Sort(FileEntryList *list);
 FileEntryList *FileEntryList_Create(void);
@@ -217,7 +239,7 @@ ChmSystem *ChmSystem_Create(void);
 void ChmSystem_Destroy(ChmSystem *sys);
 
 typedef struct _TOCIdxHeader {
-	uint32_t BlockSize; /* 4096 */
+	uint32_t EntryInfoOffset; /* 4096 */
 	uint32_t EntriesOffset;
 	uint32_t EntriesCount;
 	uint32_t TopicsOffset;
@@ -240,15 +262,16 @@ typedef struct _TOCEntryPageBookInfo {
 	/* Only if TOC_ENTRY_HAS_CHILDREN is set are these written */
 	uint32_t FirstChildOffset;
 	uint32_t Unknown3; /* = 0 */
-} TOCEntryPageBookInfo, *PTOCEntryPageBookInfo;
+} TOCEntryPageBookInfo;
 
 typedef struct _TocEntry {
 	uint32_t PageBookInfoOffset;
 	uint32_t IncrementedInt;	/* first is $29A */
+	uint32_t TopicsOffset;
 	uint32_t TopicsIndex;	 	/* Index of Entry in #TOPICS file */
 } TocEntry;
 
-typedef struct _TopicEntry {
+typedef struct _TopicEntryp {
 	uint32_t TocOffset;
 	uint32_t StringsOffset;
 	uint32_t URLTableOffset;
@@ -301,7 +324,7 @@ typedef struct _BtreeBlockEntry {
 #define SIZEOF_BTREEBLOCKENTRY 0x0010
 
 typedef struct _BtreeIndexBlockHeader {
-	uint16_t length;			/* Length of free space at the } of the block. */
+	uint16_t length;			/* Length of free space at the end of the block. */
 	uint16_t NumberOfEntries;	/* Number of entries in the block. */
 	uint32_t IndexOfChildBlock;	/* Index of Child Block */
 } BtreeIndexBlockHeader;
@@ -316,6 +339,9 @@ typedef struct _BtreeIndexBlockEntry {
 } BtreeIndexBlockEntry;
 #define SIZEOF_BTREEINDEXBLOCKENTRY 0x0010
 
-int PageBookInfoRecordSize(PTOCEntryPageBookInfo ARecord);
+#define NT_TICKSPERSEC        ((uint64_t)10000000UL)
+#define NT_SECSPERDAY         86400UL
+#define NT_SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)NT_SECSPERDAY)
+#define NT_TICKS_1601_TO_1970 (NT_SECS_1601_TO_1970 * NT_TICKSPERSEC)
 
 #endif

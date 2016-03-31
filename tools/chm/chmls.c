@@ -22,7 +22,8 @@ typedef enum _CmdEnum {
 	cmdprinttopics,
 	cmdprintproject,
 	cmdprintsearchindex,
-	cmdlookup
+	cmdlookup,
+	cmdstrings
 } CmdEnum;
 
 static const char *const CmdNames[] = {
@@ -38,7 +39,8 @@ static const char *const CmdNames[] = {
 	"printtopics",
 	"project",
 	"printsearchindex",
-	"lookup"
+	"lookup",
+	"strings"
 };
 
 enum {
@@ -63,6 +65,7 @@ enum {
 	OPTION_PRINTPROJECT,
 	OPTION_PRINTSEARCHINDEX,
 	OPTION_LOOKUP,
+	OPTION_STRINGS,
 	OPTION_INTERNALS,
 	OPTION_NO_INTERNALS,
 	OPTION_FORCEXML,
@@ -84,6 +87,7 @@ static struct option const long_options[] = {
 	{ "project", no_argument, NULL, OPTION_PRINTPROJECT },
 	{ "searchindex", no_argument, NULL, OPTION_PRINTSEARCHINDEX },
 	{ "lookup", no_argument, NULL, OPTION_LOOKUP },
+	{ "strings", no_argument, NULL, OPTION_STRINGS },
 	{ "name-only", no_argument, NULL, OPTION_NAME_ONLY },
 	{ "no-page", no_argument, NULL, OPTION_NO_PAGE },
 	{ "verbose", no_argument, NULL, OPTION_VERBOSE },
@@ -241,7 +245,7 @@ static gboolean savetofile(ChmStream *from, FILE *out)
 	while (size)
 	{
 		count = size > COPY_BUFSIZE ? COPY_BUFSIZE : size;
-		if (ChmStream_Read(from, buf, count) == FALSE)
+		if (ChmStream_Read(from, buf, count) != count)
 		{
 			return FALSE;
 		}
@@ -532,11 +536,6 @@ static gboolean extractalias(const char *filename, const char *outfilename, cons
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
-
-#define NT_TICKSPERSEC        ((uint64_t)10000000UL)
-#define NT_SECSPERDAY         86400UL
-#define NT_SECS_1601_TO_1970  ((369 * 365 + 89) * (uint64_t)NT_SECSPERDAY)
-#define NT_TICKS_1601_TO_1970 (NT_SECS_1601_TO_1970 * NT_TICKSPERSEC)
 
 static const char *make_time_t_string(uint32_t timestamp)
 {
@@ -1007,9 +1006,9 @@ static void print_idxhdr(FILE *out, ChmIdxhdr *idx)
 	fprintf(out, _("  Number of Information Types  : %d\n"), idx->num_information_types);
 	fprintf(out, _("  Unknown 5                    : %d\n"), idx->unknown5);
 	fprintf(out, _("  Number of [MERGE FILES]      : %u\n"), idx->num_merge_files);
+	fprintf(out, _("  Unknown 6                    : $%x\n"), idx->unknown6);
 	for (i = 0; i < idx->num_merge_files; i++)
 		fprintf(out, _("     %3u                       : %s\n"), i, printnull(idx->merge_files[i].c));
-	fprintf(out, _("  Unknown 6                    : %d\n"), idx->unknown6);
 }
 
 /******************************************************************************/
@@ -1477,6 +1476,60 @@ static gboolean printtopics(const char *filename, const char *outfilename)
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
+static gboolean printstrings(const char *filename, const char *outfilename)
+{
+	ChmFileStream *fs;
+	ITSFReader *r;
+	gboolean result = FALSE;
+	chm_error err;
+	ChmMemoryStream *strings = NULL;
+	FILE *out;
+	
+	if ((fs = ChmStream_Open(filename, TRUE)) == NULL)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, strerror(errno));
+		return FALSE;
+	}
+	r = ITSFReader_Create(fs, TRUE);
+	if ((err = ITSFReader_GetError(r)) != CHM_ERR_NO_ERR)
+	{
+		fprintf(stderr, "%s: %s: %s\n", gl_program_name, filename, ChmErrorToStr(err));
+	} else if ((strings = ITSFReader_GetObject(r, "/#STRINGS")) == NULL)
+	{
+		fprintf(stderr, _("This CHM doesn't contain a %s internal file.\n"), "#STRINGS");
+	} else if ((out = open_stdout(outfilename)) != NULL)
+	{
+		const unsigned char *base = ChmStream_Memptr(strings);
+		const unsigned char *end = base + (size_t)ChmStream_Size(strings);
+		const unsigned char *mem;
+		
+		result = TRUE;
+		fprintf(out, "--- #STRINGS ---\n");
+		mem = base;
+		while (mem < end)
+		{
+			printf("%04x: ", (unsigned int)(mem - base));
+			while (mem < end && *mem != '\0')
+			{
+				fputc(*mem, out);
+				mem++;
+			}
+			fputc('\n', out);
+			if (mem < end)
+				mem++;
+		}
+		close_stdout(out);
+	}
+
+	ChmStream_Close(strings);
+	ITSFReader_Destroy(r);
+	return result;
+}
+
+/******************************************************************************/
+/*** ---------------------------------------------------------------------- ***/
+/******************************************************************************/
+
 static void print_version(FILE *out)
 {
 	fprintf(out, _("%s, a CHM utility. (c) 2010 Free Pascal core.\n"), gl_program_name);
@@ -1545,7 +1598,7 @@ static gboolean include_internals = TRUE;
 static gboolean printnulls = FALSE;
 static gboolean forcexml = FALSE;
 static const char *outfilename;
-static const char *symbolname = "helpid";
+static const char *symbolname = "IDH_";
 static uint32_t section = (uint32_t)-1;
 
 int main(int argc, const char **argv)
@@ -1557,7 +1610,7 @@ int main(int argc, const char **argv)
 	struct _getopt_data *d;
 	
 	getopt_init_r(gl_program_name, &d);
-	while ((c = getopt_long_only_r(argc, argv, "hnpV?", long_options, NULL, d)) != EOF)
+	while ((c = getopt_long_only_r(argc, argv, "no:pv0hV?", long_options, NULL, d)) != EOF)
 	{
 		switch (c)
 		{
@@ -1599,6 +1652,9 @@ int main(int argc, const char **argv)
 			break;
 		case OPTION_LOOKUP:
 			cmd = cmdlookup;
+			break;
+		case OPTION_STRINGS:
+			cmd = cmdstrings;
 			break;
 		case OPTION_NAME_ONLY:
 			nameonly = TRUE;
@@ -1841,6 +1897,18 @@ int main(int argc, const char **argv)
 		if (argc == 2)
 		{
 			if (lookupword(argv[0], argv[1], outfilename) == FALSE)
+				exit_code = EXIT_FAILURE;
+		} else
+		{
+			WrongNrParam(cmd, argc);
+			exit_code = EXIT_FAILURE;
+		}
+		break;
+
+	case cmdstrings:
+		if (argc == 1)
+		{
+			if (printstrings(argv[0], outfilename) == FALSE)
 				exit_code = EXIT_FAILURE;
 		} else
 		{

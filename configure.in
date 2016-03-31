@@ -468,6 +468,7 @@ AC_CHECK_FUNCS([getcwd munmap putenv setenv setlocale strchr])
 AC_CHECK_FUNCS([sigaction syslog realpath setrlimit])
 AC_CHECK_FUNCS([getuid geteuid getgid getegid getpid getppid lstat mkdir])
 
+AC_CHECK_LIB(m, log)
 
 
 ###############################################################################
@@ -901,6 +902,13 @@ if test "$have_gtk3" = no -a "$with_gui" = gtk3; then
 	AC_MSG_ERROR([*** GTK3 was requested, but was not found ***])
 fi
 
+AC_CACHE_CHECK([for Xml includes], ac_cv_xml_config_cflags,
+               [ac_cv_xml_config_cflags=`$pkg_config --cflags libxml-2.0`])
+XML_CFLAGS="$ac_cv_xml_config_cflags"
+AC_CACHE_CHECK([for Xml libs], ac_cv_xml_config_libs,
+                   [ac_cv_xml_config_libs=`$pkg_config --libs libxml-2.0`])
+XML_LIBS="$ac_cv_xml_config_libs"
+
 AM_CONDITIONAL(WITH_GUI_GTK, test "$with_gui" = gtk2 -o "$with_gui" = gtk3)
 AM_CONDITIONAL(WITH_GUI_GTK2, test "$with_gui" = gtk2)
 AM_CONDITIONAL(WITH_GUI_GTK3, test "$with_gui" = gtk3)
@@ -960,6 +968,7 @@ AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 AC_SUBST(XML_LIBS)
+AC_SUBST(XML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(SOUP_LIBS)

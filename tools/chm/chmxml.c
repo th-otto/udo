@@ -309,7 +309,9 @@ static char *xml_dequote_bin(const char *src, size_t len)
 			int cmp, left, right, middle;
 			
 			int entlen = 1;
-			while((p + entlen) < end && p[entlen] != ';')
+			while ((p + entlen) < end && p[entlen] != ';')
+				entlen++;
+			if ((p + entlen) < end && p[entlen] == ';')
 				entlen++;
 				
 			left = 0;

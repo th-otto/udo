@@ -13,6 +13,7 @@ typedef struct _GUID
     uint8_t Data4[8];
 } GUID, *REFGUID, *LPGUID;
 #endif
+#define SIZEOF_GUID 16
 
 #undef DEFINE_GUID
 #define DEFINE_GUID(n,l,w1,w2,b1,b2,b3,b4,b5,b6,b7,b8) GUID const n = {l,w1,w2,{b1,b2,b3,b4,b5,b6,b7,b8}}
@@ -32,16 +33,19 @@ typedef struct _ITSFHeader {
 	/* 0028 */ GUID guid2;
 	/* 0038 */ 
 } ITSFHeader;
+#define SIZEOF_ITSFHEADER 0x38
 
 typedef struct _ITSFHeaderEntry {
 	uint64_t PosFromZero;
 	uint64_t Length;
 } ITSFHeaderEntry;
+#define SIZEOF_ITSFHEADERENTRY 16
 
 /* Version 3 has this uint64_t. 2 does not */
 typedef struct _ITSFHeaderSuffix {
 	uint64_t Offset;	/* offset within file of content section 0 */
 } ITSFHeaderSuffix;
+#define SIZEOF_ITSFHEADERSUFFIX 8
 
 typedef struct _ITSPHeaderPrefix {
 	uint32_t Unknown1;	/* = $01FE */
@@ -50,6 +54,7 @@ typedef struct _ITSPHeaderPrefix {
 	uint32_t Unknown3;	/* = 0 */
 	uint32_t Unknown4;	/* = 0 */
 } ITSPHeaderPrefix;
+#define SIZEOF_ITSPHEADERPREFIX 0x18 
 
 typedef struct _ITSPHeader {
 	/* 0000 */ CHMSignature ITSPsig;		/* = 'ITSP' */
@@ -58,7 +63,7 @@ typedef struct _ITSPHeader {
 	/* 000C */ uint32_t Unknown1;			/* =$0a */
 	/* 0010 */ uint32_t ChunkSize;			/* $1000 */
 	/* 0014 */ uint32_t Density;			/* usually = 2 */
-	/* 0018 */ uint32_t IndexTreeDepth;	/* 1 if there is no index 2 if there is one level of PMGI chunks */
+	/* 0018 */ uint32_t IndexTreeDepth;		/* 1 if there is no index 2 if there is one level of PMGI chunks */
 	/* 001c */ int32_t IndexOfRootChunk;	/* -1 if no root chunk */
 	/* 0020 */ uint32_t FirstPMGLChunkIndex;
 	/* 0024 */ uint32_t LastPMGLChunkIndex;
@@ -72,6 +77,7 @@ typedef struct _ITSPHeader {
 	/* 0050 */ uint32_t Unknown5;			/* = -1 */
 	/* 0054 */ 
 } ITSPHeader;
+#define SIZEOF_ITSPHEADER 0x54
 
 typedef enum { ctPMGL, ctPMGI, ctAOLL, ctAOLI, ctUnknown } DirChunkType;
 
@@ -83,6 +89,7 @@ typedef struct _PMGLListChunk {
 								/* (-1 if this is the first listing chunk) */
 	int32_t NextChunkIndex;		/* chunk number of the next listing chunk (-1 if this is the last chunk */
 } PMGLListChunk;
+#define SIZEOF_PMGLLISTCHUNK 0x14
 
 typedef struct _PMGLListChunkEntry {
 	uint32_t NameLength;
@@ -96,6 +103,7 @@ typedef struct _PMGIIndexChunk {
 	CHMSignature sig;			/* 'PMGI' */
 	uint32_t UnusedSpace;		/* has a quickref area */
 } PMGIIndexChunk;
+#define SIZEOF_PMGIINDEXCHUNK 0x08
 
 typedef struct _PMGIIndexChunkEntry {
 	uint32_t NameLength;
@@ -212,6 +220,7 @@ extern GUID const ITSPHeaderGUID;
 extern CHMSignature const ITSPHeaderSig;
 
 extern CHMSignature const PMGIsig;
+extern CHMSignature const PMGLsig;
 
 extern GUID const ITOLITLSGuid;
 
@@ -224,8 +233,8 @@ uint32_t GetCompressedInteger(ChmStream *Stream);
 /*
  * returns the number of bytes written to the stream
  */
-uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t ANumber);
-uint32_t PutCompressedInteger(void *Buffer, uint32_t ANumber);
+uint32_t WriteCompressedInteger(ChmStream *Stream, uint32_t number);
+uint32_t PutCompressedInteger(void *Buffer, uint32_t number);
 
 /*
  * stupid needed function

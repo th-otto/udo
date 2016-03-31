@@ -3,6 +3,7 @@
 
 #include "avltree.h"
 #include "chmsitemap.h"
+#include "chmwriter.h"
 
 typedef enum {
 	chmerror,
@@ -14,12 +15,11 @@ typedef enum {
 typedef struct _ChmProject ChmProject;
 
 typedef void (*ChmProgressCB) (ChmProject *project, const char *CurrentFile);
-typedef void (*ChmErrorCB)(ChmProject *project, ChmProjectErrorKind errorkind, int detaillevel, const char *msg, ...) __attribute__((format(printf, 4, 5)));
-
-typedef struct _StringIndex StringIndex;
+typedef void (*ChmErrorCB)(ChmProject *project, ChmProjectErrorKind errorkind, const char *msg, ...) __attribute__((format(printf, 3, 4)));
 
 struct _ChmProject {
 	char *hhp_filename;
+	char *xml_filename;
 	gboolean AutoFollowLinks;
 	gboolean auto_index;				/* default: false */
 	int auto_toc;
@@ -37,7 +37,7 @@ struct _ChmProject {
 	gboolean display_compile_notes;
 	gboolean enhanced_decompilation;
 	gboolean flat;						/* default: true */
-	LCID language_id;
+	LCID locale_id;
 	ChmProgressCB OnProgress;
 	ChmErrorCB onerror;
 	/* though stored in the project file, it is only there for the program that uses the unit */
@@ -52,7 +52,6 @@ struct _ChmProject {
 	GSList *allowed_extensions;			/* of char * */
 	AVLTree *TotalFileList;
 	GSList *anchorlist;					/* of char */
-	StringIndex *SpareString;
 	char *basepath;						/* location of the .hhp file. Needed to resolve relative paths */
 	char *ReadmeMessage;				/* readme message */
 	ChmSiteMap *toc;
@@ -81,7 +80,6 @@ gboolean ChmProject_SaveToHhp(ChmProject *project, const char *filename);
 gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out);
 void ChmProject_ShowUndefinedAnchors(ChmProject *project);
 const char *ChmProject_ProjectDir(ChmProject *project);
-void ChmProject_LoadSitemaps(ChmProject *project);
 void ChmProject_AddFileWithContext(ChmProject *project, const char *filename, int contextid, const char *contextname);
 
 #endif /* __CHMPROJECT_H__ */

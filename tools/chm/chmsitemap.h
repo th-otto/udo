@@ -109,5 +109,9 @@ gboolean ChmSiteMap_SaveToFile(ChmSiteMap *self, const char *filename);
 gboolean ChmSiteMap_SaveToStream(ChmSiteMap *self, ChmStream *stream);
 
 void ChmSiteMap_SetItems(ChmSiteMap *self, ChmSiteMapItems *items);
+int ChmSiteMapItems_GetCount(ChmSiteMapItems *self);
+ChmSiteMapItem *ChmSiteMapItems_GetItem(ChmSiteMapItems *self, int index);
+
+int PageBookInfoRecordSize(TOCEntryPageBookInfo *record);
 
 #endif /* __CHMSITEMAP_H__ */

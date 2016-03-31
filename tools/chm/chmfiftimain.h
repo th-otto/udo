@@ -34,20 +34,23 @@ struct _FiftiMainHeader {
 	/* 0062 */ uint8_t unknown6[24];			/* 0 */
 	/* 007a */ uint32_t codepage;				/* usually 1252 */
 	/* 007e */ LCID locale_id;
-	/* 0082 */ uint8_t Unknown7[894];			/* 0 */
+	/* 0082 */ uint8_t unknown7[894];			/* 0 */
 	/* 0400 */ 
 };
 
 typedef struct _FIftiNode FIftiNode;
+typedef struct _IndexNode IndexNode;
+typedef struct _LeafNode LeafNode;
+
 struct _FIftiNode {
 	char *LastWord;
 	ChmStream *WriteStream;
 	ChmMemoryStream *BlockStream;
-	FIftiNode *ParentNode;
+	IndexNode *ParentNode;
 	gboolean OwnsParentNode;
 };
 
-typedef struct _LeafNode {
+struct _LeafNode {
 	FIftiNode node;
 	uint32_t LeafNodeCount;
 	uint32_t LastNodeStart;
@@ -55,10 +58,10 @@ typedef struct _LeafNode {
 	uint8_t DocRootSize;
 	uint8_t CodeRootSize;
 	uint8_t LocRootSize;
-} LeafNode;
+};
 
-typedef struct _IndexNode {
+struct _IndexNode {
 	FIftiNode node;
-} IndexNode;
+};
 
 #endif /* __CHMFIFTIMAIN_H__ */

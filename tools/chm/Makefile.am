@@ -1,7 +1,7 @@
 include ../../silent.am
 
 INCLUDES = -I$(top_srcdir)/tools/hypview/include
-AM_CPPFLAGS = $(GLIB_CFLAGS)
+AM_CPPFLAGS = $(GLIB_CFLAGS) $(XML_CFLAGS)
 
 noinst_PROGRAMS = chmls chmc xmltest
 
@@ -11,7 +11,6 @@ endif
 
 common_sources = \
 	chmbase.c chmbase.h chm_htmlhelp.h langid.h \
-	chmwriter.c chmobjinstconst.h \
 	fasthtmlparser.c fasthtmlparser.h \
 	htmlutil.c htmlutil.h \
 	chmtypes.c chmtypes.h \
@@ -25,6 +24,8 @@ common_sources = \
 	chmsearchwriter.c chmsearchwriter.h \
 	chmglib.c \
 	lzxdec.c lzx.h \
+	lzx_layer_nonslide.c lzx_compress.h lzx_constants.h \
+	lzx_nonslide.c lzx_nonslide.h \
 	xgetopt.c \
 	profile.c \
 	cp_1252.h \
@@ -44,12 +45,18 @@ $(build_triplet)-chmls$(EXEEXT): chmls$(EXEEXT)
 chmc_SOURCES = \
 	chmcmd.c \
 	chmproject.c chmproject.h \
+	chmwriter.c chmwriter.h chmobjinstconst.h \
 	$(common_sources)
 
-chmc_LDADD = $(GLIB_LIBS) $(INTLLIBS)
+chmc_LDADD = $(GLIB_LIBS) $(XML_LIBS) $(INTLLIBS)
 
 $(build_triplet)-chmc$(EXEEXT): chmc$(EXEEXT)
 	cp -a $? $@
 
 xmltest_SOURCES = xmltest.c kwset.c obstack.c chmglib.c
 xmltest_LDADD = $(GLIB_LIBS)
+
+EXTRA_DIST = \
+	lzx_layer.c \
+	lzx_hash_slide.c lzx_hash_slide.h \
+	lzx_slide.c lzx_slide.h

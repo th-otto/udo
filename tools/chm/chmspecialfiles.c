@@ -78,7 +78,7 @@ int WriteTransformListToStream(ChmStream *stream)
 	/* aguid = '{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}'; */
 	/* use the broken guid */
 	static char const guid[] = { '{', 0, '7', 0, 'F', 0, 'C', 0, '2', 0, '8', 0, '9', 0, '4', 0, '0', 0, '-', 0, '9', 0, 'D', 0, '3', 0, '1', 0, '-', 0, '1', 0, '1', 0, 'D', 0, '0', 0 };
-	return ChmStream_Write(stream, guid, sizeof(guid)) ? sizeof(guid) : 0;
+	return ChmStream_Write(stream, guid, sizeof(guid));
 }
 
 /*** ---------------------------------------------------------------------- ***/

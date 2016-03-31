@@ -10,33 +10,7 @@ struct _IndexDocument {
 	int *WordIndex;
 };
 
-struct _IndexedWord {
-	gboolean IsTitle;
-	char *word;			/* converted by chm_searchword_downcase */
-	IndexDocument *CachedTopic;
-	int documents_count;
-	int documents_size;
-	IndexDocument **documents;
-};
 
-struct _IndexedWordList {
-	unsigned int IndexedFileCount;
-	unsigned int TotalDifferentWordLength;
-	unsigned int TotalDifferentWords;
-	unsigned int TotalWordCount;
-	unsigned int TotalWordLength;
-	unsigned int LongestWord;
-	AVLTree *avltree;
-	IndexedWord *spare;
-
-	/* vars while processing page */
-	gboolean InTitle;
-	gboolean InBody;
-	int WordCount;			/* only words in body */
-	char *DocTitle;
-	int TopicIndex;
-	gboolean IndexTitlesOnly;
-};
 
 
 #define GrowSpeed 10
@@ -64,7 +38,7 @@ static IndexedWord *IndexedWord_Create(const char *wordtext, size_t len, gboolea
 	
 	word = g_new(IndexedWord, 1);
 	word->IsTitle = IsTitle;
-	word->word = g_strndup(wordtext, len);;
+	word->word = g_strndup(wordtext, len);
 	chm_searchword_downcase(word->word);
 	word->CachedTopic = NULL;
 	word->documents_count = 0;
@@ -115,7 +89,7 @@ IndexDocument *IndexedWord_GetLogicalDocument(IndexedWord *word, int index)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static IndexDocument *IndexedWord_GetDocument(IndexedWord *word, int TopicIndexNum)
+static IndexDocument *IndexedWord_GetDocument(IndexedWord *word, int32_t TopicIndexNum)
 {
 	int i;
 	IndexDocument *doc;
@@ -337,7 +311,7 @@ void IndexedWordList_ForEach(IndexedWordList *list, IndexedWordList_ForEachProc 
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
 
-const char *IndexedWordList_IndexFile(IndexedWordList *list, ChmStream *stream, int TOPICIndex, gboolean IndexOnlyTitles)
+const char *IndexedWordList_IndexFile(IndexedWordList *list, ChmStream *stream, int32_t TOPICIndex, gboolean IndexOnlyTitles)
 {
 	char *TheFile;
 	size_t size;
@@ -352,7 +326,7 @@ const char *IndexedWordList_IndexFile(IndexedWordList *list, ChmStream *stream, 
 	TheFile = g_new(char, size + 1);
 	if (TheFile == NULL)
 		return NULL;
-	if (ChmStream_Read(stream, TheFile, size) == FALSE)
+	if (ChmStream_Read(stream, TheFile, size) != size)
 	{
 		g_free(TheFile);
 		return NULL;
@@ -362,7 +336,7 @@ const char *IndexedWordList_IndexFile(IndexedWordList *list, ChmStream *stream, 
 	if (parser != NULL)
 	{
 		list->InBody = FALSE;
-		list->InTitle= FALSE;
+		list->InTitle = FALSE;
 		list->IndexTitlesOnly = IndexOnlyTitles;
 		list->WordCount = 0;
 		list->TopicIndex = TOPICIndex;
@@ -410,6 +384,15 @@ void IndexedWordList_Destroy(IndexedWordList *list)
 	g_free(list->DocTitle);
 	DestroyWord(list->spare);
 	g_free(list);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+unsigned int IndexedWordList_FileCount(IndexedWordList *list)
+{
+	if (list == NULL)
+		return 0;
+	return list->IndexedFileCount;
 }
 
 /******************************************************************************/

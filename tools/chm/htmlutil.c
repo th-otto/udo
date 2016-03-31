@@ -46,7 +46,7 @@ char *GetUpTagName(const char *tag, size_t len)
 /*
  * Return name=value pair ignoring case of NAME, preserving case of VALUE
  */
-char *GetNameValPair(const char *tag, size_t taglen, const char *attribname_ci)
+static char *GetNameValPair(const char *tag, size_t taglen, const char *attribname_ci)
 {
 	const char *P;
 	const char *S;
@@ -105,7 +105,7 @@ char *GetNameValPair(const char *tag, size_t taglen, const char *attribname_ci)
 /*
  * Get value of attribute, e.g WIDTH=36 -return-> 36, preserves case sensitive
  */
-char *GetValFromNameVal(const char *namevalpair)
+static char *GetValFromNameVal(const char *namevalpair)
 {
 	const char *P;
 	const char *S;

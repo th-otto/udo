@@ -18,8 +18,8 @@ struct _ChmStream {
 	gboolean (*close)(ChmStream *stream);
 	gboolean (*seek)(ChmStream *stream, chm_off_t pos, int whence);
 	chm_off_t (*tell)(ChmStream *stream);
-	gboolean (*write)(ChmStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
-	gboolean (*read)(ChmStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+	size_t (*write)(ChmStream *stream, const void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
+	size_t (*read)(ChmStream *stream, void *buffer, size_t len) G_GNUC_WARN_UNUSED_RESULT;
 	int (*fgetc)(ChmStream *stream) G_GNUC_WARN_UNUSED_RESULT;
 	int (*fputc)(ChmStream *stream, int c) G_GNUC_WARN_UNUSED_RESULT;
 	union {
@@ -27,7 +27,8 @@ struct _ChmStream {
 		int fd;
 		struct {
 			unsigned char *base;
-			chm_off_t pos;
+			size_t pos;
+			size_t alloclen;
 			gboolean alloced;
 		} mem;
 	};
@@ -39,11 +40,11 @@ struct _ChmStream {
 
 static gboolean check_64bit(ChmStream *stream, chm_off_t pos)
 {
-	if (!stream->supports_64bit && pos > (uint32_t)0x7fffffff)
+	if (!stream->supports_64bit && pos >= (uint32_t)0x7ffffff0UL)
 	{
 		if (!stream->warned_64bit)
 		{
-			fprintf(stderr, "seek error (file too large?)\n");
+			fprintf(stderr, _("seek error (file too large?)\n"));
 			stream->warned_64bit = TRUE;
 		}
 		errno = EFBIG;
@@ -105,18 +106,18 @@ static gboolean file_seek(ChmStream *stream, chm_off_t pos, int whence)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean file_write(ChmStream *stream, const void *buffer, size_t len)
+static size_t file_write(ChmStream *stream, const void *buffer, size_t len)
 {
-	chm_off_t written = fwrite(buffer, 1, len, stream->file);
-	return written == len;
+	size_t written = fwrite(buffer, 1, len, stream->file);
+	return written;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean file_read(ChmStream *stream, void *buffer, size_t len)
+static size_t file_read(ChmStream *stream, void *buffer, size_t len)
 {
-	chm_off_t read = fread(buffer, 1, len, stream->file);
-	return read == len;
+	size_t nread = fread(buffer, 1, len, stream->file);
+	return nread;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -234,34 +235,56 @@ static gboolean mem_seek(ChmStream *stream, chm_off_t pos, int whence)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean mem_write(ChmStream *stream, const void *buffer, size_t len)
+static gboolean mem_make_space(ChmStream *stream, size_t len)
 {
-	chm_off_t space = stream->len - stream->mem.pos;
+	size_t space = stream->mem.alloclen - stream->mem.pos;
 	
 	if (len > space)
 	{
-		errno = EIO;
-		return FALSE;
+		size_t newsize;
+		unsigned char *newbuf;
+		
+		if (!stream->mem.alloced)
+		{
+			errno = EIO;
+			return FALSE;
+		}
+		newsize = ((stream->len + len + 0x1000 - 1) / 0x1000) * 0x1000;
+		newbuf = g_renew(unsigned char, stream->mem.base, newsize);
+		if (newbuf == NULL)
+			return FALSE;
+		stream->mem.base = newbuf;
+		stream->mem.alloclen = newsize;
 	}
-	memcpy(stream->mem.base + stream->mem.pos, buffer, len);
-	stream->mem.pos += len;
+	if ((stream->mem.pos + len) > stream->len)
+		stream->len = stream->mem.pos + len;
 	return TRUE;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean mem_read(ChmStream *stream, void *buffer, size_t len)
+static size_t mem_write(ChmStream *stream, const void *buffer, size_t len)
 {
-	chm_off_t space = stream->len - stream->mem.pos;
+	if (!mem_make_space(stream, len))
+		return 0;
+	memcpy(stream->mem.base + stream->mem.pos, buffer, len);
+	stream->mem.pos += len;
+	return len;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
+static size_t mem_read(ChmStream *stream, void *buffer, size_t len)
+{
+	size_t space = stream->len - stream->mem.pos;
 	
 	if (len > space)
 	{
-		errno = EIO;
-		return FALSE;
+		len = space;
 	}
 	memcpy(buffer, stream->mem.base + stream->mem.pos, len);
 	stream->mem.pos += len;
-	return TRUE;
+	return len;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -277,25 +300,30 @@ static int mem_getc(ChmStream *stream)
 
 static int mem_putc(ChmStream *stream, int c)
 {
-	if (stream->mem.pos >= stream->len)
-		return EOF;
+	if (!mem_make_space(stream, 1))
+		return FALSE;
 	stream->mem.base[stream->mem.pos++] = c;
 	return c;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-ChmMemoryStream *ChmStream_CreateMem(size_t size)
+ChmMemoryStream *ChmStream_CreateMem(chm_off_t size)
 {
 	ChmStream *stream;
 	
+	if (size >= (chm_off_t)0x7ffffff0UL || (size_t)size != size)
+	{
+		errno = EFBIG;
+		return NULL;
+	}
 	stream = g_new0(ChmStream, 1);
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_mem;
 	stream->owned = FALSE;
 	stream->filename = NULL;
-	stream->mem.base = g_new(unsigned char, size);
+	stream->mem.base = g_new(unsigned char, size + 1);
 	if (stream->mem.base == NULL)
 	{
 		g_free(stream);
@@ -303,6 +331,7 @@ ChmMemoryStream *ChmStream_CreateMem(size_t size)
 	}
 	stream->len = size;
 	stream->mem.pos = 0;
+	stream->mem.alloclen = size;
 	stream->mem.alloced = TRUE;
 	stream->close = mem_close;
 	stream->tell = mem_tell;
@@ -324,22 +353,19 @@ ChmMemoryStream *ChmStream_CreateMem(size_t size)
 
 gboolean ChmStream_CopyFrom(ChmMemoryStream *stream, ChmStream *src, size_t size)
 {
-	chm_off_t space;
-
 	assert(stream);
 	assert(src);
 	if (stream->type == chm_stream_mem)
 	{
-		space = stream->len - stream->mem.pos;
-		if (space < size)
+		if (!mem_make_space(stream, size))
 			return FALSE;
-		if (src->read(src, stream->mem.base + stream->mem.pos, size) == FALSE)
+		if (src->read(src, stream->mem.base + stream->mem.pos, size) != size)
 			return FALSE;
 		stream->mem.pos += size;
 		return TRUE;
 	} else if (src->type == chm_stream_mem)
 	{
-		if (stream->write(stream, src->mem.base + src->mem.pos, size) == FALSE)
+		if (stream->write(stream, src->mem.base + src->mem.pos, size) != size)
 			return FALSE;
 		src->mem.pos += size;
 		return TRUE;
@@ -416,7 +442,7 @@ chm_off_t ChmStream_Tell(ChmStream *stream)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean ChmStream_Write(ChmStream *stream, const void *buffer, size_t len)
+size_t ChmStream_Write(ChmStream *stream, const void *buffer, size_t len)
 {
 	assert(stream);
 	return stream->write(stream, buffer, len);
@@ -424,7 +450,7 @@ gboolean ChmStream_Write(ChmStream *stream, const void *buffer, size_t len)
 
 /*** ---------------------------------------------------------------------- ***/
 
-gboolean ChmStream_Read(ChmStream *stream, void *buffer, size_t len)
+size_t ChmStream_Read(ChmStream *stream, void *buffer, size_t len)
 {
 	assert(stream);
 	return stream->read(stream, buffer, len);
