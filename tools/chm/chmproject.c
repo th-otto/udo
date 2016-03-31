@@ -30,6 +30,11 @@ static char const xml_options[] = "param";
 #define inMerge    (1 << 6)
 #define inParam (inSettings|inWindows|inFiles|inOther|inAlias|inMerge)
 
+typedef struct anchorentry {
+	char *anchor;
+	int isdefined;
+} anchorentry;
+
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
@@ -93,15 +98,17 @@ static char *findattribute(xmlNode *node, const char *attributename)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static int anchorlist_indexof(GSList *list, const char *name)
+static anchorentry *anchorlist_indexof(GSList *list, const char *name)
 {
 	GSList *l;
-	int index;
 	
-	for (l = list, index = 0; l != NULL; l = l->next, index++)
-		if (g_ascii_strcasecmp((const char *)l->data, name) == 0)
-			return index;
-	return -1;
+	for (l = list; l != NULL; l = l->next)
+	{
+		anchorentry *a = (anchorentry *)l->data;
+		if (g_ascii_strcasecmp(a->anchor, name) == 0)
+			return a;
+	}
+	return NULL;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -110,7 +117,6 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 {
 	char *p;
 	char *anchor;
-	int j;
 	
 	*outstring = NULL;
 	if (empty(instring))
@@ -134,15 +140,19 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 	
 	if (p != NULL)
 	{
+		anchorentry *a;
+		
 		if (p > *outstring)
 			anchor = g_strdup(*outstring);
 		else
 			anchor = g_strconcat(localname, outstring, NULL);
-		project->onerror(project, chmnote, _("Anchor found %s while scanning %s"), anchor, localname);
-		j = anchorlist_indexof(project->anchorlist, anchor);
-		if (j < 0)
+		a = anchorlist_indexof(project->anchorlist, anchor);
+		if (a == NULL)
 		{
-			project->anchorlist = g_slist_append(project->anchorlist, anchor);
+			a = g_new(anchorentry, 1);
+			a->anchor = anchor;
+			a->isdefined = FALSE;
+			project->anchorlist = g_slist_append(project->anchorlist, a);
 			anchor = NULL;
 		}
 		*p = '\0';
@@ -180,7 +190,6 @@ static void scantags(ChmProject *project, xmlNode *parent, const char *localpath
 	xmlNode *child;
 	char *s;
 	char *anchor;
-	int i;
 	
 	if (parent)
 	{
@@ -203,16 +212,23 @@ static void scantags(ChmProject *project, xmlNode *parent, const char *localpath
 					s = findattribute(child, "name");
 					if (!empty(s))
 					{
+						anchorentry *a;
+						
 						anchor = g_strconcat(localname, "#", s, NULL);
-						i = anchorlist_indexof(project->anchorlist, anchor);
-						if (i < 0)
+						a = anchorlist_indexof(project->anchorlist, anchor);
+						if (a == NULL)
 						{
-							project->anchorlist = g_slist_append(project->anchorlist, anchor);
-							project->onerror(project, chmnote, _("New Anchor with name %s found while scanning %s"), s, localname);
+							a = g_new(anchorentry, 1);
+							a->anchor = anchor;
+							a->isdefined = TRUE;
+							project->anchorlist = g_slist_append(project->anchorlist, a);
 							anchor = NULL;
-						} else
+						} else if (a->isdefined)
 						{
 							project->onerror(project, chmwarning, _("Duplicate anchor definitions with name %s found while scanning %s"), s, localname);
+						} else
+						{
+							a->isdefined = TRUE;
 						}
 						g_free(anchor);
 					}
@@ -1006,6 +1022,15 @@ static void processmap(ChmProject *project, char **strs, int defined_in)
 
 /*** ---------------------------------------------------------------------- ***/
 
+static void free_anchor(void *data)
+{
+	anchorentry *a = (anchorentry *)data;
+	g_free(a->anchor);
+	g_free(a);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 static void ChmProject_Clear(ChmProject *project)
 {
 	g_freep(&project->default_font);
@@ -1031,7 +1056,7 @@ static void ChmProject_Clear(ChmProject *project)
 	project->allowed_extensions = NULL;
 	AVLTree_Destroy(project->TotalFileList);
 	project->TotalFileList = NULL;
-	g_slist_free_full(project->anchorlist, g_free);
+	g_slist_free_full(project->anchorlist, free_anchor);
 	project->anchorlist = NULL;
 	g_freep(&project->basepath);
 	g_freep(&project->ReadmeMessage);
@@ -2261,9 +2286,11 @@ void ChmProject_ShowUndefinedAnchors(ChmProject *project)
 	
 	for (l = project->anchorlist; l; l = l->next)
 	{
-		char *name = (char *)l->data;
-		/* NYI */
-		UNUSED(name);
+		anchorentry *a = (anchorentry *)l->data;
+		if (!a->isdefined)
+		{
+			project->onerror(project, chmerror, _("Anchor %s undefined"), a->anchor);
+		}
 	}
 }
 
