@@ -304,7 +304,6 @@ static gboolean trypath(ChmProject *project, char *vn, const char *fn, GSList **
 		strrec->StrId = 0;
 		AVLTree_Add(project->TotalFileList, strrec);
 		*newfiles = g_slist_append(*newfiles, g_strdup(vn));
-		CHM_DEBUG_LOG(0, "Found file %s while scanning %s\n", vn, fn);
 	}
 	g_free(path);
 	return result;
@@ -645,7 +644,7 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 		struct stat st;
 		
 		if (stat(path, &st) != 0)
-			project->onerror(project, chmwarning, _("File %s does not exist"), s);
+			project->onerror(project, chmerror, _("File %s does not exist"), s);
 		g_free(path);
 	}
 	for (l = project->alias; l; l = l->next)
