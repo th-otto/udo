@@ -298,7 +298,7 @@ static void ITSFWriter_CreateDirectoryListings(ITSFWriter *itsf)
 	IndexBlock = DirectoryChunk_Create(SIZEOF_PMGIINDEXCHUNK);
 	ListingBlock = DirectoryChunk_Create(SIZEOF_PMGLLISTCHUNK);
 
-	LastListIndex  = -1;
+	LastListIndex = -1;
 
 	/* add files to a pmgl block until it is full. */
 	/* after the block is full make a pmgi block and add the first entry of the pmgl block */
@@ -490,7 +490,7 @@ static int ITSFWriter_AtEndOfData(void *arg)
 	if (itsf->ForceExit)
 		return TRUE;
 	return itsf->CurrentIndex >= (itsf->FilesToCompressCount - 1) &&
-		ChmStream_Tell(itsf->CurrentStream) >= ChmStream_Size(itsf->CurrentStream);
+		(itsf->CurrentStream == NULL || ChmStream_Tell(itsf->CurrentStream) >= ChmStream_Size(itsf->CurrentStream));
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -504,7 +504,8 @@ static int ITSFWriter_GetData(void *arg, int count, void *_buffer)
 	
 	while (result < count && !ITSFWriter_AtEndOfData(itsf))
 	{
-		result += ChmStream_Read(itsf->CurrentStream, &buffer[result], count - result);
+		if (itsf->CurrentStream)
+			result += ChmStream_Read(itsf->CurrentStream, &buffer[result], count - result);
 		if (result < count && !ITSFWriter_AtEndOfData(itsf))
 		{
 			const char *path;
@@ -657,11 +658,11 @@ void ITSFWriter_Execute(ITSFWriter *itsf)
 	/* this creates all special files in the archive that start with ::DataSpace */
 	ITSFWriter_WriteDataSpaceFiles(itsf);
 
-	/* creates all directory listings including header */
-	ITSFWriter_CreateDirectoryListings(itsf);
-
 	/* do this after we have compressed everything so that we know the values that must be written */
 	ITSFWriter_InitHeaderSectionTable(itsf);
+
+	/* creates all directory listings including header */
+	ITSFWriter_CreateDirectoryListings(itsf);
 
 	/* Now we can write everything to FOutStream */
 	ITSFWriter_WriteHeader(itsf, itsf->OutStream);
@@ -817,6 +818,8 @@ void ITSFWriter_Destroy(ITSFWriter *itsf)
 		ChmStream_Close(itsf->OutStream);
 	FileEntryList_Destroy(itsf->InternalFiles);
 	ChmStream_Close(itsf->CurrentStream);
+	if (itsf->PostStream != itsf->CurrentStream)
+		ChmStream_Close(itsf->PostStream);
 	ChmStream_Close(itsf->Section0);
 	ChmStream_Close(itsf->Section1);
 	ChmStream_Close(itsf->Section1ResetTable);
@@ -1541,7 +1544,7 @@ static void WriteOBJINST(ChmWriter *chm)
 
 static void CheckFileMakeSearchable(ChmWriter *chm, ChmStream *stream, const FileEntryRec *entry)
 {
-	if (entry->searchable)
+	if (entry->searchable && stream)
 	{
 		const char *title = IndexedWordList_IndexFile(chm->IndexedFiles, stream, NextTopicIndex(chm), chm->SearchTitlesOnly);
 		ChmWriter_AddTopic(chm, title, entry->path.c, -1);
@@ -2277,6 +2280,9 @@ void ChmWriter_AppendBinaryIndexFromSiteMap(ChmWriter *chm, ChmSiteMap *sitemap,
 	ChmStream_Close(info->mapstream);
 	ChmStream_Close(info->datastream);
 	
+	g_free(info->blockn);
+	g_free(info->blocknplus1);
+	
 	chm->HasKLinks = info->totalentries > 0;
 }
 
@@ -2336,6 +2342,7 @@ ChmWriter *ChmWriter_Create(ChmStream *OutStream, gboolean FreeStreamOnDestroy)
 	chm->StringsStream = ChmStream_CreateMem(0);
 	chm->TopicsStream = ChmStream_CreateMem(0);
 	chm->URLSTRStream = ChmStream_CreateMem(0);
+	chm->URLTBLStream = ChmStream_CreateMem(0);
 	chm->FiftiMainStream = ChmStream_CreateMem(0);
 	chm->IndexedFiles = IndexedWordList_Create();
 	chm->AVLTopicdedupe = AVLTree_Create(compare_strings, (GDestroyNotify)StringIndex_Destroy);

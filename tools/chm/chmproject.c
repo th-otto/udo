@@ -296,7 +296,7 @@ static gboolean trypath(ChmProject *project, char *vn, const char *fn, GSList **
 
 	result = FALSE;
 	path = g_build_filename(project->basepath, vn, NULL);
-	if (stat(vn, &st) == 0)
+	if (stat(path, &st) == 0)
 	{
 		result = TRUE;
 		strrec = StringIndex_Create();
@@ -370,13 +370,15 @@ static void scanlist(ChmProject *project, GSList *toscan, GSList **newfiles, gbo
 				if (doc != NULL)
 				{
 					localpath = extractfilepath(fn);
+					if (strcmp(localpath, ".") == 0)
+						*localpath = '\0';
 					scantags(project, doc->children, localpath, chm_basename(fn), &localfilelist);
 					for (local = localfilelist; local; local = local->next)
 					{
 						s = (char *)local->data;
 						if (!trypath(project, s, fn, newfiles))
 							/* if (!trypath(project, localpath+s, fn, newfiles)) */
-								project->onerror(project, chmwarning, _("Found file %s while scanning %s, but couldn''t find it on disk"), s, fn);
+								project->onerror(project, chmwarning, _("Found file %s while scanning %s, but couldn't find it on disk"), s, fn);
 					}
 					g_free(localpath);
 					xmlFreeDoc(doc);
@@ -665,6 +667,16 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	project->onerror(project, chmhint, _("Writing CHM %s"), project->out_filename);
 
 	ChmWriter_Execute(Writer);
+
+	ChmStream_Close(project->tocstream);
+	project->tocstream = NULL;
+	ChmSiteMap_Destroy(project->toc);
+	project->toc = NULL;
+
+	ChmStream_Close(project->indexstream);
+	project->indexstream = NULL;
+	ChmSiteMap_Destroy(project->index);
+	project->index = NULL;
 
 	ChmWriter_Destroy(Writer);
 	

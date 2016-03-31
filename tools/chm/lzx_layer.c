@@ -1318,6 +1318,7 @@ int lzx_init(struct lzx_data **lzxdp, int wsize_code,
 
 	lzxd->bits_in_buf = 0;
 	lzxd->block_codes = NULL;
+	lzxd->block_size = 0;
 	lzxd->num_position_slots = num_position_slots[wsize_code - 15];
 	lzxd->main_tree_size = (NUM_CHARS + 8 * lzxd->num_position_slots);
 
@@ -1354,6 +1355,7 @@ int lzx_finish(struct lzx_data *lzxd, struct lzx_results *lzxr)
 	free(lzxd->prev_main_treelengths);
 	free(lzxd->main_tree);
 	free(lzxd->main_freq_table);
+	free(lzxd->block_codes);
 	free(lzxd);
 	return 0;
 }

@@ -216,6 +216,7 @@ void FileEntryList_AddEntry(FileEntryList *list, const FileEntryRec *FileEntry, 
 			TmpEntry->Compressed = FALSE;
 			TmpEntry->searchable = FALSE;
 			list->items = g_slist_append(list->items, TmpEntry);
+			dir = NULL;
 			TmpEntry = g_new(FileEntryRec, 1);
 		}
 		g_free(dir);

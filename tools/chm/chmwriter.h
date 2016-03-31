@@ -109,7 +109,7 @@ struct _ChmWriter {
 	char *default_font;
 	char *default_page;
 	const GSList *mergefiles;
-	ChmSiteMap *TocSitemap;
+	const ChmSiteMap *TocSitemap;
 	gboolean HasKLinks;
 	gboolean HasALinks;
 	int NrTopics;

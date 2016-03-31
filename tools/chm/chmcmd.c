@@ -45,7 +45,7 @@ static void onerror(ChmProject *project, ChmProjectErrorKind errorkind, const ch
 {
 	va_list args;
 	
-	if ((errorkind == chmhint && verbose >= 1) ||
+	if ((errorkind == chmhint && project->display_compile_notes) ||
 		(errorkind == chmnote && verbose >= 1) ||
 		(errorkind == chmerror) ||
 		(errorkind == chmwarning))
@@ -90,13 +90,20 @@ static void onerror(ChmProject *project, ChmProjectErrorKind errorkind, const ch
 
 /*** ---------------------------------------------------------------------- ***/
 
+static void onprogress(ChmProject *project, const char *name)
+{
+	if (project->display_compile_progress)
+		fprintf(stderr, "%s\n", name);
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 static gboolean processfile(const char *name)
 {
 	gboolean ishhp;
 	ChmProject *project;
 	gboolean ok;
 	ChmStream *out;
-	char *filename;
 	
 	{
 		const char *p = strrchr(name, '.');
@@ -105,6 +112,7 @@ static gboolean processfile(const char *name)
 	
 	project = ChmProject_Create();
 	project->onerror = onerror;
+	project->OnProgress = onprogress;
 	
 	if (ishhp)
 	{
@@ -118,7 +126,7 @@ static gboolean processfile(const char *name)
 	
 	if (ok)
 	{
-		filename = g_build_filename(project->basepath, project->out_filename, NULL);
+		char *filename = g_build_filename(project->basepath, project->out_filename, NULL);
 		
 		out = ChmStream_Open(filename, FALSE);
 		if (out == NULL)
@@ -136,6 +144,7 @@ static gboolean processfile(const char *name)
 				ChmProject_SaveToXml(project, project->xml_filename);
 			}
 		}
+		g_free(filename);
 	}
 			
 	ChmProject_Destroy(project);
