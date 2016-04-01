@@ -19,6 +19,7 @@ MV=		mv
 HC31=		hcp.exe
 HCRTF=		hcrtf
 HHC=		hhc
+CHMC=		chmc
 PCHELP=		hc
 LATEX=		latex
 PDFLATEX=	pdflatex
@@ -1221,16 +1222,21 @@ htmlhelp: .stamp.htmlhelp
 		$(CP) $(srcdir)/images/*.gif "$(HTMLHELP_DIR)"; \
 		$(CP) $(top_srcdir)/src/images/udo_{hm,up,lf,rg}.gif "$(HTMLHELP_DIR)"; \
 		$(CP) $(top_srcdir)/src/images/udo_{hm,up,lf,rg}_trans.gif "$(HTMLHELP_DIR)"; \
+		$(CP) $(srcdir)/images/favicon.ico $(HTMLHELP_DIR); \
+		$(CP) $(srcdir)/../udo.css $(srcdir)/../udo_web.css $(HTMLHELP_DIR); \
 		$(UDO) --htmlhelp --check --force-short -o "$(HTMLHELP_DIR)udo.html" -l $(srcdir)/udo.u || exit 1; \
 		$(RM) "$(HTMLHELP_DIR)udo.hhp"; \
 		$(CP) udo$(OUTPUT_LANG).hhp "$(HTMLHELP_DIR)"; \
 		$(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER).chm; \
-		if test "`type $(HHC) 2>/dev/null`" = ""; then \
+		hhc="`type -p $(CHMC) 2>/dev/null`"; \
+		if test "$$hhc" = ""; then \
+		 hhc="`type -p $(HHC) 2>/dev/null`"; \
+		fi; \
+		if test "$$hhc" = ""; then \
 		 echo "HTML Help Compiler ($(HHC)) not found" >& 2; \
 		 else \
 		(cd $(HTMLHELP_DIR); \
-		 $(HHC) udo$(OUTPUT_LANG).hhp; \
-		 test -f udo$(VER).chm && rm -f *.htm*; \
+		 "$$hhc" udo$(OUTPUT_LANG).hhp; \
 		); \
 		$(CP) $(HTMLHELP_DIR)udo$(VER).chm $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER).chm || exit 1; \
 		: $(RMDIRHIER) "$(HTMLHELP_DIR)"; \
