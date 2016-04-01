@@ -352,6 +352,8 @@ int lz_compress(lz_info *lzi, int nchars)
 			bbe = lzi->block_buf + lzi->chars_in_buf - holdback;
 		else
 			bbe = bbp + nchars;
+		(void) prevtab;
+		(void) lentab;
 		while ((bbp < bbe) && (!lzi->stop))
 		{
 			trimmed = 0;

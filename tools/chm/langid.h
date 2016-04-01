@@ -12,6 +12,7 @@ typedef uint32_t LCID;
 #define MAKELANGID(primary, sub) (((sub) << SUBLANG_SHIFT) | (primary))
 #undef PRIMARYLANGID
 #define PRIMARYLANGID(id) ((id) & ~(1 << SUBLANG_SHIFT))
+#undef SUBLANGID
 #define SUBLANGID(id) ((id) >> SUBLANG_SHIFT)
 #undef MAKELCID
 #define MAKELCID(l,s) ((LCID)((((LCID)((uint16_t)(s)))<<16)|((LCID)((uint16_)(l)))))

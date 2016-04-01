@@ -33,6 +33,22 @@ char *g_strdup(const char *str)
 
 /*** ---------------------------------------------------------------------- ***/
 
+gboolean g_path_is_absolute(const char *file_name)
+{
+	if (G_IS_DIR_SEPARATOR(file_name[0]))
+	    return TRUE;
+
+#ifdef G_DOSTYLE_PATHNAMES
+	/* Recognize drive letter on native Windows */
+	if ((isalpha(file_name[0]) || file_name[0] == '*') && file_name[1] == ':')
+		return TRUE;
+#endif
+
+	return FALSE;
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 char *g_build_filename(const char *first, ...)
 {
 	va_list args;

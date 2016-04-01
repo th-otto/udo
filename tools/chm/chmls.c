@@ -606,12 +606,12 @@ static gboolean printproject(const char *filename, const char *outfilename)
 		if (os_lcid)
 		{
 			const char *lcid_string = get_lcid_string(os_lcid);
-			fprintf(out, ";Compilation operating system language: 0x%x %s\n", os_lcid, fixnull(lcid_string));
+			fprintf(out, ";Compilation operating system language: 0x%x %s\n", (unsigned int)os_lcid, fixnull(lcid_string));
 		}
 		if (compiler_lcid)
 		{
 			const char *lcid_string = get_lcid_string(compiler_lcid);
-			fprintf(out, ";Compiler language id: 0x%x %s\n", compiler_lcid, fixnull(lcid_string));
+			fprintf(out, ";Compiler language id: 0x%x %s\n", (unsigned int)compiler_lcid, fixnull(lcid_string));
 		}
 		if (sys && sys->local_timestamp)
 		{
@@ -717,7 +717,7 @@ static gboolean printproject(const char *filename, const char *outfilename)
 			if (lcid != 0)
 			{
 				const char *language_string = get_lcid_string(lcid);
-				fprintf(out, "Language=0x%x %s\n", lcid, fixnull(language_string));
+				fprintf(out, "Language=0x%x %s\n", (unsigned int)lcid, fixnull(language_string));
 			}
 		}
 		
@@ -1197,7 +1197,7 @@ static gboolean printsystem(const char *filename, const char *outfilename)
 		fprintf(out, _("Index file from [options]      : %s\n"), printnull(sys->index_file.c));
 		fprintf(out, _("Default topic from [options]   : %s\n"), printnull(sys->default_page.c));
 		fprintf(out, _("Title from [options]           : %s\n"), printnull(sys->caption.c));
-		fprintf(out, _("LCID from HHP file             : $%04x %s\n"), sys->locale_id, get_lcid_string(sys->locale_id) ? get_lcid_string(sys->locale_id): _("unknown"));
+		fprintf(out, _("LCID from HHP file             : $%04x %s\n"), (unsigned int)sys->locale_id, get_lcid_string(sys->locale_id) ? get_lcid_string(sys->locale_id): _("unknown"));
 		fprintf(out, _("One if DBCS in use             : %d\n"), sys->dbcs);
 		fprintf(out, _("One if fulltext search is on   : %d\n"), sys->fulltextsearch);
 		fprintf(out, _("Non zero if there are KLinks   : %d\n"), sys->klinks);

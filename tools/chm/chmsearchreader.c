@@ -141,7 +141,7 @@ static gboolean ChmSearchReader_ReadCommonData(ChmSearchReader *chm)
 		chm->HeaderRec.unknown6[19], chm->HeaderRec.unknown6[20], chm->HeaderRec.unknown6[21],
 		chm->HeaderRec.unknown6[23], chm->HeaderRec.unknown6[23]);
 	CHM_DEBUG_LOG(1, "%s: codepage: %d\n", FIFTIMAIN, chm->HeaderRec.codepage);
-	CHM_DEBUG_LOG(1, "%s: lcid: $%04x %s\n", FIFTIMAIN, chm->HeaderRec.locale_id, get_lcid_string(chm->HeaderRec.locale_id));
+	CHM_DEBUG_LOG(1, "%s: lcid: $%04x %s\n", FIFTIMAIN, (unsigned int)chm->HeaderRec.locale_id, get_lcid_string(chm->HeaderRec.locale_id));
 
 	if (chm->HeaderRec.DocIndexScale != 2 || chm->HeaderRec.CodeCountScale != 2 || chm->HeaderRec.LocationCodeScale != 2)
 	{

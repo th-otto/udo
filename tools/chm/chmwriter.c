@@ -388,6 +388,7 @@ static gboolean ITSFWriter_WriteDirectoryListings(ITSFWriter *itsf, ChmStream *s
 
 /*** ---------------------------------------------------------------------- ***/
 
+#if 0
 static gboolean ITSFWriter_WriteREADMEFile(ITSFWriter *itsf)
 {
 	static char const DISCLAIMER_STR[] = "This archive was not made by the MS HTML Help Workshop(r)(tm) program.\x0d\x0a";
@@ -410,6 +411,7 @@ static gboolean ITSFWriter_WriteREADMEFile(ITSFWriter *itsf)
 	FileEntryList_AddEntry(itsf->InternalFiles, &entry, TRUE);
 	return TRUE;
 }
+#endif
 
 /*** ---------------------------------------------------------------------- ***/
 
@@ -467,6 +469,10 @@ static gboolean ITSFWriter_WriteDataSpaceFiles(ITSFWriter *itsf)
 
 	/*	::DataSpace/Storage/MSCompressed/Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/ */
 	/*	::DataSpace/Storage/MSCompressed/Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/InstanceData/ResetTable */
+	entry.DecompressedOffset = 0;
+	entry.DecompressedSize = 0;
+	entry.path.c = "::DataSpace/Storage/MSCompressed/Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/InstanceData/";
+	FileEntryList_AddEntry(itsf->InternalFiles, &entry, FALSE);
 	entry.DecompressedOffset = ChmStream_Tell(itsf->Section0);
 	entry.DecompressedSize = WriteResetTableToStream(itsf->Section0, itsf->Section1ResetTable);
 	entry.path.c = "::DataSpace/Storage/MSCompressed/Transform/{7FC28940-9D31-11D0-9B27-00A0C91E9C7C}/InstanceData/ResetTable";
@@ -699,8 +705,11 @@ static void ITSFWriter_WriteInternalFilesAfter(ITSFWriter *itsf)
 
 static void ITSFWriter_WriteInternalFilesBefore(ITSFWriter *itsf)
 {
+	UNUSED(itsf);
+#if 0
 	/* written to Section0 (uncompressed) */
 	ITSFWriter_WriteREADMEFile(itsf);
+#endif
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -1116,8 +1125,8 @@ static void WriteIDXHDR(ChmWriter *chm)
 	int i;
 	
 	/* I assume text/site properties could also trigger idxhdr */
-	if (count == 0)
-		return;
+	/* if (count == 0)
+		return; */
 	
 	chmstream_write_be32(stream, 0x5423534d);			/*	0 Magic 'T#SM' */
 	chmstream_write_le32(stream, 1);					/*	4 Unknown timestamp/checksum */

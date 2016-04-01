@@ -207,7 +207,7 @@ static gboolean ITSFReader_ReadHeaderEntries(ITSFReader *reader)
 	CHM_DEBUG_LOG(1, "Last PMGL               = %u\n", reader->DirectoryHeader.LastPMGLChunkIndex);
 	CHM_DEBUG_LOG(1, "Unknown2                = %d\n", reader->DirectoryHeader.Unknown2);
 	CHM_DEBUG_LOG(1, "DirCount                = %u\n", reader->DirectoryHeader.DirectoryChunkCount);
-	CHM_DEBUG_LOG(1, "LanguageID              = $%04x %s\n", reader->DirectoryHeader.LanguageID, fixnull(get_lcid_string(reader->DirectoryHeader.LanguageID)));
+	CHM_DEBUG_LOG(1, "LanguageID              = $%04x %s\n", (unsigned int)reader->DirectoryHeader.LanguageID, fixnull(get_lcid_string(reader->DirectoryHeader.LanguageID)));
 	CHM_DEBUG_LOG(1, "guid                    = %s\n", print_guid(&reader->DirectoryHeader.guid));
 	CHM_DEBUG_LOG(1, "LengthAgain             = %u\n", reader->DirectoryHeader.LengthAgain);
 	CHM_DEBUG_LOG(1, "Unknown3                = %d\n", reader->DirectoryHeader.Unknown3);
@@ -241,7 +241,7 @@ gboolean ITSFReader_ReadHeader(ITSFReader *reader)
 	CHM_DEBUG_LOG(1, "Header length = %u\n", reader->ITSFheader.HeaderLength);
 	CHM_DEBUG_LOG(1, "Unknown 1     = %u\n", reader->ITSFheader.Unknown_1);
 	CHM_DEBUG_LOG(1, "TimeStamp     = $%08x\n", reader->ITSFheader.TimeStamp);
-	CHM_DEBUG_LOG(1, "LanguageID    = $%04x %s\n", reader->ITSFheader.LanguageID, fixnull(get_lcid_string(reader->ITSFheader.LanguageID)));
+	CHM_DEBUG_LOG(1, "LanguageID    = $%04x %s\n", (unsigned int)reader->ITSFheader.LanguageID, fixnull(get_lcid_string(reader->ITSFheader.LanguageID)));
 	if (reader->ITSFheader.Version < 4)
 	{
 		if (read_guid(stream, &reader->ITSFheader.guid1) == FALSE)
@@ -2382,6 +2382,8 @@ ChmSiteMap *ChmReader_GetTOCSitemap(ChmReader *reader, gboolean ForceXML)
 	fprintf(stderr, "EntryCount=%04x\n", EntryCount);
 	fprintf(stderr, "TOPICSOffset=%04x\n", TOPICSOffset);
 #endif
+	UNUSED(EntriesOffset);
+	UNUSED(TOPICSOffset);
 	
 	if (EntryCount != 0)
 	{
