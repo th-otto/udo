@@ -106,7 +106,7 @@ static anchorentry *anchorlist_indexof(GSList *list, const char *name)
 	for (l = list; l != NULL; l = l->next)
 	{
 		anchorentry *a = (anchorentry *)l->data;
-		if (g_ascii_strcasecmp(a->anchor, name) == 0)
+		if (strcmp(a->anchor, name) == 0)
 			return a;
 	}
 	return NULL;
@@ -120,7 +120,7 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 	char *anchor;
 	
 	*outstring = NULL;
-	if (empty(instring))
+	if (empty(instring) || strcmp(instring, "#") ==  0)
 		return FALSE;
 	/* Check for protocols before adding local path */
 	if (g_ascii_strncasecmp(instring, "http:", 5) == 0)
@@ -169,7 +169,9 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 		if (p > *outstring)
 			anchor = g_strdup(*outstring);
 		else
-			anchor = g_strconcat(localname, outstring, NULL);
+			anchor = g_strconcat(localname, *outstring, NULL);
+		if (strcmp(anchor, "cmd_toplink.html#") == 0)
+			printf("localpath=%s localname=%s instring=%s\n", localpath, localname, instring);
 		a = anchorlist_indexof(project->anchorlist, anchor);
 		if (a == NULL)
 		{
@@ -249,7 +251,7 @@ static void scantags(ChmProject *project, xmlNode *parent, const char *localpath
 							anchor = NULL;
 						} else if (a->isdefined)
 						{
-							project->onerror(project, chmwarning, _("Duplicate anchor definitions with name %s found while scanning %s"), s, localname);
+							project->onerror(project, chmwarning, _("Duplicate anchor '%s' in %s"), s, localname);
 						} else
 						{
 							a->isdefined = TRUE;
