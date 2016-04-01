@@ -213,7 +213,8 @@ typedef struct _LZXv3ResetTable {
 
 
 
-extern GUID const ITSFHeaderGUID;
+extern GUID const ITSFHeaderGUID1;
+extern GUID const ITSFHeaderGUID2;
 extern CHMSignature const ITSFFileSig;
 
 extern GUID const ITSPHeaderGUID;

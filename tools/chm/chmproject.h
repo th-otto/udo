@@ -69,6 +69,9 @@ struct _ChmProject {
 	char *error_log_file;
 	char *fts_stop_list_filename;
 	int cores;
+	long internet_links;
+	long local_links;
+	long graphics;
 };
 
 ChmProject *ChmProject_Create(void);

@@ -136,6 +136,24 @@ static int file_putc(ChmStream *stream, int c)
 
 /*** ---------------------------------------------------------------------- ***/
 
+static void file_getsize(ChmStream *stream)
+{
+	FILE *fp = stream->file;
+	
+	if (fp != stdout && fp != stderr && fp != stdin)
+	{
+		chm_off_t pos = stream->tell(stream);
+		if (stream->seek(stream, 0, SEEK_END))
+		{
+			stream->len = stream->tell(stream);
+			stream->seek(stream, pos, SEEK_SET);
+		}
+	}		
+	
+}
+
+/*** ---------------------------------------------------------------------- ***/
+
 ChmStream *ChmStream_CreateForFile(FILE *fp)
 {
 	ChmStream *stream;
@@ -157,14 +175,7 @@ ChmStream *ChmStream_CreateForFile(FILE *fp)
 	stream->write = file_write;
 	stream->fgetc = file_getc;
 	stream->fputc = file_putc;
-	if (fp != stdout && fp != stderr && fp != stdin)
-	{
-		if (stream->seek(stream, 0, SEEK_END))
-		{
-			stream->len = stream->tell(stream);
-			stream->seek(stream, 0, SEEK_SET);
-		}
-	}		
+	file_getsize(stream);
 #ifdef __WIN32__
 	stream->supports_64bit = TRUE;
 #else
@@ -301,14 +312,14 @@ static int mem_getc(ChmStream *stream)
 static int mem_putc(ChmStream *stream, int c)
 {
 	if (!mem_make_space(stream, 1))
-		return FALSE;
+		return EOF;
 	stream->mem.base[stream->mem.pos++] = c;
-	return c;
+	return (unsigned char)c;
 }
 
 /*** ---------------------------------------------------------------------- ***/
 
-ChmMemoryStream *ChmStream_CreateMem(chm_off_t size)
+ChmMemoryStream *ChmStream_CreateMem(chm_off_t size, const char *filename)
 {
 	ChmStream *stream;
 	
@@ -321,8 +332,8 @@ ChmMemoryStream *ChmStream_CreateMem(chm_off_t size)
 	if (stream == NULL)
 		return NULL;
 	stream->type = chm_stream_mem;
+	stream->filename = g_strdup(filename);
 	stream->owned = FALSE;
-	stream->filename = NULL;
 	stream->mem.base = g_new(unsigned char, size + 1);
 	if (stream->mem.base == NULL)
 	{
@@ -380,6 +391,8 @@ chm_off_t ChmStream_Size(ChmStream *stream)
 {
 	if (stream == NULL)
 		return 0;
+	if (stream->type == chm_stream_file)
+		file_getsize(stream);
 	return stream->len;
 }
 
@@ -452,8 +465,11 @@ size_t ChmStream_Write(ChmStream *stream, const void *buffer, size_t len)
 
 size_t ChmStream_Read(ChmStream *stream, void *buffer, size_t len)
 {
+	size_t nread;
+	
 	assert(stream);
-	return stream->read(stream, buffer, len);
+	nread = stream->read(stream, buffer, len);
+	return nread;
 }
 
 /*** ---------------------------------------------------------------------- ***/

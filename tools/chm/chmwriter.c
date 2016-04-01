@@ -7,6 +7,7 @@
 #include "chmsearchwriter.h"
 #include "lzx_compress.h"
 #include <sys/time.h>
+#include "chmversion.h"
 
 static char const defaulthhc[] = "default.hhc";
 static char const defaulthhk[] = "default.hhk";
@@ -82,6 +83,26 @@ static void ITSFWriter_InitITSFHeader(ITSFWriter *itsf)
 	tm = *localtime(&now);
 	itsf->ITSFheader.TimeStamp = (((tm.tm_hour * 60) + tm.tm_min) * 60 + tm.tm_sec) * 1000;
 	itsf->ITSFheader.LanguageID = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US); /* English / English_US */
+
+	itsf->HeaderSection1.ITSPsig = ITSPHeaderSig;
+	itsf->HeaderSection1.Version = 1;
+	itsf->HeaderSection1.DirHeaderLength = SIZEOF_ITSPHEADER;	/* Length of the directory header */
+	itsf->HeaderSection1.Unknown1 = 0x0A;
+	itsf->HeaderSection1.ChunkSize = 0x1000;
+	itsf->HeaderSection1.Density = 2;
+	/* updated when directory listings were created */
+	itsf->HeaderSection1.IndexTreeDepth = 1;		/* 1 if there is no index 2 if there is one level of PMGI chunks. will update as */
+	itsf->HeaderSection1.IndexOfRootChunk = -1;		/* if no root chunk */
+	itsf->HeaderSection1.FirstPMGLChunkIndex = 0;
+	itsf->HeaderSection1.LastPMGLChunkIndex = 0;
+	itsf->HeaderSection1.Unknown2 = -1;
+	itsf->HeaderSection1.DirectoryChunkCount = 0;
+	itsf->HeaderSection1.LanguageID = itsf->ITSFheader.LanguageID;
+	itsf->HeaderSection1.guid = ITSPHeaderGUID;
+	itsf->HeaderSection1.LengthAgain = SIZEOF_ITSPHEADER;
+	itsf->HeaderSection1.Unknown3 = -1;
+	itsf->HeaderSection1.Unknown4 = -1;
+	itsf->HeaderSection1.Unknown5 = -1;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -106,26 +127,6 @@ static void ITSFWriter_InitHeaderSectionTable(ITSFWriter *itsf)
 	itsf->HeaderSection0.Unknown3 = 0;
 	itsf->HeaderSection0.Unknown4 = 0;
 	
-	itsf->HeaderSection1.ITSPsig = ITSPHeaderSig;
-	itsf->HeaderSection1.Version = 1;
-	itsf->HeaderSection1.DirHeaderLength = SIZEOF_ITSPHEADER;	/* Length of the directory header */
-	itsf->HeaderSection1.Unknown1 = 0x0A;
-	itsf->HeaderSection1.ChunkSize = 0x1000;
-	itsf->HeaderSection1.Density = 2;
-	/* updated when directory listings were created */
-	itsf->HeaderSection1.IndexTreeDepth = 1;		/* 1 if there is no index 2 if there is one level of PMGI chunks. will update as */
-	itsf->HeaderSection1.IndexOfRootChunk = -1;		/* if no root chunk */
-	itsf->HeaderSection1.FirstPMGLChunkIndex = 0;
-	itsf->HeaderSection1.LastPMGLChunkIndex = 0;
-
-	itsf->HeaderSection1.Unknown2 = -1;
-	itsf->HeaderSection1.DirectoryChunkCount = 0;
-	itsf->HeaderSection1.LanguageID = itsf->ITSFheader.LanguageID;
-	itsf->HeaderSection1.guid = ITSPHeaderGUID;
-	itsf->HeaderSection1.LengthAgain = SIZEOF_ITSPHEADER;
-	itsf->HeaderSection1.Unknown3 = -1;
-	itsf->HeaderSection1.Unknown4 = -1;
-	itsf->HeaderSection1.Unknown5 = -1;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -161,8 +162,8 @@ static gboolean ITSFWriter_WriteHeader(ITSFWriter *itsf, ChmStream *stream)
 	chmstream_write_le32(stream, itsf->ITSFheader.LanguageID);
 	if (itsf->ITSFheader.Version < 4)
 	{
-		write_guid(stream, &ITSFHeaderGUID);
-		write_guid(stream, &ITSFHeaderGUID);
+		write_guid(stream, &ITSFHeaderGUID1);
+		write_guid(stream, &ITSFHeaderGUID2);
 	}
 
 	chmstream_write_le64(stream, itsf->HeaderSection0Table.PosFromZero);
@@ -511,7 +512,10 @@ static int ITSFWriter_GetData(void *arg, int count, void *_buffer)
 	while (result < count && !ITSFWriter_AtEndOfData(itsf))
 	{
 		if (itsf->CurrentStream)
-			result += ChmStream_Read(itsf->CurrentStream, &buffer[result], count - result);
+		{
+			int nread = ChmStream_Read(itsf->CurrentStream, &buffer[result], count - result);
+			result += nread;
+		}
 		if (result < count && !ITSFWriter_AtEndOfData(itsf))
 		{
 			const char *path;
@@ -533,6 +537,7 @@ static int ITSFWriter_GetData(void *arg, int count, void *_buffer)
 			g_free(FileEntry.path.s);
 			/* So the next file knows it's offset */
 			itsf->ReadCompressedSize += FileEntry.DecompressedSize;
+			if (ChmStream_Seek(itsf->CurrentStream, 0) == FALSE) {}
 		}
 
 		/* this is intended for programs to add perhaps a file */
@@ -638,6 +643,10 @@ static void ITSFWriter_StartCompressingStream(ITSFWriter *itsf)
 
 	/* we have to mark the last frame manually */
 	ITSFWriter_MarkFrame(itsf, results.len_uncompressed_input, results.len_compressed_output);
+	
+	/* some statistics */
+	itsf->len_uncompressed_input = results.len_uncompressed_input;
+	itsf->len_compressed_output = results.len_compressed_output;
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -650,12 +659,13 @@ void ITSFWriter_Execute(ITSFWriter *itsf)
 	
 	itsf->FilesToCompressCount = g_slist_length(itsf->FilesToCompress);
 	
-	/* write any internal files to FCurrentStream that we want in the compressed section */
+	/* write any internal files to CurrentStream that we want in the compressed section */
 	itsf->WriteInternalFilesBefore(itsf);
 
 	/* move back to zero so that we can start reading from zero :) */
 	itsf->ReadCompressedSize = ChmStream_Size(itsf->CurrentStream);
-
+	if (ChmStream_Seek(itsf->CurrentStream, 0) == FALSE) {}
+	
 	/* this gathers ALL files that should be in section1 (the compressed section) */
 	ITSFWriter_StartCompressingStream(itsf);
 
@@ -664,17 +674,17 @@ void ITSFWriter_Execute(ITSFWriter *itsf)
 	/* this creates all special files in the archive that start with ::DataSpace */
 	ITSFWriter_WriteDataSpaceFiles(itsf);
 
-	/* do this after we have compressed everything so that we know the values that must be written */
-	ITSFWriter_InitHeaderSectionTable(itsf);
-
 	/* creates all directory listings including header */
 	ITSFWriter_CreateDirectoryListings(itsf);
 
-	/* Now we can write everything to FOutStream */
+	/* do this after we have compressed everything so that we know the values that must be written */
+	ITSFWriter_InitHeaderSectionTable(itsf);
+
+	/* Now we can write everything to OutStream */
 	ITSFWriter_WriteHeader(itsf, itsf->OutStream);
 	ITSFWriter_WriteDirectoryListings(itsf, itsf->OutStream);
 	ITSFWriter_WriteSection0(itsf); /* does NOT include section 1 even though section0.content IS section1 */
-	ITSFWriter_WriteSection1(itsf); /* writes section 1 to FOutStream */
+	ITSFWriter_WriteSection1(itsf); /* writes section 1 to OutStream */
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -786,13 +796,13 @@ static void ITSFWriter_Init(ITSFWriter *itsf, ChmStream *OutStream, gboolean Fre
 	itsf->OutStream = OutStream;
 	itsf->DestroyStream = FreeStreamOnDestroy;
 	itsf->CurrentIndex = -1;
-	itsf->CurrentStream = ChmStream_CreateMem(0);
+	itsf->CurrentStream = ChmStream_CreateMem(0, "<empty file>");
 	itsf->InternalFiles = FileEntryList_Create();
-	itsf->Section0 = ChmStream_CreateMem(0);
-	itsf->Section1 = ChmStream_CreateMem(0);
-	itsf->Section1ResetTable = ChmStream_CreateMem(0);
-	itsf->DirectoryListings = ChmStream_CreateMem(0);
-	itsf->PostStream = ChmStream_CreateMem(0);
+	itsf->Section0 = ChmStream_CreateMem(0, "<Section 0>");
+	itsf->Section1 = ChmStream_CreateMem(0, "<Section 1>");
+	itsf->Section1ResetTable = ChmStream_CreateMem(0, "<ResetTable>");
+	itsf->DirectoryListings = ChmStream_CreateMem(0, "<Directory>");
+	itsf->PostStream = ChmStream_CreateMem(0, "<PostStream>");
 	itsf->FilesToCompress = NULL;
 	itsf->FilesToCompressCount = 0;
 	itsf->WriteInternalFilesBefore = ITSFWriter_WriteInternalFilesBefore;
@@ -1045,7 +1055,7 @@ static void WriteWINDOWS(ChmWriter *chm)
 	
 	if (chm->windows)
 	{
-		WindowStream = ChmStream_CreateMem(0);
+		WindowStream = ChmStream_CreateMem(0, "/#WINDOWS");
 		chmstream_write_le32(WindowStream, g_slist_length(chm->windows));
 		chmstream_write_le32(WindowStream, 196); /* 1.1 or later. 188 is old style. */
 		for (l = chm->windows; l; l = l->next)
@@ -1129,10 +1139,10 @@ static void WriteIDXHDR(ChmWriter *chm)
 		return; */
 	
 	chmstream_write_be32(stream, 0x5423534d);			/*	0 Magic 'T#SM' */
-	chmstream_write_le32(stream, 1);					/*	4 Unknown timestamp/checksum */
-	chmstream_write_le32(stream, 1);					/*	8 1 (unknown) */
+	chmstream_write_le32(stream, 1);					/*	4 timestamp/checksum */
+	chmstream_write_le32(stream, 1);					/*	8 unknown1 */
 	chmstream_write_le32(stream, chm->NrTopics);		/*	C Number of topic nodes including the contents & index files */
-	chmstream_write_le32(stream, 0);					/* 10 0 (unknown) */
+	chmstream_write_le32(stream, 0);					/* 10 unknown2 */
 
 	/* 14 Offset in the #STRINGS file of the ImageList param of the "text/site properties" object of the sitemap contents (0/-1 == none) */
 	if (chm->TocSitemap && chm->TocSitemap->imagelist != NULL)
@@ -1140,7 +1150,7 @@ static void WriteIDXHDR(ChmWriter *chm)
 	else
 		chmstream_write_le32(stream, 0);
 
-	/* 18 0 (unknown) */
+	/* 18 0 (unknown3) */
 	chmstream_write_le32(stream, 0);
 
 	/* 1C 1 if the value of the ImageType param of the "text/site properties" object of the sitemap contents is Folder. 0 otherwise. */
@@ -1179,7 +1189,7 @@ static void WriteIDXHDR(ChmWriter *chm)
 	else
 		chmstream_write_le32(stream, 0);
 
-	/* 34 Unknown. Often -1. Sometimes 0. */
+	/* 34 unknown4. Often -1. Sometimes 0. */
 	chmstream_write_le32(stream, -1);
 
 	/* 38 Offset in the #STRINGS file of the FrameName param of the "text/site properties" object of the sitemap contents (0/-1 == none) */
@@ -1195,10 +1205,10 @@ static void WriteIDXHDR(ChmWriter *chm)
 		chmstream_write_le32(stream, 0);
 
 	chmstream_write_le32(stream, 0);				/* 40 Number of information types. */
-	chmstream_write_le32(stream, 0);				/* 44 Unknown. Often 1. Also 0, 3. */
+	chmstream_write_le32(stream, 1);				/* 44 unknown5. Often 1. Also 0, 3. */
 	chmstream_write_le32(stream, count);			/* 48 Number of files in the [MERGE FILES] list. */
 
-	/* 4C Unknown. Often 0. Non-zero mostly in files with some files in the merge files list. */
+	/* 4C unknown6. Often 0. Non-zero mostly in files with some files in the merge files list. */
 	chmstream_write_le32(stream, count > 0 ? 1 : 0);
 
 	for (l = chm->mergefiles; l; l = l->next)
@@ -1242,7 +1252,7 @@ static void WriteFiftiMain(ChmWriter *chm)
 static void WriteSYSTEM(ChmWriter *chm)
 {
 	FileEntryRec entry;
-	static char const VersionStr[] = "HHA Version 4.74.8702"; /* does this matter? */
+	static char const VersionStr[] = "CHMCMD Version " CHM_VERSION; /* "HHA Version 4.74.8702" */
 	ChmStream *stream = chm->itsf.Section0;
 	uint32_t len;
 	
@@ -1434,7 +1444,7 @@ static void WriteOBJINST(ChmWriter *chm)
 	int i;
 	ChmMemoryStream *ObjStream;
 
-	ObjStream = ChmStream_CreateMem(0);
+	ObjStream = ChmStream_CreateMem(0, "/$OBJINST");
 	
 	/* this file is needed to enable searches for the ms reader */
 	chmstream_write_le32(ObjStream, 0x04000000);
@@ -1634,7 +1644,7 @@ void ChmWriter_AddContext(ChmWriter *chm, HelpContext context, const char *topic
 	
 	if (chm->ContextStream == NULL)
 	{
-		chm->ContextStream = ChmStream_CreateMem(0);
+		chm->ContextStream = ChmStream_CreateMem(0, "<ContextStream>");
 		/* #IVB starts with a dword which is the size of the stream - sizeof(dword) */
 		chmstream_write_le32(chm->ContextStream, 0);
 		/* we will update this when we write the file to the final stream */
@@ -1801,10 +1811,10 @@ void ChmWriter_AppendBinaryTOCFromSiteMap(ChmWriter *chm, ChmSiteMap *sitemap)
 	
 	memset(&header, 0, sizeof(header));
 	/* create streams */
-	bininfo.TOCIDXStream = ChmStream_CreateMem(0);
-	bininfo.EntryInfoStream = ChmStream_CreateMem(0);
-	bininfo.EntryTopicOffsetStream = ChmStream_CreateMem(0);
-	bininfo.EntryStream = ChmStream_CreateMem(0);
+	bininfo.TOCIDXStream = ChmStream_CreateMem(0, "/$TOCIDX");
+	bininfo.EntryInfoStream = ChmStream_CreateMem(0, "<entryinfo of TOC>");
+	bininfo.EntryTopicOffsetStream = ChmStream_CreateMem(0, "<topics of TOC>");
+	bininfo.EntryStream = ChmStream_CreateMem(0, "<entries of TOC>");
 	bininfo.EntryCount = 0;
 	bininfo.HeaderSize = 4096;
 	
@@ -2126,7 +2136,7 @@ static void AddDummyALink(ChmWriter *chm)
 {
 	ChmMemoryStream *stream;
 
-	stream = ChmStream_CreateMem(4);
+	stream = ChmStream_CreateMem(4, NULL);
 	chmstream_write_le32(stream, 0);
 	ITSFWriter_AddStreamToArchive(&chm->itsf, "/$WWAssociativeLinks/Property", stream, TRUE, FALSE);
 	ChmStream_Close(stream);
@@ -2151,13 +2161,13 @@ void ChmWriter_AppendBinaryIndexFromSiteMap(ChmWriter *chm, ChmSiteMap *sitemap,
 	memset(info, 0, sizeof(*info));
 	info->chm = chm;
 	
-	info->IndexStream = ChmStream_CreateMem(0);
+	info->IndexStream = ChmStream_CreateMem(0, "/$WWKeywordLinks/BTree");
 	ChmStream_Write(info->IndexStream, info->curblock, SIZEOF_BTREEHEADER);
 	
-	info->datastream = ChmStream_CreateMem(0);
-	info->mapstream  = ChmStream_CreateMem(0);
+	info->datastream = ChmStream_CreateMem(0, "/$WWKeywordLinks/Data");
+	info->mapstream = ChmStream_CreateMem(0, "/$WWKeywordLinks/Map");
 	chmstream_write_le16(info->mapstream, 0);
-	info->propertystream	= ChmStream_CreateMem(0);
+	info->propertystream = ChmStream_CreateMem(0, "/$WWKeywordLinks/Property");
 	chmstream_write_le32(info->propertystream, 0);
 	
 	/* we iterate over all entries and write listingblocks directly to the stream. */
@@ -2348,16 +2358,16 @@ ChmWriter *ChmWriter_Create(ChmStream *OutStream, gboolean FreeStreamOnDestroy)
 	chm->itsf.WriteInternalFilesAfter = ChmWriter_WriteInternalFilesAfter;
 	chm->itsf.WriteInternalFilesBefore = ChmWriter_WriteInternalFilesBefore;
 	chm->itsf.FileAdded = ChmWriter_FileAdded;
-	chm->StringsStream = ChmStream_CreateMem(0);
-	chm->TopicsStream = ChmStream_CreateMem(0);
-	chm->URLSTRStream = ChmStream_CreateMem(0);
-	chm->URLTBLStream = ChmStream_CreateMem(0);
-	chm->FiftiMainStream = ChmStream_CreateMem(0);
+	chm->StringsStream = ChmStream_CreateMem(0, "/#STRINGS");
+	chm->TopicsStream = ChmStream_CreateMem(0, "/#TOPICS");
+	chm->URLSTRStream = ChmStream_CreateMem(0, "/#URLSTR");
+	chm->URLTBLStream = ChmStream_CreateMem(0, "/#URLTBL");
+	chm->FiftiMainStream = ChmStream_CreateMem(0, "/$FiftiMain");
 	chm->IndexedFiles = IndexedWordList_Create();
 	chm->AVLTopicdedupe = AVLTree_Create(compare_strings, (GDestroyNotify)StringIndex_Destroy);
 	chm->AvlStrings = AVLTree_Create(compare_strings, (GDestroyNotify)StringIndex_Destroy);
 	chm->AvlURLStr = AVLTree_Create(compare_urlstr, (GDestroyNotify)UrlStrIndex_Destroy);
-	chm->IDXHdrStream = ChmStream_CreateMem(4096);
+	chm->IDXHdrStream = ChmStream_CreateMem(4096, "/#IDXHDR");
 	chm->locale_id = MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US);
 	chm->codepage = 1252;
 	

@@ -3,6 +3,8 @@
 
 #include "chm_htmlhelp.h"
 
+extern char const emptystr[];
+
 #define snMSCompressed (1 << 0)
 #define snUnCompressed (1 << 1)
 typedef unsigned int SectionNames;

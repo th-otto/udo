@@ -434,7 +434,7 @@ gboolean ITSFReader_GetCompleteFileList(ITSFReader *reader, void *obj, FileEntry
 	
 	if (reader == NULL || ForEach == NULL)
 		return FALSE;
-	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize);
+	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize, "<Chunks>");
 	if (ChunkStream == NULL)
 		return FALSE;
 	
@@ -626,7 +626,7 @@ gboolean ITSFReader_ObjectExists(ITSFReader *reader, const char *Name)
 		return TRUE;
 	}
 	
-	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize);
+	ChunkStream = ChmStream_CreateMem(reader->DirectoryHeader.ChunkSize, "<Chunks>");
 	if (ChunkStream == NULL)
 	{
 		g_free(freeme);
@@ -748,7 +748,7 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader)
 	uint16_t EntryCount;
 	uint16_t X;
 	uint16_t i;
-	chm_wchar_t *WString;
+	chm_wchar_t *wstring;
 	uint16_t StrLength;
 	WStringList *sections;
 	
@@ -767,13 +767,13 @@ WStringList *ITSFReader_GetSections(ITSFReader *reader)
 		StrLength = chmstream_read_le16(stream);
 		/* the strings are stored null terminated */
 		StrLength++;
-		WString = g_new(chm_wchar_t, StrLength);
+		wstring = g_new(chm_wchar_t, StrLength);
 		for (i = 0; i < StrLength; i++)
 		{
-			WString[i] = chmstream_read_le16(stream);
+			wstring[i] = chmstream_read_le16(stream);
 		}
-		WString[StrLength - 1] = 0;
-		sections = g_slist_append(sections, WString);
+		wstring[StrLength - 1] = 0;
+		sections = g_slist_append(sections, wstring);
 	}
 	ChmStream_Close(stream);
 	return sections;
@@ -888,7 +888,7 @@ static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 		{
 			if (ChmStream_Seek(stream, reader->HeaderSuffix.Offset + reader->CachedEntry.ContentOffset + StartPos) == FALSE)
 				goto fail;
-			result = ChmStream_CreateMem(BlockLength);
+			result = ChmStream_CreateMem(BlockLength, "<Block>");
 			if (ChmStream_CopyFrom(result, stream, BlockLength) == FALSE)
 				goto fail;
 		}
@@ -996,7 +996,7 @@ static ChmMemoryStream *ITSFReader_GetBlockFromSection(
 			goto fail;
 		}
 		
-		result = ChmStream_CreateMem(BlockLength);
+		result = ChmStream_CreateMem(BlockLength, "<Block>");
 		inbuf_size = BlockSize;
 		InBuf = g_new(uint8_t, inbuf_size);
 		OutBuf = g_new(uint8_t, BlockSize);
@@ -1089,7 +1089,7 @@ ChmMemoryStream *ITSFReader_GetObject(ITSFReader *reader, const char *Name)
 	Entry = reader->CachedEntry;
 	if (Entry.ContentSection == 0)
 	{
-		stream = ChmStream_CreateMem(Entry.DecompressedLength);
+		stream = ChmStream_CreateMem(Entry.DecompressedLength, Name);
 		if (ChmStream_Seek(reader->Stream, reader->HeaderSuffix.Offset + Entry.ContentOffset) == FALSE ||
 			ChmStream_CopyFrom(stream, reader->Stream, Entry.DecompressedLength) == FALSE)
 		{

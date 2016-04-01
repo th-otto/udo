@@ -3,9 +3,10 @@
 #include "chmxml.h"
 #include "chmproject.h"
 #include <libxml/parser.h>
+#include "chmversion.h"
 
 char const gl_program_name[] = "chmc";
-char const gl_program_version[] = "1.0";
+char const gl_program_version[] = CHM_VERSION;
 
 int verbose = 0;
 
@@ -71,7 +72,7 @@ static void onerror(ChmProject *project, ChmProjectErrorKind errorkind, const ch
 			case chmerror: prefix = _("error: "); errors++; break;
 			case chmwarning: prefix = _("warning: "); warnings++; break;
 			case chmnote: prefix = _("note: "); break;
-			case chmhint: prefix = _("hint: "); break;
+			case chmhint: prefix = emptystr; break;
 		}
 		fputs(prefix, stderr);
 		vfprintf(stderr, msg, args);
@@ -165,8 +166,7 @@ static gboolean processfile(const char *name)
 
 static void print_version(FILE *out)
 {
-	fprintf(out, _("%s, a CHM utility. (c) 2010 Free Pascal core.\n"), gl_program_name);
-	fprintf(out, "\n");
+	fprintf(out, _("Free HTML Help Compiler %s\n"), gl_program_version);
 }
 
 /*** ---------------------------------------------------------------------- ***/
@@ -174,6 +174,7 @@ static void print_version(FILE *out)
 static void usage(FILE *out)
 {
 	print_version(out);
+	fprintf(out, "\n");
 	fprintf(out, _("Usage: %s [options] <filename>\n"), gl_program_name);
 	fprintf(out, "\n");
 	fprintf(out, _("The following options are available :\n"));

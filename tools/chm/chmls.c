@@ -3,9 +3,10 @@
 #include "chmsearchreader.h"
 #include "xgetopt.h"
 #include "chmxml.h"
+#include "chmversion.h"
 
 char const gl_program_name[] = "chmls";
-char const gl_program_version[] = "1.0";
+char const gl_program_version[] = CHM_VERSION;
 
 int verbose = 0;
 

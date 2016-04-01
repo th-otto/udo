@@ -17,7 +17,7 @@ typedef ChmStream ChmFileStream;
 
 ChmFileStream *ChmStream_CreateForFile(FILE *);
 ChmFileStream *ChmStream_Open(const char *filename, gboolean readonly);
-ChmMemoryStream *ChmStream_CreateMem(chm_off_t size);
+ChmMemoryStream *ChmStream_CreateMem(chm_off_t size, const char *filename);
 const char *ChmStream_GetFilename(ChmStream *stream);
 
 chmstream_type ChmStream_Type(ChmStream *stream);

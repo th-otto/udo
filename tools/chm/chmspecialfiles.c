@@ -37,9 +37,9 @@ int WriteNameListToStream(ChmStream *stream, SectionNames sectionnames)
 		
 	if (sectionnames & snMSCompressed)
 	{
-		chmstream_write_le16(stream, sizeof(UnCompressedName) - 1);
-		for (i = 0; i < (int)sizeof(UnCompressedName); i++)
-			chmstream_write_le16(stream, UnCompressedName[i]);
+		chmstream_write_le16(stream, sizeof(MSCompressedName) - 1);
+		for (i = 0; i < (int)sizeof(MSCompressedName); i++)
+			chmstream_write_le16(stream, MSCompressedName[i]);
 	}
 		
 	return size * 2;

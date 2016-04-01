@@ -10,6 +10,7 @@ noinst_SCRIPTS = $(build_triplet)-chmls$(EXEEXT) $(build_triplet)-chmc$(EXEEXT)
 endif
 
 common_sources = \
+	chmversion.h \
 	chmbase.c chmbase.h chm_htmlhelp.h langid.h \
 	fasthtmlparser.c fasthtmlparser.h \
 	htmlutil.c htmlutil.h \

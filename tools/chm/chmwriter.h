@@ -68,6 +68,8 @@ struct _ITSFWriter {
 	void (*WriteInternalFilesAfter)(ITSFWriter *itsf);
 	void (*WriteFinalCompressedFiles)(ITSFWriter *itsf);
 	void (*FileAdded)(ITSFWriter *itsf, ChmStream *stream, const FileEntryRec *entry);
+	long len_uncompressed_input;
+	long len_compressed_output;
 };
 
 ITSFWriter *ITSFWriter_Create(ChmStream *OutStream, gboolean FreeStreamOnDestroy);

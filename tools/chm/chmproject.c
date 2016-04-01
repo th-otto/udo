@@ -5,6 +5,7 @@
 #include "htmlutil.h"
 #include <libxml/HTMLparser.h>
 #include <libxml/tree.h>
+#include <sys/time.h>
 
 #define CREATOR "CHM"
 
@@ -113,7 +114,7 @@ static anchorentry *anchorlist_indexof(GSList *list, const char *name)
 
 /*** ---------------------------------------------------------------------- ***/
 
-static gboolean sanitizeurl(ChmProject *project, const char *instring, const char *localpath, const char *localname, char **outstring)
+static gboolean sanitizeurl(ChmProject *project, const char *instring, const char *localpath, const char *localname, char **outstring, gboolean graphics)
 {
 	char *p;
 	char *anchor;
@@ -123,18 +124,41 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 		return FALSE;
 	/* Check for protocols before adding local path */
 	if (g_ascii_strncasecmp(instring, "http:", 5) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	if (g_ascii_strncasecmp(instring, "https:", 6) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	if (g_ascii_strncasecmp(instring, "ftp:", 4) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	if (g_ascii_strncasecmp(instring, "ms-its:", 7) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	if (g_ascii_strncasecmp(instring, "mk:@MSITStore:", 14) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	if (g_ascii_strncasecmp(instring, "mailto:", 7) == 0)
+	{
+		++project->internet_links;
 		return FALSE;
+	}
 	
+	if (graphics)
+		++project->graphics;
+	else
+		++project->local_links;
+
 	*outstring = g_strconcat(localpath, instring, NULL);
 	p = strchr(*outstring, '#');
 	
@@ -164,13 +188,13 @@ static gboolean sanitizeurl(ChmProject *project, const char *instring, const cha
 
 /*** ---------------------------------------------------------------------- ***/
 
-static void checkattributes(ChmProject *project, xmlNode *node, const char *attributename, const char *localpath, const char *localname, GSList **filelist)
+static void checkattributes(ChmProject *project, xmlNode *node, const char *attributename, const char *localpath, const char *localname, GSList **filelist, gboolean graphics)
 {
 	char *fn;
 	char *val;
 	
 	val = findattribute(node, attributename);
-	if (sanitizeurl(project, val, localpath, localname, &fn))
+	if (sanitizeurl(project, val, localpath, localname, &fn, graphics))
 	{
 		/* Skip links to self using named anchors */
 		if (!empty(fn) && !FileInTotalList(project, fn))
@@ -200,15 +224,15 @@ static void scantags(ChmProject *project, xmlNode *parent, const char *localpath
 			{
 				if (g_ascii_strcasecmp((const char *)child->name, "link") == 0)
 				{
-					checkattributes(project, child, "href", localpath, localname, filelist);
+					checkattributes(project, child, "href", localpath, localname, filelist, FALSE);
 				}
 				if (g_ascii_strcasecmp((const char *)child->name, "img") == 0)
 				{
-					checkattributes(project, child, "src", localpath, localname, filelist);
+					checkattributes(project, child, "src", localpath, localname, filelist, TRUE);
 				}
 				if (g_ascii_strcasecmp((const char *)child->name, "A") == 0)
 				{
-					checkattributes(project, child, "href", localpath, localname, filelist);
+					checkattributes(project, child, "href", localpath, localname, filelist, FALSE);
 					s = findattribute(child, "name");
 					if (!empty(s))
 					{
@@ -254,7 +278,7 @@ static void scanitems(ChmProject *project, ChmSiteMapItems *it, GSList **newfile
 	{
 		x = (ChmSiteMapItem *)l->data;
 		/* sanitize, remove stuff etc. */
-		if (sanitizeurl(project, x->local, "", x->name, &s))
+		if (sanitizeurl(project, x->local, "", x->name, &s, FALSE))
 		{
 			if (!FileInTotalList(project, s))
 			{
@@ -509,7 +533,7 @@ static ChmMemoryStream *loadfile(const char *filename)
 		return NULL;
 	}
 	size = ChmStream_Size(stream);
-	mem = ChmStream_CreateMem(size);
+	mem = ChmStream_CreateMem(size, filename);
 	if (mem == NULL ||
 		(buffer = ChmStream_Memptr(mem)) == NULL ||
 		ChmStream_Read(stream, buffer, size) != size)
@@ -616,8 +640,16 @@ static void ChmProject_LastFileAdded(void *obj, void *sender)
 
 gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 {
-	ChmWriter *Writer;
+	ChmWriter *chm;
 	GSList *l;
+	struct timeval start, end;
+	long secs;
+	
+	gettimeofday(&start, NULL);
+	
+	project->internet_links = 0;
+	project->local_links = 0;
+	project->graphics = 0;
 	
 	ChmProject_LoadSiteMaps(project);
 
@@ -625,34 +657,34 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	if (project->ScanHtmlContents)
 		ChmProject_ScanHtml(project); 								/* Since this is slowing we opt to skip this step, and only do this on html load. */
 
-	Writer = ChmWriter_Create(out, FALSE);
+	chm = ChmWriter_Create(out, FALSE);
 
 	/* our callback to get data */
-	Writer->itsf.OnGetFileData = ChmProject_GetData;
-	Writer->itsf.OnLastFile = ChmProject_LastFileAdded;
-	Writer->itsf.user_data = project;
+	chm->itsf.OnGetFileData = ChmProject_GetData;
+	chm->itsf.OnLastFile = ChmProject_LastFileAdded;
+	chm->itsf.user_data = project;
 	
-	Writer->locale_id = project->locale_id;
-	Writer->dbcs = project->dbcs;
+	chm->locale_id = project->locale_id;
+	chm->dbcs = project->dbcs;
 	
 	/* give it the list of html files */
-	AddStrings(&Writer->itsf.FilesToCompress, project->htmlfiles);
+	AddStrings(&chm->itsf.FilesToCompress, project->htmlfiles);
 
 	/* give it the list of other files */
 
-	AddStrings(&Writer->itsf.FilesToCompress, project->otherfiles);
+	AddStrings(&chm->itsf.FilesToCompress, project->otherfiles);
 
 	/* now some settings in the chm */
-	Writer->default_page = g_strdup(project->default_page);
-	Writer->title = g_strdup(project->title);
-	Writer->default_font = g_strdup(project->default_font);
-	Writer->FullTextSearch = project->full_text_search;
-	Writer->HasBinaryTOC = project->MakeBinaryTOC;
-	Writer->HasBinaryIndex = project->MakeBinaryIndex;
-	Writer->index_filename = g_strdup(project->index_filename);
-	Writer->toc_filename = g_strdup(project->toc_filename);
-	Writer->itsf.ReadmeMessage = g_strdup(project->ReadmeMessage);
-	Writer->default_window = g_strdup(project->default_window);
+	chm->default_page = g_strdup(project->default_page);
+	chm->title = g_strdup(project->title);
+	chm->default_font = g_strdup(project->default_font);
+	chm->FullTextSearch = project->full_text_search;
+	chm->HasBinaryTOC = project->MakeBinaryTOC;
+	chm->HasBinaryIndex = project->MakeBinaryIndex;
+	chm->index_filename = g_strdup(project->index_filename);
+	chm->toc_filename = g_strdup(project->toc_filename);
+	chm->itsf.ReadmeMessage = g_strdup(project->ReadmeMessage);
+	chm->default_window = g_strdup(project->default_window);
 	for (l = project->htmlfiles; l; l = l->next)
 	{
 		char *s = (char *)l->data;
@@ -670,18 +702,20 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 		if (node->fileindex >= 0 && (s = (char *)g_slist_nth_data(project->htmlfiles, node->fileindex)) != NULL)
 		{
 			if (node->number_valid)
-				ChmWriter_AddContext(Writer, node->number_value, s);
+				ChmWriter_AddContext(chm, node->number_value, s);
 		}
 	}
-	ChmWriter_SetWindows(Writer, project->windows);
-	ChmWriter_SetMergefiles(Writer, project->mergefiles);
-	Writer->TocSitemap = project->toc;
+	ChmWriter_SetWindows(chm, project->windows);
+	ChmWriter_SetMergefiles(chm, project->mergefiles);
+	chm->TocSitemap = project->toc;
 
 	/* and write! */
 
+	project->onerror(project, chmhint, emptystr);
 	project->onerror(project, chmhint, _("Writing CHM %s"), project->out_filename);
+	project->onerror(project, chmhint, emptystr);
 
-	ChmWriter_Execute(Writer);
+	ChmWriter_Execute(chm);
 
 	ChmStream_Close(project->tocstream);
 	project->tocstream = NULL;
@@ -693,7 +727,21 @@ gboolean ChmProject_WriteChm(ChmProject *project, ChmStream *out)
 	ChmSiteMap_Destroy(project->index);
 	project->index = NULL;
 
-	ChmWriter_Destroy(Writer);
+	gettimeofday(&end, NULL);
+	
+	project->onerror(project, chmhint, emptystr);
+	secs = ((end.tv_sec - start.tv_sec) * 1000000 + (end.tv_usec - start.tv_usec) + 999999l) / 1000000l;
+	project->onerror(project, chmhint, P_("Compile time: %ld second", "Compile time: %ld seconds", secs), secs);
+	project->onerror(project, chmhint, P_("%-7u Topic", "%-7u Topics", chm->NrTopics), chm->NrTopics);
+	project->onerror(project, chmhint, P_("%-7ld Local link", "%-7ld Local links", project->local_links), project->local_links);
+	project->onerror(project, chmhint, P_("%-7ld Internet link", "%-7ld Internet links", project->internet_links), project->internet_links);
+	project->onerror(project, chmhint, P_("%-7ld Graphic links", "%-7ld Graphics links", project->graphics), project->graphics);
+
+	project->onerror(project, chmhint, emptystr);
+	project->onerror(project, chmhint, _("Created %s, %" PRIu64 " bytes"), ChmStream_GetFilename(out), ChmStream_Size(chm->itsf.OutStream));
+	project->onerror(project, chmhint, _("Compression decreased file by %ld bytes"), chm->itsf.len_uncompressed_input - chm->itsf.len_compressed_output);
+
+	ChmWriter_Destroy(chm);
 	
 	return TRUE;
 }

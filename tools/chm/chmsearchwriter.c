@@ -115,7 +115,7 @@ static IndexNode *FIftiNode_CreateIndex(ChmSearchWriter *writer, ChmStream *stre
 	if (node == NULL)
 		return NULL;
 	node->node.WriteStream = stream;
-	node->node.BlockStream = ChmStream_CreateMem(writer->HeaderRec.NodeSize);
+	node->node.BlockStream = ChmStream_CreateMem(writer->HeaderRec.NodeSize, "<IndexBlock>");
 	node->node.OwnsParentNode = FALSE;
 	return node;
 }
@@ -240,7 +240,7 @@ static LeafNode *FIftiNode_CreateLeaf(ChmSearchWriter *writer, ChmStream *stream
 	if (node == NULL)
 		return NULL;
 	node->node.WriteStream = stream;
-	node->node.BlockStream = ChmStream_CreateMem(writer->HeaderRec.NodeSize);
+	node->node.BlockStream = ChmStream_CreateMem(writer->HeaderRec.NodeSize, "<LeafBlock>");
 	node->node.OwnsParentNode = FALSE;
 	return node;
 }

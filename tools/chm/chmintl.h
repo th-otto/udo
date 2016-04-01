@@ -4,5 +4,7 @@
 #undef ENABLE_NLS
 #undef _
 #define _(x) x
+#undef P_
+#define P_(s, p, c) ((c) == 1 ? s : p)
 
 #endif

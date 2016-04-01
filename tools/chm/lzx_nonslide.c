@@ -195,7 +195,7 @@ static void lz_analyze_block(lz_info *lzi)
 	prevtab = prevp = lzi->prevtab;
 	lentab = lenp = lzi->lentab;
 	memset(prevtab, 0, sizeof(*prevtab) * lzi->chars_in_buf);
-	memset(lentab, 0, sizeof(*prevtab) * lzi->chars_in_buf);
+	memset(lentab, 0, sizeof(*lentab) * lzi->chars_in_buf);
 #ifdef DEBUG_PERF
 	memset(&innertime, 0, sizeof(innertime));
 	memset(&outertime, 0, sizeof(outertime));
