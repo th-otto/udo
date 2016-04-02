@@ -1359,6 +1359,10 @@ GLOBAL void recode(char *zeile, int from_char_set, int to_char_set)
                   break;
                }
             }
+            if (i >= 256)
+            {
+               warning_cannot_recode(*ptr, sSource, sTarget);
+            }
          }
          else                             /* conversion is not possible */
          {
@@ -3895,6 +3899,11 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
                }
               
                j++;
+            }
+
+            if (!found)
+            {
+               warning_cannot_recode(idx, chr_codepage_name(iEncodingSource), chr_codepage_name(iEncodingTarget));
             }
          }
          else
