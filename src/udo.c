@@ -10124,7 +10124,7 @@ LOCAL _BOOL pass1(const char *datei)
       }
       
       /* Kommentare nicht recoden */
-      if (zeile[0] != '#')
+      if (zeile[0] != '#' && pflag[PASS1].ignore_line == 0)
       {
          recode(zeile, iEncodingSource, iEncodingTarget);
       }
@@ -11465,7 +11465,7 @@ LOCAL _BOOL pass2(const char *datei)
          len--;
       }
 
-      if (zeile[0] != EOS && zeile[0] != '#')
+      if (zeile[0] != EOS && zeile[0] != '#' && pflag[PASS2].ignore_line == 0)
       {
          recode(zeile, iEncodingSource, iEncodingTarget);
       }
