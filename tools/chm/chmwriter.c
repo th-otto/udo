@@ -1865,13 +1865,11 @@ void ChmWriter_AppendBinaryTOCFromSiteMap(ChmWriter *chm, ChmSiteMap *sitemap)
 
 #define DefBlocksize 2048
 
-typedef uint8_t IndexBlock[DefBlocksize];
-
 struct binidxinfo {
 	ChmWriter *chm;
 	ChmMemoryStream *IndexStream;
-	IndexBlock curblock;		/* current listing block being built */
-	IndexBlock testblock;		/* each entry is first built here. then moved to curblock */
+	uint8_t curblock[DefBlocksize];		/* current listing block being built */
+	uint8_t testblock[DefBlocksize];		/* each entry is first built here. then moved to curblock */
 	int curind;					/* next byte to write in testblock. */
 	int blocknr;				/* blocknr of block in testblock; */
 	int lastblock;				/* blocknr of last block. */
@@ -1911,7 +1909,7 @@ static void preparecurrentblock(struct binidxinfo *info, gboolean force)
 	else
 		put_le32(p, info->blocknr);
 	ChmStream_Write(info->IndexStream, info->curblock, DefBlocksize);
-	memset(p, 0, DefBlocksize);
+	memset(info->curblock, 0, DefBlocksize);
 	chmstream_write_le32(info->mapstream, info->mapentries);
 	chmstream_write_le32(info->mapstream, info->blocknr);
 	info->mapentries = info->totalentries;
@@ -1941,7 +1939,7 @@ static void prepareindexblockn(struct binidxinfo *info, int listingblocknr)
 		info->blockn_len++;
 	}
 	p = &info->blockn[info->indexblocknr * DefBlocksize] + 4;
-	put_le16(p, listingblocknr);
+	put_le32(p, listingblocknr); /* update IndexOfChildBlock */
 	info->blockind = SIZEOF_BTREEINDEXBLOCKHEADER;
 }
 
@@ -1954,6 +1952,11 @@ static void finalizeindexblockn(uint8_t *p, int ind, int xEntries)
 }
 
 /*** ---------------------------------------------------------------------- ***/ 
+
+#define get_le32(var, p) \
+	var = ((uint32_t)((p)[3]) << 24) | ((uint32_t)((p)[2]) << 16) | ((uint32_t)((p)[1]) << 8) | (uint32_t)((p)[0]), p += 4
+#define get_le16(var, p) \
+	var = ((uint32_t)((p)[1]) << 8) | (uint32_t)((p)[0]), p += 2
 
 static void CurEntryToIndex(struct binidxinfo *info, int entrysize)
 {
@@ -2006,8 +2009,8 @@ static void CreateEntry(struct binidxinfo *info, const ChmSiteMapItem *item, con
 	topicid = ChmWriter_AddTopic(info->chm, item->name, item->local, -1);
 	put_le32(p, topicid);
 	/* if seealso then _here_ a wchar NT string with seealso? */
-	put_le32(p, 1);					/* always 1 (unknown); */
-	put_le32(p, info->mod13value); 	/* a value that increments with 13. */
+	put_le32(p, 1);						/* always 1 (unknown); */
+	put_le32(p, info->mod13value); 		/* a value that increments with 13. */
 	info->mod13value += 13;
 	entrysize = (int)(p - info->testblock);
 	if ((info->curind + entrysize) >= DefBlocksize)
@@ -2060,11 +2063,9 @@ static void MoveIndexEntry(struct binidxinfo *info, int nr, int bytes, int child
 
 /*** ---------------------------------------------------------------------- ***/ 
 
-#define get_le32(var, p) \
-	var = ((uint32_t)((p)[3]) << 24) | ((uint32_t)((p)[2]) << 16) | ((uint32_t)((p)[1]) << 8) | (uint32_t)((p)[0]), p += 4
-
-static int ScanIndexBlock(uint8_t *blk)
+static int ScanIndexBlock(struct binidxinfo *info, int nr)
 {
+	uint8_t *blk = &info->blockn[nr * DefBlocksize];
 	uint8_t *start;
 	int n;
 	int i;
@@ -2072,7 +2073,9 @@ static int ScanIndexBlock(uint8_t *blk)
 	start = &blk[SIZEOF_BTREEINDEXBLOCKHEADER];
 	blk = start;
 	while (blk[0] != 0 || blk[1] != 0) 	/* skip wchar */
+	{
 		blk += 2;
+	}
 	blk += 2;					/* skip NT */
 	blk += 2;					/* skip see also */
 	blk += 2;					/* skip depth */
@@ -2235,7 +2238,7 @@ void ChmWriter_AppendBinaryIndexFromSiteMap(ChmWriter *chm, ChmSiteMap *sitemap,
 			info->entrytoindex = TRUE;
 			for (i = 0; i < info->indexblocknr; i++)
 			{
-				entrybytes = ScanIndexBlock(&info->blockn[i * DefBlocksize]);
+				entrybytes = ScanIndexBlock(info, i);
 				MoveIndexEntry(info, i, entrybytes, info->blocknr + i);
 				ChmStream_Write(info->IndexStream, &info->blockn[i * DefBlocksize], DefBlocksize);
 			}
