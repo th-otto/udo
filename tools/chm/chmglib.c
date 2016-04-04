@@ -854,7 +854,8 @@ int g_mkdir_with_parents(const char *pathname, int mode)
 		errno = EINVAL;
 		return -1;
 	}
-
+	UNUSED(mode); /* sometimes */
+	
 	fn = g_strdup(pathname);
 
 	p = fn;
