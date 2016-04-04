@@ -1318,8 +1318,10 @@ gboolean ChmProject_LoadFromHhp(ChmProject *project, const char *filename)
 	char *str;
 	unsigned int id;
 	
-	if ((profile = Profile_Load(filename, CREATOR)) == NULL)
+	if ((profile = Profile_Load(filename, CREATOR)) == NULL ||
+		Profile_IsNew(profile))
 	{
+		Profile_Delete(profile);
 		project->onerror(project, chmerror, "%s: %s", filename, strerror(errno));
 		return FALSE;
 	}
