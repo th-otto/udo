@@ -138,7 +138,14 @@ static char *GetValFromNameVal(const char *namevalpair)
 		if (P != S)
 		{
 			char *tmp;
-			tmp = g_strndup(S, P - S);
+			size_t len = P - S;
+			tmp = g_strndup(S, len);
+			if (!g_utf8_validate(tmp, len, NULL))
+			{
+				char *s = chm_conv_to_utf8(tmp, len);
+				g_free(tmp);
+				tmp = s;
+			}
 			result = xml_dequote(tmp, tmp ? strlen(tmp) : 0);
 			g_free(tmp);
 		}
