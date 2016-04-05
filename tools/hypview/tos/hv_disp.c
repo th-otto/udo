@@ -228,9 +228,9 @@ static void DrawBox(WINDOW_DATA *win, struct hyp_gfx *gfx, long x, long y)
 	} else
 	{
 		if (gfx->style != 0)
-			v_rbox(vdi_handle, xy);
-		else
 			v_rfbox(vdi_handle, xy);
+		else
+			v_rbox(vdi_handle, xy);
 	}
 	vsf_interior(vdi_handle, FIS_SOLID);
 	vsf_style(vdi_handle, 0);
@@ -698,7 +698,7 @@ void HypPrepNode(WINDOW_DATA *win, HYP_NODE *node)
 			textstart = src;
 			x = sx;
 			sy += win->y_raster;
-			sy = draw_graphics(win, node->gfx, lineno, sx, sy);
+			sy = skip_graphics(win, node->gfx, lineno, sx, sy);
 			
 			new_windowline = sy / win->y_raster;
 			node->line_ptr = g_renew(const unsigned char *, node->line_ptr, new_windowline + 1);
@@ -718,7 +718,7 @@ void HypPrepNode(WINDOW_DATA *win, HYP_NODE *node)
 			max_w = x;
 		++lineno;
 		sy += win->y_raster;
-		sy = draw_graphics(win, node->gfx, lineno, sx, sy);
+		sy = skip_graphics(win, node->gfx, lineno, sx, sy);
 	}
 	new_windowline = sy / win->y_raster;
 	node->line_ptr = g_renew(const unsigned char *, node->line_ptr, new_windowline + 1);
@@ -732,4 +732,6 @@ void HypPrepNode(WINDOW_DATA *win, HYP_NODE *node)
 	node->height = sy;
 	win->docsize.w = node->width;
 	win->docsize.h = node->height;
+#undef TEXTOUT
+#undef DUMPTEXT
 }
