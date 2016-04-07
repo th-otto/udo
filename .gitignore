@@ -73,8 +73,6 @@ tools/hypview/hyp/reflink
 tools/hypview/hyp/stool
 tools/hypview/hyp/dumpicon
 tools/hypview/hyp/tmp
-tools/hypview/gtk/hypview
-tools/hypview/gtk/gfilesel
 tools/helpdeco/helpdeco
 tools/helpdeco/splitmrb
 tools/helpdeco/zapres
