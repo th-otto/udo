@@ -152,6 +152,13 @@
 #  define VK_LAUNCH_APP2 0xb7
 #endif
 
+#ifndef WM_MOUSEWHEEL
+#  define WM_MOUSEWHEEL 522
+#endif
+#ifndef WM_MOUSEHWHEEL
+#  define WM_MOUSEHWHEEL 526
+#endif
+
 #else
 typedef unsigned short LANGID;
 #endif /* __WIN32__ */
