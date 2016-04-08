@@ -159,6 +159,25 @@
 #  define WM_MOUSEHWHEEL 526
 #endif
 
+#ifndef TPM_HORPOSANIMATION
+#define TPM_HORPOSANIMATION 0x0400L
+#endif
+#ifndef TPM_HORNEGANIMATION
+#define TPM_HORNEGANIMATION 0x0800L
+#endif
+#ifndef TPM_VERPOSANIMATION
+#define TPM_VERPOSANIMATION 0x1000L
+#endif
+#ifndef TPM_VERNEGANIMATION
+#define TPM_VERNEGANIMATION 0x2000L
+#endif
+#ifndef TPM_NOANIMATION
+#define TPM_NOANIMATION 0x4000L
+#endif
+#ifndef TPM_LAYOUTRTL
+#define TPM_LAYOUTRTL 0x8000L
+#endif
+
 #else
 typedef unsigned short LANGID;
 #endif /* __WIN32__ */
