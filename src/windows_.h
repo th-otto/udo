@@ -159,6 +159,10 @@
 #  define WM_MOUSEHWHEEL 526
 #endif
 
+#ifndef WM_UNICHAR
+#define WM_UNICHAR 0x0109
+#endif
+
 #ifndef TPM_HORPOSANIMATION
 #define TPM_HORPOSANIMATION 0x0400L
 #endif
