@@ -17,6 +17,7 @@
 #define WIN32_LEAN_AND_MEAN
 #define STRICT
 #define WINVER 0x0500
+#define _WIN32_IE 0x0600
 #define __SIMPLE_LOCALES__
 #include <windows.h>
 #include <shellapi.h>
