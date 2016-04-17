@@ -50,6 +50,9 @@ chmc_SOURCES = \
 	$(common_sources)
 
 chmc_LDADD = $(GLIB_LIBS) $(XML_LIBS) $(INTLLIBS)
+if WITH_GUI_GTK
+chmc_LDFLAGS = -Wl,-rpath,$(GTK_LIBDIR)
+endif
 
 $(build_triplet)-chmc$(EXEEXT): chmc$(EXEEXT)
 	cp -a $? $@
