@@ -70,9 +70,9 @@ typedef struct _styleflag                 /* various style control flags */
    _BOOL   underlined;                  /* (!U)...(!u) */
    _BOOL   verbatim;                    /* (!V)...(!v) */
    _BOOL   twriter;                     /* (!T)...(!t) */
-   _BOOL	 ghost;                       /* (!G)...(!g) */
-   _BOOL	 shadow;                      /* (!S)...(!s) */
-   _BOOL	 outline;                     /* (!O)...(!o) */
+   _BOOL   ghost;                       /* (!G)...(!g) */
+   _BOOL   shadow;                      /* (!S)...(!s) */
+   _BOOL   outline;                     /* (!O)...(!o) */
    _BOOL   insert;                      /* (!INS)...(!ins) */
    _BOOL   deleted;                     /* (!DEL)...(!del) */
    _BOOL   color;                       /* (!<colorname>)...(!coloff) */
@@ -182,8 +182,7 @@ GLOBAL char        UNDER_ON[8], UNDER_OFF[8];
 GLOBAL char        GHOST_ON[8], GHOST_OFF[8];
 GLOBAL char        SHADOW_ON[8], SHADOW_OFF[8];
 GLOBAL char        OUTLINE_ON[8], OUTLINE_OFF[8];
-GLOBAL char        INSERT_ON[8],
-                   INSERT_OFF[8];
+GLOBAL char        INSERT_ON[8], INSERT_OFF[8];
 GLOBAL char        DELETED_ON[8],
                    DELETED_OFF[8];
 GLOBAL char        COLOR_BLACK[8],
@@ -203,10 +202,8 @@ GLOBAL char        COLOR_BLACK[8],
                    COLOR_TEAL[8],
                    COLOR_AQUA[8],
                    COLOR_OFF[8];
-GLOBAL char        SUP_ON[8],
-                   SUP_OFF[8];
-GLOBAL char        SUB_ON[8],
-                   SUB_OFF[8];
+GLOBAL char        SUP_ON[8], SUP_OFF[8];
+GLOBAL char        SUB_ON[8], SUB_OFF[8];
 
 
 

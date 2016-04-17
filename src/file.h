@@ -57,9 +57,9 @@ typedef struct _mytextfile
    char   *buffer;
 }   MYTEXTFILE;
 
-/*    ############################################################
-      # Globale Routinen
-      ############################################################   */
+/*   ############################################################
+     # Globale Routinen
+     ############################################################   */
 
 GLOBAL int         uiMultiLines;          /* Anzahl zusammengefuegter Zeilen (0=nicht zusammengefuegt, 1=eine Zeile angehaengt) */
 

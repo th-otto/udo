@@ -353,7 +353,7 @@ static _UWORD const u_CODE_437[] =             /* CODE_437 */
 *
 ******************************************|************************************/
 
-static _UWORD  const  CODE_437_lig[][3] =     /* CODE_437 character ligatures */
+static _UWORD const CODE_437_lig[][3] =     /* CODE_437 character ligatures */
 {
    {0x00fc, U_LatinSmallLetterU,   U_LatinSmallLetterE},      /* 0x81  - 0x00fc:  LATIN SMALL LETTER U WITH DIAERESIS */
    {0x00e4, U_LatinSmallLetterA,   U_LatinSmallLetterE},      /* 0x84  - 0x00e4:  LATIN SMALL LETTER A WITH DIAERESIS */
@@ -385,7 +385,7 @@ static _UWORD  const  CODE_437_lig[][3] =     /* CODE_437 character ligatures */
 *
 ******************************************|************************************/
 
-static _UWORD const  sort_CODE_437[] =          /* CODE_437 */
+static _UWORD const sort_CODE_437[] =          /* CODE_437 */
 {
    U_NUL,                                 /* 0x00  NULl */
    U_SOH,                                 /* 0x01  Start Of Heading */

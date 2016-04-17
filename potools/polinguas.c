@@ -54,6 +54,18 @@ struct fileentry {
 	char *lang;
 };
 
+#define SUBLANG_SHIFT 10
+#undef MAKELANGID
+#define MAKELANGID(primary, sub) (((sub) << SUBLANG_SHIFT) | (primary))
+#undef PRIMARYLANGID
+#define PRIMARYLANGID(id) ((id) & ~(1 << SUBLANG_SHIFT))
+#undef SUBLANGID
+#define SUBLANGID(id) ((id) >> SUBLANG_SHIFT)
+#undef MAKELCID
+#define MAKELCID(l,s) ((LCID)((((LCID)((uint16_t)(s)))<<16)|((LCID)((uint16_)(l)))))
+#undef LANGIDFROMLCID
+#define LANGIDFROMLCID(l) ((uint16_t)((l) & 0xffff))
+
 /******************************************************************************/
 /*** ---------------------------------------------------------------------- ***/
 /******************************************************************************/
@@ -168,6 +180,16 @@ static gboolean dofile(FILE *out, struct fileentry *entry)
 	{
 		if (strncmp(entry->lang, sublang_table[i].po_name, sublang_table[i].namelen) == 0)
 			break;
+	}
+	if (i >= n)
+	{
+		for (i = 0; i < n; i++)
+		{
+			if (strncmp(entry->lang, sublang_table[i].po_name, 2) == 0 &&
+				(SUBLANGID(sublang_table[i].id) == SUBLANG_DEFAULT ||
+				 SUBLANGID(sublang_table[i].id) == SUBLANG_NEUTRAL))
+				break;
+		}
 	}
 	if (i >= n)
 	{

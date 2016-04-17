@@ -46,6 +46,8 @@
 *                - webmasterurl     -> domain_link
 *                - webmasteremail   -> contact_name
 *                - webmastermailurl -> contact_link
+*  2014
+*    ggs Apr 20: Add Node6
 *
 ******************************************|************************************/
 
@@ -85,8 +87,8 @@ typedef struct _titledata                 /* ---- Titelseiteninfos ---- */
    char   *authorimage;                   /* author's funny face image */
    char   *authoricon;                    /* -> Modern/Frames */
    char   *authoricon_active;             /* -> Modern/Frames */
-   char   *appletitle;                    /* for HTML Apple Help V6.5.17 */
-   char   *appleicon;                     /* for HTML Apple Help V6.5.17 */
+   char   *appletitle;                    /* for HTML Apple Help */
+   char   *appleicon;                     /* for HTML Apple Help */
    _UWORD   authoriconWidth;               /* */
    _UWORD   authoriconHeight;              /* */
    _UWORD   authoriconActiveWidth;         /* */
@@ -116,8 +118,8 @@ typedef struct _titledata                 /* ---- Titelseiteninfos ---- */
 typedef struct                            /* Paper Format */
 {
    const char *paper;                     /* paper format */
-   _UWORD     width_mm10;                  /* width  in 10th of a mm */
-   _UWORD     height_mm10;                 /* height in 10th of a mm */
+   _UWORD     width_mm10;                 /* width  in 10th of a mm */
+   _UWORD     height_mm10;                /* height in 10th of a mm */
    _UWORD     width_pt;
    _UWORD     height_pt;
    _UWORD     margintop_pt;
@@ -154,7 +156,7 @@ typedef struct                            /* ---- Layoutinfos ---- */
    char   *monofontname;
    _UWORD   monofontsize;
    _UWORD   nodesize[9 /* TOC_MAXDEPTH */ + 1]; /* +1 forr use_style_book */
-}  LAYOUTDATA;
+} LAYOUTDATA;
 
 
 

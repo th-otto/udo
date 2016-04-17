@@ -83,6 +83,9 @@
 *    ggs Mar 03: copyright year updated
 *    fd  May 02: v7.02 (1228)
 *    fd  Oct 23: v7.03 (1242) - supporting HTML5
+*    fd  Oct 24: v7.03 (1248)
+*  2014
+*    ggs Apr 16: copyright year updated
 *
 ******************************************|************************************/
 
@@ -114,7 +117,7 @@
 
 #define UDO_REL     "7"
 #define UDO_SUBVER  "11"
-#define UDO_BUILD   "(1242)"
+#define UDO_BUILD   "(1248)"
 #define UDO_VERSION_STRING "Version " UDO_REL "." UDO_SUBVER " " UDO_BUILD
 #define UDO_VERSION_STRING_OS UDO_VERSION_STRING " for " UDO_OS
 
@@ -123,8 +126,8 @@
 
    /* --- Copyright Meldung --- */
 
-#define COPYRIGHT           "Copyright (C) 1995-2001 by Dirk Hagedorn\nCopyright (C) 2001-2013 by The UDO Community"
-#define UDO_COPYRIGHT_TEXT  "Copyright (!copyright) 1995-2001 by Dirk Hagedorn (!nl)\nCopyright (!copyright) 2001-2013 by The UDO Community (!nl)\n"
+#define COPYRIGHT           "Copyright (C) 1995-2001 by Dirk Hagedorn\nCopyright (C) 2001-2014 by The UDO Community"
+#define UDO_COPYRIGHT_TEXT  "Copyright (!copyright) 1995-2001 by Dirk Hagedorn (!nl)\nCopyright (!copyright) 2001-2014 by The UDO Community (!nl)\n"
 
    /* --- Zeichensaetze --- */
 
@@ -166,11 +169,10 @@
 
    /* --- Compiler- und systemabhaengige Dinge setzen --- */
 
-#ifdef __TOS__
+#if defined(__TOS__) || defined(__atarist__)
 #define UDO_OS               "TOS"
 #define USE_SLASH            0
 #define USE_LONG_FILENAMES   0
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_TOS
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -191,7 +193,6 @@
 #define UDO_OS               "DOS"
 #define USE_SLASH            0
 #define USE_LONG_FILENAMES   0
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_437
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -213,7 +214,6 @@
 #define UDO_OS               "DOS"
 #define USE_SLASH            0
 #define USE_LONG_FILENAMES   0
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_850
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -226,11 +226,10 @@
 #endif
 #endif
 
-#ifdef __WIN32__
+#if (defined(__WIN32__) || defined(_WIN32)) && !defined(__CYGWIN__)
 #define UDO_OS               "Win32"
 #define USE_SLASH            0
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -243,11 +242,13 @@
 #endif
 #endif
 
-#ifdef __LINUX__
+#if defined(__LINUX__) || defined(__linux__)
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define UDO_OS               "Linux"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRCASECMP      1
@@ -260,7 +261,6 @@
 #define UDO_OS               "Amiga"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRNICMP        1
@@ -272,10 +272,12 @@
 #endif
 
 #ifdef __SINIX__
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define UDO_OS               "Sinix"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -287,10 +289,12 @@
 #endif
 
 #ifdef __SUNOS__
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define UDO_OS               "SunOS"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRNICMP        1
@@ -301,15 +305,14 @@
 #endif
 
 #ifdef __IRIX__
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define UDO_OS               "IRIX"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
-#define HAVE_STRUPR          0
-#define HAVE_STRLWR          0
-#define HAVE_STRICMP         0
 #define HAVE_STRNICMP        1
 #define HAVE_STRCASECMP      1
 #define HAVE_SYS_ERRLIST     1
@@ -319,10 +322,12 @@
 #endif
 
 #ifdef __HPUX_ISO__
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define DO_OS               "HP-UX"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -334,10 +339,12 @@
 #endif
 
 #ifdef __HPUX_ROMAN8__
+#ifndef __UNIX__
+#define __UNIX__ 1
+#endif
 #define UDO_OS               "HP-UX"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_HP8
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -353,7 +360,6 @@
 #define UDO_OS               "Mac OS"
 #define USE_SLASH            0
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   0
 #define USE_SETFILETYPE      1
 #define SYSTEM_CHARSET       CODE_MAC
 #ifndef HAVE_CONFIG_H
@@ -367,7 +373,6 @@
 #define UDO_OS               "Mac OS X"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_MAC
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRCASECMP      1
@@ -382,7 +387,6 @@
 #define UDO_OS               "NeXTStep"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   0
 #define SYSTEM_CHARSET       CODE_NEXT
 #ifndef HAVE_CONFIG_H
 #define HAVE_STRUPR          1
@@ -398,7 +402,6 @@
 #define UDO_OS               "BeOS"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   0
 #define USE_SETFILETYPE      1
 #define SYSTEM_CHARSET       CODE_UTF8
 #ifndef HAVE_CONFIG_H
@@ -409,12 +412,13 @@
 #endif
 
 /* generic unix, not in any of the above */
-#ifdef __UNIX__
+#if defined(__UNIX__) || defined(__unix__) || defined(__unix) || defined(unix)
+#ifndef UDO_OS
 #define UDO_OS               "Unix"
 #define USE_SLASH            1
 #define USE_LONG_FILENAMES   1
-#define USE_LATIN1_CHARSET   1
 #define SYSTEM_CHARSET       CODE_CP1252
+#endif
 #endif
 
 /*******************************************************************************
@@ -449,12 +453,10 @@
 #error  "USE_LONG_FILENAMES not defined!"
 #endif
 
-#ifndef USE_LATIN1_CHARSET
-#error  "USE_LATIN1_CHARSET not defined!"
-#endif
-
 #ifndef SYSTEM_CHARSET
 #error  "SYSTEM_CHARSET not defined!"
 #endif
+
+#define CODE_DEFAULT CODE_CP1252
 
 #endif   /* VERSION_H */

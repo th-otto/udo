@@ -41,6 +41,8 @@
 *    fd  Feb 22: - header adjusted
 *    fd  Mar 04: - file tidied up
 *                - message wrapper functions now global
+*  2014:
+*    ggs Apr 20: Add Node6
 *
 ******************************************|************************************/
 
@@ -123,12 +125,12 @@ GLOBAL void warning_long_destline(const char *s, FILE_LINENO lnr, const int ll);
 GLOBAL void note_short_sourceline(const char *s);
 GLOBAL void warning_short_destline(const char *s, FILE_LINENO lnr, const int ll, const char *w);
 
-GLOBAL void warning_cannot_recode(const char c, const char *scs, const char *dcs);
+GLOBAL void warning_cannot_recode(unsigned int c, const char *scs, const char *dcs);
 GLOBAL void warning_cannot_recode_utf8(const char *utf, const char *dcs);
 GLOBAL void warning_no_isochar(const char c);
 GLOBAL void warning_buffer_overrun(const char *func, const char *place, size_t n, size_t max);
 
-GLOBAL void warning_node_too_deep(void);
+GLOBAL void warning_node_too_deep(_BOOL popup, _BOOL invisible);
 
 
    /* --- inquiry functions --- */

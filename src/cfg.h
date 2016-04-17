@@ -141,7 +141,7 @@ typedef struct _config
    _BOOL  bAskQuit;
    _BOOL  bWarnOver;
 
-   char     strSymbol[CFG_MAX_SYMBOL][CFG_MAX_SYMBOL_LEN];
+   char   strSymbol[CFG_MAX_SYMBOL][CFG_MAX_SYMBOL_LEN];
    _BOOL  bUseSymbol[CFG_MAX_SYMBOL];
    
 #endif /* __TOS__ */

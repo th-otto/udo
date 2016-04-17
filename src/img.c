@@ -48,6 +48,9 @@
 *  2013:
 *    fd  Oct 23: HTML output supports HTML5
 *    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
+*    fd  Oct 31: - c_calc_pngsize() added
+*                - c_gif_output() renamed: c_html_image_output()
+*    fd  Nov 02: HTML5 output of <img> tags cleaned
 *
 ******************************************|************************************/
 
@@ -76,6 +79,7 @@
 #include "toc.h"
 #include "udo.h"
 #include "upr.h"
+#include "lang.h"
 #include "img_html.h"                     /* graphic data for GIF (used in HTML) */
 #include "img_win.h"                      /* graphic data for BMP (used in WinHelp) */
 #include "img_stg.h"                      /* graphic data for IMG (used in ST-Guide) */
@@ -127,7 +131,7 @@ LOCAL int image_counter;
 
 LOCAL void save_one_html_gif(FILE_ID fileid, const _UBYTE *buffer, size_t length, _BOOL *ret)
 {
-   FILE       *giffile;  /* */
+   FILE       *giffile;
    const char *name = file_lookup(fileid);
    
    giffile = fopen(name, "rb");           /* try to read GIF file */
@@ -283,7 +287,7 @@ LOCAL void save_one_win_bmp(FILE_ID fileid, const _UBYTE *buffer, size_t length,
       }
       else
       {
-          error_open_outfile(name);
+         error_open_outfile(name);
       }
    }
    else                                    /* yes: BMP file exists already */
@@ -389,9 +393,9 @@ LOCAL void save_ipf_bmps(void)
 *
 ******************************************|************************************/
 
-LOCAL void save_one_stg_img(FILE_ID fileid, const _UBYTE *buffer, size_t length, _BOOL *ret)      /* */
+LOCAL void save_one_stg_img(FILE_ID fileid, const _UBYTE *buffer, size_t length, _BOOL *ret)
 {
-   FILE       *imgfile;  
+   FILE       *imgfile;
    const char *name = file_lookup(fileid);
    
    imgfile = fopen(name, "rb");           /* try to read IMG file */
@@ -601,15 +605,11 @@ LOCAL void save_pdf_pngs(void)
 *
 ******************************************|************************************/
 
-LOCAL _BOOL get_image_header(
-
-const char  *datei,  /* */
-int          type,   /* IMGTYPE_... */
-void *       head)   /* image header struct */
+LOCAL _BOOL get_image_header(const char  *datei, int type, void *head)
 {
-   FILE     *file;   /* */
-   size_t    elem;   /* */
-   size_t    size = 0;   /* sizeof() */
+   FILE     *file;
+   size_t    elem;
+   size_t    size = 0;
    
    file = fopen(datei, "rb");             /* try to read image file */
    
@@ -698,11 +698,11 @@ LOCAL int get_img_size(FILE *file, _UWORD *w, _UWORD *h, _UWORD *bitcnt)
 
 LOCAL int set_imgheader(
 
-const char  *datei,  /* */
-IMGHEADER   *head)   /* */
+const char  *datei,
+IMGHEADER   *head)
 {
-   FILE     *file;   /* */
-   size_t    elem;   /* */
+   FILE     *file;
+   size_t    elem;
    
    file = fopen(datei, "r+");              /* open IMG file */
    
@@ -728,7 +728,7 @@ IMGHEADER   *head)   /* */
 *
 ******************************************|************************************/
 
-LOCAL void uc2ToInt(unsigned char *uc, _UWORD *i)
+LOCAL void uc2ToInt(const unsigned char *uc, _UWORD *i)
 {
    *i = uc[0] + 256 * uc[1];
 }
@@ -747,9 +747,9 @@ LOCAL void uc2ToInt(unsigned char *uc, _UWORD *i)
 *
 ******************************************|************************************/
 
-LOCAL void uc4ToInt(unsigned char *uc, _UWORD *i)
+LOCAL void uc4ToInt(const unsigned char *uc, _ULONG *i)
 {
-   *i = uc[0] + 256 * uc[1];
+   *i = (_ULONG)uc[0] + ((_ULONG)uc[1] << 8) + ((_ULONG)uc[2] << 16) + ((_ULONG)uc[3] << 24);
 }
 
 
@@ -765,8 +765,12 @@ LOCAL int get_bmp_size(FILE *file, _UWORD *w, _UWORD *h, _UWORD *bitcnt)
 
    if (elem > 0)
    {
-      uc4ToInt(head.biWidth, w);
-      uc4ToInt(head.biHeight, h);
+   	  _ULONG lw, lh;
+   	  
+      uc4ToInt(head.biWidth, &lw);
+      uc4ToInt(head.biHeight, &lh);
+      *w = (_UWORD)lw;
+      *h = (_UWORD)lh;
       uc2ToInt(head.biBitCnt, bitcnt);
       return TRUE;
    }
@@ -844,12 +848,7 @@ LOCAL _BOOL get_gifheader(FILE *file, GIFHEADER *gh)
 *
 ******************************************|************************************/
 
-LOCAL void calc_gifsize(
-
-_UWORD      *w,     /* */
-_UWORD      *h,     /* */
-_UWORD      *bitcnt,
-GIFHEADER  *head)
+LOCAL void calc_gifsize(_UWORD *w, _UWORD *h, _UWORD *bitcnt, GIFHEADER *head)
 {
    *w = (head->gif_width_hi  * 256 + head->gif_width_lo);
    *h = (head->gif_height_hi * 256 + head->gif_height_lo);
@@ -951,20 +950,20 @@ LOCAL void get_image_alignment(_BOOL *inside_left, _BOOL *inside_center, _BOOL *
 GLOBAL _BOOL c_img_output(const char *name, const char *caption, _BOOL visible, _BOOL limage)
 {
    IMGHEADER    imghead;        /* IMG file header */
-   char         n[256],         /* */
+   char         n[256],
                 datei[MYFILE_FULL_LEN],
                 found[MYFILE_FULL_LEN];
    int          img_xoff,       /* X offset in chars (for ST-Guide) */
                 img_cw;         /* char width        (for ST-Guide) */
-   _UWORD        width,          /* */
+   _UWORD       width,
                 height,
                 bitcnt;
    int          scanwidth,
                 nlines;
    double       tex_wmm,        /* image width  in mm (for TeX) */
                 tex_hmm;        /* image height in mm (for TeX) */
-   double       pix_wmm,        /* */
-                pix_hmm;        /* */
+   double       pix_wmm,
+                pix_hmm;
    int          indent,         /* indentation */
                 max_width;      /* maximum available width */
    _BOOL      inside_center,  /* flags */
@@ -1100,7 +1099,7 @@ GLOBAL _BOOL c_img_output(const char *name, const char *caption, _BOOL visible, 
          out(n);
          
          if (visible)
-            sprintf(n, "(%s %d:%s)", lang.figure, image_counter, caption);
+            sprintf(n, "(%s %d:%s)", get_lang()->figure, image_counter, caption);
          else
             sprintf(n, "(%s)", caption);
          
@@ -1160,9 +1159,8 @@ GLOBAL void c_gif_output(const char *name, const char *caption)
    if (*datei == ':')
       datei++;
    replace_char(datei, ':', '/');
-#else
-   replace_char(datei, '\\', '/');
 #endif
+   replace_char(datei, '\\', '/');
 
    get_image_alignment(&inside_left, &inside_center, &inside_right);
 
@@ -1196,7 +1194,7 @@ GLOBAL void c_gif_output(const char *name, const char *caption)
       }
    }
    
-   if (get_picture_size(datei, NULL, &uiWidth, &uiHeight, &bitcnt))
+   if (!no_img_size && get_picture_size(datei, NULL, &uiWidth, &uiHeight, &bitcnt))
    {
       sprintf(sGifSize, " width=\"%u\" height=\"%u\"", uiWidth, uiHeight);
    }
@@ -1320,9 +1318,9 @@ GLOBAL void c_bmp_output(const char *name, const char *caption, _BOOL visible)
 
          if (visible)
          {
-            /* sprintf(n, "%s %d: %s", lang.figure, image_counter, caption); */
+            /* sprintf(n, "%s %d: %s", get_lang()->figure, image_counter, caption); */
 
-            sprintf(n, "{{\\*\\bkmkstart _tocimg%d}%s }{\\field{\\*\\fldinst {SEQ %s \\\\* ARABIC }}{\\fldrslt %d}}: %s{\\*\\bkmkend _Tocimg%d}", image_counter, lang.figure, lang.figure, image_counter, caption, image_counter);
+            sprintf(n, "{{\\*\\bkmkstart _tocimg%d}%s }{\\field{\\*\\fldinst {SEQ %s \\\\* ARABIC }}{\\fldrslt %d}}: %s{\\*\\bkmkend _Tocimg%d}", image_counter, get_lang()->figure, get_lang()->figure, image_counter, caption, image_counter);
          }
          else
          {
@@ -1335,8 +1333,8 @@ GLOBAL void c_bmp_output(const char *name, const char *caption, _BOOL visible)
 
    case TOTEX:
       if (!get_picture_size(datei, NULL, &width, &height, &bitcnt))
-            return;
-
+         return;
+      
       /* Hier muessen noch die Breite und Hoehe des Bildes in pt(!) */
       /* eingetragen werden */
       
@@ -1385,7 +1383,7 @@ GLOBAL void c_bmp_output(const char *name, const char *caption, _BOOL visible)
    case TOAQV:
       replace_char(datei, '\\', '/');
 
-                                          /* PL12: Bilder umgebungsabhaengig positionieren */
+      /* Bilder umgebungsabhaengig positionieren */
       alignOn[0]  = EOS;
       alignOff[0] = EOS;
       
@@ -1419,7 +1417,7 @@ GLOBAL void c_bmp_output(const char *name, const char *caption, _BOOL visible)
          if (visible)
          {
             voutlnf("%s%s(%s %d: %s)%s\\par\\pard\\par",
-               li, alignOn, lang.figure, image_counter, caption, alignOff);
+               li, alignOn, get_lang()->figure, image_counter, caption, alignOff);
          }
          else
          {
@@ -1457,11 +1455,7 @@ GLOBAL void c_bmp_output(const char *name, const char *caption, _BOOL visible)
 *
 ******************************************|************************************/
 
-GLOBAL _BOOL c_msp_output(
-
-const char     *name,
-const char     *caption,
-_BOOL         visible)
+GLOBAL _BOOL c_msp_output(const char *name, const char *caption, _BOOL visible)
 {
    char         n[256],
                 datei[MYFILE_FULL_LEN];
@@ -1491,7 +1485,7 @@ _BOOL         visible)
    case TOTEX:
       if (iTexVersion == TEX_EMTEX || iTexVersion == TEX_MIKTEX)
       {
-         if (!get_picture_size(datei, NULL, &width, &height, &bitcnt) )
+         if (!get_picture_size(datei, NULL, &width, &height, &bitcnt))
          {
             return FALSE;
          }
@@ -1566,11 +1560,7 @@ _BOOL         visible)
 *
 ******************************************|************************************/
 
-GLOBAL _BOOL c_pcx_output(
-
-const char     *name,
-const char     *caption,
-_BOOL         visible)
+GLOBAL _BOOL c_pcx_output(const char *name, const char *caption, _BOOL visible)
 {
    char         n[256],
                 datei[MYFILE_FULL_LEN];
@@ -1602,7 +1592,7 @@ _BOOL         visible)
    case TOTEX:
       if (iTexVersion == TEX_EMTEX || iTexVersion == TEX_MIKTEX)
       {
-         if (!get_picture_size(datei, NULL, &width, &height, &bitcnt) )
+         if (!get_picture_size(datei, NULL, &width, &height, &bitcnt))
          {
             return FALSE;
          }
@@ -1654,7 +1644,7 @@ _BOOL         visible)
          outln("\\end{figure}");
          outln("");
       }
-     break;
+      break;
    }
    
    UNUSED(visible);
@@ -1697,9 +1687,8 @@ GLOBAL void c_eps_output(const char *name, const char *caption, _BOOL visible)
 #ifdef __MACOS__
    if (*datei == ':') datei++;
       replace_char(datei, ':', '/');
-#else
-   replace_char(datei, '\\', '/');
 #endif
+   replace_char(datei, '\\', '/');
 
    switch (desttype)
    {
@@ -1741,14 +1730,14 @@ GLOBAL void c_eps_output(const char *name, const char *caption, _BOOL visible)
          image_counter++;
          voutlnf("\\caption{%s}", caption);
       }
-	   if (inside_center)
-	      outln("\\end{center}");
+	  if (inside_center)
+	     outln("\\end{center}");
 	   
-	   if (inside_right)
-	      outln("\\end{flushright}");
+	  if (inside_right)
+	     outln("\\end{flushright}");
 	   
-	   if (caption[0] != EOS)
-	      outln("\\end{figure}");
+	  if (caption[0] != EOS)
+	     outln("\\end{figure}");
       break;
    }
 }
@@ -1797,8 +1786,8 @@ GLOBAL void c_png_output(const char *name, const char *caption, _BOOL visible)
    if (inside_right)
       outln("\\begin{flushright}");
 
-#if IMAGEDEBUG
    get_picture_size(datei, NULL, &uiWidth, &uiHeight, &bitcnt);
+#if IMAGEDEBUG
    voutlnf("%% PNG information of %s", datei);
    voutlnf("%%     width:  %u", uiWidth);
    voutlnf("%%     height: %u", uiHeight);
@@ -1808,9 +1797,8 @@ GLOBAL void c_png_output(const char *name, const char *caption, _BOOL visible)
 #ifdef __MACOS__
    if (*datei == ':') datei++;
       replace_char(datei, ':', '/');
-#else
-   replace_char(datei, '\\', '/');
 #endif
+   replace_char(datei, '\\', '/');
 
    outln("\\mbox{");
    /* Rechne Zielbreite in mm aus : */
@@ -1915,7 +1903,7 @@ LOCAL unsigned long png_get_uint_32(unsigned char *buf)
    return i;
 }
 
-LOCAL _BOOL get_png_size ( FILE *file, _UWORD *uiW, _UWORD *uiH, _UWORD *bitcnt)
+LOCAL _BOOL get_png_size(FILE *file, _UWORD *uiW, _UWORD *uiH, _UWORD *bitcnt)
 {
    char magic[8];
    unsigned char chunk_length[4];
@@ -2300,6 +2288,3 @@ GLOBAL void init_module_img(void)
    bEpsMwSaved = FALSE;
    bPngMwSaved = FALSE;
 }
-
-
-/* +++ EOF +++ */

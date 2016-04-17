@@ -1595,7 +1595,7 @@ static _UWORD const CODE_CP1252_lig[][3] =     /* CODE_CP1252 character ligature
 *
 ******************************************|************************************/
 
-static _UWORD  const sort_CODE_CP1252[] =      /* CODE_CP1252 */
+static _UWORD const sort_CODE_CP1252[] =      /* CODE_CP1252 */
 {
    U_NUL,                                 /* 0x00  NULl */
    U_SOH,                                 /* 0x01  Start Of Heading */

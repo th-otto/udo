@@ -40,6 +40,8 @@
 *  2010:
 *    fd  Feb 11: file reformatted and tidied up, TAB-free
 *    fd  Feb 19: new: NIL
+*  2011:
+*    fd  Jan 31: new: XPOINT
 *  2013:
 *   tho  Dec 07: renamed from portab.h, sometimes concflicts
 *                with system header of same name
@@ -76,15 +78,16 @@
 #define UNUSED(x)  if (x) {;}             /* tell compiler that variable seems to be used */
 #endif
 
-#ifndef NO_CONST
-#  ifdef __GNUC__
-#	 define NO_CONST(p) __extension__({ union { const void *cs; void *s; } x; x.cs = p; x.s; })
-#  else
-#	 define NO_CONST(p) ((void *)(p))
-#  endif
+#ifdef __GNUC__
+#define __build_bug(e) (__extension__ sizeof(struct { int:-!!(e); }))
+/* &a[0] degrades to a pointer: a different type from an array */
+#define __must_be_array(a) __build_bug(__builtin_types_compatible_p(typeof(a), typeof(&a[0])))
+#else
+#define __build_bug(e)
+#define __must_be_array(a) 0
 #endif
 
-#define ArraySize(a) (sizeof(a) / sizeof((a)[0]))
+#define ArraySize(a) (sizeof(a) / sizeof((a)[0]) + __must_be_array(a))
 
 
 

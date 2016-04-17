@@ -129,7 +129,7 @@ typedef struct _cliopt                    /* command line options */
 *
 ******************************************|************************************/
 
-LOCAL const char *strPrgname = "udo";     /* der Name dieses Programms */
+static char const strPrgname[] = "udo";     /* der Name dieses Programms */
 
 LOCAL _BOOL   bHoldKey;
 LOCAL _BOOL   bShowArgs;
@@ -316,7 +316,7 @@ GLOBAL void show_status_udo2udo(FILE_LINENO Pass2Lines, const char *s)
 {
    UNUSED(Pass2Lines);
    if ((bOutOpened || bTestmode) && !bBeQuiet)
-      fprintf(stdout, "Reading %s\n", s);
+      fprintf(stdout, _("Reading %s\n"), s);
 }
 
 
@@ -624,24 +624,6 @@ GLOBAL void multitasking_interrupt(void)
 
 /*******************************************************************************
 *
-*  unregistered_copyright():
-*     dummy function
-*
-*  Return:
-*     -
-*
-******************************************|************************************/
-
-GLOBAL void unregistered_copyright(void)
-{
-}
-
-
-
-
-
-/*******************************************************************************
-*
 *  break_action():
 *     dummy function
 *
@@ -673,7 +655,7 @@ LOCAL NOINLINE void show_version(void)
 {
    fprintf(stdout, "UDO %s, %s %s\n", UDO_VERSION_STRING_OS, compile_date, compile_time);
    fprintf(stdout, "%s\n", COPYRIGHT);
-   fprintf(stdout, "UDO is Open Source (see %s for further information).\n", UDO_URL);
+   fprintf(stdout, _("UDO is Open Source (see %s for further information).\n"), UDO_URL);
 }
 
 
@@ -857,7 +839,7 @@ LOCAL NOINLINE _BOOL getcliopt(int *counter, const char *arg, const char *argnex
                   strcpy((char *)cliopt[i].var, "");
                }
                break;
-            }  /* switch () */
+            }
          }
       }
 
@@ -1160,6 +1142,7 @@ int main(int argc, const char **argv)
          {
             bNoLogfile = TRUE;
             bNoHypfile = TRUE;
+            dest_special_adjust();
          }
 
          udo(infile.full);                /* <???> informativeren Exitcode ermitteln */

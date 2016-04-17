@@ -157,6 +157,7 @@
 #include "chr_all.h"
 #include "chr_ttf.h"
 #include "udomem.h"
+#include "lang.h"
 
 #include "export.h"
 #include "chr.h"
@@ -181,7 +182,7 @@
 
 typedef struct _quotecommand
 {
-   const char *cmd;                       /* String PL6: vorher _UBYTE */
+   const char *cmd;                       /* name of command */
    size_t    cmdlen;                      /* Laenge des Kommandos (need speed ;-))*/
    const char *abb;                       /* Kommandoabkuerzung */
    size_t    abblen;                      /* Laenge der Abkuerzung */
@@ -317,7 +318,7 @@ LOCAL CHARTABLE const chrtab[] =           /* in no particular order */
    { U_HorizontalEllipsis,                "...",   "\\'85",             "\\ldots{}",      "&#x2026;", "\\205"  },
    { U_Dagger,                            "",      "\\'86",             "\\dag{}",        "&#x2020;", "\\206"  },
    { U_DoubleDagger,                      "",      "\\'87",             "$\\ddagger$",    "&#x2021;", "\\207"  },
-   { U_ModifierLetterCircumflexAccent,    "^",     "\\'88",             "\\^{ }",         "&#x2c6",   "^"      },
+   { U_ModifierLetterCircumflexAccent,    "^",     "\\'88",             "\\^{ }",         "&#x2c6;",  "^"      },
    { U_PerMilleSign,                      "0/00",  "\\'89",             "",               "&#x2030;", "\\211"  },
    { U_LatinCapitalLetterSWithCaron,      "S",     "\\'8A",             "\\v{S}",         "&#x160;",  "\\212"  },
    { U_LeftPointingSingleGuillemet,       "<",     "\\'8B",             "$<$",            "&#x2039;", "<"      },
@@ -337,7 +338,7 @@ LOCAL CHARTABLE const chrtab[] =           /* in no particular order */
    { U_LatinSmallLetterSWithCaron,        "s",     "\\'9A",             "\\v{s}",         "&#x161;",  ""       },
    { U_LatinSmallLigatureOE,              "oe",    "\\'9C",             "{\\oe}",         "&#x153;",  "\\234"  },
    { U_LatinSmallLetterZWithCaron,        "z",     "\\'9E",             "\\v{z}",         "&#x17E;",  "\\236"  },
-   { U_LatinCapitalLetterYWithDiaeresis,  "Y",     "\\'9F",             "\\\"{Y}",        "&Yuml;",   "\\230"  },
+   { U_LatinCapitalLetterYWithDiaeresis,  "Y",     "\\'9F",             "\\\"{Y}",        "&Yuml;",   "\\237"  },
    { U_NB_SP,                             " ",     "\\~",               "~",              "&nbsp;",   "\\240"  },
    { U_InvertedExclamationMark,           "!",     "\\'A1",             "!`",             "&#161;",   "\\241"  },
    { U_CentSign,                          "ct",    "\\'A2",             "cent",           "&#162;",   "\\242"  },
@@ -449,7 +450,7 @@ LOCAL CHARTABLE const chrtab[] =           /* in no particular order */
 
    { U_GreekCapitalLetterAlpha,           "Alpha", "{\\f3 A}",          "$\\Alpha$",      "&#x391;",  "Alpha"  },
    { U_GreekCapitalLetterBeta,            "Beta",  "{\\f3 B}",          "$\\Beta$",       "&#x392;",  "Beta"   },
-   { U_GreekCapitalLetterGamma,           "Gamme", "{\\f3 G}",          "$\\Gamma$",      "&#x393;",  "Gamma"  },
+   { U_GreekCapitalLetterGamma,           "Gamma", "{\\f3 G}",          "$\\Gamma$",      "&#x393;",  "Gamma"  },
    { U_GreekCapitalLetterDelta,           "Delta", "{\\f3 D}",          "$\\Delta$",      "&#x394;",  "Delta"  },
    { U_GreekCapitalLetterEpsilon,         "",      "{\\f3 E}",          "$\\Epsilon$",    "&#x395;",  ""       },
    { U_GreekCapitalLetterZeta,            "",      "{\\f3 Z}",          "$\\Zeta$",       "&#x396;",  ""       },
@@ -614,8 +615,7 @@ LOCAL void uni2misc(char *s)
       if (html_ignore_8bit)
       {
          recode_udo(s);
-      }
-      else
+      } else
       {
          for (i = 0; i < (int)UNITABLESIZE; i++)
             replace_all(s, unitab[i].uni, unitab[i].html);
@@ -668,7 +668,7 @@ LOCAL void recode_always(char *zeile, int char_set)
 {
    switch (char_set)
    {
-#if !USE_LATIN1_CHARSET
+#if SYSTEM_CHARSET != CODE_CP1252
    case CODE_CP1252:
       iso2system(zeile);
       break;
@@ -1181,8 +1181,8 @@ GLOBAL void recode(char *zeile, int from_char_set, int to_char_set)
    _UWORD     idx;
    const _UWORD *pUsrc;          /* ^ encoding table for source encoding */
    const _UWORD *pUtrg;          /* ^ encoding table for target encoding */
-   char      sSource[42];       /* source encoding name, human-readable */
-   char      sTarget[42];       /* target encoding name, human-readable */
+   char      sSource[42];        /* source encoding name, human-readable */
+   char      sTarget[42];        /* target encoding name, human-readable */
    _UWORD    i;                 /* counter */
    _BOOL   found = FALSE;     /* TRUE: char found */
    
@@ -1284,7 +1284,8 @@ GLOBAL void recode(char *zeile, int from_char_set, int to_char_set)
             {
                cbuf[0] = '*';             /* no ANSI character */
                cbuf[1] = EOS;
-               strcat(sbuf,cbuf);
+               warning_cannot_recode(idx, sSource, sTarget);
+               strcat(sbuf, cbuf);
             }
          }
       }
@@ -1361,12 +1362,12 @@ GLOBAL void recode(char *zeile, int from_char_set, int to_char_set)
             }
             if (i >= 256)
             {
-               warning_cannot_recode(*ptr, sSource, sTarget);
+               warning_cannot_recode(idx, sSource, sTarget);
             }
          }
          else                             /* conversion is not possible */
          {
-            warning_cannot_recode(*ptr, sSource, sTarget);
+            warning_cannot_recode(idx, sSource, sTarget);
 
                                          /* pass un-mappable char through */
 /*          *ptr = '?';
@@ -1994,7 +1995,7 @@ GLOBAL void node2winhelp(char *n)
 {
    char     t[512];  /* buffer for converted node name */
    char     v[32];   /* buffer for hex values */
-   size_t   i;       /* ^ into string */
+   size_t   i;
 
    if (n[0] == EOS)
       return;
@@ -2183,7 +2184,7 @@ GLOBAL void node2vision(char *n)
 *     In einem @node duerfen bei Texinfo einige Zeichen nicht auftauchen. 
 *     Diese werden entfernt.
 *
-*     PL15: Wenn der Titel hingegen keine alphanumerischen Zeichen enthaelt, 
+*     Wenn der Titel hingegen keine alphanumerischen Zeichen enthaelt, 
 *     so werden alle Zeichen im Titel durch Ascii/Hexcodes ersetzt.
 *
 *  Return:
@@ -2280,11 +2281,11 @@ GLOBAL void node2texinfo(char *s)
 
 GLOBAL void c_tilde(char *s)
 {
-   qreplace_all(s, "!~", 2, TILDE_S, TILDE_S_LEN);     /* Tilde ~ */
+   qreplace_all(s, "!~", 2, TILDE_S, TILDE_S_LEN);
 #if (NBSP_S_LEN==1)
-   replace_char(s, '~', NBSP_C);                       /* non breaking space */
+   replace_char(s, '~', NBSP_C);
 #else
-   qreplace_all(s, "~", 1, NBSP_S, NBSP_S_LEN);        /* non breaking space */
+   qreplace_all(s, "~", 1, NBSP_S, NBSP_S_LEN);
 #endif
 }
 
@@ -2459,7 +2460,7 @@ GLOBAL void c_divis(char *s)
       else
          qdelete_all(s, "!-", 2);
       break;
-      
+   
    default:
       qdelete_all(s, "!-", 2);
       break;
@@ -2509,8 +2510,10 @@ LOCAL void specials2ascii(char *s)
 LOCAL void specials2html(char *s)
 {
    /* Doesn't work in CAB :-( */
-/* qreplace_all(s, "!..",    3,            "&hellip;", 8); */
-   qreplace_all(s, "!..",    3,            "...",      3);
+   if (iEncodingTarget == CODE_TOS)
+      qreplace_all(s, "!..",    3,            "...",      3);
+   else
+      qreplace_all(s, "!..",    3,            "&#x2026;", 8);
    qreplace_all(s, "(---)",  5,            TEMPO_S,    TEMPO_S_LEN);
    qreplace_all(s, "(--)",   4,            TEMPO_S2,   TEMPO_S2_LEN);
    qreplace_all(s, "---",    3,            "&mdash;",  7);
@@ -2717,8 +2720,7 @@ LOCAL void texvar2ascii(char *s)
    qreplace_all(s, "(!pound)",      8, "GBP",     3);
    qreplace_all(s, "(!reg)",        6, "(r)",     3);
    qreplace_all(s, "(!tm)",         5, "(tm)",    4);
-   if (lang.degree != NULL)
-      replace_all(s, "(!deg)", lang.degree);
+   replace_all(s, "(!deg)", get_lang()->degree);
 }
 
 
@@ -2818,9 +2820,12 @@ GLOBAL void c_vars(char *s)
    char cbuf[8];
    const char *repl;
    
-   replace_all(s, "(!today)", lang.today);
-   replace_all(s, "(!short_today)", lang.short_today);
-
+   if ((repl = strchr(s, '(')) != NULL && repl[1] == '!')
+   {
+      replace_all(s, "(!today)", get_lang()->today);
+      replace_all(s, "(!short_today)", get_lang()->short_today);
+   }
+   
    /* === quotation marks === */
    
    qreplace_all(s, "(\"\")", 4, TEMPO_S,  TEMPO_S_LEN);
@@ -3168,8 +3173,6 @@ GLOBAL void c_vars(char *s)
       qreplace_all(s, "(!alpha)",      8, "&#x3B1;",       7);
       qreplace_all(s, "(!beta)",       7, "&#x3B2;",       7);
       specials2html(s);
-/*    specials2ascii(s);
-*/
       texvar2ascii(s);
       break;
       
@@ -3309,7 +3312,7 @@ GLOBAL void c_man_styles(char *s)
       }
       else if (ptr[0] == ESC_STYLE_MAGIC[0] && ptr[1] == ESC_STYLE_MAGIC[1])
       {
-         switch (ptr[2])   
+         switch (ptr[2])
          {
          case C_BOLD_ON:
             bold_active = TRUE;
@@ -3415,7 +3418,7 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
          /*
           * wrong place. doing that here
           * - requires us to undo this replacement in each and every stg command
-          * - caused wrong calculations in table output
+          * - causes wrong calculations in table output
           * - prevents autoreferences from working
           * - prevents !index command from working
           * ...
@@ -3424,13 +3427,13 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
          replace_1at_by_2at(s);
 #endif
          break;
-         
+      
       case TOINF:
          qreplace_all(s, "@", 1, "@@", 2);
          qreplace_all(s, "}", 1, "@}", 2);
          qreplace_all(s, "{", 1, "@{", 2);
          break;
-         
+      
       case TOTVH:
          qreplace_all(s, "{", 1, "{{", 2);
          break;
@@ -3498,10 +3501,9 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
 
    sl_verb_on = CMD_STYLELEN;
    sl_verb_off = CMD_STYLELEN;
-   
    while (ptr[0] != EOS)
    {
-      /* PL13: Innerhalb (!V)...(!v) Leerzeichen durch interne  */
+      /* Innerhalb (!V)...(!v) Leerzeichen durch interne  */
       /* feste Leerzeichen ersetzen, damit token_output() nicht */
       /* \verb+...+ umbricht. */
       if (desttype == TOTEX || desttype == TOPDL)
@@ -3570,7 +3572,7 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
       
       /* Sonderbehandlung fuer Platzhalter, welche spaeter */
       /* gequotet werden (macro, define, link, index) */
-      /* PL6: aber nicht in verbatim-Umgebungen! */
+      /* aber nicht in verbatim-Umgebungen! */
 
       /* Dabei beruecksichtigen, dass Klammern innerhalb */
       /* durch ein Ausrufungszeichen gequotet werden. */
@@ -3593,7 +3595,7 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
 
             if (ptr[0] == EOS)
             {
-               /* PL16: Falls der Pointer auf das Ende zeigt, dann */
+               /* Falls der Pointer auf das Ende zeigt, dann */
                /* ist etwas schiefgelaufen oder aber es handelte */
                /* sich gar nicht um einen Parameter (z.B. "(!)") */
                /* In dem Falle den alten Pointer restaurieren */
@@ -3970,7 +3972,6 @@ GLOBAL void auto_quote_chars(char *s, _BOOL all)
          if (idx > 127)
          {
             j = 0;
-                                          /* check for end of table! */
             while (chrtab[j].uname != U_NIL)
             {
                                           /* identical Unicode name found! */
@@ -4760,3 +4761,31 @@ GLOBAL const char *chr_codepage_charset_name(int encoding)
    }
    return "ISO-8859-1";
 }
+
+
+#undef iEncodingTarget
+void (set_encoding_target)(int code, const char *file, int line)
+{
+	iEncodingTarget = code;
+#if 0 /* for debugging */
+	fprintf(stderr, "set enc: %s %d %s\n", file, line, chr_codepage_charset_name(iEncodingTarget));
+#else
+	UNUSED(file);
+	UNUSED(line);
+#endif
+}
+
+
+#if 0 /* for debugging */
+#undef iEncodingTarget
+int get_encoding_target(const char *file, int line)
+{
+	static int been_here;
+	if (!been_here)
+	{
+		fprintf(stderr, "get enc: %s %d %s\n", file, line, chr_codepage_charset_name(iEncodingTarget));
+		been_here = 1;
+	}
+	return iEncodingTarget;
+}
+#endif

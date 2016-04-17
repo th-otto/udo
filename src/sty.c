@@ -77,6 +77,7 @@
 #include "udo.h"
 #include "file.h"
 #include "udomem.h"
+
 #include "export.h"
 #include "sty.h"
 
@@ -539,6 +540,8 @@ GLOBAL void c_internal_styles(char *s)
       free(tex_verb_on);
       replace_all(ptr, FOOT_ON, "\\footnote{");
       replace_all(ptr, FOOT_OFF, "}");
+      qreplace_all(ptr, DELETED_ON, STYLELEN, "\\[", 2);
+      qreplace_all(ptr, DELETED_OFF, STYLELEN, "\\]", 2);
 
       qreplace_all(ptr, SUP_ON,  STYLELEN, "$^{\\mbox{", 9);
       qreplace_all(ptr, SUP_OFF, STYLELEN, "}}$", 3);
@@ -586,7 +589,6 @@ GLOBAL void c_internal_styles(char *s)
       delete_all(s, VERB_OFF);
 #endif
       footnote2ascii(s);
-
       del_internal_styles(s);
       break;
       
@@ -629,7 +631,6 @@ GLOBAL void c_internal_styles(char *s)
       delete_all(s, VERB_OFF);
 #endif
       footnote2ascii(s);
-
       del_internal_styles(s);
       break;
       
@@ -650,7 +651,6 @@ GLOBAL void c_internal_styles(char *s)
 #else
       footnote2array(s);
 #endif
-
       del_internal_styles(s);
       break;
       
@@ -861,7 +861,7 @@ GLOBAL void c_internal_styles(char *s)
       footnote2ascii(s);
       del_internal_styles(s);
       break;
-      
+   
    case TOKPS:
       qreplace_all(ptr, BOLD_ON, STYLELEN,     ") udoshow Bon (", 15);
       qreplace_all(ptr, BOLD_OFF, STYLELEN,    ") udoshow Boff (", 16);

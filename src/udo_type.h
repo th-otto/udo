@@ -67,7 +67,7 @@
 *
 ******************************************|************************************/
 
-#include "udoport.h"                       /* */
+#include "udoport.h"
 
 
 
@@ -94,7 +94,6 @@
 *     TYPE DEFINITIONS
 *
 ******************************************|************************************/
-
 
 struct rgb {
 	unsigned char set;
@@ -180,8 +179,7 @@ typedef struct _lang                      /* language strings */
    
    char   today[64];
    char   short_today[64];
-
-}  LANG;
+} LANG;
 
 
 typedef struct _myfile                    /* file information */
@@ -192,13 +190,38 @@ typedef struct _myfile                    /* file information */
    char   path[MYFILE_PATH_LEN + 1];      /* Pfad */
    char   name[MYFILE_NAME_LEN + 1];      /* Dateiname */
    char   suff[MYFILE_SUFF_LEN + 1];      /* Endung */
-}  MYFILE;
+} MYFILE;
 
-                                          /* New in V6.5.19 */
-typedef struct _show_variable             /* */
+typedef struct _show_variable
 {
    _BOOL source_filename;               /* Filename anzeigen */
-}  SHOW_VAR;
+} SHOW_VAR;
+
+
+typedef struct _style                     /* style sheets */
+{
+   FILE_ID filename;                      /* filename only of stylesheet */
+   char   *media;                         /* fuer welches Medium */
+   char   *title;                         /* Titel eines Stylesheets */
+   int    alternate;                      /* Alternate Stylesheet? */
+} STYLE;
+
+typedef struct _stylelist {
+	int count;
+	int alloc;
+	STYLE **style;                        /* array of stylesheet names */
+} STYLELIST;
+
+typedef struct _script                    /* javascript files */
+{
+	FILE_ID filename;                     /* javascript file reference */
+} SCRIPT;
+
+typedef struct _scriptlist {
+	int count;
+	int alloc;
+	SCRIPT **script;                      /* array of scripts */
+} SCRIPTLIST;
 
 
 #endif   /* UDO_TYPE_H */

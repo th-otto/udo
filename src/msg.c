@@ -41,6 +41,8 @@
 *    fd  Jan 23: - converted all German umlauts in comments into plain ASCII
 *    fd  Mar 04: - file tidied up (some message texts updated or adjusted)
 *                - message wrapper functions now global
+*  2014:
+*    ggs Apr 20: Add Node6
 *
 ******************************************|************************************/
 
@@ -503,7 +505,7 @@ GLOBAL void error_open_logfile(const char *s)
 
 GLOBAL void error_open_hypfile(const char *s)
 {
-   error_message(_("couldn't open hypfile <%s>"), s);
+   error_message(_("couldn't open hyphen file <%s>"), s);
    errno_logln(s);
 }
 
@@ -1314,11 +1316,11 @@ GLOBAL void warning_short_destline(const char *s, FILE_LINENO lnr, const int ll,
 *
 ******************************************|************************************/
 
-GLOBAL void warning_cannot_recode(const char c, const char *se, const char *te)
+GLOBAL void warning_cannot_recode(unsigned int c, const char *se, const char *te)
 {
    if (iUdopass == PASS2)
    {
-      warning_message(_("cannot convert %c (%s #%u) to %s"), c, se, ((_UBYTE)c), te);
+      warning_message(_("cannot convert %s #0x%x to %s"), se, c, te);
    }
 }
 
@@ -1377,9 +1379,20 @@ GLOBAL void warning_no_isochar(const char c)
 *
 ******************************************|************************************/
 
-GLOBAL void warning_node_too_deep(void)
+GLOBAL void warning_node_too_deep(_BOOL popup, _BOOL invisible)
 {
-   warning_message(_("structure depth exceeded, using subsubsubsubnode"));
+   char n[100 + TOC_MAXDEPTH * 3];
+   int i;
+   
+   strcpy(n, "!");
+   if (popup)
+      strcat(n, "p");
+   for (i = 0; i < TOC_MAXDEPTH - 1; i++)
+      strcat(n, "sub");
+   strcat(n, "node");
+   if (invisible)
+      strcat(n, "*");
+   warning_message(_("structure depth exceeded, using %s"), n);
 }
 
 

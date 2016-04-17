@@ -42,6 +42,9 @@
 *  2011:
 *    fd  Jan 31: - file reformatted
 *                - IMGTYPE_... introduced; image header definitions resorted
+*  2013:
+*    fd  Oct 31: - get_png_size() added
+*                - c_gif_output() renamed: c_html_image_output()
 *
 ******************************************|************************************/
 
@@ -130,7 +133,14 @@ typedef struct _imgheader
 
 typedef struct _jpgheader
 {
-   _UBYTE   jpg_unknown[2];                /* ??? */
+   _UBYTE   SOI[2];                        /* Start of Image (SOI) Marker */
+   _UBYTE   APP0[2];                       /* Applicaion (APP0) Marker    */
+   _UBYTE   APPO_lenght[2];
+   _UBYTE   APP0_ID[5];
+   _UBYTE   APP0_Version[2];
+   _UBYTE   APP0_Units[1];
+   _UBYTE   APP0_X_Density[2];
+   _UBYTE   APP0_Y_Density[2];
 } JPGHEADER;
 
 
