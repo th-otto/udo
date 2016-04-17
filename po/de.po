@@ -6,7 +6,7 @@ msgid  ""
 msgstr ""
 "Project-Id-Version: udo HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-17 11:51+0200\n"
+"POT-Creation-Date: 2016-04-17 14:51+0200\n"
 "PO-Revision-Date: 2011-05-30 02:03+0200\n"
 "Last-Translator: Thorsten Otto <halgara@yahoo.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -307,155 +307,155 @@ msgid  "'!item' outside environment"
 msgstr "'!item' ausserhalb Environment"
 
 #. preface
-#: ../src/lang_utf.h:140
+#: ../src/lang_utf.h:145
 msgid  "Preface"
 msgstr "Vorwort"
 
 #. chapter
-#: ../src/lang_utf.h:141
+#: ../src/lang_utf.h:146
 msgid  "Chapter"
 msgstr "Kapitel"
 
 #. title
-#: ../src/lang_utf.h:142
+#: ../src/lang_utf.h:147
 msgid  "Title"
 msgstr "Titel"
 
 #. appendix
-#: ../src/lang_utf.h:143
+#: ../src/lang_utf.h:148
 msgid  "Appendix"
 msgstr "Anhang"
 
 #. contents
-#: ../src/lang_utf.h:144
+#: ../src/lang_utf.h:149
 msgid  "Contents"
 msgstr "Inhaltsverzeichnis"
 
 #. listfigure
-#: ../src/lang_utf.h:145
+#: ../src/lang_utf.h:150
 msgid  "List of Figures"
 msgstr "Abbildungsverzeichnis"
 
 #. listtable
-#: ../src/lang_utf.h:146
+#: ../src/lang_utf.h:151
 msgid  "List of Tables"
 msgstr "Tabellenverzeichnis"
 
 #. figure
-#: ../src/lang_utf.h:147
+#: ../src/lang_utf.h:152
 msgid  "Figure"
 msgstr "Abbildung"
 
 #. table
-#: ../src/lang_utf.h:148
+#: ../src/lang_utf.h:153
 msgid  "Table"
 msgstr "Tabelle"
 
 #. index
-#: ../src/lang_utf.h:149
+#: ../src/lang_utf.h:154
 msgid  "Index"
 msgstr "Index"
 
 #. page
-#: ../src/lang_utf.h:150
+#: ../src/lang_utf.h:155
 msgid  "page"
 msgstr "Seite"
 
 #. see
-#: ../src/lang_utf.h:151
+#: ../src/lang_utf.h:156
 msgid  "see"
 msgstr "siehe"
 
 #. also
-#: ../src/lang_utf.h:152
+#: ../src/lang_utf.h:157
 msgid  "see also"
 msgstr "siehe auch"
 
 #. by
-#: ../src/lang_utf.h:153
+#: ../src/lang_utf.h:158
 msgid  "by"
 msgstr "von"
 
 #. fur
-#: ../src/lang_utf.h:154
+#: ../src/lang_utf.h:159
 msgid  "for"
 msgstr "für"
 
 #. up
-#: ../src/lang_utf.h:155
+#: ../src/lang_utf.h:160
 msgid  "&Up"
 msgstr "&Hoch"
 
 #. exit
-#: ../src/lang_utf.h:156
+#: ../src/lang_utf.h:161
 msgid  "E&xit"
 msgstr "Bee&nden"
 
 #. unknown
-#: ../src/lang_utf.h:157
+#: ../src/lang_utf.h:162
 msgid  "Unknown"
 msgstr "Unbekannt"
 
 #. update
-#: ../src/lang_utf.h:158
+#: ../src/lang_utf.h:163
 msgid  "Last updated on"
 msgstr "Letzte Aktualisierung am"
 
 #. lcid
-#: ../src/lang_utf.h:159
+#: ../src/lang_utf.h:164
 msgid  "0x409"
 msgstr "0x407"
 
 #. html_home
-#: ../src/lang_utf.h:160
+#: ../src/lang_utf.h:165
 msgid  "Home"
 msgstr "Home"
 
 #. html_up
-#: ../src/lang_utf.h:161
+#: ../src/lang_utf.h:166
 msgid  "Up"
 msgstr "Hoch"
 
 #. html_prev
-#: ../src/lang_utf.h:162
+#: ../src/lang_utf.h:167
 msgid  "Prev"
 msgstr "Vorige"
 
 #. html_next
-#: ../src/lang_utf.h:163
+#: ../src/lang_utf.h:168
 msgid  "Next"
 msgstr "Nächste"
 
 #. html_lang
 #. html_start
-#: ../src/lang_utf.h:165
+#: ../src/lang_utf.h:170
 msgid  "Begin of the document"
 msgstr "Beginn des Dokumentes"
 
 #. translator
-#: ../src/lang_utf.h:166
+#: ../src/lang_utf.h:171
 msgid  "Translation:"
 msgstr "Übersetzung:"
 
 #. distributor
-#: ../src/lang_utf.h:167
+#: ../src/lang_utf.h:172
 msgid  "Distributor:"
 msgstr "Vertrieb:"
 
 #. tex_stylename
-#: ../src/lang_utf.h:168
+#: ../src/lang_utf.h:173
 msgctxt "tex_stylename"
 msgid  "english"
 msgstr "german,a4"
 
 #. lyx_langname
-#: ../src/lang_utf.h:169
+#: ../src/lang_utf.h:174
 msgctxt "lyx_langname"
 msgid  "english"
 msgstr "german"
 
 #. degree
-#: ../src/lang_utf.h:170
+#: ../src/lang_utf.h:175
 msgid  "degree"
 msgstr "Grad"
 
@@ -465,7 +465,7 @@ msgstr "Grad"
 #. * 3rd arg: day of month
 #.
 #. today
-#: ../src/lang_utf.h:176
+#: ../src/lang_utf.h:181
 #, c-format
 msgctxt "today"
 msgid  "%2$s %3$d, %1$d"
@@ -477,57 +477,57 @@ msgstr "%3$d. %2$s %1$d"
 #. * 3rd arg: day of month
 #.
 #. short_today
-#: ../src/lang_utf.h:182
+#: ../src/lang_utf.h:187
 #, c-format
 msgctxt "short_today"
 msgid  "%1$0d/%2$02d/%3$02d"
 msgstr "%3$02d.%2$02d.%1$d"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:190
 msgid  "January"
 msgstr "Januar"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:191
 msgid  "February"
 msgstr "Februar"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:192
 msgid  "March"
 msgstr "März"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:193
 msgid  "April"
 msgstr "April"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:194
 msgid  "May"
 msgstr "Mai"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:195
 msgid  "June"
 msgstr "Juni"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:196
 msgid  "July"
 msgstr "Juli"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:197
 msgid  "August"
 msgstr "August"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:198
 msgid  "September"
 msgstr "September"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:199
 msgid  "October"
 msgstr "Oktober"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:200
 msgid  "November"
 msgstr "November"
 
-#: ../src/lang_utf.h:185
+#: ../src/lang_utf.h:201
 msgid  "December"
 msgstr "Dezember"
 
@@ -778,7 +778,7 @@ msgstr "%x nicht verfügbar in ISO Latin 1"
 #: ../src/msg.c:1395
 #, c-format
 msgid  "structure depth exceeded, using %s"
-msgstr ""
+msgstr "Strukturtiefe überschritten, benutze %s"
 
 #: ../src/msg.c:1404
 #, c-format
@@ -816,15 +816,16 @@ msgstr "nicht ersetzt %3lu:%3lu: %c%c%c %s %s\n"
 msgid  "%x not allowed in macro name"
 msgstr "%x nicht erlaubt in Makronamen"
 
-#: ../src/par.c:4432
-#, c-format
-msgid  "redefining internal command (!%s)"
-msgstr "internes Kommando (!%s) neu definiert"
-
-#: ../src/par.c:4549
+#: ../src/par.c:4547
 #, c-format
 msgid  "macro name longer than %d characters"
 msgstr "Makroname länger als %d Zeichen"
+
+#: ../src/par.c:4553
+#: ../src/par.c:4725
+#, c-format
+msgid  "redefining internal command (!%s)"
+msgstr "internes Kommando (!%s) neu definiert"
 
 #: ../src/par.c:4578
 #, c-format
@@ -836,12 +837,17 @@ msgstr "Makroinhalt länger als %d Zeichen"
 msgid  "definition name longer than %d characters"
 msgstr "Definitionsname länger als %d Zeichen"
 
-#: ../src/par.c:4752
+#: ../src/par.c:4754
 #, c-format
 msgid  "definition contents longer than %d characters"
-msgstr "Definitions länger als %d Zeichen"
+msgstr "Definitionstext länger als %d Zeichen"
 
-#: ../src/par.c:4895
+#: ../src/par.c:4851
+#, c-format
+msgid  "internal command (!%s) cannot be undefined"
+msgstr "Internes Kommando (!%s) kann nicht gelöscht werden"
+
+#: ../src/par.c:4902
 #, c-format
 msgid  "possibly undefined macro: %s"
 msgstr "Makro möglicherweise nicht definiert: %s"
@@ -902,7 +908,7 @@ msgid  "! please inform the author (%s)!\n"
 msgstr "! bitte den Author informieren (%s)!\n"
 
 #: ../src/toc.c:5831
-#: ../src/udo.c:2534
+#: ../src/udo.c:2529
 msgid  "Sorting index..."
 msgstr "Sortiere Index..."
 
@@ -1030,144 +1036,144 @@ msgstr "Unbekanntes !docinfo Kommando: %s"
 msgid  "no title data available"
 msgstr "Keine Titeldaten verfügbar"
 
-#: ../src/udo.c:1251
+#: ../src/udo.c:1246
 #, c-format
 msgid  "stringcenter(): length must not exceed %d!"
 msgstr "stringcenter(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1290
+#: ../src/udo.c:1285
 #, c-format
 msgid  "strcenter(): length must not exceed %d!"
 msgstr "strcenter(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1358
+#: ../src/udo.c:1353
 #, c-format
 msgid  "outlncenterfill(): string must not be longer than %d characters"
 msgstr "outlncenterfill(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1451
+#: ../src/udo.c:1446
 #, c-format
 msgid  "strjustify(): string must not be longer than %d characters"
 msgstr "strjustify(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1570
+#: ../src/udo.c:1565
 #, c-format
 msgid  "%s ignored outside preamble"
 msgstr "%s wird ignoriert nach !begin_document"
 
-#: ../src/udo.c:1592
+#: ../src/udo.c:1587
 #, c-format
 msgid  "%s ignored inside preamble"
 msgstr "%s wird ignoriert vor !begin_document"
 
-#: ../src/udo.c:1769
+#: ../src/udo.c:1764
 msgid  "use \"unix\" to test for unix systems"
 msgstr "Benutzen Sie \"unix\" um für Unix-Systeme zu testen"
 
-#: ../src/udo.c:1837
+#: ../src/udo.c:1832
 #, c-format
 msgid  "unknown color: %s"
 msgstr "Unbekannte Farbe: %s"
 
-#: ../src/udo.c:5254
+#: ../src/udo.c:5249
 msgid  "odd number of \"\""
 msgstr "ungerade Anzahl von \"\""
 
-#: ../src/udo.c:5259
+#: ../src/udo.c:5254
 msgid  "odd number of ''"
 msgstr "ungerade Anzahl von ''"
 
-#: ../src/udo.c:5702
+#: ../src/udo.c:5697
 msgid  "$UDOINPUTPATH not set!"
 msgstr "$UDOINPUTPATH nicht gesetzt!"
 
-#: ../src/udo.c:7751
+#: ../src/udo.c:7746
 #, c-format
 msgid  "unknown command: %s"
 msgstr "Unbekanntes Kommando: %s"
 
-#: ../src/udo.c:7961
+#: ../src/udo.c:7956
 msgid  "Reading hyphen file..."
 msgstr "Lese Hyphen-Datei..."
 
-#: ../src/udo.c:7971
+#: ../src/udo.c:7966
 msgid  "Sorting hyphen file..."
 msgstr "Sortiere Hyphen-Datei..."
 
-#: ../src/udo.c:7975
+#: ../src/udo.c:7970
 msgid  "Writing hyphen file..."
 msgstr "Schreibe Hyphen-Datei..."
 
-#: ../src/udo.c:8425
+#: ../src/udo.c:8420
 msgid  "too many files opened"
 msgstr "Zu viele Dateien göffnet"
 
-#: ../src/udo.c:8532
+#: ../src/udo.c:8527
 msgid  "too many !if"
 msgstr "Zu viele !if"
 
-#: ../src/udo.c:9004
+#: ../src/udo.c:8966
 #, c-format
 msgid  "language %s not supported"
 msgstr "Sprache %s wird nicht unterstützt"
 
-#: ../src/udo.c:9042
+#: ../src/udo.c:9004
 #, c-format
 msgid  "more than %d buttons defined"
 msgstr "Mehr als %d Knöpfe definiert"
 
-#: ../src/udo.c:10078
+#: ../src/udo.c:10038
 msgid  "Recursive !include detected"
 msgstr "Rekursives !include entdeckt"
 
-#: ../src/udo.c:10681
+#: ../src/udo.c:10641
 msgid  "!code is deprecated, use !code_source instead"
 msgstr "!code is überholt, benutzen Sie !code_source stattdessen"
 
-#: ../src/udo.c:10829
+#: ../src/udo.c:10789
 msgid  "check this paragraph"
 msgstr "Prüfen sie diesen Paragraph"
 
 #. Es kann nur eine geben
-#: ../src/udo.c:11205
+#: ../src/udo.c:11162
 msgid  "UDO cannot handle nested tables"
 msgstr "UDO kann verschachtelte Tabellen nicht behandeln"
 
-#: ../src/udo.c:12182
+#: ../src/udo.c:12135
 #, c-format
 msgid  "Output (%lu lines) written to %s"
 msgstr "Ausgabe (%lu Zeilen) geschrieben in %s"
 
-#: ../src/udo.c:12186
+#: ../src/udo.c:12139
 #, c-format
 msgid  "Output: %lu lines"
 msgstr "Ausgabe: %lu Zeilen"
 
-#: ../src/udo.c:12192
+#: ../src/udo.c:12145
 #, c-format
 msgid  "Warnings: %d"
 msgstr "Warnungen:   %d"
 
-#: ../src/udo.c:12198
+#: ../src/udo.c:12151
 #, c-format
 msgid  "Notes:    %d"
 msgstr "Anmerkungen: %d"
 
-#: ../src/udo.c:12204
+#: ../src/udo.c:12157
 #, c-format
 msgid  "Errors:   %d"
 msgstr "Fehler:      %d"
 
-#: ../src/udo.c:12360
+#: ../src/udo.c:12313
 #, c-format
 msgid  "source and destination file are equal: <%s>"
 msgstr "Quell- und Ziel-Datei sind identisch: <%s>"
 
-#: ../src/udo.c:12399
+#: ../src/udo.c:12352
 msgid  "Pass 1..."
 msgstr "Pass 1..."
 
-#: ../src/udo.c:12465
+#: ../src/udo.c:12418
 msgid  "Pass 2..."
 msgstr "Pass 2..."
 
@@ -1175,6 +1181,3 @@ msgstr "Pass 2..."
 #, c-format
 msgid  "symbol %s not set"
 msgstr "Symbol %s ist nicht gesetzt"
-
-#~ msgid  "structure depth exceeded, using subsubsubsubnode"
-#~ msgstr "Strukturtiefe überschritten, benutze subsubsubsubnode"
