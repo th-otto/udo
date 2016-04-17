@@ -6,7 +6,7 @@ msgid  ""
 msgstr ""
 "Project-Id-Version: udo HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-17 14:51+0200\n"
+"POT-Creation-Date: 2016-04-17 19:50+0200\n"
 "PO-Revision-Date: 2011-05-30 02:03+0200\n"
 "Last-Translator: Thorsten Otto <halgara@yahoo.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
@@ -16,37 +16,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: ../src/abo.c:233
+#: ../src/abo.c:231
 #, c-format
 msgid  "This text was made with\n"
 msgstr "Dieser Text wurde erzeugt mit\n"
 
-#: ../src/abo.c:240
+#: ../src/abo.c:238
 #, c-format
 msgid  "UDO is Open Source (!nl)\n"
 msgstr "UDO ist Open Source (!nl)\n"
 
-#: ../src/abo.c:244
+#: ../src/abo.c:242
 #, c-format
 msgid  "UDO is an application that converts text files which you\n"
 msgstr "UDO ist ein Programm, mit dem Sie Textdateien, die im\n"
 
-#: ../src/abo.c:245
+#: ../src/abo.c:243
 #, c-format
 msgid  "have written in Universal Document Format, into more than\n"
 msgstr "Universal-Document-Format erstellt wurden, in (!\"u)ber\n"
 
-#: ../src/abo.c:246
+#: ../src/abo.c:244
 #, c-format
 msgid  "25 different target formats.\n"
 msgstr "25 Zielformate umwandeln k(!\"o)nnen.\n"
 
-#: ../src/abo.c:248
+#: ../src/abo.c:246
 #, c-format
 msgid  "Get further information and the current versions on the Internet at (!nl)\n"
 msgstr "Weitere Informationen sowie die aktuellen Versionen finden Sie im Internet unter (!nl)\n"
 
-#: ../src/chr.c:3668
+#: ../src/chr.c:3661
 #, c-format
 msgid  "%x maybe not available in LaTeX"
 msgstr "%x möglicherweise nicht verfügbar in LaTeX"
@@ -283,26 +283,26 @@ msgstr ""
 "\n"
 "<RETURN> drücken...\n"
 
-#: ../src/cli.c:888
+#: ../src/cli.c:879
 #, c-format
 msgid  "%s: unknown option! %s\n"
 msgstr "%s: Unbekannte Option! %s\n"
 
-#: ../src/cli.c:1126
+#: ../src/cli.c:1113
 #, c-format
 msgid  "          use --help for more information\n"
 msgstr "          Mehr Hilfe mit --help\n"
 
-#: ../src/env.c:277
+#: ../src/env.c:273
 msgid  "'!short' is a deprecated attribute for environments. Please use '!compressed' instead."
 msgstr ""
 "'!short' ist ein überholtes Attribut für Umgebungen. Bitte benutzen Sie '!compressed' stattdessen."
 
-#: ../src/env.c:312
+#: ../src/env.c:307
 msgid  "too many environments used"
 msgstr "Zu viele Environments benutzt"
 
-#: ../src/env.c:3102
+#: ../src/env.c:3078
 msgid  "'!item' outside environment"
 msgstr "'!item' ausserhalb Environment"
 
@@ -908,65 +908,65 @@ msgid  "! please inform the author (%s)!\n"
 msgstr "! bitte den Author informieren (%s)!\n"
 
 #: ../src/toc.c:5831
-#: ../src/udo.c:2529
+#: ../src/udo.c:2581
 msgid  "Sorting index..."
 msgstr "Sortiere Index..."
 
-#: ../src/toc.c:9308
+#: ../src/toc.c:9320
 msgid  "mapping not numeric or not of type integer"
 msgstr "Mapping ist nicht numerisch"
 
-#: ../src/toc.c:9517
+#: ../src/toc.c:9529
 msgid  "missing node name"
 msgstr "Fehlende Überschrift"
 
-#: ../src/toc.c:11282
+#: ../src/toc.c:11294
 msgid  "Checking nodes, labels and aliases..."
 msgstr "Prüfe Nodes, Labels und Aliase..."
 
-#: ../src/toc.c:11289
+#: ../src/toc.c:11301
 #, c-format
 msgid  "label \"%s\" used twice"
 msgstr "label \"%s\" wird zweimal benutzt"
 
-#: ../src/toc.c:11292
-#: ../src/toc.c:11302
+#: ../src/toc.c:11304
+#: ../src/toc.c:11314
 msgid  "as a label"
 msgstr "als label"
 
-#: ../src/toc.c:11294
-#: ../src/toc.c:11304
+#: ../src/toc.c:11306
+#: ../src/toc.c:11316
 msgid  "as a node"
 msgstr "als Überschrift"
 
-#: ../src/toc.c:11296
-#: ../src/toc.c:11306
+#: ../src/toc.c:11308
+#: ../src/toc.c:11318
 msgid  "as an alias"
 msgstr "als Alias"
 
-#: ../src/toc.c:11298
-#: ../src/toc.c:11308
+#: ../src/toc.c:11310
+#: ../src/toc.c:11320
 #, c-format
 msgid  " in node '%s'"
 msgstr " in Überschrift '%s'"
 
-#: ../src/toc.c:11332
+#: ../src/toc.c:11344
 msgid  "Checking HTML file names..."
 msgstr "Prüfe HTML Dateinamen..."
 
-#: ../src/toc.c:11353
+#: ../src/toc.c:11365
 #, c-format
 msgid  "file name \"%s\" used in \"%s\" and \"%s\""
 msgstr "Dateiname \"%s\" benutzt in \"%s\" und \"%s\""
 
-#: ../src/toc.c:11388
+#: ../src/toc.c:11400
 msgid  "Checking usage of labels and aliases..."
 msgstr "Prüfe Benutzung von Label und Alias"
 
-#: ../src/toc.c:11395
+#: ../src/toc.c:11409
 #, c-format
-msgid  "label/alias '%s' in node '%s' wasn't referenced"
-msgstr "label/alias '%s' in Überschrift '%s' wurde nicht benutzt"
+msgid  "%s %lu: label/alias '%s' in node '%s' wasn't referenced"
+msgstr "%s %lu: label/alias '%s' in Überschrift '%s' wurde nicht benutzt"
 
 #: ../src/toc_html.c:164
 #, c-format
@@ -1051,129 +1051,129 @@ msgstr "strcenter(): Länge darf %d nicht überschreiten!"
 msgid  "outlncenterfill(): string must not be longer than %d characters"
 msgstr "outlncenterfill(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1446
+#: ../src/udo.c:1445
 #, c-format
 msgid  "strjustify(): string must not be longer than %d characters"
 msgstr "strjustify(): Länge darf %d nicht überschreiten!"
 
-#: ../src/udo.c:1565
+#: ../src/udo.c:1563
 #, c-format
 msgid  "%s ignored outside preamble"
 msgstr "%s wird ignoriert nach !begin_document"
 
-#: ../src/udo.c:1587
+#: ../src/udo.c:1585
 #, c-format
 msgid  "%s ignored inside preamble"
 msgstr "%s wird ignoriert vor !begin_document"
 
-#: ../src/udo.c:1764
+#: ../src/udo.c:1813
 msgid  "use \"unix\" to test for unix systems"
 msgstr "Benutzen Sie \"unix\" um für Unix-Systeme zu testen"
 
-#: ../src/udo.c:1832
+#: ../src/udo.c:1881
 #, c-format
 msgid  "unknown color: %s"
 msgstr "Unbekannte Farbe: %s"
 
-#: ../src/udo.c:5249
+#: ../src/udo.c:5291
 msgid  "odd number of \"\""
 msgstr "ungerade Anzahl von \"\""
 
-#: ../src/udo.c:5254
+#: ../src/udo.c:5296
 msgid  "odd number of ''"
 msgstr "ungerade Anzahl von ''"
 
-#: ../src/udo.c:5697
+#: ../src/udo.c:5731
 msgid  "$UDOINPUTPATH not set!"
 msgstr "$UDOINPUTPATH nicht gesetzt!"
 
-#: ../src/udo.c:7746
+#: ../src/udo.c:7755
 #, c-format
 msgid  "unknown command: %s"
 msgstr "Unbekanntes Kommando: %s"
 
-#: ../src/udo.c:7956
+#: ../src/udo.c:7964
 msgid  "Reading hyphen file..."
 msgstr "Lese Hyphen-Datei..."
 
-#: ../src/udo.c:7966
+#: ../src/udo.c:7974
 msgid  "Sorting hyphen file..."
 msgstr "Sortiere Hyphen-Datei..."
 
-#: ../src/udo.c:7970
+#: ../src/udo.c:7978
 msgid  "Writing hyphen file..."
 msgstr "Schreibe Hyphen-Datei..."
 
-#: ../src/udo.c:8420
+#: ../src/udo.c:8419
 msgid  "too many files opened"
 msgstr "Zu viele Dateien göffnet"
 
-#: ../src/udo.c:8527
+#: ../src/udo.c:8525
 msgid  "too many !if"
 msgstr "Zu viele !if"
 
-#: ../src/udo.c:8966
+#: ../src/udo.c:8960
 #, c-format
 msgid  "language %s not supported"
 msgstr "Sprache %s wird nicht unterstützt"
 
-#: ../src/udo.c:9004
+#: ../src/udo.c:8998
 #, c-format
 msgid  "more than %d buttons defined"
 msgstr "Mehr als %d Knöpfe definiert"
 
-#: ../src/udo.c:10038
+#: ../src/udo.c:10021
 msgid  "Recursive !include detected"
 msgstr "Rekursives !include entdeckt"
 
-#: ../src/udo.c:10641
+#: ../src/udo.c:10572
 msgid  "!code is deprecated, use !code_source instead"
 msgstr "!code is überholt, benutzen Sie !code_source stattdessen"
 
-#: ../src/udo.c:10789
+#: ../src/udo.c:10713
 msgid  "check this paragraph"
 msgstr "Prüfen sie diesen Paragraph"
 
 #. Es kann nur eine geben
-#: ../src/udo.c:11162
+#: ../src/udo.c:11078
 msgid  "UDO cannot handle nested tables"
 msgstr "UDO kann verschachtelte Tabellen nicht behandeln"
 
-#: ../src/udo.c:12135
+#: ../src/udo.c:12040
 #, c-format
 msgid  "Output (%lu lines) written to %s"
 msgstr "Ausgabe (%lu Zeilen) geschrieben in %s"
 
-#: ../src/udo.c:12139
+#: ../src/udo.c:12044
 #, c-format
 msgid  "Output: %lu lines"
 msgstr "Ausgabe: %lu Zeilen"
 
-#: ../src/udo.c:12145
+#: ../src/udo.c:12050
 #, c-format
 msgid  "Warnings: %d"
 msgstr "Warnungen:   %d"
 
-#: ../src/udo.c:12151
+#: ../src/udo.c:12056
 #, c-format
 msgid  "Notes:    %d"
 msgstr "Anmerkungen: %d"
 
-#: ../src/udo.c:12157
+#: ../src/udo.c:12062
 #, c-format
 msgid  "Errors:   %d"
 msgstr "Fehler:      %d"
 
-#: ../src/udo.c:12313
+#: ../src/udo.c:12218
 #, c-format
 msgid  "source and destination file are equal: <%s>"
 msgstr "Quell- und Ziel-Datei sind identisch: <%s>"
 
-#: ../src/udo.c:12352
+#: ../src/udo.c:12257
 msgid  "Pass 1..."
 msgstr "Pass 1..."
 
-#: ../src/udo.c:12418
+#: ../src/udo.c:12323
 msgid  "Pass 2..."
 msgstr "Pass 2..."
 
