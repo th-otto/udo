@@ -1289,10 +1289,11 @@ win4 winhelp4: .stamp.winhelp4
 		 $(CP) $(WIN4HPJ) "$(WINHELP4_DIR)udo$(VER)4.hpj"; \
 		 $(CP) $(srcdir)/images/help.ico "$(WINHELP4_DIR)help.ico"; \
 		 $(CP) $(srcdir)/images/*.bmp "$(WINHELP4_DIR)images"; \
+		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/UDO$*4.HLP $(BIN_DIR)/$(OUTPUT_LANG)/UDO$*4.CNT; \
 		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.hlp $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.cnt; \
-		 chmod -f +w $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.fts $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.FTS 2>/dev/null; \
-		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.gid $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.GID; \
-		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.fts $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.FTS; \
+		 chmod -f +w $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.fts $(BIN_DIR)/$(OUTPUT_LANG)/UDO$(VER)4.FTS 2>/dev/null; \
+		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo*4.gid $(BIN_DIR)/$(OUTPUT_LANG)/UDO*4.GID; \
+		 $(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.fts $(BIN_DIR)/$(OUTPUT_LANG)/udo*4.FTS; \
 		 if test "`type $(HCRTF) 2>/dev/null`" = ""; then \
 		   echo "WinHelp4 Help Compiler ($(HCRTF)) not found" >& 2; \
 		 else \
@@ -1302,6 +1303,9 @@ win4 winhelp4: .stamp.winhelp4
 		   $(HCRTF) -x -NG udo$(VER)4.hpj; \
 		   $(HCRTF) -x -NG udo$(VER)4.hpj; \
 		   ); \
+		   if test -f "$(WINHELP4_DIR)"UDO*4.HLP -a ! -f "$(WINHELP4_DIR)udo$(VER)4.hlp"; then \
+			mv "$(WINHELP4_DIR)"UDO*4.HLP "$(WINHELP4_DIR)udo$(VER)4.hlp"; \
+		   fi; \
 		   $(CP) "$(WINHELP4_DIR)udo$(VER)4.hlp" $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.hlp || exit 1; \
 		   $(CP) "$(WINHELP4_DIR)udo$(VER)4.cnt" $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER)4.cnt || exit 1; \
 		   : $(RMDIRHIER) "$(WINHELP4_DIR)"; \
