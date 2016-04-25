@@ -3096,7 +3096,7 @@ LOCAL void output_html_doctype(void)
 		outln("        \"http://www.w3.org/TR/html4/loose.dtd\">");
 		break;
 	case HTML5:
-		outln("<!DOCTYPE HTML>");
+		outln("<!DOCTYPE html>");
 		break;
 	case XHTML_STRICT:
 		voutlnf("<?xml version=\"1.0\" encoding=\"%s\"?>", s);
