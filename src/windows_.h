@@ -183,6 +183,10 @@
 #define TPM_LAYOUTRTL 0x8000L
 #endif
 
+#ifndef MAPVK_VSC_TO_VK_EX
+#define MAPVK_VSC_TO_VK_EX 3
+#endif
+
 #else
 typedef unsigned short LANGID;
 #endif /* __WIN32__ */
