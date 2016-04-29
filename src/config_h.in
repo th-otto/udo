@@ -29,6 +29,12 @@
 /* Define to 1 if you have the 'bind_textdomain_codeset' function. */
 #undef HAVE_BIND_TEXTDOMAIN_CODESET
 
+/* Define if you have libcurl. */
+#undef HAVE_CURL
+
+/* Define to 1 if you have the <curl/curl.h> header file. */
+#undef HAVE_CURL_CURL_H
+
 /* Define to 1 if you have the 'dcgettext' function. */
 #undef HAVE_DCGETTEXT
 
@@ -94,6 +100,9 @@
 
 /* Define if your <locale.h> file defines LC_MESSAGES. */
 #undef HAVE_LC_MESSAGES
+
+/* Define to 1 if you have the 'curl' library (-lcurl). */
+#undef HAVE_LIBCURL
 
 /* Define to 1 if you have the 'm' library (-lm). */
 #undef HAVE_LIBM
