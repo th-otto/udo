@@ -525,7 +525,10 @@ GLOBAL _BOOL table_add_line(char *s)
 	if (strcmp(s, "!hline") == 0)
 	{
 		if (!no_table_lines)
-			table.row[y].horizontal_bar++;
+		{
+			if (y != 0)
+				table.row[y - 1].horizontal_bar++;
+		}
 		return TRUE;
 	}
 
@@ -1408,11 +1411,11 @@ LOCAL void table_output_general(void)
 	int y, x, i, offset, indent = 0, y_stg;
 	char s[512];
 	char f[LINELEN];
-	char stg_vl[32];
-	char hl[3][512], space[50];
+	char hl[3][512];
 	char hl_l[3][2], hl_c[3][2], hl_v[3][2], hl_r[3][2];
+	char space[50];
 	char vc_l[2], vc_m[2], vc_r[2];
-	size_t tl, add, twidth, toffset, isl, j;
+	size_t tl, add, twidth, toffset, isl;
 	_BOOL tortf, tosrc, ansichars, align_caption;
 	_BOOL inside_center, inside_right, inside_left;
 
@@ -1463,6 +1466,7 @@ LOCAL void table_output_general(void)
 		outln(sSrcRemOn);
 
 	toffset = 1;
+	y_stg = -1;
 	if ((desttype == TOSTG || desttype == TOAMG) && !ansichars)
 	{
 		/* Tabellenbreite fuer den ST-Guide berechnen und in <hl[1]> */
@@ -1485,8 +1489,17 @@ LOCAL void table_output_general(void)
 				toffset = indent + 1;
 		}
 
-		if (twidth > 126)				/* ST-Guide kennt Linien nur mit einer  */
-		{								/* Breite von max 126 Zeichen           */
+		if (twidth > 126)
+		{
+			/*
+			 * this code was intended to draw horizontal lines for STG that are
+			 * longer than 126 chars, but it does not work:
+			 * the x-offset to specify the starting position is also
+			 * limited to 126 :-(
+			 */
+#if 0
+			int j;
+			
 			i = (int) twidth;
 			twidth = 126;
 
@@ -1512,6 +1525,16 @@ LOCAL void table_output_general(void)
 				if (x > 255)			/* Max X-Position       */
 					break;
 			}
+#else
+			int warn = table.toplines > 0;
+			
+			for (y = 0; y < table.height; y++)
+				if (table.row[y].horizontal_bar > 0)
+					warn = TRUE;
+			if (warn)
+				warning_message(_("horizontal table lines will be truncated"));
+			sprintf(hl[1], "@line %d %d 0", (int) toffset, 126);
+#endif
 		} else
 		{
 			sprintf(hl[1], "@line %d %d 0", (int) toffset, (int) twidth);
@@ -1520,22 +1543,12 @@ LOCAL void table_output_general(void)
 		strcpy(hl[2], hl[1]);
 
 		/* Befehle fuer vertikale Linien erzeugen */
-		offset = (int) toffset;
-		for (x = 0; x < table.width; x++)
+		for (x = 0; x <= table.width; x++)
 		{
 			if (table.vertical_bar[x] > 0)
 			{
-				sprintf(stg_vl, "@line %d 0 %d", offset, table.height > 254 ? 254 : table.height);
-				outln(stg_vl);
+				y_stg = 0;
 			}
-			offset += (int) table.cell_width[x];
-			offset += 2;
-		}
-
-		if (table.vertical_bar[table.width] > 0)
-		{
-			sprintf(stg_vl, "@line %d 0 %d", offset, table.height > 254 ? 254 : table.height);
-			outln(stg_vl);
 		}
 
 		strcpy(vc_l, "");
@@ -1677,34 +1690,31 @@ LOCAL void table_output_general(void)
 		}
 	}
 
-
-	for (y = 0, y_stg = 0; y < table.height; y++, y_stg++)
+	for (y = 0; y < table.height; y++)
 	{
 		s[0] = EOS;
-		if (y_stg >= 254 && (desttype == TOSTG || desttype == TOAMG) && !ansichars)
+		if (y == y_stg)
 		{
 			/* ST-Guide kann nur Linien mit einer Laenge von 254 Zeilen */
 			/* zeichen. Deshalb wird hier eine Anschlussline gezeichnet */
+			int h_stg;
+			
 			offset = (int) toffset;
-			/* y_stg = table.height - y; */
 
-			for (x = 0; x < table.width; x++)
+			h_stg = table.height - y_stg;
+			if (h_stg > 254)
+				h_stg = 254;
+
+			for (x = 0; x <= table.width; x++)
 			{
 				if (table.vertical_bar[x] > 0)
 				{
-					sprintf(stg_vl, "@line %d 0 %d", offset, y_stg);
-					outln(stg_vl);
+					voutlnf("@line %d 0 %d", offset, h_stg);
 				}
 				offset += (int) table.cell_width[x];
 				offset += 2;
 			}
-			if (table.vertical_bar[table.width] > 0)
-			{
-				sprintf(stg_vl, "@line %d 0 %d", offset, y_stg);
-			}
-			outln(stg_vl);
-
-			y_stg = 0;
+			y_stg += h_stg;
 		}
 
 		strcat(s, space);
@@ -1715,7 +1725,7 @@ LOCAL void table_output_general(void)
 			{
 				for (i = 1; i <= table.vertical_bar[x]; i++)
 				{
-					(x == 0) ? strcat(s, vc_l) : strcat(s, vc_m);
+					strcat(s, x == 0 ? vc_l : vc_m);
 				}
 			}
 
@@ -1769,7 +1779,7 @@ LOCAL void table_output_general(void)
 		{
 			for (i = 1; i <= table.vertical_bar[table.width]; i++)
 			{
-				(i == table.vertical_bar[table.width]) ? strcat(s, vc_r) : strcat(s, vc_m);
+				strcat(s, i == table.vertical_bar[table.width] ? vc_r : vc_m);
 			}
 		}
 
