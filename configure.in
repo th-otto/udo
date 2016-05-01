@@ -463,10 +463,10 @@ AM_CONDITIONAL(CROSS_COMPILING, test "$cross_compiling" != no)
 
 AC_CHECK_HEADERS([argz.h limits.h locale.h nl_types.h malloc.h string.h strings.h unistd.h process.h sys/param.h endian.h io.h fcntl.h dlfcn.h pwd.h wchar.h])
 
-AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strincmp strncmpi strlwr strupr tmpnam strerror sys_errlist mkstemp fdopen times])
+AC_CHECK_FUNCS([strcasecmp strncasecmp stricmp strnicmp strincmp strncmpi strlwr strupr tmpnam strerror sys_errlist fdopen times])
 AC_CHECK_FUNCS([getcwd munmap putenv setenv setlocale strchr])
 AC_CHECK_FUNCS([sigaction syslog realpath setrlimit])
-AC_CHECK_FUNCS([getuid geteuid getgid getegid getpid getppid lstat mkdir])
+AC_CHECK_FUNCS([getuid geteuid getgid getegid getpid getppid lstat mkdir mktemp mkstemp mkstemps])
 
 AC_CHECK_LIB(m, log)
 
