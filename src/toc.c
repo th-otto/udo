@@ -7123,7 +7123,7 @@ LOCAL void toc_output(TOCTYPE currdepth, const int depth, _BOOL for_apx)
 			{
 				for (level = currdepth; level < TOC_MAXDEPTH; level++)
 				{
-					if (depth > level - currdepth && toc_table[i]->toctype == level)
+					if (depth > level - currdepth && toc_table[i]->toctype == level && !label_table[toc_table[i]->labindex]->is_popup)
 					{
 						/* Ein Kapitel */
 						if (currdepth == TOC_NODE1 && level == TOC_NODE1 && leerzeile && depth > 1)
@@ -9541,7 +9541,8 @@ GLOBAL _BOOL add_node_to_toc(TOCTYPE currdepth, _BOOL popup, _BOOL invisible)
 
 	if (currdepth > toc_maxdepth)
 		toc_maxdepth = currdepth;
-
+	tocptr->ignore_subtoc = popup;
+	
 	/* ---------------------------------------------------- */
 	/* Listenartige Verkettung erzeugen                     */
 	/* ---------------------------------------------------- */
