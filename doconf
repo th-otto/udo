@@ -8,6 +8,8 @@ configure_args="--enable-warnings --enable-fatal-warnings"
 case $gui in
 gem|tos)
 	. $HOME/gtk/profile /
+	PKG_CONFIG_LIBDIR=/usr/m68k-atari-mint/sys-root/usr/lib/pkgconfig
+	PKG_CONFIG_PATH=/usr/m68k-atari-mint/sys-root/usr/lib/pkgconfig
 	./configure $configure_args --with-gui=gem --host=m68k-atari-mint
 	;;
 win32)

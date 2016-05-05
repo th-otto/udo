@@ -3,7 +3,9 @@ include ../../silent.am
 INCLUDES = -I$(top_srcdir)/tools/hypview/include
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(XML_CFLAGS)
 
+if HAVE_XML
 noinst_PROGRAMS = chmls chmc xmltest
+endif
 
 if !CROSS_COMPILING
 noinst_SCRIPTS = $(build_triplet)-chmls$(EXEEXT) $(build_triplet)-chmc$(EXEEXT)
