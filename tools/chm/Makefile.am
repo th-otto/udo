@@ -1,6 +1,6 @@
 include ../../silent.am
 
-INCLUDES = -I$(top_srcdir)/tools/hypview/include
+INCLUDES = -I$(top_srcdir)/tools/hypview/include -I$(top_srcdir)/src
 AM_CPPFLAGS = $(GLIB_CFLAGS) $(XML_CFLAGS)
 
 if HAVE_XML

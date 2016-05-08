@@ -1229,7 +1229,7 @@ htmlhelp: .stamp.htmlhelp
 		$(CP) $(srcdir)/../udo.css $(srcdir)/../udo_web.css $(HTMLHELP_DIR); \
 		$(UDO) --htmlhelp --check --force-short -o "$(HTMLHELP_DIR)udo.html" -l $(srcdir)/udo.u || exit 1; \
 		$(RM) "$(HTMLHELP_DIR)udo.hhp"; \
-		$(CP) udo$(OUTPUT_LANG).hhp "$(HTMLHELP_DIR)"; \
+		$(CP) $(srcdir)/udo$(OUTPUT_LANG).hhp "$(HTMLHELP_DIR)"; \
 		$(RM) $(BIN_DIR)/$(OUTPUT_LANG)/udo$(VER).chm; \
 		hhc="`type -p $(CHMC) 2>/dev/null`"; \
 		if test "$$hhc" = ""; then \
