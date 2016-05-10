@@ -4,3 +4,4 @@ tests/*.ref
 tests/_hypview.css
 tests/_hypview.js
 tests/*.gif
+tos/utils/call-acc/call-acc.gtp
