@@ -8001,7 +8001,8 @@ GLOBAL void c_tableofcontents(void)
 			}
 			voutlnf("@keywords \"%s\"", get_lang()->contents);
 		}
-
+		outln("@noref");
+		
 		if (called_maketitle)
 			voutlnf("@toc \"%s\"", get_lang()->title);
 
