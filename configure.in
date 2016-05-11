@@ -1028,6 +1028,7 @@ AC_OUTPUT([
 	tools/hypview/tools/Makefile
 	tools/hypview/tools/help_rc/Makefile
 	tools/hypview/tools/pc_conv/Makefile
+	tools/hypview/tools/1st_conv/Makefile
 	tools/hypview/po/Makefile.in
 	tools/hypview/doc/Makefile
 	tools/hypview/doc/de/Makefile
