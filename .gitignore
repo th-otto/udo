@@ -56,6 +56,7 @@ m4/prog-cc-c-o.m4
 *.res
 *.a
 src/udo
+src/*-udo
 tools/helpdeco/helpdeco
 tools/helpdeco/splitmrb
 tools/helpdeco/zapres
