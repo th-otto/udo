@@ -10791,7 +10791,6 @@ static void dump_node_structure(void)
 LOCAL void output_verbatim_line(char *zeile)
 {
 	char indent[128];
-	size_t len;
 
 	if (zeile[0] == '#')
 	{
@@ -10831,11 +10830,14 @@ LOCAL void output_verbatim_line(char *zeile)
 	case TOSTG:
 	case TOAMG:
 	case TOTVH:
-		len = strlen(indent) + strlen(zeile);
-		if (len > zDocParwidth)
+		if (!(pflag[PASS2].env == ENV_PREFORMATTED && pflag[PASS2].doinside))
 		{
-			warning_long_destline(outfile.full, outlines + 1, (int) len);
-			note_message(bNoWarningsLines ? NULL : _("check this paragraph"));
+			size_t len = strlen(indent) + strlen(zeile);
+			if (len > zDocParwidth)
+			{
+				warning_long_destline(outfile.full, outlines + 1, (int) len);
+				note_message(bNoWarningsLines ? NULL : _("check this paragraph"));
+			}
 		}
 		break;
 	}
@@ -10881,11 +10883,6 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_commands_inside(zeile, TRUE);
 
 			replace_macros(zeile);
-			c_divis(zeile);
-			c_vars(zeile);
-			c_tilde(zeile);
-			c_styles(zeile);
-
 			c_commands_inside(zeile, FALSE);
 
 			replace_defines(zeile);
@@ -10936,11 +10933,6 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_commands_inside(zeile, TRUE);
 
 			replace_macros(zeile);
-			c_divis(zeile);
-			c_vars(zeile);
-			c_tilde(zeile);
-			c_styles(zeile);
-
 			c_commands_inside(zeile, FALSE);
 
 			replace_defines(zeile);
