@@ -10878,9 +10878,30 @@ LOCAL void output_verbatim_line(char *zeile)
 		replace_1at_by_2at(zeile);
 		if (pflag[PASS2].env == ENV_PREFORMATTED && pflag[PASS2].doinside)
 		{
+			c_commands_inside(zeile, TRUE);
+
+			replace_macros(zeile);
+			c_divis(zeile);
+			c_vars(zeile);
+			c_tilde(zeile);
+			c_styles(zeile);
+
+			c_commands_inside(zeile, FALSE);
+
+			replace_defines(zeile);
+			if (bCheckMisc)
+				auto_references(zeile, FALSE, "", 0, 0);
+			replace_placeholders(zeile);
+			replace_speccmds(zeile);
+			c_internal_styles(zeile);
+
+			replace_udo_tilde(zeile);
+			replace_udo_nbsp(zeile);
+		} else
+		{
+			if (bCheckMisc)
+				auto_references(zeile, FALSE, "", 0, 0);
 		}
-		if (bCheckMisc)
-			auto_references(zeile, FALSE, "", 0, 0);
 		break;
 
 	case TOTEX:
