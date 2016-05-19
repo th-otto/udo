@@ -10883,6 +10883,10 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_commands_inside(zeile, TRUE);
 
 			replace_macros(zeile);
+			c_divis(zeile);
+			c_vars(zeile);
+			c_tilde(zeile);
+			c_styles(zeile);
 			c_commands_inside(zeile, FALSE);
 
 			replace_defines(zeile);
@@ -10894,6 +10898,8 @@ LOCAL void output_verbatim_line(char *zeile)
 
 			replace_udo_tilde(zeile);
 			replace_udo_nbsp(zeile);
+			reset_placeholders();
+			reset_refs();
 		} else
 		{
 			if (bCheckMisc)
@@ -10933,6 +10939,10 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_commands_inside(zeile, TRUE);
 
 			replace_macros(zeile);
+			c_divis(zeile);
+			c_vars(zeile);
+			c_tilde(zeile);
+			c_styles(zeile);
 			c_commands_inside(zeile, FALSE);
 
 			replace_defines(zeile);
