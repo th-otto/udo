@@ -2361,8 +2361,11 @@ GLOBAL void c_hline(void)
 
 	case TOSTG:
 	case TOAMG:
-		indent = strlen_indent();
-		voutlnf("@line %d %d 0 0 7", indent + 1, ((int) zDocParwidth) - indent);
+		if (token[1][0] == '-')
+			indent = strlen_prev_indent();
+		else
+			indent = strlen_indent();
+		voutlnf("@line %d %d 0 0 1", indent + 1, ((int) zDocParwidth) - indent);
 		outln("");
 		break;
 
