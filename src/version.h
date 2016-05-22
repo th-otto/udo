@@ -116,7 +116,7 @@
    /* --- Release-Nummer und Patchlevel setzen --- */
 
 #define UDO_REL     "7"
-#define UDO_SUBVER  "11"
+#define UDO_SUBVER  "12"
 #define UDO_BUILD   "(1248)"
 #define UDO_VERSION_STRING "Version " UDO_REL "." UDO_SUBVER " " UDO_BUILD
 #define UDO_VERSION_STRING_OS UDO_VERSION_STRING " for " UDO_OS
