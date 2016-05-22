@@ -52,6 +52,9 @@ m4/strip.m4
 m4/substnot.m4
 m4/tar.m4
 m4/prog-cc-c-o.m4
+m4/runlog.m4
+m4/cond-if.m4
+m4/mkdirp.m4
 *.o
 *.res
 *.a
