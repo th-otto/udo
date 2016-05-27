@@ -535,7 +535,6 @@ LOCAL _BOOL out_lf_needed;				/* Fehlt noch ein Linefeed? */
 FILE_LINENO outlines;					/* Anzahl gesicherter Zeilen */
 
 LOCAL char *tobuffer;					/* Puffer fuer token_output() */
-LOCAL size_t tomaxlen;					/* spaeteste Umbruchstelle in t_o() */
 
 LOCAL _BOOL bDocSloppy;					/* Kurze Zeilen bemaengeln? */
 LOCAL _BOOL no_verbatim_umlaute;		/* In verbatim Umlaute entfernen? */
@@ -5952,7 +5951,7 @@ LOCAL void str2silben(const char *s)
 *
 ******************************************|************************************/
 
-LOCAL void check_parwidth(void)
+LOCAL void check_parwidth(size_t tomaxlen)
 {
 	if (zDocParwidth <= 0)
 		zDocParwidth = tomaxlen;
@@ -6003,8 +6002,7 @@ LOCAL _BOOL malloc_token_output_buffer(void)
 			tobuffer = (char *) malloc(bs[i]);
 			if (tobuffer != NULL)
 			{
-				tomaxlen = ml[i];
-				check_parwidth();
+				check_parwidth(ml[i]);
 				return TRUE;
 			}
 		}
@@ -6017,8 +6015,7 @@ LOCAL _BOOL malloc_token_output_buffer(void)
 		return FALSE;
 	}
 
-	tomaxlen = 256;
-	check_parwidth();
+	check_parwidth(256);
 
 	return TRUE;
 }
@@ -6137,77 +6134,7 @@ GLOBAL size_t toklen(const char *s)
 				break;
 
 			case C_STYLE_MAGIC:
-				ptr++;
-				switch (desttype)
-				{
-				case TOTEX:
-				case TOPDL:
-				case TOLYX:
-				case TORTF:
-				case TOWIN:
-				case TOWH4:
-				case TOAQV:
-				case TOHPH:
-				case TOIPF:
-					/* skip ESC sequences */
-					ptr++;
-					break;
-
-				case TOHTM:
-				case TOMHH:
-				case TOHAH:
-					switch (*ptr)
-					{
-					case C_FOOT_ON:
-						/* footnotes only displayed as title */
-						/* skip text until FOOT_OFF */
-						ptr += 2;
-						while (*ptr != EOS && *ptr != ESC_C)
-							ptr++;
-						ptr--; /* will be incremented again below */
-						break;
-					default:
-						/* skip to end of ESC sequences */
-						ptr++;
-						break;
-					}
-					break;
-					
-				case TOSTG:
-				case TOAMG:
-					switch (*ptr)
-					{
-					case C_FOOT_ON:
-						len += 3;		/* "(1)"; FIXME: need to get length of number */
-						/* skip text until FOOT_OFF */
-						ptr += 2;
-						while (*ptr != EOS && *ptr != ESC_C)
-							ptr++;
-						ptr--; /* will be incremented again below */
-						break;
-					default:
-						/* skip to end of ESC sequences */
-						ptr++;
-						break;
-					}
-					break;
-					
-				default:
-					switch (*ptr)
-					{
-					case C_FOOT_ON:
-						len += 2;		/* " (" */
-						ptr++;
-						break;
-					case C_FOOT_OFF:
-						len += 1;		/* ")" */
-						ptr++;
-						break;
-					}
-					/* skip to end of ESC sequences */
-					ptr++;
-					break;
-				}
+				ptr += STYLELEN - 1;
 				break;
 
 			default:
@@ -7130,7 +7057,7 @@ GLOBAL void token_output(_BOOL reset_internals, _BOOL with_para)
 						strcat(z, " ");
 
 					/* Capture first blank in string for a better appearance */
-					if ((inside_env) && (desttype == TOKPS))
+					if (inside_env && desttype == TOKPS)
 					{
 						_BOOL replaced_blank;
 
@@ -7820,7 +7747,7 @@ GLOBAL void tokenize(char *s)
 		return;
 
 	i = 0;
-	while ((i < token_counter) && (!found))
+	while (i < token_counter && !found)
 	{
 		if (token[i][0] == META_C && token[i][1] != QUOTE_C)
 		{
