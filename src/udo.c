@@ -6120,6 +6120,7 @@ GLOBAL size_t toklen(const char *s)
 		{
 		case DIVIS_C:
 			/* Laenge 0 */
+			ptr++;
 			break;
 
 		case ESC_C:
@@ -6130,8 +6131,8 @@ GLOBAL size_t toklen(const char *s)
 				ptr++;
 				/* Laenge des Linktexts addieren */
 				len += pholdlen(ptr);
-				/* skip phold_counter */
-				ptr += 3;
+				/* skip phold_counter & terminating ESC_C */
+				ptr += 4;
 				break;
 
 			case C_STYLE_MAGIC:
@@ -6142,13 +6143,16 @@ GLOBAL size_t toklen(const char *s)
 				/* skip ESC sequences */
 				while (*ptr != EOS && *ptr != ESC_C)
 					ptr++;
+				if (*ptr != EOS)
+					ptr++;
 				break;
 			}
 			break;
 
 		case '!':
+			ptr++;
 			/* Naechstes Zeichen betrachten */
-			switch (*(ptr + 1))
+			switch (*ptr)
 			{
 			case '/':
 				/* !/ = UDO-Quote, Laenge 1 */
@@ -6167,7 +6171,8 @@ GLOBAL size_t toklen(const char *s)
 			break;
 
 		case '@':
-			if (desttype == TOSTG && ptr[1] == '@')
+			ptr++;
+			if (desttype == TOSTG && *ptr == '@')
 				ptr++;
 			len++;
 			break;
@@ -6175,11 +6180,10 @@ GLOBAL size_t toklen(const char *s)
 		case TILDE_C:
 		case INDENT_C:
 		default:
+			ptr++;
 			len++;
 			break;
 		}
-
-		ptr++;
 	}
 
 	return len;
@@ -10819,8 +10823,8 @@ LOCAL void output_verbatim_line(char *zeile)
 			size_t len = strlen(indent) + strlen(zeile);
 			if (len > zDocParwidth)
 			{
-				warning_long_destline(outfile.full, outlines + 1, (int) len);
-				note_message(bNoWarningsLines ? NULL : _("check this paragraph"));
+				if (warning_long_destline(outfile.full, outlines + 1, (int) len))
+					note_message(_("check this paragraph"));
 			}
 		}
 		break;
