@@ -46,6 +46,12 @@ win32)
 	. $HOME/gtk/profile /
 	./configure $configure_args --with-gui=win32 --host=i686-pc-mingw32
 	;;
+win64)
+	. $HOME/gtk/profile /
+	export PKG_CONFIG_PATH=/usr/x86_64-w64-mingw32/lib/pkgconfig
+	export PKG_CONFIG_LIBDIR=$PKG_CONFIG_PATH
+	./configure $configure_args --with-gui=win32 --host=x86_64-w64-mingw32
+	;;
 unix|gtk2)
 	. $HOME/gtk/profile
 	./configure $configure_args --with-gui=gtk2

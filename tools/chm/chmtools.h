@@ -68,6 +68,7 @@ char *changefileext(const char *filename, const char *ext);
 int g_mkdir_with_parents(const char *pathname, int mode);
 
 #ifdef __WIN32__
+#include <direct.h>
 #define mkdir(s, m) _mkdir(s)
 #endif
 
