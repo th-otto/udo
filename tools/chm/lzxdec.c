@@ -707,7 +707,7 @@ int LZXdecompress(LZXstate *lzx, const unsigned char *inpos, unsigned char *outp
 					LENTABLE(ALIGNED)[i] = j;
 				}
 				BUILD_TABLE(ALIGNED);
-				/* no break -- rest of aligned header is same as verbatim */
+				/* fall through -- rest of aligned header is same as verbatim */
 
 			case LZX_BLOCKTYPE_VERBATIM:
 				/* read lengths of and build main huffman decoding tree */

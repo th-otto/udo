@@ -243,8 +243,8 @@ GLOBAL void c_pch_styles(char *s)
 GLOBAL void c_rtf_styles(char *s)
 {
 	char *ptr;
-	char time_insert[50];
-	char time_delete[50];
+	char time_insert[60];
+	char time_delete[60];
 	char fs[20];
 	size_t l;
 	long time;
@@ -1393,7 +1393,7 @@ GLOBAL void check_styles_asc_next_line(void)
 
 GLOBAL void init_module_sty(void)
 {
-	char zone[10] = "+00:00";
+	char zone[20] = "+00:00";
 	time_t uhrzeit;
 	int hour_local, min_local, mday_local, min_utc, hour_utc, mday_utc;
 	int hours, minutes;

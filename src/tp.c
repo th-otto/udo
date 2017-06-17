@@ -941,7 +941,7 @@ GLOBAL void c_maketitle(void)
 	int i;
 	char n[512];
 	char s1[128];
-	char s2[128];
+	char s2[256];
 
 	_BOOL has_author;
 	_BOOL has_program;

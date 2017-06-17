@@ -5220,6 +5220,7 @@ static void DumpTopic(FILE *HelpFile, int32_t TopicPos)
 							case 0x22:	/* HC31 */
 								x1 = scanword(&ptr);
 								printf("hotspots=%u ", x1);
+								/* fall through */
 							case 0x03:	/* HC30 */
 								switch (fetchword(ptr))
 								{

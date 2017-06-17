@@ -2799,7 +2799,7 @@ LOCAL void output_html_meta(_BOOL keywords)
 
 	if (html_header_date)
 	{
-		char zone[10];
+		char zone[20];
 		time_t uhrzeit;
 		int hour_local, min_local, mday_local, min_utc,	hour_utc, mday_utc;
 		int hours, minutes;
@@ -3192,7 +3192,7 @@ LOCAL void output_html_doctype(void)
 LOCAL _BOOL html_new_file(void)
 {
 	char t[512];
-	char xml_lang[40];
+	char xml_lang[80];
 	const char *xml_ns;
 
 	if (outfile.file == stdout && !bTestmode)
@@ -3331,7 +3331,7 @@ LOCAL _BOOL html_new_file(void)
 
 GLOBAL void output_html_header(const char *t)
 {
-	char xml_lang[40];
+	char xml_lang[80];
 	const char *xml_ns;
 
 	output_html_doctype();
