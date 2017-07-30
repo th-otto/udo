@@ -25,6 +25,8 @@
 
 /* avoid warnings from G_TYPE_* macros */
 #pragma GCC diagnostic ignored "-Wcast-qual"
+#pragma GCC diagnostic ignored "-Wstrict-prototypes"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
@@ -33,6 +35,7 @@
 #include <gio/gdesktopappinfo.h>
 #endif
 #pragma GCC diagnostic warning "-Wcast-qual"
+#pragma GCC diagnostic warning "-Wstrict-prototypes"
 
 #include "udoport.h"
 #undef GETTEXT_PACKAGE
