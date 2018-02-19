@@ -53,7 +53,7 @@ win64)
 	./configure $configure_args --with-gui=win32 --host=x86_64-w64-mingw32
 	;;
 unix|gtk2)
-	. $HOME/gtk/profile
+	# . $HOME/gtk/profile
 	./configure $configure_args --with-gui=gtk2
 	;;
 macosx|cocoa|darwin)
