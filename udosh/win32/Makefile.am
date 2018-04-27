@@ -1,3 +1,5 @@
+AUTOMAKE_OPTIONS = subdir-objects
+
 include ../../silent.am
 
 if WITH_GUI_WIN32
