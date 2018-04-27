@@ -4,15 +4,15 @@
 
 long nf_shutdown(int mode)
 {
-	struct nf_ops *nf_ops;
+	struct nf_ops *ops;
 	long res = 0;
 
-	if ((nf_ops = nf_init()) != NULL)
+	if ((ops = nf_init()) != NULL)
 	{
-		long shutdown_id = NF_GET_ID(nf_ops, NF_ID_SHUTDOWN);
+		long shutdown_id = NF_GET_ID(ops, NF_ID_SHUTDOWN);
 		
 		if (shutdown_id)
-        	res = nf_ops->call(shutdown_id | mode);
+        	res = ops->call(shutdown_id | mode);
 	}
 	return res;
 }
