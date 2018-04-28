@@ -95,6 +95,7 @@
 #define TOLVA                12           /* Latvian */
 #define TOPOL                13           /* Polish */
 #define TOJAP                14           /* Japanese */
+#define TORUS                15           /* Russian */
 
 
 

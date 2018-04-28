@@ -996,7 +996,8 @@ LOCAL UDOLANGUAGE const udolanguage[] = {
 	{ "polish",     TOPOL }, { "pl", TOPOL },
 	{ "portuguese", TOPOR }, { "pt", TOPOR },
 	{ "spanish",    TOSPA }, { "es", TOSPA },
-	{ "swedish",    TOSWE }, { "sv", TOSWE }
+	{ "swedish",    TOSWE }, { "sv", TOSWE },
+	{ "russian",    TORUS }, { "ru", TORUS }
 };
 
 #define  MAXLANGUAGE ArraySize(udolanguage)

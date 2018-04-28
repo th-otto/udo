@@ -74,6 +74,8 @@
 *    fd  Jun 03: some Japanese strings updated (by Koichi MATSUMOTO)
 *  2015:
 *    fd  Feb 03: more Portuguese words added
+*  2017:
+*    fd  Feb 07: Russian added
 *
 ******************************************|************************************/
 
@@ -927,6 +929,54 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
       	 "oktober",
       	 "november",
       	 "december"
+      }
+   },
+   {
+      TORUS,                              /* Russian */
+      {
+         /* preface     */    "Предисловие",
+         /* chapter     */    "Глава",
+         /* title       */    "Название",
+         /* appendix    */    "Приложение",
+         /* contents    */    "Содержание",
+         /* listfigure  */    "Список рисунков",
+         /* listtable   */    "Список таблиц",
+         /* figure      */    "Рисунок",
+         /* table       */    "Таблица",
+         /* index       */    "Индекс",
+         /* page        */    "страница",
+         /* see         */    "см.",
+         /* also        */    "cмотрите также",
+         /* by          */    "по",
+         /* fur         */    "для",
+         /* up          */    "Вверх",
+         /* exit        */    "Выход",
+         /* unknown     */    "Неизвестно",
+         /* update      */    "Последнее обновление:",
+         /* lcid        */    "LCID=0x419 0x0 0x0 ;Russian",
+         /* html_home   */    "Главная",
+         /* html_prev   */    "Предыдущий",
+         /* html_next   */    "Следующая",
+         /* html_lang   */    "ru",
+         /* html_start  */    "Начало документа",
+         /* translator  */    "Перевод:",
+         /* distributor */    "Дистрибьютор:",
+         /* degree      */    "степень",
+         "",""
+      },
+      {
+         "Январь",
+         "Февраль",
+         "Март",
+         "Апрель",
+         "Май",
+         "Июнь",
+         "Июль",
+         "Август",
+         "Сентябрь",
+         "Октябрь",
+         "Ноябрь",
+         "Декабрь"
       }
    },
    
