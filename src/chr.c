@@ -152,7 +152,6 @@
 #include "msg.h"
 #include "str.h"
 #include "sty.h"
-#include "tp.h"
 #include "udo.h"
 #include "chr_all.h"
 #include "chr_ttf.h"

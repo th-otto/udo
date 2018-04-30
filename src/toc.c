@@ -171,7 +171,6 @@
 #include "par.h"
 #include "str.h"
 #include "sty.h"
-#include "tp.h"
 #include "udo.h"
 #include "upr.h"
 #include "gui.h"
@@ -182,6 +181,7 @@
 
 #include "export.h"
 #include "toc.h"
+#include "tp.h"
 #if USE_KWSET
 #include "kwset.h"
 static kwset_t kwset;

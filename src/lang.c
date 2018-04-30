@@ -52,6 +52,10 @@
 *    fd  Feb 19: - uni2ascii() renamed -> recode_udo()
 *                - init_lang_date() + init_lang() generalized
 *                - init_lang_date() debugged: don't recode a const string via pointer :-(
+*  2013:
+*    fd  Jun 03: lang.html_up removed (unused so far)
+*  2017:
+*    fd  Feb 08: Russian date formatting added, init_lang_date() sorted alphab.
 *
 ******************************************|************************************/
 
