@@ -79,6 +79,7 @@
 #include "toc.h"
 #include "udo.h"
 #include "upr.h"
+#include "udomem.h"
 #include "lang.h"
 #include "img_html.h"					/* graphic data for GIF (used in HTML) */
 #include "img_win.h"					/* graphic data for BMP (used in WinHelp) */
@@ -1112,7 +1113,7 @@ GLOBAL _BOOL c_img_output(const char *name, const char *caption, _BOOL visible, 
 
 GLOBAL void c_html_image_output(const char *name, const char *caption)
 {
-	char n[MYFILE_FULL_LEN * 2];
+	char *n;
 	char datei[MYFILE_FULL_LEN];
 	char align[64];
 	char sGifSize[64];
@@ -1175,9 +1176,10 @@ GLOBAL void c_html_image_output(const char *name, const char *caption)
 
 	if (caption[0] != EOS)
 		image_counter++;
-	sprintf(n, "%s<img src=\"%s\" alt=\"%s\" title=\"%s\" border=\"0\"%s%s>",
+	n = um_strdup_printf("%s<img src=\"%s\" alt=\"%s\" title=\"%s\" border=\"0\"%s%s>",
 			align, datei, caption, caption, sGifSize, xhtml_closer);
 	out(n);
+	free(n);
 	outln("</p>");
 }
 
