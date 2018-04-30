@@ -1102,15 +1102,15 @@ GLOBAL _BOOL c_img_output(const char *name, const char *caption, _BOOL visible, 
 
 /*******************************************************************************
 *
-*  c_gif_output():
-*     outputs GIF image tag (HTML only)
+*  c_html_image_output():
+*     outputs image tag (HTML only)
 *
 *  return:
 *     -
 *
 ******************************************|************************************/
 
-GLOBAL void c_gif_output(const char *name, const char *caption)
+GLOBAL void c_html_image_output(const char *name, const char *caption)
 {
 	char n[MYFILE_FULL_LEN * 2];
 	char datei[MYFILE_FULL_LEN];

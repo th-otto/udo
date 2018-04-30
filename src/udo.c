@@ -5300,7 +5300,7 @@ LOCAL void convert_image(const _BOOL visible)
 	case TOMHH:
 		del_internal_styles(caption);
 		change_sep_suffix(filename, sDocImgSuffix);
-		c_gif_output(filename, caption);
+		c_html_image_output(filename, caption);
 		break;
 
 	case TOWIN:

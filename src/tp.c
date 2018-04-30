@@ -536,7 +536,7 @@ GLOBAL _BOOL set_docinfo(void)
 				{
 					replace_char(titdat.authorimage, '\\', '/');
 					/* Ausmasse nicht ermitteln -> da */
-					/* ueber c_gif_output() ausgegeben wird  */
+					/* ueber c_html_image_output() ausgegeben wird  */
 				}
 			} else
 			{
@@ -634,7 +634,7 @@ GLOBAL _BOOL set_docinfo(void)
 				{
 					replace_char(titdat.programimage, '\\', '/');
 					/* Ausmasse nicht ermitteln -> da */
-					/* ueber c_gif_output() ausgegeben wird  */
+					/* ueber c_html_image_output() ausgegeben wird  */
 				}
 			} else
 			{
@@ -2111,7 +2111,7 @@ GLOBAL void c_maketitle(void)
 		if (has_programimage)
 		{
 			c_begin_center();
-			c_gif_output(titdat.programimage, "");
+			c_html_image_output(titdat.programimage, "");
 			c_end_center();
 		}
 
@@ -2159,7 +2159,7 @@ GLOBAL void c_maketitle(void)
 		if (has_authorimage)
 		{
 			c_begin_center();
-			c_gif_output(titdat.authorimage, "");
+			c_html_image_output(titdat.authorimage, "");
 			c_end_center();
 			if (has_author || has_address)
 			{

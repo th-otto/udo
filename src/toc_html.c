@@ -1215,7 +1215,7 @@ GLOBAL void set_html_special_color(struct rgb *rgb)
 
 GLOBAL void set_html_counter_command(void)
 {
-	char k[512];
+	char k[MYFILE_FULL_LEN];
 
 	ASSERT(toc_table != NULL);
 	ASSERT(toc_table[p1_toc_counter] != NULL);

@@ -2576,8 +2576,8 @@ LOCAL _BOOL html_make_file(void)
 #if 0
 	if (html_use_folders)
 	{
-		if (toc_table[ti]->dirname[0] != EOS)
-			sprintf(outfile.path, "%s%s", old_outfile.path, toc_table[ti]->dirname);
+		if (toc_table[ti]->dirname != EOS)
+			sprintf(outfile.path, "%s%s", old_outfile.path, file_lookup(toc_table[ti]->dirname));
 		else
 			sprintf(outfile.path, "%s%04X", old_outfile.path, toc_table[ti]->n[TOC_NODE1]);
 
