@@ -660,7 +660,7 @@ LOCAL const UDOCOMMAND udoCmdSeq[] = {
 	{ "!label*",                         "!l*",           c_label_iv,                      TRUE,  CMD_ONLY_MAINPART },
 	{ "!label-",                         "",              c_label,                         TRUE,  CMD_ONLY_MAINPART },
 	{ "!alias",                          "!a",            c_alias,                         TRUE,  CMD_ONLY_MAINPART },
-	{ "!alias+",                         "!a+",           c_alias,                         TRUE,  CMD_ONLY_MAINPART },
+	{ "!alias-",                         "!a-",           c_alias,                         TRUE,  CMD_ONLY_MAINPART },
 	{ "!index",                          "!x",            c_index,                         TRUE,  CMD_ONLY_MAINPART },
 	{ "!heading",                        "!h",            c_heading,                       TRUE,  CMD_ONLY_MAINPART },
 	{ "!subheading",                     "!sh",           c_subheading,                    TRUE,  CMD_ONLY_MAINPART },
@@ -10476,8 +10476,8 @@ LOCAL _BOOL pass1(const char *datei)
 						{
 							tokcpy2(tmp, ArraySize(tmp));
 							add_alias(tmp, toc_inside_popup(), FALSE);
-						} else if (strcmp(token[0], "!alias+") == 0 ||
-							       strcmp(token[0], "!a+") == 0)
+						} else if (strcmp(token[0], "!alias-") == 0 ||
+							       strcmp(token[0], "!a-") == 0)
 						{
 							tokcpy2(tmp, ArraySize(tmp));
 							add_alias(tmp, toc_inside_popup(), TRUE);

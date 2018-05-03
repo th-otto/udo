@@ -9250,7 +9250,7 @@ GLOBAL void win_set_button(void)
 			break;
 	if (i >= iNumWinButtons)
 	{
-		error_message("windows button %s not defined", token[1]);
+		error_message(_("windows button %s not defined"), token[1]);
 		return;
 	}
 
@@ -10475,7 +10475,7 @@ GLOBAL _BOOL save_winhelp4_cnt(void)
 	}
 
 	/*
-	 * if !tableofcontens was used,
+	 * if !tableofcontents was used,
 	 * we have a TOC in the document and
 	 * dont need the entries in the *.cnt file
 	 */
