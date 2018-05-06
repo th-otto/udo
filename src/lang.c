@@ -326,6 +326,7 @@ GLOBAL void init_lang(void)
 		recode(lang.translator, CODE_UTF8, iEncodingTarget);
 		recode(lang.distributor, CODE_UTF8, iEncodingTarget);
 		recode(lang.degree, CODE_UTF8, iEncodingTarget);
+		recode(lang.copyright, CODE_UTF8, iEncodingTarget);
 
 		/*
 		 * these are directly used in c_maketitle,
@@ -353,7 +354,7 @@ GLOBAL void init_lang(void)
 
 /*
  * used to delay (re-)initialization of language strings
- * because we both destination language and output character
+ * because both destination language and output character
  * set are needed for this.
  */
 const LANG *get_lang(void)

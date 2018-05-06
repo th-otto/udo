@@ -50,7 +50,10 @@
 *    fd  May 19: new: LANG.degree
 *  2013:
 *    fd  May 02: LANG string arrays enlarged to 64 chars each (tribute to UTF)
+*    fd  Jun 03: lang.html_up removed (unused so far)
 *    fd  Jun 04: lang.degree moved upwards in the _lang structure (recommended by ggs)
+*  2017:
+*    fd  Feb 08: lang.copyright added
 *
 ******************************************|************************************/
 
@@ -170,17 +173,15 @@ typedef struct _lang                      /* language strings */
    char   html_start[64];                 /* "Start" */
    char   translator[64];                 /* "Translator" */
    char   distributor[64];                /* "Distributor" */
-   
    char   tex_stylename[64];
    char   lyx_langname[64];
-
-   /* --- the following are not used in TITLEDATA so far! --- */
    char   degree[64];                     /* "degree" */
-   
+   char   copyright[64];                  /* "Copyright" */
+
    /* --- these are filled in by UDO! --- */
    
-   char   today[64];
-   char   short_today[64];
+   char   today[64];                      /* 28. Februar 1995 */
+   char   short_today[64];                /* 28.02.1995 */
 } LANG;
 
 

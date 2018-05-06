@@ -4994,7 +4994,7 @@ GLOBAL void html_footer(void)
 	}
 
 	/* output address segment */
-	sprintf(footer_buffer, "<address>%sCopyright &copy; ", sHtmlPropfontStart);
+	sprintf(footer_buffer, "<address>%s%s &copy; ", sHtmlPropfontStart, get_lang()->copyright);
 
 	s[0] = EOS;							/* clear buffer */
 

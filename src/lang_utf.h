@@ -72,10 +72,13 @@
 *    fd  Feb 15: Japanese added (Microsoft Translator; not verified yet)
 *    fd  May 02: UDOSTRINGS resorted
 *    fd  Jun 03: some Japanese strings updated (by Koichi MATSUMOTO)
+*    fd  Jun 03: lang.html_up removed (unused so far)
 *  2015:
 *    fd  Feb 03: more Portuguese words added
 *  2017:
 *    fd  Feb 07: Russian added
+*    fd  Feb 07: Russian added
+*    fd  Feb 08: localized copyright string added
 *
 ******************************************|************************************/
 
@@ -175,6 +178,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  NC_("tex_stylename", "english"),
          /* lyx_langname */   NC_("lyx_langname", "english"),
          /* degree      */    N_("degree"),
+         /* copyright   */    N_("Copyright"),
          /*
           * 1st arg; year
           * 2nd arg: month name
@@ -237,6 +241,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "czech",
          /* lyx_langname */   "czech",
          /* degree      */    "stupeň",
+         /* copyright   */    "Autorská práva",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -289,6 +294,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "danish",
          /* lyx_langname */   "danish",
          /* degree      */    "grad",
+         /* copyright   */    "Ophavsret",
          /* today       */    "%3$d %2$s %1$d",
          /* short_today */    "%3$02d-%2$02d-%1$d"
       },
@@ -341,6 +347,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "dutch",
          /* lyx_langname */   "dutch",
          /* degree      */    "graad",
+         /* copyright   */    "Auteursrechten",
          /* today       */    "%3$d %2$s %1$d",
          /* short_today */    "%3$02d-%2$02d-%1$d"
       },
@@ -393,6 +400,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "finnish",
          /* lyx_langname */   "finnish",
          /* degree      */    "aste",
+         /* copyright   */    "Tekijänoikeus",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -445,6 +453,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "french",
          /* lyx_langname */   "french",
          /* degree      */    "degré",
+         /* copyright   */    "Droit d’auteur",
          /* today       */    "%3$d %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -497,6 +506,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "german,a4",
          /* lyx_langname */   "german",
          /* degree      */    "Grad",
+         /* copyright   */    "Copyright",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -549,6 +559,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "italian",
          /* lyx_langname */   "italian",
          /* degree      */    "grado",
+         /* copyright   */    "Diritto d'autore",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -601,6 +612,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "japanese",
          /* lyx_langname */   "japanese",
          /* degree      */    "度",
+         /* copyright   */    "著作権",
          /* today       */    "%1$d年 %2$s %3$02d日",
          /* short_today */    "%1$d年%2$02d月%3$02d日"
       },
@@ -653,6 +665,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "latvian",
          /* lyx_langname */   "latvian",
          /* degree      */    "degree",
+         /* copyright   */    "Autortiesības",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -705,6 +718,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "norsk",
          /* lyx_langname */   "norsk",
          /* degree      */    "grad",
+         /* copyright   */    "Opphavsrett",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -757,6 +771,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "polish",
          /* lyx_langname */   "polish",
          /* degree      */    "stopień",
+         /* copyright   */    "Prawo autorskie",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -809,6 +824,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "portuges",
          /* lyx_langname */   "portuges",
          /* degree      */    "grau",
+         /* copyright   */    "Direito autoral",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d-%2$02d-%1$d"
       },
@@ -861,6 +877,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "spanish",
          /* lyx_langname */   "spanish",
          /* degree      */    "grado",
+         /* copyright   */    "Derechos de autor",
          /* today       */    "%3$d. %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
@@ -913,6 +930,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "swedish",
          /* lyx_langname */   "swedish",
          /* degree      */    "grad",
+         /* copyright   */    "Upphovsrätt",
          /* today       */    "%3$d %2$s %1$d",
          /* short_today */    "%1$0d-%2$02d-%3$02d"
       },
@@ -965,6 +983,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "russian",
          /* lyx_langname */   "russian",
          /* degree      */    "степень",
+         /* copyright   */    "Авторские права",
          "",""
       },
       {
@@ -983,7 +1002,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
       }
    },
    
-   {  -1, { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
+   {  -1, { "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "" },
      { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
    }
 };
