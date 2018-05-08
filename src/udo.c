@@ -6398,8 +6398,6 @@ LOCAL void warning_short_line(const size_t len, const char *t)
 			if (next[0] != EOS)
 			{
 				output_hyphen_line(next);
-				if (strcmp(next, "xxx") == 0)
-					note_message("check %s", next);
 			}
 		}
 	}
