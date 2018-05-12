@@ -38,6 +38,7 @@
 *
 *  2010:
 *    fd  Feb 19: file introduced (content merged from CHR_xxx.h files)
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 25: u_CODE_UDO[] enhanced:
 *                - (!#P) -> U_SectionSign (aka 'Paragraph')
 *                - (!/O) -> U_LatinCapitalLetterOSlash (more intuitive)

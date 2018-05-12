@@ -41,6 +41,7 @@
 *    fd  Jan 23: converted all German umlauts in comments into plain ASCII
 *    fd  Feb 05: - file partly reformatted, TAB-free now
 *                - replace_placeholders(): issue #12 fixed
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 24: replace_placeholders() debugged
 *    fd  Feb 25: replace_placeholders() debugged
 *    fd  Feb 26: replace_placeholders() debugged
@@ -51,7 +52,6 @@
 *  2013
 *    ggs Sep 29: extract_parameters looks now for the ')'
 *    fd  Oct 23: c_ilink() + c_internal_image() support HTML5
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
 *    fd  Oct 31: c_internal_image() supports PNG images
 *    tho Dec 03: c_xlink() now support target for ST-Guide
 *    tho Dec 03: c_url() now generates rx-command for ST-Guide

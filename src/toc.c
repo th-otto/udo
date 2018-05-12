@@ -75,6 +75,7 @@
 *                - win2sys() -> recode_chrtab()
 *    fd  Feb 18: - str_UTF_sort_cmp()
 *                - save_html_index() uses a new approach with flattened HTML_INDEX.sortname
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 23: - UDO_PL -> UDO_BUILD (no more patchlevels)
 *                - unicode2char() adjusted, using ^string instead of local string
 *    fd  Mar 01: html_footer(): changes from (ME) reverted - see discussion in UDO_DEV
@@ -128,7 +129,6 @@
 *  2013:
 *    fd  Oct 23: HTML output now supports HTML5
 *    fd  Nov 02: HTML5 output of <img> tags cleaned
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
 *    tho Dec 04: WinHelp4: links to pnodes should now be displayed in a popup
 *  2014:
 *    ggs Apr 20: Add Node6
@@ -137,6 +137,8 @@
 *    fd  Oct 08: - HTML headlines|bottomlines output now creates unique UDO_nav_xx IDs
 *                - HTML 5 no longer outputs <link rev='made'> and <meta name='Email'>
 *                - string2reference() debugged: don't create IDs without name
+*  2017:
+*    fd  Feb 08: using lang.copyright
 *
 ******************************************|************************************/
 
@@ -249,7 +251,6 @@ LOCAL const char *HTML_LABEL_CONTENTS = "UDOTOC";
 *     TYPE DEFINITIONS
 *
 ******************************************|************************************/
-
 
 typedef struct _reference				/* auto-reference placeholders */
 {
@@ -521,6 +522,7 @@ GLOBAL _BOOL is_node_link(const char *link, char *node, TOCIDX *ti, _BOOL *isnod
 	{
 		return FALSE;
 	}
+
 #if USE_NAME_HASH
 	{
 		_UWORD hash_index;
@@ -547,7 +549,7 @@ GLOBAL _BOOL is_node_link(const char *link, char *node, TOCIDX *ti, _BOOL *isnod
 	}
 #else
 	{
-		register LABIDX i;
+		LABIDX i;
 
 		for (i = 1; i <= p1_lab_counter; i++)
 		{
@@ -4393,7 +4395,6 @@ LOCAL void html_node_bar_frames(void)
 		border[0] = EOS;
 #endif
 
-
 	switch (html_frames_position)
 	{
 	case POS_LEFT:
@@ -7058,7 +7059,7 @@ LOCAL void tocline_handle_1st(_BOOL * first)
 
 GLOBAL _BOOL bookmarks_ps(void)
 {
-	register TOCIDX i;
+	TOCIDX i;
 	LABIDX li;
 	TOCIDX apxstart;
 	char s[MAX_NODE_LEN + 1];
@@ -8904,7 +8905,7 @@ GLOBAL void set_raw_footer_filename(void)
 	if (token[1][0] == EOS)
 		return;
 
-	um_strcpy(s, token[1], 512, "set_raw_footer_filename[1]");
+	um_strcpy(s, token[1], sizeof(s), "set_raw_footer_filename[1]");
 
 	if (p1_toc_counter == 0)
 	{
@@ -9676,7 +9677,7 @@ LOCAL _BOOL add_toc_to_toc(void)
 {
 	TOCITEM *tocptr;
 
-	/* should be lang.contents, but is not initialized yet */
+	/* should be get_lang()->contents, but is not initialized yet */
 	strcpy(token[1], "Contents");
 	token_counter = 2;
 	tocptr = init_new_toc_entry(TOC_TOC, TRUE);

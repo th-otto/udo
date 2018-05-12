@@ -39,7 +39,8 @@
 *  2010:
 *    fd  Feb 18: file introduced
 *    fd  Feb 20: more ligatures added
-*    fd  Feb 22: - Greek sort chars added
+*    fd  Feb 22: - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - Greek sort chars added
 *
 ******************************************|************************************/
 

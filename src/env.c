@@ -80,7 +80,6 @@
 *    mg  Aug 02: more enhancements for NROFF
 *  2012:
 *    fd  Apr 24: c_begin_enumerate() handles optional enumeration start number parameter
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
 *  2013:
 *    fd  Oct 23: HTML output supports HTML5
 *
@@ -5264,7 +5263,7 @@ GLOBAL void c_end_document(void)
 			outln("/NodeName (About UDO) def");
 			outln("/acty acty 50 sub def");
 			outln("actx acty moveto");
-			voutlnf("(%s) (%s) (%s) aboutUDO", UDO_VERSION_STRING, UDO_OS, UDO_URL);
+			voutlnf("(%s) (%s) (%s) %s", UDO_VERSION_STRING, UDO_OS, UDO_URL, destlang == TOGER ? "aboutUDO_ger" : "aboutUDO_eng");
 			outln("newpage");
 		}
 #endif

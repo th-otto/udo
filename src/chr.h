@@ -44,6 +44,7 @@
 *                - CHRTAB_... introduced
 *    fd  Feb 19: uni2ascii() renamed -> recode_udo()
 *    fd  Feb 20: utf8_to_uchar()
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 23: some prototypes adjusted
 *    fd  Feb 24: - new: chr_codepage()
 *                - new: chr_codepage_name()

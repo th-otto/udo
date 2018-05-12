@@ -40,6 +40,7 @@
 *    fd  Feb 15: file introduced
 *    fd  Feb 16: - table adjusted, based on <http://www.kostis.net/charsets/atarist.htm>
 *                - ligatures and sorting tables moved from encoding.h
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *
 ******************************************|************************************/
 

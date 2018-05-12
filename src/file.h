@@ -48,20 +48,20 @@
 #include "version.h"
 #include "udo_type.h"
 
-/*   ############################################################
-     # Typen
-     ############################################################   */
+/* ############################################################
+   # Typen
+   ############################################################   */
 typedef struct _mytextfile
 {
    FILE   *file;
    char   *buffer;
-}   MYTEXTFILE;
+}  MYTEXTFILE;
 
-/*   ############################################################
-     # Globale Routinen
-     ############################################################   */
+/* ############################################################
+   # Globale Routinen
+   ############################################################   */
 
-GLOBAL int         uiMultiLines;          /* Anzahl zusammengefuegter Zeilen (0=nicht zusammengefuegt, 1=eine Zeile angehaengt) */
+GLOBAL int uiMultiLines;          /* Anzahl zusammengefuegter Zeilen (0=nicht zusammengefuegt, 1=eine Zeile angehaengt) */
 
 void init_module_files(void);
 void exit_module_files(void);
@@ -93,11 +93,11 @@ GLOBAL _BOOL my_mkdir(const char *s);
 
 #endif /* USE_HTML_FOLDERS */
 
-/*   ##############################################################
-     # MO: Funktion zum Setzen von Dateityp und -creator.
-     # Uebergeben werden die von UDO definierten Kennungen fuer die
-     # verschiedenen Dateiformate.
-     ##############################################################   */
+/* ##############################################################
+   # MO: Funktion zum Setzen von Dateityp und -creator.
+   # Uebergeben werden die von UDO definierten Kennungen fuer die
+   # verschiedenen Dateiformate.
+   ##############################################################   */
 
 #if USE_SETFILETYPE
 extern void SetFileType( const char *fileName, int fileKind);

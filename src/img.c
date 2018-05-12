@@ -78,8 +78,8 @@
 #include "sty.h"
 #include "toc.h"
 #include "udo.h"
-#include "upr.h"
 #include "udomem.h"
+#include "upr.h"
 #include "lang.h"
 #include "img_html.h"					/* graphic data for GIF (used in HTML) */
 #include "img_win.h"					/* graphic data for BMP (used in WinHelp) */
@@ -1841,14 +1841,27 @@ GLOBAL void set_image_counter(const int i)
 
 
 
+/*******************************************************************************
+*
+*  get_png_size():
+*     get size of PNG image
+*
+*  return:
+*      TRUE: everything is okay
+*     FALSE: something went wrong
+*
+******************************************|************************************/
+
 LOCAL unsigned long png_get_uint_32(unsigned char *buf)
 {
 	unsigned long i = ((unsigned long) (*buf) << 24) +
-		((unsigned long) (*(buf + 1)) << 16) + ((unsigned long) (*(buf + 2)) << 8) + (unsigned long) (*(buf + 3));
+		((unsigned long) (*(buf + 1)) << 16) +
+		((unsigned long) (*(buf + 2)) << 8) +
+		(unsigned long) (*(buf + 3));
 	return i;
 }
 
-LOCAL _BOOL get_png_size(FILE * file, _UWORD * uiW, _UWORD * uiH, _UWORD * bitcnt)
+LOCAL _BOOL get_png_size(FILE *file, _UWORD *uiW, _UWORD *uiH, _UWORD *bitcnt)
 {
 	char magic[8];
 	unsigned char chunk_length[4];

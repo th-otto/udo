@@ -51,7 +51,7 @@
 *  2013:
 *    fd  Oct 23: - <h1> on HTML5 now uses class UDO_h1_align_center| UDO_h1_align_right
 *                - <h2> on HTML5 now uses class UDO_h2_align_center| UDO_h2_align_right
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
+*    fd  Oct 31: c_gif_output() renamed: c_html_image_output()
 *  2014
 *    ggs Apr 20: Add Node6
 *

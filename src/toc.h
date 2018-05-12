@@ -40,6 +40,7 @@
 *  2010:
 *    fd  Jan 20: new: html_quotes()
 *    fd  Feb 05: file reformatted and tidied up; TAB-free
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  May 21: more comments translated
 *  2011:
 *    fd  Feb 14: - functions add_...node_to_toc() merged into add_nodetype_to_toc()

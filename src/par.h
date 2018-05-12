@@ -39,6 +39,7 @@
 *
 *  2010:
 *    fd  Feb 22: - header adjusted
+*                - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  May 19: file tidied up
 *
 ******************************************|************************************/
@@ -56,7 +57,7 @@
 *
 ******************************************|************************************/
 
-GLOBAL size_t        hyphen_counter;      /* # of loaded hyphenation rules */
+GLOBAL size_t         hyphen_counter;      /* # of loaded hyphenation rules */
 GLOBAL _UWORD         macro_counter;       /* # of loaded macros */
 GLOBAL _UWORD         define_counter;      /* # of loaded definitions */
 

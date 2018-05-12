@@ -39,6 +39,7 @@
 *
 *  2010:
 *    fd  Feb 22: - header adjusted
+*                - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Mar 04: - file tidied up
 *                - message wrapper functions now global
 *  2014:

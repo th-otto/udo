@@ -42,6 +42,7 @@
 *  2010:
 *    fd  Feb 15: file introduced
 *    fd  Feb 16: ligatures and sorting tables moved from encoding.h
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 23: - sort_CODE_MAC[] adjusted
 *                - CODE_MAC_CE
 *

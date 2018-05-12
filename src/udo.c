@@ -69,7 +69,8 @@
 *    fd  Feb 19: - CODE_CP1257; MAXCHARSET removed; udocharset[] resorted for relevance
 *                - c_universal_charset() debugged
 *    fd  Feb 20: CODE_CP1251
-*    fd  Feb 22: - CODE_CP1253 (Greek)
+*    fd  Feb 22: - VOID, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - CODE_CP1253 (Greek)
 *    fd  Feb 23: - CODE_MAC_CE
 *                - CODE_LAT1 -> CODE_CP1252
 *                - CODE_LAT2 -> CODE_LATIN2
@@ -125,12 +126,15 @@
 *                - <div> on HTML5 now uses class UDO_div_align_center| UDO_div_align_right
 *                - <p>   on HTML5 now uses class UDO_p_align_center  | UDO_p_align_right
 *                - <td>  on HTML5 now uses class UDO_td_align_center | UDO_td_align_right
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
+*    fd  Oct 31: c_gif_output() renamed: c_html_image_output()
 *  2014
 *    ggs Apr 16: copyright year updated
 *    ggs Apr 20: Add Node6
 *  2015:
 *    fd  Feb 25: malloc_token_output_buffer(): tomaxlen increased from 200 to 256
+*  2017:
+*    fd  Feb 07: "russian" added
+*    fd  Feb 08: save_htmlhelp_project() adjusted
 *
 ******************************************|************************************/
 
@@ -961,7 +965,6 @@ LOCAL const UDOSWITCH udoswitch[] = {
 	{ "!no_effects",                            &no_effects,                  '\0', "", NULL },
 	{ "!no_quotes",                             &no_quotes,                   '\0', "", NULL },
 	{ "!no_preamble",                           &no_preamble,                 '\0', "", NULL },
-	{ "!no_titles",                             &no_titles,                   '\0', "", NULL },
 	{ "!no_headlines",                          &no_headlines,                '\0', "", NULL },
 	{ "!no_bottomlines",                        &no_bottomlines,              '\0', "", NULL },
 	{ "!no_popup_headlines",                    &no_popup_headlines,          '\0', "", NULL },
@@ -3721,10 +3724,10 @@ LOCAL void c_internal_listheading(int offset)
 		if (html_doctype == HTML5)
 		{
 			if (inside_center)
-				strcpy(align, "UDO_td_align_center");
+				strcpy(align, " class=\"UDO_td_align_center\"");
 
 			if (inside_right)
-				strcpy(align, "UDO_td_align_right");
+				strcpy(align, " class=\"UDO_td_align_right\"");
 		} else
 #endif
 		{
@@ -6374,7 +6377,9 @@ LOCAL void warning_short_line(const size_t len, const char *t)
 												 next[i] == '\224' ||
 												 next[i] == '\201' ||
 												 next[i] == '\216' ||
-												 next[i] == '\231' || next[i] == '\232' || next[i] == '\236')))
+												 next[i] == '\231' ||
+												 next[i] == '\232' ||
+												 next[i] == '\236')))
 			{
 				nr++;
 				if (nr > 1)
@@ -10211,17 +10216,17 @@ LOCAL _BOOL pass1(const char *datei)
 				/*
 				   commented out for several reasons:
 				   - using macros to define section commands just is not supported.
-				   when replacing macros here, someone will surely
-				   try to do something like !macro MYMACRO !macro ...
+				     when replacing macros here, someone will surely
+				     try to do something like !macro MYMACRO !macro ...
 				   - auto_quote_chars has not been called yet, so the macro
-				   would get unconverted parameters, which would lead
-				   to different node names in pass1() and pass2()
+				     would get unconverted parameters, which would lead
+				     to different node names in pass1() and pass2()
 				   - replace_macros() is called below again, which would make it
-				   impossible to quote macro names
+				     impossible to quote macro names
 				   - this would be similar trying to do a "#define x #include y"
-				   in C, which is not allowed either (guess why)
+				     in C, which is not allowed either (guess why)
 				   - conclusion: the bug is not that is does not work in pass1(),
-				   but that is DOES work in pass2()
+				     but that is DOES work in pass2()
 				   [tho]
 				 */
 				if (bInsideDocument && zeile[0] != META_C)
@@ -12884,6 +12889,14 @@ LOCAL _BOOL passU(const char *datei)
 		strcpy(zeileBak, zeile);
 
 		token_reset();
+
+		/* Spezielle (verbatim, raw, table sourcecode) Umgebungen testen. */
+		/* Gesucht wird nur nach !begin... bzw !end... */
+		if (zeile[0] != '#')
+		{
+			pass2_check_environments(zeile);
+		}
+
 		replace_defines(zeile);
 		str2tok(zeile);
 

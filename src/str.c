@@ -54,7 +54,8 @@
 *    fd  Feb 19: - CODE_CP1257
 *                - str_flatten() debugged for 1-byte encodings
 *    fd  Feb 20: CODE_CP1251
-*    fd  Feb 22: - CODE_CP1253
+*    fd  Feb 22: - VOID, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - CODE_CP1253
 *    fd  Feb 23: - CODE_MAC_CE
 *                - CODE_LAT2 -> CODE_LATIN2
 *                - CODE_LATIN1

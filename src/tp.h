@@ -42,6 +42,7 @@
 *  2009:
 *    fd  Jun 04: !docinfo [translator] introduced
 *  2010:
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Mar 02: - webmastername    -> domain_name
 *                - webmasterurl     -> domain_link
 *                - webmasteremail   -> contact_name

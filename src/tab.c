@@ -62,7 +62,6 @@
 *    tho Jun 21: dynamically allocate table.caption
 *  2013:
 *    fd  Oct 23: HTML output now supports HTML5
-*    tho Oct 29: Disabled the nonsense for HTML5 that only works on the UDO webpage
 *  2014:
 *    fd  Jun 25: table_output_html() must not output multiple CSS class definitions in HTML5
 *
@@ -378,9 +377,6 @@ GLOBAL void table_get_header(char *s)
 *
 *	test_for_addition():
 *		??? (description missing)
-*
-*	Note:
-*		not adjusted for HTML5 output
 *
 *	Return:
 *		-

@@ -59,6 +59,7 @@
 *                - CODE_CP1250_lig, sort_CODE_CP1250 added
 *    fd  Feb 18: CODE_LAT2
 *    fd  Feb 19: all Microsoft Windows codepage encodings moved to u_mswin.h
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 23: - tables adjusted
 *                - CODE_LAT2 -> CODE_LATIN2
 *                - CODE_LATIN1
@@ -5719,7 +5720,7 @@ static _UWORD const CODE_NORDIC_lig[][3] =     /* CODE_NORDIC character ligature
 *
 ******************************************|************************************/
 
-static _UWORD  const sort_CODE_NORDIC[] =       /* CODE_NORDIC */
+static _UWORD const sort_CODE_NORDIC[] =       /* CODE_NORDIC */
 {
    U_NUL,                                 /* 0x00  NULl */
    U_SOH,                                 /* 0x01  Start Of Heading */

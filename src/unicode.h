@@ -39,7 +39,8 @@
 *                - 2580-259F completed
 *    fd  Feb 16: tiny adjustments
 *    fd  Feb 19: 0400-04FF: Cyrillic
-*    fd  Feb 22: - 0370-03ff completed (Greek)
+*    fd  Feb 22: - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - 0370-03ff completed (Greek)
 *    fd  Feb 24: - 0590-05FF completed (Hebrew)
 *                - 0600-06FF: Arabic
 *    fd  Mar 05: typo fixed: U_LatinSmallLetterEng

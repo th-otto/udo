@@ -40,6 +40,7 @@
 *  2010:
 *    fd  Feb 16: file introduced
 *    fd  Feb 17: CODE_NEXT_lig[] + sort_CODE_NEXT[] added
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *
 ******************************************|************************************/
 

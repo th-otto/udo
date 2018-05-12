@@ -39,6 +39,7 @@
 *  2010:
 *    fd  Feb 16: file introduced
 *    fd  Feb 17: CODE_HP8_lig[] + sort_CODE_HP8[] added
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *
 ******************************************|************************************/
 

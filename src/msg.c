@@ -39,6 +39,7 @@
 *
 *  2010:
 *    fd  Jan 23: - converted all German umlauts in comments into plain ASCII
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Mar 04: - file tidied up (some message texts updated or adjusted)
 *                - message wrapper functions now global
 *  2014:

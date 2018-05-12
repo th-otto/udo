@@ -46,6 +46,8 @@
 *  2013:
 *    fd  May 02: MAXDESTLANG increased
 *    fd  Oct 23: HTML5 added
+*  2017:
+*    fd  Feb 07: TORUS added
 *
 ******************************************|************************************/
 

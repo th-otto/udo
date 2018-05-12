@@ -179,8 +179,7 @@ GLOBAL char        GHOST_ON[8], GHOST_OFF[8];
 GLOBAL char        SHADOW_ON[8], SHADOW_OFF[8];
 GLOBAL char        OUTLINE_ON[8], OUTLINE_OFF[8];
 GLOBAL char        INSERT_ON[8], INSERT_OFF[8];
-GLOBAL char        DELETED_ON[8],
-                   DELETED_OFF[8];
+GLOBAL char        DELETED_ON[8], DELETED_OFF[8];
 GLOBAL char        COLOR_BLACK[8],
                    COLOR_SILVER[8],
                    COLOR_GRAY[8],

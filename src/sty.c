@@ -267,9 +267,7 @@ GLOBAL void c_rtf_styles(char *s)
 	qreplace_all(ptr, TWRITER_ON, STYLELEN, fs, l);
 	qreplace_all(ptr, TWRITER_OFF, STYLELEN, "}", 1);
 
-	time =
-		(long) (iDateMin + (iDateHour << 6) + (iDateDay << 11) + ((long) iDateMonth << 16) +
-				((long) (iDateYear - 1900) << 20));
+	time = (long) (iDateMin + (iDateHour << 6) + (iDateDay << 11) + ((long) iDateMonth << 16) + ((long) (iDateYear - 1900) << 20));
 
 	sprintf(time_insert, "{\\revised\\revauth1\\revdttm%ld ", time);
 	sprintf(time_delete, "{\\deleted\\revauthdel1\\revdttmdel%ld ", time);

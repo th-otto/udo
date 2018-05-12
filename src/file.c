@@ -1,57 +1,58 @@
 /**(TAB=0)**********************************************************************
 *
-*	Project name : UDO
-*	Module name  : file.c
-*	Symbol prefix: file
+*  Project name : UDO
+*  Module name  : file.c
+*  Symbol prefix: file
 *
-*	Copyright	 : 1995-2001 Dirk Hagedorn
-*	Open Source  : since 2001
+*  Copyright    : 1995-2001 Dirk Hagedorn
+*  Open Source  : since 2001
 *
-*						This program is free software; you can redistribute it and/or
-*						modify it under the terms of the GNU General Public License
-*						as published by the Free Software Foundation; either version 2
-*						of the License, or (at your option) any later version.
-*						
-*						This program is distributed in the hope that it will be useful,
-*						but WITHOUT ANY WARRANTY; without even the implied warranty of
-*						MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
-*						GNU General Public License for more details.
-*						
-*						You should have received a copy of the GNU General Public License
-*						along with this program; if not, write to the Free Software
-*						Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*                 This program is free software; you can redistribute it and/or
+*                 modify it under the terms of the GNU General Public License
+*                 as published by the Free Software Foundation; either version 2
+*                 of the License, or (at your option) any later version.
 *
-*	Description  : ???
+*                 This program is distributed in the hope that it will be useful,
+*                 but WITHOUT ANY WARRANTY; without even the implied warranty of
+*                 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*                 GNU General Public License for more details.
 *
-*-------------------------------------------------------------------------------
+*                 You should have received a copy of the GNU General Public License
+*                 along with this program; if not, write to the Free Software
+*                 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 *
-*	Author		 : Dirk Hagedorn (udo@dirk-hagedorn.de)
-*	Co-Authors	 : Martin Osieka (MO)
-*						Volker Jansen (vj)
-*						Ulf Dunkel (fd)
-*						Gerhard Stoll (ggs)
-*	Write access : fd, ggs
-*
-*	Notes 		 : Please add yourself as co-author when you change this file.
+*  Description  : ???
 *
 *-------------------------------------------------------------------------------
-*	Things to do : -
+*
+*  Author       : Dirk Hagedorn (udo@dirk-hagedorn.de)
+*  Co-Authors   : Martin Osieka (MO)
+*                 Volker Jansen (vj)
+*                 Ulf Dunkel (fd)
+*                 Gerhard Stoll (ggs)
+*  Write access : fd, ggs
+*
+*  Notes        : Please add yourself as co-author when you change this file.
 *
 *-------------------------------------------------------------------------------
-*	History:
+*  Things to do : -
 *
-*	2010:
-*	  fd	Jan 23: converted all German umlauts in comments into plain ASCII
-*	  fd	Feb 25: myTextGetline() no longer concatenates '!\' lines in ENV_VERBATIM
-*	  ggs Mar 13: Delete # in line 49
-*	2011:
-*	  fd	Feb 21: more reformatting done
+*-------------------------------------------------------------------------------
+*  History:
+*
+*  2010:
+*    fd  Jan 23: converted all German umlauts in comments into plain ASCII
+*    fd  Feb 22: VOID, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*    fd  Feb 25: myTextGetline() no longer concatenates '!\' lines in ENV_VERBATIM
+*    ggs Mar 13: Delete # in line 49
+*  2011:
+*    fd  Feb 21: more reformatting done
 *
 ******************************************|************************************/
 
 /*******************************************************************************
 *
-*		INCLUDE FILES
+*     INCLUDE FILES
 *
 ******************************************|************************************/
 
@@ -86,17 +87,17 @@ static FILE_ID last_fileid;
 
 /*******************************************************************************
 *
-*		FUNCTIONS
+*     FUNCTIONS
 *
 ******************************************|************************************/
 
 /*******************************************************************************
 *
-*	myTextOpen():
-*		??? (description missing)
+*  myTextOpen():
+*     ??? (description missing)
 *
-*	Return:
-*		???
+*  Return:
+*     ???
 *
 ******************************************|************************************/
 
@@ -185,7 +186,7 @@ GLOBAL _BOOL myTextGetline(char *string, size_t n, MYTEXTFILE * tf)
 		string[sl] = '\0';
 		uiMultiLines++;
 		/* Is there a continue line mark before linebreak? */
-		if (sl >= 2 && (string[sl - 2] == '!') && (string[sl - 1] == '\\'))
+		if (sl >= 2 && string[sl - 2] == '!' && string[sl - 1] == '\\')
 		{
 			sl = sl - 2;				/* String got shorter */
 			string[sl] = '\0';			/* Cut continue line! */

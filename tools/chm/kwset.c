@@ -1,2 +1,2 @@
-#define NO_MEM_REPLACE
+#define UDO_MEMORY
 #include "../../src/kwset.c"

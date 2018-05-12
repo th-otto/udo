@@ -77,7 +77,6 @@
 *    fd  Feb 03: more Portuguese words added
 *  2017:
 *    fd  Feb 07: Russian added
-*    fd  Feb 07: Russian added
 *    fd  Feb 08: localized copyright string added
 *
 ******************************************|************************************/
@@ -180,13 +179,13 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* degree      */    N_("degree"),
          /* copyright   */    N_("Copyright"),
          /*
-          * 1st arg; year
+          * 1st arg: year
           * 2nd arg: month name
           * 3rd arg: day of month
           */
          /* today       */    NC_("today", "%2$s %3$d, %1$d"),
          /*
-          * 1st arg; year
+          * 1st arg: year
           * 2nd arg: month
           * 3rd arg: day of month
           */
@@ -288,7 +287,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* html_prev   */    "Tidligere",
          /* html_next   */    "næste",
          /* html_lang   */    "da",
-         /* html_start  */    "start af dokumentp",
+         /* html_start  */    "start af dokument",
          /* translator  */    "Oversættelse:",
          /* distributor */    "Distributor:",
          /* tex_stylename */  "danish",
@@ -794,7 +793,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
       TOPOR,                              /* Portuguese */
       {
          /* preface     */    "Prefácio",
-         /* chapter     */    "Captítulo",
+         /* chapter     */    "Capítulo",
          /* title       */    "Título",
          /* appendix    */    "Apêndice",
          /* contents    */    "Conteúdo",
@@ -808,13 +807,13 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* also        */    "ver também",
          /* by          */    "por",
          /* fur         */    "para",
-         /* up          */    "Para cima",
-         /* exit        */    "Sair",
+         /* up          */    "&Para cima",
+         /* exit        */    "&Sair",
          /* unknown     */    "Desconhecido",
          /* update      */    "Actualizada em",
          /* lcid        */    "0x816",
          /* html_home   */    "Casa",
-         /* html_up     */    "Up",
+         /* html_up     */    "Para cima",
          /* html_prev   */    "Anterior",
          /* html_next   */    "Próximo",
          /* html_lang   */    "pt",
@@ -841,6 +840,59 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
       	 "Outubro",
       	 "Novembro",
       	 "Dezembro"
+      }
+   },
+   {
+      TORUS,                              /* Russian */
+      {
+         /* preface     */    "Предисловие",
+         /* chapter     */    "Глава",
+         /* title       */    "Название",
+         /* appendix    */    "Приложение",
+         /* contents    */    "Содержание",
+         /* listfigure  */    "Список рисунков",
+         /* listtable   */    "Список таблиц",
+         /* figure      */    "Рисунок",
+         /* table       */    "Таблица",
+         /* index       */    "Индекс",
+         /* page        */    "страница",
+         /* see         */    "см.",
+         /* also        */    "cмотрите также",
+         /* by          */    "по",
+         /* fur         */    "для",
+         /* up          */    "Вверх",
+         /* exit        */    "Выход",
+         /* unknown     */    "Неизвестно",
+         /* update      */    "Последнее обновление:",
+         /* lcid        */    "0x419",
+         /* html_home   */    "Главная",
+         /* html_up     */    "Вверх",
+         /* html_prev   */    "Предыдущий",
+         /* html_next   */    "Следующая",
+         /* html_lang   */    "ru",
+         /* html_start  */    "Начало документа",
+         /* translator  */    "Перевод:",
+         /* distributor */    "Дистрибьютор:",
+         /* tex_stylename */  "russian",
+         /* lyx_langname */   "russian",
+         /* degree      */    "степень",
+         /* copyright   */    "Авторские права",
+         /* today       */    "%3$d. %2$s %1$d r.",
+         /* short_today */    "%3$02d.%2$02d.%1$d"
+      },
+      {
+         "Январь",
+         "Февраль",
+         "Март",
+         "Апрель",
+         "Май",
+         "Июнь",
+         "Июль",
+         "Август",
+         "Сентябрь",
+         "Октябрь",
+         "Ноябрь",
+         "Декабрь"
       }
    },
    {
@@ -947,58 +999,6 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
       	 "oktober",
       	 "november",
       	 "december"
-      }
-   },
-   {
-      TORUS,                              /* Russian */
-      {
-         /* preface     */    "Предисловие",
-         /* chapter     */    "Глава",
-         /* title       */    "Название",
-         /* appendix    */    "Приложение",
-         /* contents    */    "Содержание",
-         /* listfigure  */    "Список рисунков",
-         /* listtable   */    "Список таблиц",
-         /* figure      */    "Рисунок",
-         /* table       */    "Таблица",
-         /* index       */    "Индекс",
-         /* page        */    "страница",
-         /* see         */    "см.",
-         /* also        */    "cмотрите также",
-         /* by          */    "по",
-         /* fur         */    "для",
-         /* up          */    "Вверх",
-         /* exit        */    "Выход",
-         /* unknown     */    "Неизвестно",
-         /* update      */    "Последнее обновление:",
-         /* lcid        */    "0x419",
-         /* html_home   */    "Главная",
-         /* html_up     */    "Вверх",
-         /* html_prev   */    "Предыдущий",
-         /* html_next   */    "Следующая",
-         /* html_lang   */    "ru",
-         /* html_start  */    "Начало документа",
-         /* translator  */    "Перевод:",
-         /* distributor */    "Дистрибьютор:",
-         /* tex_stylename */  "russian",
-         /* lyx_langname */   "russian",
-         /* degree      */    "степень",
-         /* copyright   */    "Авторские права",
-         "",""
-      },
-      {
-         "Январь",
-         "Февраль",
-         "Март",
-         "Апрель",
-         "Май",
-         "Июнь",
-         "Июль",
-         "Август",
-         "Сентябрь",
-         "Октябрь",
-         "Ноябрь",
-         "Декабрь"
       }
    },
    

@@ -40,6 +40,7 @@
 *  2010:
 *    fd  Feb 11: file reformatted and tidied up, TAB-free
 *    fd  Feb 19: new: NIL
+*    fd  Feb 22: new: VOID, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG
 *  2011:
 *    fd  Jan 31: new: XPOINT
 *  2013:
@@ -49,8 +50,8 @@
 *   tho  Aug 08: removed unused definitions
 *                renamed remaining typedefs to _BOOL, _UBYTE, _UWORD and _ULONG because
 *                of conflicts with windows headers
-*                removed idiotic XPOINT typedef
-*                removed even more idiotic NIL define
+*                removed XPOINT typedef
+*                removed NIL define
 *
 ******************************************|************************************/
 

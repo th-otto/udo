@@ -49,7 +49,8 @@
 *    fd  Feb 19: - file introduced (extracted from u_iso.h)
 *                - CODE_CP1257 (Baltic)
 *    fd  Feb 20: - CODE_CP1251 (Russian)
-*    fd  Feb 22: - CODE_CP1253 (Greek)
+*    fd  Feb 22: - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - CODE_CP1253 (Greek)
 *    fd  Feb 23: CODE_LAT1 -> CODE_CP1252
 *    fd  Feb 24: - CODE_CP1254 (Turkish)
 *                - CODE_CP1255 (Hebrew)

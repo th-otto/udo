@@ -47,6 +47,7 @@
 *                - mac2iso() and stuff removed
 *                - tos2iso() and stuff removed
 *    fd  Feb 19: id_charset_h removed
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Feb 23: UDO_PL -> UDO_BUILD (no more patchlevels)
 *    fd  Mar 05: file tidied up
 *    fd  Mar 06: read_cliopt_file() decomposes arguments from read file (finally)

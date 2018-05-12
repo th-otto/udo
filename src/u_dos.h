@@ -42,6 +42,7 @@
 *    fd  Feb 15: file introduced
 *    fd  Feb 16: CODE_437_lig[] + sort_CODE_437[] added
 *    fd  Feb 17: CODE_850_lig[] + sort_CODE_850[] added
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *
 ******************************************|************************************/
 

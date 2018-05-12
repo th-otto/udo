@@ -216,9 +216,9 @@ static void init_lang_date(int langidx)
 			sprintf(lang.short_today, "%d年%02d月%02d日", 1900 + zeit->tm_year, zeit->tm_mon + 1, zeit->tm_mday);
 			break;
 
-		case TORUS:                            /* Russian */
+		case TORUS:					/* Russian */
 			sprintf(lang.today, "%d %s %d r.", zeit->tm_mday, month, 1900 + zeit->tm_year);
-			sprintf(lang.short_today, "%02d.%02d.%d", zeit->tm_mday, zeit->tm_mon + 1, 1900+zeit->tm_year);
+			sprintf(lang.short_today, "%02d.%02d.%d", zeit->tm_mday, zeit->tm_mon + 1, 1900 + zeit->tm_year);
 			break;
 
 		case TOENG:					/* English */

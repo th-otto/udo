@@ -39,6 +39,7 @@
 *
 *  2010:
 *    fd  Feb 22: - header adjusted
+*                - void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *  2011:
 *    fd  Jan 31: - file reformatted
 *                - IMGTYPE_... introduced; image header definitions resorted

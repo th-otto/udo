@@ -77,7 +77,8 @@
 *                - recode(): U_ReplacementCharacter or '*' for unsupported chars
 *    fd  Feb 20: - CODE_CP1251
 *                - utf8_to_uchar()
-*    fd  Feb 22: - CODE_CP1253
+*    fd  Feb 22: - VOID, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
+*                - CODE_CP1253
 *    fd  Feb 23: - CODE_MAC_CE
 *                - CODE_LAT1 -> CODE_CP1252
 *                - CODE_LAT2 -> CODE_LATIN2
@@ -1534,11 +1535,9 @@ GLOBAL int calc_ttf_twip(const char *s, const int font, const int style)
 		return 0;
 
 	strcpy(d, s);
-	/* recode_always(d, iCharset); */
 	strcat(d, "W");						/* Breitenausgleiche */
 
 	pixel = 0;
-
 	switch (font)
 	{
 	case TTF_TIMES:

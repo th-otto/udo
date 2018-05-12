@@ -48,6 +48,7 @@
 *    fd  Feb 16: - more stuff globalized
 *                - MAXCHARSET increased for CODE_CP1250
 *    fd  Feb 19: - MAXCHARSET removed
+*    fd  Feb 22: void, SBYTE, UBYTE, SWORD, UWORD, SLONG, ULONG introduced
 *    fd  Mar 01: new: use_short_itemizes
 *                     use_short_enumerates
 *                     use_short_descriptions
@@ -231,7 +232,6 @@ GLOBAL _BOOL     use_auto_helpids;      /* HelpIDs automatisch generieren? */
 
 GLOBAL _BOOL     no_umlaute;            /* Umlaute durch ae etc. ersetzen? */
 GLOBAL _BOOL     no_headlines;          /* Keine Titelzeilen? */
-GLOBAL _BOOL     no_titles;             /* Keine Ueberschriften? */
 GLOBAL _BOOL     no_bottomlines;        /* Keine Fusszeilen? */
 GLOBAL _BOOL     no_popup_headlines;    /* In Popups nie eine Titelzeile? */
 GLOBAL _BOOL     no_footers;            /* Keine speziellen Fusszeilen? */
