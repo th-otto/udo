@@ -20,7 +20,7 @@ EXTRA_DIST = \
 	commands.txt \
 	missing_doc.txt \
 	Makefile.common \
-	udo.css udo_web.css \
+	udo.css udo_web.css keypress.js \
 	sql/udo.sql \
 	sql/versions.sql \
 	sql/udosql.pl
