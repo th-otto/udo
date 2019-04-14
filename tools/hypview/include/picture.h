@@ -30,8 +30,8 @@ struct _rgb {
 };
 typedef struct _rgb PALETTE[256];
 
-#ifndef __MFDB__
-#define __MFDB__
+#ifndef __MFDB
+#define __MFDB
 typedef struct
 {
 	void	*fd_addr;
