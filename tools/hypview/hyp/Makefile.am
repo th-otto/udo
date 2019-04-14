@@ -369,7 +369,7 @@ endif
 CLEANFILES = *.ttp *.tos *.res
 DISTCLEANFILES = $(build_triplet)-hcp$(EXEEXT)
 
-HYP_VERSION = 1.0.0
+HYP_VERSION = 1.0.1
 DISTDIR = hcp-$(HYP_VERSION)
 
 bindist:
