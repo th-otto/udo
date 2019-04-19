@@ -1112,7 +1112,7 @@ void ListBaggage(FILE *HelpFile, FILE *hpj, BOOL before31)
 	int32_t savepos;
 
 	headerwritten = FALSE;
-	leader = "|bm" + before31;
+	leader = &"|bm"[before31];
 	SearchFile(HelpFile, NULL, NULL);
 	for (n = GetFirstPage(HelpFile, &buf, NULL); n; n = GetNextPage(HelpFile, &buf))
 	{

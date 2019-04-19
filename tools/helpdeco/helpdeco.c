@@ -1719,7 +1719,7 @@ static void ExportBitmaps(FILE *HelpFile)		/* export all bitmaps */
 	unsigned int num;
 	int32_t savepos;
 
-	leader = "|bm" + before31;
+	leader = &"|bm"[before31];
 	SearchFile(HelpFile, NULL, NULL);
 	for (n = GetFirstPage(HelpFile, &buf, NULL); n; n = GetNextPage(HelpFile, &buf))
 	{

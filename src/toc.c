@@ -6045,14 +6045,13 @@ LOCAL void make_node(TOCTYPE currdepth, const _BOOL popup, _BOOL invisible)
 			replace_all(name, "\\pounds{}", "\033\003AAD\033");
 			replace_all(name, "\\texttrademark{}", "\033\003AAE\033");
 			replace_all(name, "$^{o}$", get_lang()->degree);
-			replace_all(name, "{\\\"a}", "ä");
-			replace_all(name, "{\\\"o}", "ö");
-			replace_all(name, "{\\\"u}", "ü");
-			replace_all(name, "{\\\"A}", "Ä");
-			replace_all(name, "{\\\"O}", "Ö");
-			replace_all(name, "{\\\"U}", "Ü");
-			replace_all(name, "{\\\"O}", "Ö");
-			replace_all(name, "{\\ss}", "ß");
+			replace_all(name, "{\\\"a}", "\344"); /* 0xe4 */
+			replace_all(name, "{\\\"o}", "\366"); /* 0xf6 */
+			replace_all(name, "{\\\"u}", "\374"); /* 0xfc */
+			replace_all(name, "{\\\"A}", "\304"); /* 0xc4 */
+			replace_all(name, "{\\\"O}", "\326"); /* 0xd6 */
+			replace_all(name, "{\\\"U}", "\334"); /* 0xdc */
+			replace_all(name, "{\\ss}", "\337"); /* 0xdf */
 			replace_all(name, "``", "`");
 			replace_all(name, "\"`", "`");
 			replace_all(name, "''", "'");

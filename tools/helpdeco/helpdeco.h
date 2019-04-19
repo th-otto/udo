@@ -23,7 +23,6 @@ http://www.gnu.org
 #ifndef HELPDECO_H
 #define HELPDECO_H
 #include <time.h>
-#include <malloc.h>
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>

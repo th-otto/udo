@@ -87,6 +87,10 @@ if OS_UNIX
 libhyp_a_SOURCES += unix/spawn.c unix/malloc.c
 endif
 
+if OS_MACOS
+libhyp_a_SOURCES += unix/spawn.c unix/malloc.c
+endif
+
 if OS_WIN32
 libhyp_a_SOURCES += win32.c win32/spawn.c win32/hypmain.c unix/malloc.c
 endif
