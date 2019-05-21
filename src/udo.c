@@ -2705,12 +2705,12 @@ LOCAL void print_ascii_index(void)
 	if (use_style_book)
 	{
 		output_ascii_line("=", zDocParwidth);
-		outln(get_lang()->index);
+		outln(U_(get_lang()->index));
 		output_ascii_line("=", zDocParwidth);
 	} else
 	{
-		outln(get_lang()->index);
-		output_ascii_line("*", strlen(get_lang()->index));
+		outln(U_(get_lang()->index));
+		output_ascii_line("*", strlen(U_(get_lang()->index)));
 	}
 
 	lastc = EOS;
@@ -2890,8 +2890,8 @@ LOCAL void print_info_index(void)
 		return;
 
 	outln("@ifinfo");
-	voutlnf("@node %s, , , Top", get_lang()->index);
-	voutlnf("@chapter %s", get_lang()->index);
+	voutlnf("@node %s, , , Top", U_(get_lang()->index));
+	voutlnf("@chapter %s", U_(get_lang()->index));
 	outln("");
 	outln("@menu");
 
@@ -8264,7 +8264,7 @@ LOCAL void output_preamble(void)
 			}
 			outln(s);
 			s[0] = EOS;
-			strcat(s, get_lang()->tex_stylename);
+			strcat(s, U_(get_lang()->tex_stylename));
 			if (!no_index && bCalledIndex)
 				strcat(s, ",makeidx");
 			if (!no_images && (iTexVersion == TEX_TETEX || iTexVersion == TEX_MIKTEX))
@@ -8295,7 +8295,7 @@ LOCAL void output_preamble(void)
 		} else
 		{
 			strcpy(s, "\\documentstyle[11pt,");
-			strcat(s, get_lang()->tex_stylename);
+			strcat(s, U_(get_lang()->tex_stylename));
 			if (!no_index && bCalledIndex)
 				strcat(s, ",makeidx");
 			strcat(s, "]");
@@ -8378,7 +8378,7 @@ LOCAL void output_preamble(void)
 		voutlnf("\\secnumdepth %d", toc_maxdepth - TOC_NODE1 + 1);
 		voutlnf("\\tocdepth %d", toc_maxdepth - TOC_NODE1 + 1);
 		outln("\\paragraph_separation indent");
-		voutlnf("\\language %s", get_lang()->lyx_langname);
+		voutlnf("\\language %s", U_(get_lang()->lyx_langname));
 
 		switch (destlang)
 		{
@@ -8411,7 +8411,7 @@ LOCAL void output_preamble(void)
 			voutlnf("%%%%Title 0, %s", titleprogram);
 		} else
 		{
-			voutlnf("%%%%Title 0, %s", get_lang()->unknown);
+			voutlnf("%%%%Title 0, %s", U_(get_lang()->unknown));
 		}
 
 		outln("%%Status_line 3");
@@ -8441,7 +8441,7 @@ LOCAL void output_preamble(void)
 		voutlnf("@os \"%s\"", UDO_OS);
 		voutlnf("@charset \"%s\"", chr_codepage_charset_name(CODE_TOS));
 		voutlnf("@inputenc \"%s\"", chr_codepage_charset_name(iEncodingTarget));
-		voutlnf("@lang \"%s\"", get_lang()->html_lang);
+		voutlnf("@lang \"%s\"", U_(get_lang()->html_lang));
 		outln("@endif");
 		break;
 	}
@@ -11754,7 +11754,7 @@ LOCAL void save_winhelp_project(void)
 			{
 				/* enable browse buttons "<<" and ">>" */
 				fprintf(hpjfile, "BrowseButtons()\n");
-				fprintf(hpjfile, "CreateButton(\"BTN_UP\", \"%s\", \"JumpID(%s, `%s')\")\n", get_lang()->up, hlp_name,
+				fprintf(hpjfile, "CreateButton(\"BTN_UP\", \"%s\", \"JumpID(%s, `%s')\")\n", U_(get_lang()->up), hlp_name,
 						WIN_TITLE_NODE_NAME);
 				/* create user defined buttons */
 				for (i = 0; i < iNumWinButtons; i++)
@@ -11767,7 +11767,7 @@ LOCAL void save_winhelp_project(void)
 				}
 #if 0
 				/* WinHelp: Knopf zum Beenden einbauen */
-				fprintf(hpjfile, "CreateButton(\"BTN_EXIT\", \"%s\", \"Exit()\")\n", get_lang()->exit);
+				fprintf(hpjfile, "CreateButton(\"BTN_EXIT\", \"%s\", \"Exit()\")\n", U_(get_lang()->exit));
 #endif
 			}
 
@@ -11850,7 +11850,7 @@ LOCAL void save_winhelp4_project(void)
 	fprintf(hpjfile, "HCW=0\n");
 	fprintf(hpjfile, "HLP=%s.hlp\n", outfile.name);
 	fprintf(hpjfile, "CNT=%s.cnt\n", outfile.name);
-	fprintf(hpjfile, "LCID=%s 0x0 0x0\n", get_lang()->lcid);
+	fprintf(hpjfile, "LCID=%s 0x0 0x0\n", U_(get_lang()->lcid));
 	strcpy(n, titleprogram);
 	del_right_spaces(n);
 	recode_chrtab(n, CHRTAB_ANSI);
@@ -11895,7 +11895,7 @@ LOCAL void save_winhelp4_project(void)
 		{
 			/* << und >> anzeigen */
 			fprintf(hpjfile, "BrowseButtons()\n");
-			fprintf(hpjfile, "CreateButton(\"BTN_UP\", \"%s\", \"JumpID(`', `%s')\")\n", get_lang()->up,
+			fprintf(hpjfile, "CreateButton(\"BTN_UP\", \"%s\", \"JumpID(`', `%s')\")\n", U_(get_lang()->up),
 					WIN_TITLE_NODE_NAME);
 
 			/* create user defined buttons */
@@ -12018,7 +12018,7 @@ LOCAL void save_htmlhelp_project(void)
 	fprintf(hhpfile, "Flat=Yes\n");
 	fprintf(hhpfile, "Full-text search=Yes\n");
 	fprintf(hhpfile, "Auto Index=Yes\n");
-	fprintf(hhpfile, "Language=%s\n", get_lang()->lcid);
+	fprintf(hhpfile, "Language=%s\n", U_(get_lang()->lcid));
 	fprintf(hhpfile, "Default Window=main\n");
 	fprintf(hhpfile, "\n");
 	fprintf(hhpfile, "[FILES]\n");

@@ -80,6 +80,16 @@ const char *xs_dngettext(const char *domain, const char *msgid, const char *msgi
 	return ret;
 }
 
+const char *xs_untranslated(const char *msgid)
+{
+	const char *ctxt;
+	
+	ctxt = strchr(msgid, GETTEXT_CONTEXT_GLUE[0]);
+	if (ctxt != NULL)
+		msgid = ctxt + 1;
+	return msgid;
+}
+
 #endif /* ENABLE_NLS */
 
 /*** ---------------------------------------------------------------------- ***/

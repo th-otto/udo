@@ -20,6 +20,7 @@
 # define C_(Context, String) xs_dgettext(GETTEXT_PACKAGE, Context GETTEXT_CONTEXT_GLUE String)
 # define N_(String) String
 # define NC_(Context, String) Context GETTEXT_CONTEXT_GLUE String
+# define U_(String) xs_untranslated(String)
 
 #undef printf
 #undef fprintf
@@ -45,6 +46,7 @@
 # define P_(String, Stringp, n) ((n) == 1 ? (String) : (Stringp))
 # define N_(String) String
 # define NC_(Context, String) String
+# define U_(String) (String)
 # define textdomain(String)
 # define gettext(String) (String)
 # define dgettext(Domain, String) (String)
@@ -103,6 +105,7 @@ EXTERN_C_BEG
 
 const char *xs_dgettext(const char *domain, const char *msgid) __THROW __attribute_format_arg__ (2);
 const char *xs_dngettext(const char *domain, const char *msgid, const char *msgid_plural, unsigned long n) __THROW __attribute_format_arg__ (1) __attribute_format_arg__ (2);
+const char *xs_untranslated(const char *msgid);
 
 const char *xs_get_locale_dir(void);
 char *g_get_package_installation_directory(void);
