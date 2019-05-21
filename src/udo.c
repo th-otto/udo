@@ -8264,15 +8264,13 @@ LOCAL void output_preamble(void)
 			}
 			outln(s);
 			s[0] = EOS;
-			strcat(s, U_(get_lang()->tex_stylename));
+			voutlnf("\\usepackage[%s]{babel}", U_(get_lang()->tex_stylename));
 			if (!no_index && bCalledIndex)
-				strcat(s, ",makeidx");
+				voutlnf("\\usepackage{makeidx}");
 			if (!no_images && (iTexVersion == TEX_TETEX || iTexVersion == TEX_MIKTEX))
 			{
-				strcat(s, ",graphicx");
+				voutlnf("\\usepackage{graphicx}");
 			}
-			if (s[0] != EOS)
-				voutlnf("\\usepackage{%s}", s);
 
 			outln("\\usepackage{eurosym}");
 			outln("\\usepackage{times}");
