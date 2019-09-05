@@ -151,10 +151,9 @@ LOCAL void c_win_charwidth(void);
 LOCAL void c_wh4_charwidth(void);
 LOCAL void c_rtf_charwidth(void);
 LOCAL void c_rtf_add_color(void);
-LOCAL void c_html_img_suffix(void);
 LOCAL void c_html_nodesize(void);
 
-LOCAL void c_htag_img_suffix(void);
+LOCAL void c_img_suffix(void);
 LOCAL void c_tabwidth(void);
 LOCAL void c_verbatimsize(void);
 LOCAL void c_linedrawsize(void);

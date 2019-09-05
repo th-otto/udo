@@ -770,10 +770,11 @@ LOCAL const UDOCOMMAND udoCmdSeq[] = {
 	{ "!rtf_add_colour",                 "",              c_rtf_add_color,                 TRUE,  CMD_ONLY_PREAMBLE },
 	{ "!rtf_add_color",                  "",              c_rtf_add_color,                 TRUE,  CMD_ONLY_PREAMBLE },
 	{ "!rtf_keep_tables",                "",              c_rtf_keep_tables,               TRUE,  CMD_ALWAYS },
-	{ "!html_img_suffix",                "",              c_html_img_suffix,               TRUE,  CMD_ALWAYS },
+	{ "!html_img_suffix",                "",              c_img_suffix,                    TRUE,  CMD_ALWAYS },
+	{ "!img_suffix",                     "",              c_img_suffix,                    TRUE,  CMD_ALWAYS },
 	{ "!html_nodesize",                  "",              c_html_nodesize,                 TRUE,  CMD_ALWAYS },
-	{ "!htag_img_suffix",                "",              c_htag_img_suffix,               TRUE,  CMD_ALWAYS },
-	{ "!hh_img_suffix",                  "",              c_html_img_suffix,               TRUE,  CMD_ALWAYS },
+	{ "!htag_img_suffix",                "",              c_img_suffix,                    TRUE,  CMD_ALWAYS },
+	{ "!hh_img_suffix",                  "",              c_img_suffix,                    TRUE,  CMD_ALWAYS },
 	{ "!tabwidth",                       "",              c_tabwidth,                      TRUE,  CMD_ALWAYS },
 	{ "!verbatimsize",                   "",              c_verbatimsize,                  TRUE,  CMD_ALWAYS },
 	{ "!linedrawsize",                   "",              c_linedrawsize,                  TRUE,  CMD_ALWAYS },
@@ -4896,8 +4897,8 @@ LOCAL void c_rtf_add_color(void)
 
 /*******************************************************************************
 *
-*  c_html_img_suffix():
-*     set file suffix for use in !image and (!img) commands in HTML
+*  c_img_suffix():
+*     set file suffix for use in !image and (!img) commands
 *
 *  Notes:
 *     Default: .gif
@@ -4907,10 +4908,10 @@ LOCAL void c_rtf_add_color(void)
 *
 ******************************************|************************************/
 
-LOCAL void c_html_img_suffix(void)
+LOCAL void c_img_suffix(void)
 {
 	sDocImgSuffix[0] = EOS;
-	um_strcpy(sDocImgSuffix, token[1], ArraySize(sDocImgSuffix) - 1, "!html_img_suffix");
+	um_strcpy(sDocImgSuffix, token[1], ArraySize(sDocImgSuffix) - 1, "!img_suffix");
 
 	if (sDocImgSuffix[0] != EOS)
 	{
@@ -4949,34 +4950,6 @@ LOCAL void c_html_nodesize(void)
 
 
 
-
-
-/*******************************************************************************
-*
-*  c_htag_img_suffix():
-*     set file suffix for use in !image and (!img) commands in HP-Helptag-SGML
-*
-*  Notes:
-*     Default: .tiff
-*
-*  return:
-*     -
-*
-******************************************|************************************/
-
-LOCAL void c_htag_img_suffix(void)
-{
-	sDocImgSuffix[0] = EOS;
-	um_strcpy(sDocImgSuffix, token[1], ArraySize(sDocImgSuffix) - 1, "!htag_img_suffix");
-
-	if (sDocImgSuffix[0] != EOS)
-	{
-		if (sDocImgSuffix[0] != '.')
-		{
-			strinsert(sDocImgSuffix, ".");
-		}
-	}
-}
 
 
 /*******************************************************************************
@@ -5258,7 +5231,7 @@ LOCAL void convert_image(const _BOOL visible)
 	case TOSTG:
 	case TOAMG:
 		c_internal_styles(caption);
-		change_sep_suffix(filename, ".img");
+		change_sep_suffix(filename, sDocImgSuffix);
 		c_img_output(filename, caption, visible, bStgLimage);
 		break;
 
@@ -5266,7 +5239,7 @@ LOCAL void convert_image(const _BOOL visible)
 		qreplace_all(filename, "$\\backslash$", 12, "\\", 1);
 		c_internal_styles(caption);
 		qreplace_all(filename, "\\_", 2, "_", 1);
-		build_image_filename(filename, ".img");
+		build_image_filename(filename, sDocImgSuffix);
 
 		switch (iTexVersion)
 		{
@@ -9795,7 +9768,7 @@ LOCAL _BOOL pass1_check_everywhere_commands(void)
 	case TOHTM:
 		if (strcmp(token[0], "!html_img_suffix") == 0)
 		{
-			c_html_img_suffix();
+			c_img_suffix();
 			return TRUE;
 		}
 		if (strcmp(token[0], "!html_backcolor") == 0)
@@ -9843,7 +9816,7 @@ LOCAL _BOOL pass1_check_everywhere_commands(void)
 	case TOMHH:
 		if (strcmp(token[0], "!hh_img_suffix") == 0)
 		{
-			c_html_img_suffix();
+			c_img_suffix();
 			return TRUE;
 		}
 		if (strcmp(token[0], "!hh_backcolor") == 0)
@@ -10509,7 +10482,10 @@ LOCAL _BOOL pass1(const char *datei)
 							win_set_button();
 						} else if (strcmp(token[0], "!html_img_suffix") == 0)
 						{
-							c_html_img_suffix();
+							c_img_suffix();
+						} else if (strcmp(token[0], "!img_suffix") == 0)
+						{
+							c_img_suffix();
 						} else if (strcmp(token[0], "!chapterimage") == 0)
 						{
 							set_chapter_image();

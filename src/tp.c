@@ -697,7 +697,7 @@ GLOBAL _BOOL set_docinfo(void)
 		if (address_counter < MAXADDRESS)
 		{
 			address_counter++;
-			init_docinfo_data(data, &(titdat.address[address_counter]), FALSE);
+			init_docinfo_data(data, &(titdat.address[address_counter]), TRUE);
 		}
 		return TRUE;
 	}
@@ -1357,7 +1357,7 @@ GLOBAL void c_maketitle(void)
 		if (has_programimage)
 		{
 			strcpy(n, titdat.programimage);
-			change_sep_suffix(n, ".img");
+			change_sep_suffix(n, sDocImgSuffix);
 			c_begin_center();
 			c_img_output(n, "", FALSE, TRUE);
 			c_end_center();
@@ -1377,14 +1377,15 @@ GLOBAL void c_maketitle(void)
 
 		if (has_author || has_authorimage)
 		{
-			outln("");
+			if (has_version ||has_date)
+				outln("");
 			outlncenter(get_lang()->by);
 		}
 
 		if (has_authorimage)
 		{
 			strcpy(n, titdat.authorimage);
-			change_sep_suffix(n, ".img");
+			change_sep_suffix(n, sDocImgSuffix);
 			c_begin_center();
 			c_img_output(n, "", FALSE, TRUE);
 			c_end_center();
