@@ -7529,7 +7529,7 @@ LOCAL void output_appendix_line(void)
 *
 ******************************************|************************************/
 
-LOCAL void do_toc(int depth, _BOOL no_numbers, _BOOL compressed)
+LOCAL void do_toc(int depth, int appendix_depth, _BOOL no_numbers, _BOOL compressed)
 {
 	if (desttype == TORTF)				/* no TOC in RTF as we have no page numbers! */
 		return;
@@ -7539,7 +7539,7 @@ LOCAL void do_toc(int depth, _BOOL no_numbers, _BOOL compressed)
 	if (apx_available)
 	{
 		output_appendix_line();
-		toc_output(TOC_NODE1, depth, TRUE, no_numbers, compressed);
+		toc_output(TOC_NODE1, appendix_depth, TRUE, no_numbers, compressed);
 	}
 }
 
@@ -7810,7 +7810,7 @@ LOCAL void do_toptoc(const TOCTYPE currdepth, _BOOL popup)
 *
 ******************************************|************************************/
 
-LOCAL int get_toccmd_depth(void)
+LOCAL int get_toccmd_depth(int *appendix_depth)
 {
 	register int i;
 	int ret;
@@ -7826,6 +7826,18 @@ LOCAL int get_toccmd_depth(void)
 					ret = TOC_MAXDEPTH;
 				if (ret > TOC_MAXDEPTH)
 					ret = TOC_MAXDEPTH;
+				if (appendix_depth)
+				{
+					*appendix_depth = ret;
+					if (i + 2 < token_counter)
+					{
+						*appendix_depth = atoi(token[i + 2]);
+						if (*appendix_depth <= 0)
+							*appendix_depth = 1;
+						if (*appendix_depth > TOC_MAXDEPTH)
+							*appendix_depth = TOC_MAXDEPTH;
+					}
+				}
 				return ret;
 			}
 		}
@@ -7871,7 +7883,7 @@ GLOBAL void c_toc(void)
 	{
 		_BOOL compressed = has_flag_compressed();
 		
-		d = get_toccmd_depth();
+		d = get_toccmd_depth(NULL);
 		if (d == 0)
 		{
 			if (use_compressed_tocs)
@@ -7883,7 +7895,7 @@ GLOBAL void c_toc(void)
 		
 		if (desttype == TOINF)
 			d = 1;
-		do_toc(d, no_numbers, compressed);
+		do_toc(d, d, no_numbers, compressed);
 	}
 }
 
@@ -7914,7 +7926,7 @@ GLOBAL void c_subtoc(void)
 		
 		if (active_nodetype >= TOC_NODE1 && active_nodetype < TOC_MAXDEPTH - 2)
 		{
-			d = get_toccmd_depth();
+			d = get_toccmd_depth(NULL);
 			if (d == 0)
 				d = subtocs_depth[active_nodetype];
 			no_numbers = get_toccmd_nonumbers();
@@ -8043,6 +8055,7 @@ GLOBAL void c_tableofcontents(void)
 	char *n;
 	int i;
 	int depth;
+	int appendix_depth;
 	const char *title;
 	_BOOL compressed = has_flag_compressed();
 	
@@ -8053,13 +8066,14 @@ GLOBAL void c_tableofcontents(void)
 
 	check_endnode();
 
-	depth = get_toccmd_depth();
+	depth = get_toccmd_depth(&appendix_depth);
 	if (depth == 0)						/* use default values */
 	{
 		if (use_compressed_tocs)		/* show only 1st TOC level */
 			depth = 1;
 		else							/* show all TOC levels */
 			depth = TOC_MAXDEPTH;
+		appendix_depth = depth;
 	}
 
 	switch (desttype)
@@ -8126,7 +8140,7 @@ GLOBAL void c_tableofcontents(void)
 		outln(get_lang()->contents);
 		outln("");
 
-		do_toc(1, no_numbers, compressed);						/* always 1 */
+		do_toc(1, 1, no_numbers, compressed);						/* always 1 */
 		outln("@end ifinfo");
 		break;
 
@@ -8161,7 +8175,7 @@ GLOBAL void c_tableofcontents(void)
 		output_helpid(0);
 		stg_headline("", get_lang()->contents, FALSE);
 
-		do_toc(depth, no_numbers, compressed);
+		do_toc(depth, appendix_depth, no_numbers, compressed);
 #if 0
 		/* no @endnode here, so the user can add raw cmds to TOC page */
 		outln("@endnode");
@@ -8185,7 +8199,7 @@ GLOBAL void c_tableofcontents(void)
 		output_ascii_line("=", strlen(title));
 		outln("");
 
-		do_toc(depth, no_numbers, compressed);
+		do_toc(depth, appendix_depth, no_numbers, compressed);
 		outln("");
 		break;
 
