@@ -7719,7 +7719,7 @@ GLOBAL void tokenize(char *s)
 	/* bevor das neue Kommando bearbeitet wird. */
 	if (s[0] == META_C && s[1] >= 'a' && s[1] <= 'z')
 	{
-		token_output(FALSE, strcmp(s, "!end_node") != 0);
+		token_output(FALSE, strcmp(s, "!end_node") != 0 && strcmp(s, "!hline") != 0);
 		newtoken = TRUE;
 	}
 
