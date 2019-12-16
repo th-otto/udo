@@ -10853,9 +10853,9 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_vars(zeile);
 			c_tilde(zeile);
 			c_styles(zeile);
+			replace_defines(zeile);
 			c_commands_inside(zeile, FALSE);
 
-			replace_defines(zeile);
 			if (bCheckMisc)
 				auto_references(zeile, FALSE, "", 0, 0);
 			replace_placeholders(zeile);
@@ -10909,9 +10909,9 @@ LOCAL void output_verbatim_line(char *zeile)
 			c_vars(zeile);
 			c_tilde(zeile);
 			c_styles(zeile);
+			replace_defines(zeile);
 			c_commands_inside(zeile, FALSE);
 
-			replace_defines(zeile);
 			auto_references(zeile, FALSE, "", 0, 0);
 			replace_placeholders(zeile);
 			replace_speccmds(zeile);
@@ -11548,6 +11548,7 @@ LOCAL _BOOL pass2(const char *datei)
 
 					auto_quote_chars(zeile, FALSE);
 
+					replace_defines(zeile);
 					c_commands_inside(zeile, TRUE);
 
 					replace_macros(zeile);
@@ -11558,7 +11559,6 @@ LOCAL _BOOL pass2(const char *datei)
 
 					c_commands_inside(zeile, FALSE);
 
-					replace_defines(zeile);
 					tokenize(zeile);
 				}
 			} else if (token_counter > 0)

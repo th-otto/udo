@@ -263,6 +263,7 @@ LOCAL int get_nr_of_parameters(const char *cmd, const char *s)
 	int count = 0;						/* # of found parameters */
 	char *pos;
 	char search[128];					/* buffer for search string */
+	int parenlevel = 0;
 
 	sprintf(search, "(!%s", cmd);		/* create search string, e.g. "(!raw" */
 
@@ -278,16 +279,36 @@ LOCAL int get_nr_of_parameters(const char *cmd, const char *s)
 		return 0;
 
 	/* find first uncasted closing bracket */
-	while (pos[0] != ')' || (pos[0] == ')' && pos[-1] == '!'))
+	for (;;)
 	{
 		switch (pos[0])
 		{
 		case EOS:						/* not allowed: command block has a line break! */
 			error_unexpected_eol();
 			return 0;
+		case '(':
+			if (pos[-1] != '!')
+				parenlevel++;
+			break;
+		case ')':
+			/* if (pos[-1] != '!') */
+			{
+				--parenlevel;
+				if (parenlevel < 0)
+					return count;
+			}
+			break;
+		case '[':
+			/* start of new paremeter if not quoted */
+			if (pos[-1] != '!')
+				parenlevel = 0;
+			break;
 		case ']':						/* parameter found? */
 			if (pos[-1] != '!')			/* if ] wasn't casted by ! ... */
+			{
 				count++;				/* yes, parameter found */
+				parenlevel = 0;
+			}
 			break;
 		}
 		pos++;							/* next char */
@@ -378,7 +399,7 @@ LOCAL int extract_parameters(const char *s, const char *cmd, int count)
 
 		/* Pointer auf erstes Zeichen des Parameters setzen */
 		/* und bis zur naechsten Klammer lesen, die nicht */
-		/* duch ein Ausrufungszeichen gequotet ist. */
+		/* durch ein Ausrufungszeichen gequotet ist. */
 		pos++;
 
 		while ((pos[0] != ']' || (pos[0] == ']' && pos[-1] == '!')) && (pos[0] != EOS))
@@ -443,7 +464,6 @@ LOCAL int get_parameters(const char *s, const char *search, int min, int max)
 		return params;
 
 	params = extract_parameters(s, search, params);
-
 	if (params == 0)
 		return 0;
 
@@ -1427,7 +1447,9 @@ LOCAL void c_link(char *s, _BOOL inside_b4_macro)
 	}
 
 	if (pnr != 0 && pnr != 2)
+	{
 		error_wrong_nr_parameters("!link");
+	}
 }
 
 
@@ -4954,7 +4976,7 @@ GLOBAL void replace_udo_quotes(char *s)
 			 * are removed. Apparently, this is not the case in a lot of
 			 * places however.
 			 */
-			if (*name && !is_internal_name(name))
+			if (*name && (*name < '1' || *name > '9') && !is_internal_name(name))
 				warning_message(_("possibly undefined macro: %s"), name);
 		}
 		found = strstr(found + 2, "(!");
