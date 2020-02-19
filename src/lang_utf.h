@@ -452,7 +452,7 @@ LOCAL _UDOSTRINGS const UDOSTRINGS[] =              /* localized UDO strings */
          /* tex_stylename */  "french",
          /* lyx_langname */   "french",
          /* degree      */    "degré",
-         /* copyright   */    "Droit d’auteur",
+         /* copyright   */    "Droit d'auteur",
          /* today       */    "%3$d %2$s %1$d",
          /* short_today */    "%3$02d.%2$02d.%1$d"
       },
