@@ -5423,24 +5423,8 @@ GLOBAL void init_env_itemchar(void)
 
 		if (!no_umlaute)
 		{
-			if (desttype == TOSTG)
-			{
-				strcpy(itemchar[1], "\371");
-			} else
-			{
-#ifdef __TOS__
-				strcpy(itemchar[1], "\371");
-#endif
-#ifdef __NEXTSTEP__
-				strcpy(itemchar[1], "\367");
-#endif
-#ifdef __HPUX_ROMAN8__
-				strcpy(itemchar[1], "\374");
-#endif
-#if defined(__MACOS__) || defined(__MACOSX__) || defined(__BEOS__)
-				strcpy(itemchar[1], "\245");
-#endif
-			}
+			strcpy(itemchar[1], "\371");
+			recode(itemchar[1], CODE_TOS, iEncodingTarget);
 		}
 		strcpy(itemchar[2], "-");
 		strcpy(itemchar[3], "*");

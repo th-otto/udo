@@ -612,9 +612,10 @@ GLOBAL void init_module_config(const char *pfname, const char *prgname, const ch
 			return;
 		}
 	}
-#ifdef __TOS__
+
 	tmp = getenv("HOME");
 
+#ifdef __TOS__
 	if (tmp != NULL && *tmp != EOS)
 	{
 		strcpy(path, tmp);
@@ -636,8 +637,6 @@ GLOBAL void init_module_config(const char *pfname, const char *prgname, const ch
 		}
 	}
 #endif
-
-	tmp = getenv("HOME");
 
 	if (tmp != NULL && *tmp != EOS)
 	{
