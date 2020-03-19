@@ -170,14 +170,14 @@ typedef struct                            /* ---- Layoutinfos ---- */
 *
 ******************************************|************************************/
 
-GLOBAL int          address_counter;
-GLOBAL _BOOL      called_maketitle;
-GLOBAL _BOOL      uses_maketitle;
+extern int          address_counter;
+extern _BOOL      called_maketitle;
+extern _BOOL      uses_maketitle;
 
-GLOBAL TITLEDATA    titdat;
-GLOBAL LAYOUTDATA   laydat;
+extern TITLEDATA    titdat;
+extern LAYOUTDATA   laydat;
 
-GLOBAL char         titleprogram[512];
+extern char         titleprogram[512];
 
 
 

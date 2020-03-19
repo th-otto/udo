@@ -91,6 +91,12 @@
 #include "export.h"
 #include "tp.h"
 
+int          address_counter;
+_BOOL      called_maketitle;
+_BOOL      uses_maketitle;
+TITLEDATA    titdat;
+LAYOUTDATA   laydat;
+char         titleprogram[512];
 
 
 
