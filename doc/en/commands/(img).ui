@@ -17,7 +17,7 @@ when converting to WinHelp (!file [file.bmp]) will be used. UDO doesn't check
 if this file exists.
 
 Since version 6.5.18, this command has been enhanced: (!nl)
-(!code [(!/img [(!FILE!)!] [(!TEXT!) [(!TEXT!)!]!]!)]) (!nl)
+(!/img [(!FILE)!] [(!TEXT) [(!TEXT)!]!]) (!nl)
 This has effects only on HTML, HTML Apple Help and HTML-Help output.
 The second (!TEXT) will then be used for the attribute ""title"". If only one (!TEXT)
 exists, both attributes ('alt' and 'title') get the same text. Example:

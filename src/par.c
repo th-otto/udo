@@ -299,7 +299,7 @@ LOCAL int get_nr_of_parameters(const char *cmd, const char *s)
 			}
 			break;
 		case '[':
-			/* start of new paremeter if not quoted */
+			/* start of new parameter if not quoted */
 			if (pos[-1] != '!')
 				parenlevel = 0;
 			break;

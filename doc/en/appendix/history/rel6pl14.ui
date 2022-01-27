@@ -115,7 +115,7 @@ cases it was impossible not to change the syntax of some commands.
       !item (!KW [table_alignment])
       !item (!KW [image_alignment])
       !item (!KW [no_popup_headlines])
-      !item (!KW [use_raw_header] [(!FILE!)]), (!KW [use_raw_footer] [(!FILE!)]),
+      !item (!KW [use_raw_header] [(!FILE)]), (!KW [use_raw_footer] [(!FILE)]),
             (!KW [ignore_raw_header]), (!KW [ignore_raw_footer])
       !item (!KW [win_old_keywords])
       !item (!KW [no_table_lines])

@@ -296,7 +296,7 @@ sequences are converted to which characters:
 !begin_table [|l|l|l|l|] (!hline)
 Placeholder  !! x from          !! Example         !! Result
 !hline
-(!/"x)       !! aeiosuyAEIOU    !! (!T)(!/"a)(!t)  !! = (!"a)
+(!/"x)       !! aeiosuyAEIOUY   !! (!T)(!/"a)(!t)  !! = (!"a)
 (!/'x)       !! aeiouyAEIOUY    !! (!T)(!/'e)(!t)  !! = (!'e)
 (!/`x)       !! aeiouAEIOU      !! (!T)(!/`i)(!t)  !! = (!`i)
 (!/^x)       !! aeiouAEIOU      !! (!T)(!/^o)(!t)  !! = (!^o)
@@ -304,9 +304,10 @@ Placeholder  !! x from          !! Example         !! Result
 (!/!~x)       !! anoANO          !! (!T)(!/!~n)(!t)  !! = (!~n)
 (!/,x)       !! cC              !! (!T)(!/,C)(!t)  !! = (!,C)
 (!/.x)       !! aA              !! (!T)(!/.A)(!t)  !! = (!.A)
-(!/_x)       !! ao              !! (!T)(!/_a)(!t)  !! = (!_a)
+(!/_x)       !! ao!?            !! (!T)(!/_a)(!t)  !! = (!_a)
 (!/\x)       !! oO              !! (!T)(!/\O)(!t)  !! = (!\O)
-(!/#x)       !! S               !! (!T)(!/#S)(!t)  !! = (!#S)
+(!/#x)       !! PS              !! (!T)(!/#S)(!t)  !! = (!#S)
+(!/vx)       !! cdelnrstzCDELNRSTZ !! (!T)(!/vc)(!t)  !! = (!vc)
 !hline
 !end_table
 

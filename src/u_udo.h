@@ -71,10 +71,10 @@ typedef struct _udo2utf
    const char *udo;                       /* UDO universal character string */
    _UWORD unicode;                        /* Unicode */
    _UWORD uni2ascii;                      /* 7-bit ASCII Unicode */
-   const char *win;
-   const char *tex;
-   const char *html;
-   const char *lyx;
+   const char *winxx;
+   const char *texxx;
+   const char *htmlxx;
+   const char *lyxxx;
 } UDO2UTF;
 
 
@@ -102,6 +102,25 @@ static UDO2UTF const u_CODE_UDO[] =            /* CODE_UDO */
    
    { "(!,C)",   U_LatinCapitalLetterCWithCedilla,     U_LatinCapitalLetterC,  "\\'C7", "\\c{C}",  "&Ccedil;", "\0xC7" },
    { "(!,c)",   U_LatinSmallLetterCWithCedilla,       U_LatinSmallLetterC,    "\\'E7", "\\c{c}",  "&ccedil;", "\0xE7" },
+   
+   { "(!vC)",   U_LatinCapitalLetterCWithCaron,       U_LatinCapitalLetterC,  "\\'C7", "\\v{C}",  "&#x010c;", "\0xC7" },
+   { "(!vc)",   U_LatinSmallLetterCWithCaron,         U_LatinSmallLetterC,    "\\'E7", "\\v{c}",  "&#x010d;", "\0xE7" },
+   { "(!vD)",   U_LatinCapitalLetterDWithCaron,       U_LatinCapitalLetterD,  "\\'C7", "\\v{D}",  "&#x010e;", "\0xC7" },
+   { "(!vd)",   U_LatinSmallLetterDWithCaron,         U_LatinSmallLetterD,    "\\'E7", "\\v{d}",  "&#x010f;", "\0xE7" },
+   { "(!vE)",   U_LatinCapitalLetterEWithCaron,       U_LatinCapitalLetterE,  "\\'C7", "\\v{E}",  "&#x011a;", "\0xC7" },
+   { "(!ve)",   U_LatinSmallLetterEWithCaron,         U_LatinSmallLetterE,    "\\'E7", "\\v{e}",  "&#x011b;", "\0xE7" },
+   { "(!vL)",   U_LatinCapitalLetterLWithCaron,       U_LatinCapitalLetterL,  "\\'C7", "\\v{L}",  "&#x013d;", "\0xC7" },
+   { "(!vl)",   U_LatinSmallLetterLWithCaron,         U_LatinSmallLetterL,    "\\'E7", "\\v{l}",  "&#x013e;", "\0xE7" },
+   { "(!vN)",   U_LatinCapitalLetterNWithCaron,       U_LatinCapitalLetterN,  "\\'C7", "\\v{N}",  "&#x0147;", "\0xC7" },
+   { "(!vn)",   U_LatinSmallLetterNWithCaron,         U_LatinSmallLetterN,    "\\'E7", "\\v{n}",  "&#x0148;", "\0xE7" },
+   { "(!vR)",   U_LatinCapitalLetterRWithCaron,       U_LatinCapitalLetterR,  "\\'C7", "\\v{R}",  "&#x0158;", "\0xC7" },
+   { "(!vr)",   U_LatinSmallLetterRWithCaron,         U_LatinSmallLetterR,    "\\'E7", "\\v{r}",  "&#x0159;", "\0xE7" },
+   { "(!vS)",   U_LatinCapitalLetterSWithCaron,       U_LatinCapitalLetterS,  "\\'C7", "\\v{S}",  "&#x0160;", "\0xC7" },
+   { "(!vs)",   U_LatinSmallLetterSWithCaron,         U_LatinSmallLetterS,    "\\'E7", "\\v{s}",  "&#x0161;", "\0xE7" },
+   { "(!vT)",   U_LatinCapitalLetterTWithCaron,       U_LatinCapitalLetterT,  "\\'C7", "\\v{T}",  "&#x0164;", "\0xC7" },
+   { "(!vt)",   U_LatinSmallLetterTWithCaron,         U_LatinSmallLetterT,    "\\'E7", "\\v{t}",  "&#x0165;", "\0xE7" },
+   { "(!vZ)",   U_LatinCapitalLetterZWithCaron,       U_LatinCapitalLetterZ,  "\\'C7", "\\v{Z}",  "&#x017d;", "\0xC7" },
+   { "(!vz)",   U_LatinSmallLetterZWithCaron,         U_LatinSmallLetterZ,    "\\'E7", "\\v{z}",  "&#x017e;", "\0xE7" },
    
    { "(!.A)",   U_LatinCapitalLetterAWithRingAbove,   U_LatinCapitalLetterA,  "\\'C5", "{\\AA}",  "&Aring;",  "\0xC5" },
    { "(!.a)",   U_LatinSmallLetterAWithRingAbove,     U_LatinSmallLetterA,    "\\'E5", "{\\aa}",  "&aring;",  "\0xE5" },

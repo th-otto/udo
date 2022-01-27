@@ -1111,8 +1111,8 @@ GLOBAL void convert_sz(char *s)
 
 GLOBAL void recode_udo(char *s)
 {
-	register int i = 0;
-	char cbuf[8];
+	int i;
+	char cbuf[20];
 	const char *repl;
 
 	if (s[0] == EOS)					/* empty string */
@@ -1121,17 +1121,17 @@ GLOBAL void recode_udo(char *s)
 	if (strstr(s, "(!") == NULL)		/* no UDO command header found */
 		return;
 
-	while (u_CODE_UDO[i].udo != NULL)	/* check whole table */
+	for (i = 0; u_CODE_UDO[i].udo != NULL; i++)	/* check whole table */
 	{
 		/* get recoded replacement char(s) */
 		repl = unicode2char(u_CODE_UDO[i].unicode, cbuf);
+		if (*repl == '\0')
+			repl = unicode2char(u_CODE_UDO[i].uni2ascii, cbuf);
 		/* replace all existances */
 		replace_all(s, u_CODE_UDO[i].udo, repl);
 
 		if (strstr(s, "(!") == NULL)	/* no further UDO command header found */
 			break;
-
-		i++;
 	}
 
 	if (no_umlaute)						/* target encoding must not use umlauts */
